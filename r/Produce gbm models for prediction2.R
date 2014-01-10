@@ -82,7 +82,7 @@ predict_data2$class <- as.factor(predict_data2$class)
                           metric    = Optimize_Metric,
                           #weights   = class_weights,
                           verbose   = FALSE,
-                          tuneGrid  = expand.grid(.interaction.depth = 4, .n.trees = 500,.shrinkage = .00))
+                          tuneGrid  = expand.grid(.interaction.depth = 4, .n.trees = 500,.shrinkage = .001))
                         
                           
 
@@ -278,7 +278,7 @@ preds <- do.call("rbind",Predictions)
 preds$pred.outcome.raw <- ifelse(preds$extinct >= .5, "extinct","survive")
 preds <- data.frame(lapply(preds,as.character), stringsAsFactors=FALSE)
 
-
+source("~/Dropbox/nescent_extinction_map/r/calibrate-models.R")
 
 
 ## extract number of extinctions and survivals
