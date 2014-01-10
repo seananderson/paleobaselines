@@ -31,7 +31,7 @@ data <- drop.levels(subset(data,data$stage %in% x))
   predict_max.lat <- predict_data$max.lat
   predict_mean.lat <- predict_data$mean.lat
 
-  
+
   train_stage <- rep(stage_name,length(predict_genus))
 
 ext <- as.factor(ifelse(data$Ex == 1,"extinct","survive"))
@@ -42,9 +42,10 @@ ext <- as.factor(ifelse(data$Ex == 1,"extinct","survive"))
   ExFreq <- (exes/obs)
   SurFreq <- (1-(exes/obs))
   MaxFreq <- max(ExFreq,SurFreq)
-  ExWeight <- 1/(ExFreq/MaxFreq)
-  SurWeight <- 1/(SurFreq/MaxFreq)
+  ExWeight <- (1/(ExFreq/MaxFreq))
+  SurWeight <- (1/(SurFreq/MaxFreq))
   weights <- ifelse(data$Ex==1,ExWeight,SurWeight)
+  #weights <- ifelse(data$Ex==1,1,1)
   null_weights <- rep(1,length(weights))
   use_weights <- rep(Use_Weights,length(weights))
   class_weights <-ifelse(use_weights == "yes",weights,null_weights)
@@ -60,37 +61,41 @@ predict_data2$class <- as.factor(predict_data2$class)
 
 # parallel processing:
   require(doMC)
-  registerDoMC(2)
+  registerDoMC(4)
   # set up training parameters for models
- fitControl <- trainControl(## 10-fold CV
+ fitControl <- trainControl(
                            method = CV_Method,
                            number = Number_run,
                            repeats = Number_rep,
                            ## Save all the resampling results
                            returnResamp = "all",
                            classProbs = TRUE,
+                           allowParallel = TRUE
                            #summaryFunction = twoClassSummary
                            )
   ## choose metric to optimize: "Kappa","ROC","Spec" or "Sens". If Kappa, disable "summaryFunction = twoClassSummary".
-                           
+
+ #browser()
               gbmFit <-   train(data2, ext,
                           method    = "gbm",
                           trControl = fitControl,
                           metric    = Optimize_Metric,
+                          #weights   = class_weights,
                           verbose   = FALSE,
-                          weights   = class_weights
-                          )
+                          tuneGrid  = expand.grid(.interaction.depth = 4, .n.trees = 500,.shrinkage = .00))
+                        
                           
+
   # grab the gbm model:
-  m <- gbmFit$finalModel                        
-                          
+  m <- gbmFit$finalModel
+
   ##extract extinction probabilities from suite of models
   All.Models <- list(gbm = gbmFit)
   All.Preds <- predict(All.Models,newdata = predict_data2, type = "prob")
-  str(All.Preds)
+  #str(All.Preds)
   Ext.Prob <- All.Preds$gbm$extinct
-  
-  
+
+
   #### script for turning raw risk estimates into quantiles
   Quantiles <- function(x){
 	Q1 <- data.frame(cut2(x, g=Num_risk_quantiles, levels.mean = FALSE))
@@ -104,14 +109,14 @@ predict_data2$class <- as.factor(predict_data2$class)
     Qquant <- Qquant[order(Qquant$num),]
     return(Qquant$quant)
     }
-    
+
   Ext.Prob.Quant <- Quantiles(Ext.Prob)
   Ext.Prob.Quant <- Ext.Prob.Quant/max(Ext.Prob.Quant)
 
-  preds <- data.frame(train_stage,predict_class,predict_group,predict_genus,Ext.Prob,Ext.Prob.Quant,predict_occupancy,predict_occurrences,predict_great.circle,predict_richness,predict_lat.range,predict_data$min.lat,predict_data$max.lat,predict_data$mean.lat)  
+  preds <- data.frame(train_stage,predict_class,predict_group,predict_genus,Ext.Prob,Ext.Prob.Quant,predict_occupancy,predict_occurrences,predict_great.circle,predict_richness,predict_lat.range,predict_data$min.lat,predict_data$max.lat,predict_data$mean.lat)
 
   colnames(preds) <- c("training_interval","class","group","genus","risk","risk_quantile","occupancy","occurrences","great.circle","richness","lat_range","min.lat","max.lat","mean.lat")
- 
+
   class <- plot.gbm(m, i.var = 1, n.trees = m$n.trees,
                     continuous.resolution = 100, return.grid = TRUE, type =
                       "response")
@@ -148,7 +153,7 @@ predict_data2$class <- as.factor(predict_data2$class)
  # tropical.only <- plot.gbm(m, i.var = 11, n.trees = m$n.trees,
                           # continuous.resolution = 100, return.grid = TRUE, type =
                              #"response")
-    
+
 
   Group <- data.frame(rep("group",length(group[,1])),group)
   colnames(Group) <- c("predictor","value","response")
@@ -175,16 +180,16 @@ predict_data2$class <- as.factor(predict_data2$class)
 
   lat.range <- data.frame(rep("lat.range",length(lat.range[,1])),lat.range)
   colnames(lat.range) <- c("predictor","value","response")
-  
+
    mean.lat <- data.frame(rep("mean.lat",length(mean.lat[,1])),mean.lat)
   colnames(mean.lat) <- c("predictor","value","response")
-  
+
   # mean.lat.zone <- data.frame(rep("mean.lat.zone",length(mean.lat.zone[,1])),mean.lat.zone)
   #colnames(mean.lat.zone) <- c("predictor","value","response")
-  
+
    great.circle <- data.frame(rep("great.circle",length(great.circle[,1])),great.circle)
   colnames(great.circle) <- c("predictor","value","response")
-  
+
   #tropical.only <- data.frame(rep("tropical.only",length(tropical.only[,1])),tropical.only)
   #colnames(tropical.only) <- c("predictor","value","response")
 
@@ -195,25 +200,25 @@ predict_data2$class <- as.factor(predict_data2$class)
   stage_top <- rep(stage_upper,length(Others[,1]))
   num_genera <- rep(NumGenera,length(Others[,1]))
   Others <- data.frame(stage,stage_top,num_genera,Others)
-  
+
   return(list(group = Group, others = Others, model = m, model.suite = All.Models, predictions = preds))
 }
 
-  
-data <- load("~/Dropbox/nescent_extinction_map/Final data/standardized.predictors.Cenozoic.OBIS.rda")  
-data <- standardized.cenozoic 
+
+data <- load("~/Dropbox/nescent_extinction_map/Final data/standardized.predictors.Cenozoic.OBIS.rda")
+data <- standardized.cenozoic
 
 predict_data <- drop.levels(subset(data,data$stage == "Modern"))
 
-### limit to Neogene if desired 
+### limit to Neogene if desired
 
 data <- drop.levels(subset(data,data$stage_top < 22 & data$stage_top != 0))
 
 data_copy <- data
-data_copy$stage <- rep("Cenozoic",length(data_copy[,1]))  
-data_copy$stage_top <- rep(.011,length(data_copy[,1])) 
+data_copy$stage <- rep("Cenozoic",length(data_copy[,1]))
+data_copy$stage_top <- rep(.011,length(data_copy[,1]))
 data <- rbind(data,data_copy)
-  
+
 stage_names <- list()
 for(i in 1:length(unique(data$stage))) {
   stage_names[[i]] <- drop.levels(unique(data$stage)[i])
@@ -266,53 +271,75 @@ for(i in index) {
   Preds <- predict(caret.gbm.model.sets[[i]]$gbm, type="prob")
   interval <- rep(i,length(Preds[,1]))
   outcome <- caret.gbm.model.sets[[i]]$gbm$trainingData$.outcome
-  Predictions[[i]] <- data.frame(interval,Preds,outcome)
+  class <- as.factor(caret.gbm.model.sets[[i]]$gbm$trainingData$class)
+  Predictions[[i]] <- data.frame(interval,class,Preds,outcome)
 }
-preds <- data.frame(do.call("rbind",Predictions))
+preds <- do.call("rbind",Predictions)
 preds$pred.outcome.raw <- ifelse(preds$extinct >= .5, "extinct","survive")
+preds <- data.frame(lapply(preds,as.character), stringsAsFactors=FALSE)
+
+
+
 
 ## extract number of extinctions and survivals
 prop.extinct <- function(df) {
+  #df <- preds
   ext <- drop.levels(subset(df$outcome,df$outcome=="extinct"))
   ext <- length(ext)
   all <- length(df$outcome)
-  prop.ext <- ext/all
+  prop.ext <-ext/all
+ # prop.ext <- ifelse(all==0 | ext == 0,NA,ext/all)
   num.ext <- ext
   return(data.frame(prop.ext,num.ext))
 }
-prop.ext <- ddply(preds,.(interval),prop.extinct)
-preds <- merge(preds,prop.ext,by="interval")
- 
+prop.exts <- ddply(preds,.(class,interval),prop.extinct)
+
+
+preds2 <- merge(preds,prop.exts,by=c("class","interval"))
+
+
+
+###drop interval-class combinations that are 100% survive or extinct
+factor.levels1 <- function(df) length(levels(as.factor(df$outcome)))
+factor.levels2 <- function(df) length(levels(as.factor(df$pred.outcome)))
+fac.levs <- ddply(preds2,.(class,interval),each(factor.levels1,factor.levels2))
+preds2 <- merge(preds2,fac.levs)
+preds2 <- drop.levels(subset(preds2,preds2$factor.levels1==2 & preds2$factor.levels2==2))
+
+
+
 ### extract risk percentile corresponding to proportional extinction
-cutoff <- function(df) quantile(df$extinct,1-mean(df$prop.ext))
-cutoffs <- ddply(preds,.(interval),each(cutoff))
-  
-preds <- merge(preds,cutoffs,by="interval") 
-preds$pred.outcome.adjusted <- ifelse(preds$extinct >= preds$cutoff,"extinct","survive")
+#cutoff <- function(df) quantile(df$extinct,1-mean(df$prop.ext))
+#cutoffs <- ddply(preds2,.(class,interval),each(cutoff))
+
+#preds <- merge(preds2,cutoffs,by="interval")
+#preds$pred.outcome.adjusted <- ifelse(preds$extinct >= preds$cutoff,"extinct","survive")
 
 library(epiR)
 kappa.outs.adjusted <- function(df){
-k.data <- table(df$pred.outcome.adjusted,df$outcome)
-kappas <- epi.kappa(k.data)
-specificity <- k.data[1,1]/(k.data[1,1]+k.data[2,1])
-sensitivity <- k.data[2,2]/(k.data[2,2]+k.data[1,2])
-accuracy <- (k.data[2,2] + k.data[1,1])/(k.data[2,2] + k.data[1,1]+k.data[1,2] +k.data[2,1])
+  #df <- preds2
+  confmat <- confusionMatrix(df$outcome,df$pred.outcome.raw)
+  byClass <-  t(data.frame(confmat$byClass))
+  overall <- t(data.frame(confmat$overall))
 n.genera <- length(df$outcome)
-kappa.val.adj <- kappas$kappa$est
-kappa.se.adj <- kappas$kappa$se
-kappa.pval.adj <- kappas$z$p.value
 gen.Ex <- length(drop.levels(subset(df$outcome,df$outcome=="extinct")))
-pred.gen.Ex <- length(drop.levels(subset(df$pred.outcome.adjusted,df$pred.outcome.adjusted=="extinct")))
-return(data.frame(kappa.val.adj,kappa.se.adj,kappa.pval.adj,specificity,sensitivity,accuracy,n.genera,gen.Ex,pred.gen.Ex))}
+pred.gen.Ex <- length(drop.levels(subset(df$pred.outcome.raw,df$pred.outcome.raw=="extinct")))
+ return(data.frame(byClass,overall,n.genera,gen.Ex,pred.gen.Ex))}
 
 #df <- drop.levels(subset(preds,preds$interval=="Upper_Miocene"))
 #k.data <- table(df$outcome,df$pred.outcome.adjusted)
 
-kappa.values <- ddply(preds,.(interval),each(kappa.outs.adjusted))
+kappa.values <- ddply(preds2,.(class,interval),each(kappa.outs.adjusted))
+kappa.values$Predicted.minus.observed.Prop.Ex <- (kappa.values$pred.gen.Ex/kappa.values$n.genera) - (kappa.values$gen.Ex/kappa.values$n.genera)
 kappa.values2 <- drop.levels(subset(kappa.values,kappa.values$interval != "Cenozoic"))
 
+kappa.values3 <- data.frame(melt(kappa.values2))
 
+kappa.values3 <- drop.levels(subset(kappa.values3,kappa.values3$variable == "Sensitivity" | kappa.values3$variable == "Specificity" | kappa.values3$variable == "Accuracy" |kappa.values3$variable == "Kappa" | kappa.values3$variable =="Predicted.minus.observed.Prop.Ex" ))
 
+quartz()
+p <- ggplot(kappa.values3,aes(class,value))
+p + geom_point(pch=1) + facet_wrap(~variable,ncol=2,scales="free")
 
 #test.table<- table(df$outcome,df$pred.outcome.raw)
 #test2 <- epi.kappa(test.table)
@@ -324,9 +351,10 @@ save(caret.gbm.models, file = "~/Dropbox/nescent_extinction_map/Final data/caret
 save(caret.gbm.model.sets, file = "~/Dropbox/nescent_extinction_map/Final data/caret.gbm.model.sets.rda")
 save(caret.gbm.model.stages, file = "~/Dropbox/nescent_extinction_map/Final data/caret.gbm.model.stages.rda")
 save(varimps, file = "~/Dropbox/nescent_extinction_map/Final data/variable.importance.matrix.rda")
-
+save(kappa.values3 , file = "~/Dropbox/nescent_extinction_map/Final data/matrix.statistics.by.class.rda")
+save(preds , file = "~/Dropbox/nescent_extinction_map/Final data/Preds.rda")
 ### make plot of variable importance
-dev.off()
+#dev.off()
 png()
 p <- ggplot(varimps,aes(Interval,Predictor,fill=Importance)) + geom_tile(colour="black") + scale_fill_gradient(low="lemonchiffon",high="red3") + opts(axis.text.x = theme_text(size=10)) + opts(axis.text.y = theme_text(size=10))+ opts(panel.background = theme_rect(colour=NA, size =1, fill = "white")) + opts(panel.grid.minor = theme_blank()) + opts(panel.grid.major = theme_blank())
 print(p)

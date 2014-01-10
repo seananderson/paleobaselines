@@ -41,7 +41,7 @@ Optimize_Metric <- "Kappa"
 Use_Weights <- "yes"
 ### method for cross-validation.  I haven't experimented with this yet but the options are laid out in the Caret package documentation
 CV_Method <- "repeatedcv"
-Number_run <- 10
+Number_run <- 20
 Number_rep <- 5
 ### choose prediction model.  Options are: Plio_Pleistocene,U_Miocene,M_Miocene,L_Miocene,Neogene.all,Neogene.mean
 Prediction_model <- "Neogene.mean"
@@ -61,17 +61,19 @@ plot.value <- "mean"
 
 #Use Standardize predictors by interval faster 3.0.R for non-quartile-based standardization with Plio-Pleistocene vs. Modern calibrated corrections to range data, use Standardize predictors by interval faster no tranformation.R to use unstandardized data.
 
-#source("~/Dropbox/nescent_extinction_map/r/Unstandardized predictors by interval.R")
+#source("~/Dropbox/nescent_extinction_map/r/Standardized predictors by interval.R")
 #source("~/Dropbox/nescent_extinction_map/r/Standardize predictors by interval faster 3.0.R")
 source("~/Dropbox/nescent_extinction_map/r/Standardize predictors by interval faster 2.0.R")
 ##source("~/Dropbox/nescent_extinction_map/r/Standardize predictors by interval faster.R")
 source("~/Dropbox/nescent_extinction_map/r/Produce gbm models for prediction2.R")
+# to calibrate the models by class-interval:
+# source("~/Dropbox/nescent_extinction_map/r/calibrate-models.R")
 source("~/Dropbox/nescent_extinction_map/r/Set model predictions for maps.R")
-source("~/Dropbox/nescent_extinction_map/r/Make matrix of model predictions2.R") 
-source("~/Dropbox/nescent_extinction_map/r/Make figure 1 partial dependence plot 2.0.R")	
+source("~/Dropbox/nescent_extinction_map/r/Make matrix of model predictions2.R")
+source("~/Dropbox/nescent_extinction_map/r/Make figure 1 partial dependence plot 2.0.R")
 source("~/Dropbox/nescent_extinction_map/r/make-figure1-partial-dependence-baseplot.r")
-source("~/Dropbox/nescent_extinction_map/r/plot-class-ext-maps.R")	
-source("~/Dropbox/nescent_extinction_map/r/hotspotmaps3.R")	
-source("~/Dropbox/nescent_extinction_map/r/Make Burrows and Halpern crossplots.R")	
+source("~/Dropbox/nescent_extinction_map/r/plot-class-ext-maps.R")
+source("~/Dropbox/nescent_extinction_map/r/hotspotmaps3.R")
+source("~/Dropbox/nescent_extinction_map/r/Make Burrows and Halpern crossplots.R")
 
 # source("make-figure1-partial-dependence-baseplot.r") # once it's done
