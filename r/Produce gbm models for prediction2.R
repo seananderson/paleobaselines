@@ -9,7 +9,7 @@ run_ml_models <- function(x) {
   require(gdata)
 
 data <- drop.levels(subset(data,data$stage %in% x))
-## single test case: 
+## single test case:
   #data <- drop.levels(subset(data,data$stage =="Lower Miocene"))
 
 ###set specific stage to test
@@ -84,8 +84,8 @@ predict_data2$class <- as.factor(predict_data2$class)
                           weights   = class_weights,
                           verbose   = FALSE,
                           tuneGrid  = expand.grid(.interaction.depth = 4, .n.trees = 500,.shrinkage = .001))
-                        
-                          
+
+
 
   # grab the gbm model:
   m <- gbmFit$finalModel
@@ -255,10 +255,10 @@ caret.gbm.model.stages <- stage_names
 
 ### extract matrix of variable importance for all intervals
 
-names(caret.gbm.models) <- c("Lower_Miocene","Middle_Miocene","Plio_Pleistocene","Upper_Miocene","Cenozoic")
-names(caret.gbm.model.sets) <- c("Lower_Miocene","Middle_Miocene","Plio_Pleistocene","Upper_Miocene","Cenozoic")
+names(caret.gbm.models) <- c("Lower_Miocene","Middle_Miocene","Plio_Pleistocene","Upper_Miocene","Neogene")
+names(caret.gbm.model.sets) <- c("Lower_Miocene","Middle_Miocene","Plio_Pleistocene","Upper_Miocene","Neogene")
 
-varimps<- data.frame(cbind(varImp(caret.gbm.models$Lower_Miocene),varImp(caret.gbm.models$Middle_Miocene),varImp(caret.gbm.models$Upper_Miocene),varImp(caret.gbm.models$Plio_Pleistocene),varImp(caret.gbm.models$Cenozoic)))
+varimps<- data.frame(cbind(varImp(caret.gbm.models$Lower_Miocene),varImp(caret.gbm.models$Middle_Miocene),varImp(caret.gbm.models$Upper_Miocene),varImp(caret.gbm.models$Plio_Pleistocene),varImp(caret.gbm.models$Neogene)))
 
 varimps$variable <- c("class","group","richness","occupancy","occurrences","min.lat","max.lat","lat.range","mean.lat","mean.lat.zone","great.circle","tropical_only")
 colnames(varimps) <- c("Lower_Miocene","Middle_Miocene","Upper_Miocene","Plio_Pleistocene","Cenozoic","Predictor")
@@ -266,7 +266,7 @@ varimps <- data.frame(melt(varimps))
 colnames(varimps) <- c("Predictor","Interval","Importance")
 
  ###extract predictions, calibrate within classes
-index <- c("Lower_Miocene","Middle_Miocene","Plio_Pleistocene","Upper_Miocene","Cenozoic")
+index <- c("Lower_Miocene","Middle_Miocene","Plio_Pleistocene","Upper_Miocene","Neogene")
 Predictions <- list()
 for(i in index) {
   Preds <- predict(caret.gbm.model.sets[[i]]$gbm, type="prob")
