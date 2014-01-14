@@ -9,7 +9,8 @@ run_ml_models <- function(x) {
   require(gdata)
 
 data <- drop.levels(subset(data,data$stage %in% x))
-## single test case: data <- drop.levels(subset(data,data$stage =="Lower Miocene"))
+## single test case: 
+  #data <- drop.levels(subset(data,data$stage =="Lower Miocene"))
 
 ###set specific stage to test
 ##data <- drop.levels(subset(data,data$stage == "Middle Miocene"))
@@ -80,7 +81,7 @@ predict_data2$class <- as.factor(predict_data2$class)
                           method    = "gbm",
                           trControl = fitControl,
                           metric    = Optimize_Metric,
-                          #weights   = class_weights,
+                          weights   = class_weights,
                           verbose   = FALSE,
                           tuneGrid  = expand.grid(.interaction.depth = 4, .n.trees = 500,.shrinkage = .001))
                         
@@ -264,7 +265,7 @@ colnames(varimps) <- c("Lower_Miocene","Middle_Miocene","Upper_Miocene","Plio_Pl
 varimps <- data.frame(melt(varimps))
 colnames(varimps) <- c("Predictor","Interval","Importance")
 
- ###extract kappa matrix
+ ###extract predictions, calibrate within classes
 index <- c("Lower_Miocene","Middle_Miocene","Plio_Pleistocene","Upper_Miocene","Cenozoic")
 Predictions <- list()
 for(i in index) {
@@ -277,69 +278,64 @@ for(i in index) {
 preds <- do.call("rbind",Predictions)
 preds$pred.outcome.raw <- ifelse(preds$extinct >= .5, "extinct","survive")
 preds <- data.frame(lapply(preds,as.character), stringsAsFactors=FALSE)
+preds2 <- preds
 
 source("~/Dropbox/nescent_extinction_map/r/calibrate-models.R")
-
+preds2$pred.outcome.calibrated <- ifelse(preds2$calibrated_ext_prob >= .3,"extinct","survive")
 
 ## extract number of extinctions and survivals
-prop.extinct <- function(df) {
+#prop.extinct <- function(df) {
   #df <- preds
-  ext <- drop.levels(subset(df$outcome,df$outcome=="extinct"))
-  ext <- length(ext)
-  all <- length(df$outcome)
-  prop.ext <-ext/all
+ # ext <- drop.levels(subset(df$outcome,df$outcome=="extinct"))
+ # ext <- length(ext)
+ # all <- length(df$outcome)
+ # prop.ext <-ext/all
  # prop.ext <- ifelse(all==0 | ext == 0,NA,ext/all)
-  num.ext <- ext
-  return(data.frame(prop.ext,num.ext))
-}
-prop.exts <- ddply(preds,.(class,interval),prop.extinct)
+  #num.ext <- ext
+  #return(data.frame(prop.ext,num.ext))
+#}
+#prop.exts <- ddply(preds2,.(class,interval),prop.extinct)
 
 
-preds2 <- merge(preds,prop.exts,by=c("class","interval"))
+#preds3 <- merge(preds2,prop.exts,by=c("class","interval"))
 
 
 
 ###drop interval-class combinations that are 100% survive or extinct
-factor.levels1 <- function(df) length(levels(as.factor(df$outcome)))
-factor.levels2 <- function(df) length(levels(as.factor(df$pred.outcome)))
-fac.levs <- ddply(preds2,.(class,interval),each(factor.levels1,factor.levels2))
-preds2 <- merge(preds2,fac.levs)
-preds2 <- drop.levels(subset(preds2,preds2$factor.levels1==2 & preds2$factor.levels2==2))
+#factor.levels1 <- function(df) length(levels(as.factor(df$outcome)))
+#factor.levels2 <- function(df) length(levels(as.factor(df$pred.outcome.calibrated)))
+#fac.levs <- ddply(preds3,.(class,interval),each(factor.levels1,factor.levels2))
+#preds3 <- merge(preds3,fac.levs)
+#preds3 <- drop.levels(subset(preds3,preds3$factor.levels1==2 & preds3$factor.levels2==2))
 
 
-
-### extract risk percentile corresponding to proportional extinction
-#cutoff <- function(df) quantile(df$extinct,1-mean(df$prop.ext))
-#cutoffs <- ddply(preds2,.(class,interval),each(cutoff))
-
-#preds <- merge(preds2,cutoffs,by="interval")
-#preds$pred.outcome.adjusted <- ifelse(preds$extinct >= preds$cutoff,"extinct","survive")
-
-library(epiR)
-kappa.outs.adjusted <- function(df){
+#library(epiR)
+#Matrix.Stats <- function(df){
   #df <- preds2
-  confmat <- confusionMatrix(df$outcome,df$pred.outcome.raw)
-  byClass <-  t(data.frame(confmat$byClass))
-  overall <- t(data.frame(confmat$overall))
-n.genera <- length(df$outcome)
-gen.Ex <- length(drop.levels(subset(df$outcome,df$outcome=="extinct")))
-pred.gen.Ex <- length(drop.levels(subset(df$pred.outcome.raw,df$pred.outcome.raw=="extinct")))
- return(data.frame(byClass,overall,n.genera,gen.Ex,pred.gen.Ex))}
+ # confmat <- confusionMatrix(df$outcome,df$pred.outcome.calibrated)
+ # byClass <-  t(data.frame(confmat$byClass))
+ # overall <- t(data.frame(confmat$overall))
+#n.genera <- length(df$outcome)
+#gen.Ex <- length(drop.levels(subset(df$outcome,df$outcome=="extinct")))
+#pred.gen.Ex <- length(drop.levels(subset(df$pred.outcome.calibrated,df$pred.outcome.calibrated=="extinct")))
+# return(data.frame(byClass,overall,n.genera,gen.Ex,pred.gen.Ex))}
 
 #df <- drop.levels(subset(preds,preds$interval=="Upper_Miocene"))
 #k.data <- table(df$outcome,df$pred.outcome.adjusted)
 
-kappa.values <- ddply(preds2,.(class,interval),each(kappa.outs.adjusted))
-kappa.values$Predicted.minus.observed.Prop.Ex <- (kappa.values$pred.gen.Ex/kappa.values$n.genera) - (kappa.values$gen.Ex/kappa.values$n.genera)
-kappa.values2 <- drop.levels(subset(kappa.values,kappa.values$interval != "Cenozoic"))
+#Matrix.Statistics <- ddply(preds3,.(class,interval),each(Matrix.Stats))
 
-kappa.values3 <- data.frame(melt(kappa.values2))
 
-kappa.values3 <- drop.levels(subset(kappa.values3,kappa.values3$variable == "Sensitivity" | kappa.values3$variable == "Specificity" | kappa.values3$variable == "Accuracy" |kappa.values3$variable == "Kappa" | kappa.values3$variable =="Predicted.minus.observed.Prop.Ex" ))
+#Matrix.Statistics$Predicted.minus.observed.Prop.Ex <- (Matrix.Statistics$pred.gen.Ex/Matrix.Statistics$n.genera) - (Matrix.Statistics$gen.Ex/Matrix.Statistics$n.genera)
+#Matrix.Statistics2 <- drop.levels(subset(Matrix.Statistics,Matrix.Statistics$interval == "Cenozoic"))
 
-quartz()
-p <- ggplot(kappa.values3,aes(class,value))
-p + geom_point(pch=1) + facet_wrap(~variable,ncol=2,scales="free")
+#Matrix.Statistics3 <- data.frame(melt(Matrix.Statistics2))
+
+#Matrix.Statistics3 <- drop.levels(subset(Matrix.Statistics3,Matrix.Statistics3$variable == "Sensitivity" | Matrix.Statistics3$variable == "Specificity" | Matrix.Statistics3$variable == "Accuracy" |Matrix.Statistics3$variable == "Kappa" | Matrix.Statistics3$variable =="Predicted.minus.observed.Prop.Ex" ))
+
+#quartz()
+#p <- ggplot(Matrix.Statistics3,aes(class,value))
+#p + geom_point(pch=1) + facet_wrap(~variable,ncol=2,scales="free")
 
 #test.table<- table(df$outcome,df$pred.outcome.raw)
 #test2 <- epi.kappa(test.table)
@@ -351,8 +347,8 @@ save(caret.gbm.models, file = "~/Dropbox/nescent_extinction_map/Final data/caret
 save(caret.gbm.model.sets, file = "~/Dropbox/nescent_extinction_map/Final data/caret.gbm.model.sets.rda")
 save(caret.gbm.model.stages, file = "~/Dropbox/nescent_extinction_map/Final data/caret.gbm.model.stages.rda")
 save(varimps, file = "~/Dropbox/nescent_extinction_map/Final data/variable.importance.matrix.rda")
-save(kappa.values3 , file = "~/Dropbox/nescent_extinction_map/Final data/matrix.statistics.by.class.rda")
-save(preds , file = "~/Dropbox/nescent_extinction_map/Final data/Preds.rda")
+#save(Matrix.Statistics3 , file = "~/Dropbox/nescent_extinction_map/Final data/matrix.statistics.by.class.rda")
+save(preds2 , file = "~/Dropbox/nescent_extinction_map/Final data/Preds2.rda")
 ### make plot of variable importance
 #dev.off()
 png()

@@ -41,10 +41,10 @@ Optimize_Metric <- "Kappa"
 Use_Weights <- "yes"
 ### method for cross-validation.  I haven't experimented with this yet but the options are laid out in the Caret package documentation
 CV_Method <- "repeatedcv"
-Number_run <- 20
+Number_run <- 10
 Number_rep <- 5
 ### choose prediction model.  Options are: Plio_Pleistocene,U_Miocene,M_Miocene,L_Miocene,Neogene.all,Neogene.mean
-Prediction_model <- "Neogene.mean"
+Prediction_model <- "Neogene.all"
 ### set "rand.ex" = "yes" to randomize extinction/survival column, otherwise set to "no"
 rand.ex <- "no"
 ### set "rand.group" = "yes" to randomize class and group columns, otherwise set to "no"
