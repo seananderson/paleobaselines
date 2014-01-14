@@ -99,18 +99,22 @@ Prediction.matrix2 <- rename(Prediction.matrix2, c("interval" = "predicted"))
 #Prediction.matrix2 <- drop.levels(subset(Prediction.matrix,Prediction.matrix$class=="Elasmobranchii"))
 
 # uncalibrated predictions:
-ggplot(Prediction.matrix,aes(log(prediction),log(model_pred),colour=class)) + geom_abline(size=.35,linetype=1,colour="black") + facet_grid(predicted ~ predictor,scales="free") + geom_point(size=1.25,pch=16,alpha=.6)
+p <- ggplot(Prediction.matrix,aes(log(prediction),log(model_pred),colour=class)) + geom_abline(size=.35,linetype=1,colour="black") + facet_grid(predicted ~ predictor) + geom_point(size=1.25,pch=16,alpha=.6)
+ggsave("raw-predictions-vs-predictions.pdf", width = 10, height = 9)
 
 # binned but not calibrated:
 ggplot(Prediction.matrix,aes(log(prediction_bin),log(model_pred_bin),colour=class)) + geom_abline(size=.35,linetype=1,colour="black") + facet_grid(predicted ~ predictor,scales="free") + geom_point(size=1.25,pch=16,alpha=.6, position = position_jitter())
+ggsave("raw-binned-predictions-vs-predictions.pdf", width = 10, height = 9)
 
 # look at calibration factors:
 p <- ggplot(pred_cal, aes(extinct_binned, calibrated_ext_prob)) + geom_line() + geom_point() +facet_grid(class~interval)
 ggsave("calibration-factors.pdf", width = 9, height = 9)
 
-
 # calibrated:
-ggplot(Prediction.matrix2,aes(log(model_pred_calibrated+0.01),log(prediction_calibrated + 0.01),colour=class))+ facet_grid(predicted ~ predictor) + geom_jitter(size=1.25,pch=16,alpha=.6) + theme(aspect.ratio=1) + geom_smooth(data=Prediction.matrix2,aes(log(model_pred_calibrated + 0.01), log(prediction_calibrated + 0.01)), method="lm",colour="black") + geom_abline(intercept = 0, slope = 1, col = "black", alpha = 0.4, lty = 2)
+#p <- ggplot(Prediction.matrix2,aes(log(model_pred_calibrated+0.01),log(prediction_calibrated + 0.01),colour=class))+ facet_grid(predicted ~ predictor) + geom_jitter(size=1.25,pch=16,alpha=.6) + theme(aspect.ratio=1) +  geom_abline(intercept = 0, slope = 1, col = "black", alpha = 0.4, lty = 2)
+
+p <- ggplot(Prediction.matrix2, aes(log(model_pred_calibrated+0.01), log(prediction_calibrated+0.01), colour = class)) + geom_point(position= position_jitter(width = 0.2, height = 0.2), alpha = 0.25) + facet_grid(predictor~predicted)
+ggsave("calibrated-binned-predictions-vs-predictions.pdf", width = 10, height = 9)
 
 ggplot(Prediction.matrix2,aes(log(model_pred+0.01),log(prediction + 0.01),colour=class))+ facet_grid(predicted ~ predictor) + geom_point(size=1.25,pch=16,alpha=.6, position = position_jitter()) + theme(aspect.ratio=1) + geom_smooth(data=Prediction.matrix2,aes(log(model_pred + 0.01), log(prediction + 0.01)), method="lm",colour="black") + geom_abline(intercept = 0, slope = 1, col = "black", alpha = 0.4, lty = 2)
 

@@ -38,7 +38,7 @@ Min_gcd <- 1
 ##Metrics: "Kappa","ROC","Sens","Spec". If "Kappa", "summaryFunction = twoClassSummary" must be suppressed in "Produce gbm models for prediction2.R" object "fitControl"
 Optimize_Metric <- "Kappa"
 ###Use weights to balance classes (extinct versus survive) in gbm models: "yes" or "no"
-Use_Weights <- "yes"
+Use_Weights <- "no"
 ### method for cross-validation.  I haven't experimented with this yet but the options are laid out in the Caret package documentation
 CV_Method <- "repeatedcv"
 Number_run <- 10
@@ -69,7 +69,8 @@ source("~/Dropbox/nescent_extinction_map/r/Produce gbm models for prediction2.R"
 # to calibrate the models by class-interval:
 # source("~/Dropbox/nescent_extinction_map/r/calibrate-models.R")
 source("~/Dropbox/nescent_extinction_map/r/Set model predictions for maps.R")
-source("~/Dropbox/nescent_extinction_map/r/Make matrix of model predictions2.R")
+#source("~/Dropbox/nescent_extinction_map/r/Make matrix of model predictions2.R")
+source("~/Dropbox/nescent_extinction_map/r/Make matrix of model predictions3.R")
 source("~/Dropbox/nescent_extinction_map/r/Make figure 1 partial dependence plot 2.0.R")
 source("~/Dropbox/nescent_extinction_map/r/make-figure1-partial-dependence-baseplot.r")
 source("~/Dropbox/nescent_extinction_map/r/plot-class-ext-maps.R")
