@@ -1,0 +1,11 @@
+
+cache/*
+*.csv
+*.pdf
+*.png
+*.aux
+*.bbl
+*.log
+*.toc
+*.tex
+*.blg
