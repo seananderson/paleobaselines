@@ -342,7 +342,11 @@ First, we'll extract the data to plot:
 <<shape-data-partial-plots>>=
 # a function to fit a GBM model to a given stage:
 fit_stage_models <- function(dat, stage_name) {
-  d <- dat[dat$stage == stage_name, ]
+  if(stage_name == "all") {
+    d <- dat
+  } else {
+    d <- dat[dat$stage == stage_name, ]
+  }
   gbm(Ex ~ richness + occupancy + occurrences + min.lat + max.lat +
     lat.range + mean.lat + great.circle + class + group, data =
     d, n.trees = 300, interaction.depth = 1,
@@ -350,18 +354,18 @@ fit_stage_models <- function(dat, stage_name) {
 }
 
 # fit the models for each stage:
-stage_models <- llply(stage_order, function(x)
+stage_models <- llply(c(stage_order, "all"), function(x)
   fit_stage_models(stcen2, stage_name = x))
-names(stage_models) <- stage_order
+names(stage_models) <- c(stage_order, "all")
 
 # now iterate through the models and pull out the partial dependence data:
 vars <- c("richness", "occupancy", "occurrences", "min.lat",
   "max.lat", "lat.range", "mean.lat", "great.circle", "group")
-partial_dat <- ldply(stage_order, function(stage_name) {
+partial_dat <- ldply(c(stage_order, "all"), function(stage_name) {
   p2 <- ldply(vars, function(var_name){
     p1 <- plot.gbm(stage_models[[stage_name]], return.grid = TRUE,
       i.var = var_name, type = "response")
-    names(p1)[1] <- "predictor_value"
+    names(p1) <- c("value", "response")
     p1$predictor <- var_name
     p1
     })
@@ -372,10 +376,12 @@ partial_dat <- ldply(stage_order, function(stage_name) {
 # extract the taxonomic "group" predictions, which are not numeric:
 partial_groups <- partial_dat[partial_dat$predictor == "group", ]
 partial_continuous <- partial_dat[partial_dat$predictor != "group", ]
-groups_match <- data.frame(predictor_value =
+groups_match <- data.frame(value =
   1:length(unique(stcen2$group)),
   group = sort(unique(stcen2$group)), stringsAsFactors = FALSE)
 partial_groups <- join(partial_groups, groups_match)
+partial_groups$value <- NULL
+partial_groups <- rename(partial_groups, c("group" = "value"))
 @
 
 % We want this as output:
@@ -398,7 +404,7 @@ partial_groups <- join(partial_groups, groups_match)
 % 6 great.circle 10909.09 0.06262327 Lower Miocene      1
 
 <<plot-partial-continuous, fig.width=10, fig.height=6>>=
-ggplot(partial_continuous, aes(predictor_value, y)) +
+ggplot(partial_continuous, aes(value, response)) +
   geom_line(aes(colour = stage)) +
   facet_wrap(~predictor, scales = "free_x") +
   xlab("Predictor value") +
@@ -406,10 +412,16 @@ ggplot(partial_continuous, aes(predictor_value, y)) +
 @
 
 <<plot-partial-group, out.width="4in">>=
-ggplot(partial_groups, aes(y+0.001, group)) +
+ggplot(partial_groups, aes(response, group)) +
   geom_point(aes(colour = stage)) +
   xlab("Marginal effect on probability of extinction") +
   ylab("")
+@
+
+We can re-create Fig.~1 in the paper, which is a more customized version of the previous plots, by sourcing the following file:
+
+<<partial-plots-base>>=
+source("make-partial-dependence-baseplot.R")
 @
 
 \section{Merging risk predictions with modern species distributions}
