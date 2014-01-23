@@ -19,8 +19,8 @@ col.axis.labels <- "grey45"
 g.ylim.l <- 0
 g.ylim.u <- 1
 o.ylim.l <- 0
-o.ylim.u <- 0.2
-o.y.axis.at <- c(0, 0.1, 0.2)
+o.ylim.u <- 0.175
+o.y.axis.at <- c(0, 0.05, 0.1, 0.15)
 g.y.axis.at <- c(0, 0.5, 1)
 rect.cols <- rep(c("grey93", NA), 99)
 
@@ -78,6 +78,9 @@ o.names <- data.frame(predictor = c("occupancy", "occurrences", "richness",
 
 o <- join(o, o.names)
 
+o$predictor <- factor(o$predictor, levels = c("occupancy", "occurrences",
+    "richness", "great.circle", "max.lat", "min.lat", "mean.lat", "lat.range"))
+
 l <- rbind(c(1,2,3,4),
            c(5,6,7,8),
            c(9,9,9,9))
@@ -86,7 +89,7 @@ pdf("../figs/partial-plot-base.pdf", width = 5.9, height = 5.0)
 layout(l)
 
 ## the upper half:
-par(oma = c(5, 2.7, 1.2, .4), cex = 0.8, tck = -0.03, mgp = c(2, 0.35,
+par(oma = c(5, 2.7, 1.2, .6), cex = 0.8, tck = -0.03, mgp = c(2, 0.35,
     0), mar = c(2.4,.2,0,0))
 ii <<- 0
 lwd.u <- c(rep(2.0, 4), 3.9)
@@ -107,7 +110,7 @@ if(ii %in% c(1, 5)) axis(2, at = o.y.axis.at, las = 1, col = col.axis, col.axis
 
 if(ii == 3) {
   par(xpd = NA)
-legend(-120.11, par("usr")[4] * 1.23, legend = names(g)[cols.plot], bty = "n", cex
+legend(-2.11, par("usr")[4] * 1.23, legend = names(g)[cols.plot], bty = "n", cex
   = 0.8, text.col = "grey40", fill = pal, border = pal, horiz = TRUE)
   par(xpd = FALSE)
 }
@@ -124,13 +127,16 @@ par(xpd = FALSE)
 
 ## lower half:
 # make blank plot:
-plot(1, 1, xlim = c(0.3, max(g$x.pos)+0.5), ylim = c(0, 1), yaxs = "i", axes =
-  FALSE, ann = FALSE, type = "n", xaxs = "i")
+plot(1, 1, xlim = c(0.3, max(g$x.pos)+0.5), ylim = c(0.001, 1), yaxs = "i", axes =
+  FALSE, ann = FALSE, type = "n", xaxs = "i", log = "")
 
 # shading:
 rects <- subset(g, diffs == 1)
+# fudge an extra row for the last rect if odd number:
+rects <- rbind(rects, rects[nrow(rects), ])
+rects[nrow(rects), "x.pos"] <- 99
 for(i in 1:(nrow(rects)-1)) {
-  rect(rects[i, "x.pos"]-x.gap + x.gap.lab, 0, rects[i+1, "x.pos"]-x.gap
+  rect(rects[i, "x.pos"]-x.gap + x.gap.lab, 0.001, rects[i+1, "x.pos"]-x.gap
     + x.gap.lab, 1, border = NA, col = rect.cols[i])
 }
 
@@ -146,12 +152,12 @@ add.seg <- TRUE
 cols.plot <- 3:7
 for(i in 1:5) {
   ci <- cols.plot[i] # [c]olumn [i]
-  points(g$x.pos, g[,ci], col = pal[i], pch = pch[i], cex = cex[i])
+  points(g$x.pos, 0.001 + g[,ci], col = pal[i], pch = pch[i], cex = cex[i])
   if(add.seg) { # for speed of development
   plyr::d_ply(g, ".class", function(x) {
     for(j in 1:(nrow(x)-1)){
       if(nrow(x) > 1)
-        segments(x[j,"x.pos"], x[j, ci], x[j,"x.pos"]+1, x[j+1, ci], col = pal[i], lwd = lwd[i])
+        segments(x[j,"x.pos"], x[j, ci] + 0.001, x[j,"x.pos"]+1, x[j+1, ci] + 0.001, col = pal[i], lwd = lwd[i])
       #else
         #points(x[1,"x.pos"], x[1, ci], col = pal[i], cex[i])
     }
