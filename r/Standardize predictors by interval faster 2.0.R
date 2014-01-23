@@ -3,14 +3,15 @@ library(gdata)
 library(matrixStats)
 
 standardize_data <- function(x) {
-	
+
 mod_data <- drop.levels(subset(data,data$Interval_Name %in% x))
 #mod_data <- drop.levels(subset(data,data$Interval_Name == "Upper Miocene"))
-	
+browser()
+
 data1 <- mod_data
 stage_name <- data1$Interval_Name[1]
-stage_top <- data1$stage_top[1]	
-	
+stage_top <- data1$stage_top[1]
+
 
 ### create factors to analyze from prediction interval, round if desired
 genus <- data1$genus
@@ -20,7 +21,7 @@ class.rand <- sample(class,length(class),replace=FALSE)
 group.rand <- sample(group,length(group),replace=FALSE)
 
 ## take randomized class and group if desired
-GroupRand <- rep(rand.group,length(group))
+GroupRand <- rep(group.rand,length(group))
 
 group <- as.factor(ifelse(GroupRand=="yes",group.rand,group))
 class <- as.factor(ifelse(GroupRand=="yes",class.rand,class))
@@ -32,7 +33,7 @@ max.occupancy <- max(round(log(data1$eac),0))
 occupancy <- round(log(data1$eac),0)/max.occupancy
 
 max.occurrences <- max(round(log(data1$occurrences),0))
-occurrences <- round(log(data1$occurrences),0)/max.occurrences 
+occurrences <- round(log(data1$occurrences),0)/max.occurrences
 
 #isNA <- is.na(data1$gcd)
 gcd <- data1$gcd_corrected
@@ -96,6 +97,6 @@ for(i in 1:length(out)) {
 }
 
 standardized.cenozoic <- do.call("rbind", data.out)
-save(standardized.cenozoic,file="~/Dropbox/nescent_extinction_map/Final data/standardized.predictors.Cenozoic.OBIS.rda")	
-	
-	
+save(standardized.cenozoic,file="~/Dropbox/nescent_extinction_map/Final data/standardized.predictors.Cenozoic.OBIS.rda")
+
+
