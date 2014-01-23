@@ -2,4 +2,7 @@ This (private) repository holds a mirror of the analysis files for the paper *Pa
 
 This work is a product of the Determinants of Extinction in Ancient and Modern Seas Working Group supported by the National Evolutionary Synthesis Center, NSF #EF-0905606.
 
-All analysis files are in the `r` folder for version control tracking. This folder contains many now-unused files and may be eventually cleaned up. Also, eventually, reasonably small and processed datasets may be placed in a `data` folder.
+The in-progress Supporting Material document (which also reproduces the analyses) can be found in the `analysis` folder.
+
+An up-to-date version of the Supporting Materials document is available here:
+<https://dl.dropboxusercontent.com/u/254940/risksupp.pdf>

@@ -6,3 +6,4 @@ pdf:
 	bibtex risksupp
 	pdflatex risksupp
 	pdflatex risksupp
+	cp risksupp.pdf ~/Dropbox/Public/
