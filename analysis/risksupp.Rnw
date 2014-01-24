@@ -88,12 +88,26 @@ get_summary_stats <- function(obs, pred_prob, threshold) {
 }
 @
 
+We'll also create a function to implement SMOTE upsampling on our data. TODO what SMOTE is and why\ldots
+
+<<smote-function>>=
+smote <- function(x, perc.over = 800, perc.under = 100) {
+  x$Ex <- as.factor(x$Ex)
+  x <- DMwR::SMOTE(Ex ~ ., data = x[,c("class", "group", 
+      "great.circle", "mean.lat", "lat.range", "max.lat", "min.lat", 
+      "occurrences", "occupancy", "richness", "Ex")], 
+      perc.over = perc.over, perc.under = perc.under)
+      x$Ex <- as.numeric(as.character(x$Ex))
+  x
+}
+@
+
 Now we'll create our main modelling function. This function deals with (possibly) splitting the data into training and testing portions, builds a generalized boosted regression model (GBM \cite{gbm2013}) on the training portion, and then returns predictions and classification statistics on the testing set.
 
 <<fit-models-function, cache=FALSE>>=
 fit_models <- function(dat, test_fraction = 0.5, threshold = 0.5,
   calibrate = FALSE, calibration_lm_plot = FALSE, shrinkage = 0.1,
-  interaction.depth = 1, n.trees = 300, bin = 0.025) {
+  interaction.depth = 1, n.trees = 300, bin = 0.025, smote = FALSE, ...) {
 
   require(gbm)
   require(plyr)
@@ -111,14 +125,17 @@ fit_models <- function(dat, test_fraction = 0.5, threshold = 0.5,
     dat_test <- dat_train
   }
 
-  # just in case these already exist:
+  if(smote) {
+    dat_train <- smote(dat_train)
+  }
+    # just in case these already exist:
   dat_test$gbm_pred <- NULL
 
   # model fitting:
   m <- gbm(Ex ~ richness + occupancy + occurrences + min.lat + max.lat +
     lat.range + mean.lat + great.circle + class + group, data =
     dat_train, n.trees = n.trees, interaction.depth = interaction.depth,
-    distribution = "bernoulli", shrinkage = shrinkage)
+    distribution = "bernoulli", shrinkage = shrinkage, ...)
 
   dat_train$gbm_pred <- predict(m, n.trees = n.trees, type = "response")
   dat_test$gbm_pred <- predict(m, n.trees = n.trees, type = "response",
@@ -128,18 +145,20 @@ fit_models <- function(dat, test_fraction = 0.5, threshold = 0.5,
   # for validation:
 
   dat_test$gbm_pred_binned <- assign_bins(dat_test$gbm_pred, bin = bin)
-  bin_validation <- ddply(dat_test, c("class", "gbm_pred_binned"),
+ bin_validation <- ddply(dat_test, c("class", "gbm_pred_binned"),
     summarize, obs_ext_prob =  mean(Ex), sample_n = length(Ex))
 
-  summaries_class <- ddply(dat_test, "class", function(x) {
-    get_summary_stats(x$Ex, x$gbm_pred, threshold = threshold)
-    })
+ # summaries_class <- ddply(dat_test, "class", function(x) {
+  #  get_summary_stats(x$Ex, x$gbm_pred, threshold = threshold)
+   # })
 
-  summaries_all <- get_summary_stats(dat_test$Ex, dat_test$gbm_pred,
-    threshold = threshold)
+#  summaries_all <- get_summary_stats(dat_test$Ex, dat_test$gbm_pred,
+ #   threshold = threshold)
 
-  list(stats_class = summaries_class, stats_all = summaries_all,
-    pred = dat_test, bin_validation = bin_validation)
+ # list(stats_class = summaries_class, stats_all = summaries_all,
+  #  pred = dat_test, bin_validation = bin_validation)
+   list(
+  pred = dat_test, bin_validation = bin_validation)
 }
 @
 
@@ -197,9 +216,9 @@ val_test_base <- rdply(50, fit_models(stcen, shrinkage = 0.1,
 val_test_shr <- rdply(50, fit_models(stcen, shrinkage = 0.01,
     interaction.depth = 1, n.trees = 300)$bin_validation)
 val_test_int <- rdply(50, fit_models(stcen, shrinkage = 0.1,
-    interaction.depth = 5, n.trees = 300)$bin_validation)
+    interaction.depth = 4, n.trees = 300)$bin_validation)
 val_test_ntrees <- rdply(50, fit_models(stcen, shrinkage = 0.1,
-    interaction.depth = 1, n.trees = 600)$bin_validation)
+    interaction.depth = 1, n.trees = 1000)$bin_validation)
 @
 
 <<summarize-alt-gbms>>=
@@ -250,8 +269,8 @@ load("../data/val_test2_summarized.rda")
 
 <<gbm-no-mal, eval=FALSE>>=
 stcen2 <- subset(stcen, class != "Malacostraca")
-val_test2 <- rdply(500, fit_models(stcen2, shrinkage = 0.1,
-    interaction.depth = 1, n.trees = 300)$bin_validation)
+val_test2 <- rdply(100, fit_models(stcen2, shrinkage = 0.1,
+    interaction.depth = 1, n.trees = 300, smote = TRUE)$bin_validation)
 val_test2_summarized <- ddply(val_test2, c("class", "gbm_pred_binned"),
   summarize_val_test)
 @
@@ -269,7 +288,8 @@ ggplot(val_test2_summarized,
     alpha = 0.1) +
   geom_linerange(aes(ymin = l, ymax = u), colour = "#4E9DF0") +
   geom_point(aes(size = median_sample_n), colour = "#4E9DF0") +
-  facet_wrap(~class) + geom_abline(intercept = 0, slope = 1) +
+  facet_wrap(~class) + geom_abline(intercept = 0, slope = 1/4) +
+    facet_wrap(~class) + geom_abline(intercept = 0, slope = 1) +
   scale_size(trans = "log10") + coord_fixed(ratio = 1) +
   ylim(0, 1) + xlim(0, 1) +
   xlab("Out-of-sample GBM-predicted extinction probability") +
@@ -281,7 +301,7 @@ Now, we can use these observed extinction probabilities as calibration for our G
 
 \section{Testing predictive performance across intervals}
 
-Another way to test the predictive power of our models is to build the model on one geologic interval and predict on another.
+Another way to test the predictive power of our models is to build the model on one geologic interval and predict on another. For the purposes of this comparison, we are not going to implement the SMOTE algorithm here.
 
 <<cross-intervals-gbms>>=
 fit_interval_gbm <- function(dat, stage_train, stage_test) {
@@ -343,9 +363,9 @@ First, we'll extract the data to plot:
 # a function to fit a GBM model to a given stage:
 fit_stage_models <- function(dat, stage_name) {
   if(stage_name == "all") {
-    d <- dat
+    d <- smolt(dat)
   } else {
-    d <- dat[dat$stage == stage_name, ]
+    d <- smolt(dat[dat$stage == stage_name, ])
   }
   gbm(Ex ~ richness + occupancy + occurrences + min.lat + max.lat +
     lat.range + mean.lat + great.circle + class + group, data =
@@ -379,7 +399,7 @@ partial_continuous <- partial_dat[partial_dat$predictor != "group", ]
 groups_match <- data.frame(value =
   1:length(unique(stcen2$group)),
   group = sort(unique(stcen2$group)), stringsAsFactors = FALSE)
-partial_groups <- join(partial_groups, groups_match)
+partial_groups <- plyr::join(partial_groups, groups_match)
 partial_groups$value <- NULL
 partial_groups <- rename(partial_groups, c("group" = "value"))
 @
@@ -438,13 +458,17 @@ source("make-partial-dependence-baseplot.R")
 Now we'll now use our GBM model to predict on the modern dataset:
 
 <<predict-risk-modern>>=
+stcen3 <- readRDS("../data/standardized-predictors-cenozoic-obis.rds")
+stcen2 <- gdata::drop.levels(subset(stcen3,stcen3$stage_top < 22 &
+    stcen3$stage_top != 0))
 m <- gbm(Ex ~ richness + occupancy + occurrences + min.lat + max.lat +
   lat.range + mean.lat + great.circle + class + group, data =
-  stcen2, n.trees = 300, interaction.depth = 1,
+  smote(stcen2), n.trees = 300, interaction.depth = 1,
   distribution = "bernoulli", shrinkage = 0.1)
 temp_dat <- readRDS("../data/standardized-predictors-cenozoic-obis.rds")
-modern <- subset(temp_dat, !class %in% c("Testudines", "Malacostraca") &
-  stage == "Modern")
+#modern <- subset(temp_dat, !class %in% c("Testudines", "Malacostraca") &
+#  stage == "Modern")
+modern <- subset(temp_dat, stage == "Modern")
 modern$pred <- predict(m, newdata = modern, type = "response", n.trees = 300)
 saveRDS(modern, file = "../data/modern-predictions.rds")
 @
@@ -480,10 +504,13 @@ ggplot(tropical_test,
 
 
 
-<<plot-class-maps>>=
+<<plot-class-maps, cache=FALSE>>=
 source("plot-class-ext-maps.R")
 @
 
+<<plot-hotspots, cache=FALSE>>=
+source("hotspotmaps.R")
+@
 
 
 
