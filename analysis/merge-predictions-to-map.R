@@ -70,5 +70,5 @@ by.prov.all$Lat_Zone <- as.factor(ifelse(by.prov.all$Zone=="Tropical","Tropical"
 
 save(by.prov.classes, file = "../data/by.prov.classes.rda")
 save(by.prov.all, file = "../data/by.prov.all.rda")
-saveRDS(er.df, file = "../data/ecoregion-df.rds")
-saveRDS(land.fort, file = "../data/land-df.rds")
+#saveRDS(er.df, file = "../data/ecoregion-df.rds")
+#saveRDS(land.fort, file = "../data/land-df.rds")
