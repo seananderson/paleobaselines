@@ -428,10 +428,45 @@ source("make-partial-dependence-baseplot.R")
 
 \section{Merging risk predictions with modern species distributions}
 
-Now we can take the extinction probability predictions and match them with the modern species distribution data.
+Now we'll now use our GBM model to predict on the modern dataset:
 
-<<merge-risk-modern-spatial>>=
+<<predict-risk-modern>>=
+m <- gbm(Ex ~ richness + occupancy + occurrences + min.lat + max.lat +
+  lat.range + mean.lat + great.circle + class + group, data =
+  stcen2, n.trees = 300, interaction.depth = 1,
+  distribution = "bernoulli", shrinkage = 0.1)
+temp_dat <- readRDS("../data/standardized-predictors-cenozoic-obis.rds")
+modern <- subset(temp_dat, !class %in% c("Testudines", "Malacostraca") &
+  stage == "Modern")
+modern$pred <- predict(m, newdata = modern, type = "response", n.trees = 300)
+saveRDS(modern, file = "../data/modern-predictions.rds")
 @
+
+Then, we'll merge these predictions with our modern spatial observations. At the same time, we'll merge in Halpern et al. and Spalding et al.
+
+Note which files this creates.
+
+<<merge-predictions-spatial, cache=FALSE>>=
+source("merge-predictions-to-map.R")
+@
+
+Now, let's inspect the role of tropical regions. We'll define tropical as\ldots
+
+<<test-tropical-drivers, fig.width=16.5, fig.height=11.5, out.width="7in", cache=FALSE>>=
+tropical_test <- reshape2::melt(by.prov.classes, id.vars =
+  c("PROV_CODE", "class", "Lat_Zone"), measure.vars =
+  c("mean.lat.range", "mean.occupancy", "mean.gcd", "log_OBIS_records",
+    "mean.richness"))
+tropical_test <- join(tropical_test, by.prov.classes[, c("PROV_CODE",
+    "class", "Lat_Zone", "mean.ext")])
+
+ggplot(tropical_test,
+  aes(value, log(mean.ext), colour = Lat_Zone, shape = Lat_Zone)) +
+  geom_point(alpha = 0.7) +
+  facet_wrap(variable~class, scales = "free") +
+  stat_smooth(method = "lm", se = FALSE, lwd = 1.5)
+@
+
 
 \clearpage
 
