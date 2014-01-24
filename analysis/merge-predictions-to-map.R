@@ -37,6 +37,13 @@ by.prov.all <- ddply(d.eco.filled, .(PROV_CODE), summarize, mean.ext
   mean(mean.lat), mean.gcd = mean(great.circle), mean.lat.range =
   mean(lat.range), mean.richness = mean(richness))
 
+by.prov.all2 <- ddply(by.prov.classes, .(PROV_CODE), summarize, mean.ext =
+  mean(mean.ext))
+
+#check <- ddply(d.eco.filled, c("class","PROV_CODE"), summarize, n = length(pred))
+#dcast(check, PROV_CODE ~ class, value.var = "n")
+
+
 # read in province area measurements and OBIS sampling data:
 Prov.Areas <- read.csv("../data/spalding-province-areas.csv", header = TRUE,
   stringsAsFactors = FALSE)
