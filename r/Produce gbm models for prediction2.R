@@ -93,7 +93,6 @@ predict_data2$class <- as.factor(predict_data2$class)
   ##extract extinction probabilities from suite of models
   All.Models <- list(gbm = gbmFit)
   All.Preds <- predict(All.Models,newdata = predict_data2, type = "prob")
-  browser()
   #str(All.Preds)
   Ext.Prob <- All.Preds$gbm$extinct
 
