@@ -36,8 +36,8 @@ land.fort <- fortify(land)
 er <- readShapePoly("../data/MEOW2/meow_ecos.shp")
 er@data$id = rownames(er@data)
 er.points = fortify(er, region = "id")
-er.df <- join(er.points, er@data, by = "id")
-er.df <- join(er.df, by.prov.classes, by = "PROV_CODE")
+er.df <- plyr::join(er.points, er@data, by = "id")
+er.df <- plyr::join(er.df, by.prov.classes, by = "PROV_CODE")
 er.df <- drop.levels(subset(er.df,er.df$N.gen >= 5)) # TODO NOTE this number
 
 # is N.gen province specific?
@@ -133,15 +133,15 @@ oval <- mapproject(list(x = square$x, y = square$y), proj = "mollweide")
 er.df.m <- ddply(er.df.m, "class", transform, med.mean.ext =
   -mean(mean.ext, na.rm = TRUE))
 
-er.df.m <- join(er.df.m, plot_order)
+er.df.m <- plyr::join(er.df.m, plot_order)
 # And make the maps:
 filename <- paste("class-risk-maps", today, "iter", iterations, id, type,
   plot_type, sep = "-")
 #filename <- "temp"
 if(PDF) {
-  pdf(paste0("../figs/", filename, ".pdf"), width = 6.15, height = 4.85)
+  pdf(paste0("../figs/", filename, ".pdf"), width = 6.15, height = 6.05)
 } else {
-  png(paste0("../figs/", filename, ".png"), width = 6.15, height = 4.85, units =
+  png(paste0("../figs/", filename, ".png"), width = 6.15, height = 6.05, units =
     "in", res = 250)
 }
 
@@ -150,7 +150,7 @@ mw <- 88 # map width
 mg <- 1 # map gap
 kw <- 3 # key width
 kg <- 5 # key gap
-nrow <- 3
+nrow <- 4
 N <- nrow*2*2
 
 lo <- matrix(ncol = mw*2 + kw*2 + mg*2 + kg*2, nrow = nrow)
