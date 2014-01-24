@@ -37,16 +37,6 @@ by.prov.all <- ddply(d.eco.filled, .(PROV_CODE), summarize, mean.ext
   mean(mean.lat), mean.gcd = mean(great.circle), mean.lat.range =
   mean(lat.range), mean.richness = mean(richness))
 
-# read in land map:
-land <- readShapePoly("../data/110m-land/110m_land.shp")
-land.fort <- fortify(land)
-
-# read in eco-regions map:
-er <- readShapePoly("../data/MEOW2/meow_ecos.shp")
-er@data$id = rownames(er@data)
-er.points = fortify(er, region = "id")
-er.df <- join(er.points, er@data, by = "id")
-
 # read in province area measurements and OBIS sampling data:
 Prov.Areas <- read.csv("../data/spalding-province-areas.csv", header = TRUE,
   stringsAsFactors = FALSE)
@@ -54,7 +44,6 @@ Prov.Sampling <- read.csv("../data/obis.sampling.and.richness.csv", header =
   TRUE, stringsAsFactors = FALSE)
 Prov.Data <- merge(Prov.Sampling, Prov.Areas, by = c("Zone", "PROV_CODE"),
   all.x = TRUE)
-## TODO
 by.prov.classes <- merge(by.prov.classes, Prov.Data, by = c("class", "PROV_CODE"))
 by.prov.all <- merge(by.prov.all, Prov.Data, by = "PROV_CODE")
 
