@@ -426,6 +426,13 @@ TODO fix this Fig 1 plot. The black lines aren't showing the overall model. Mayb
 source("make-partial-dependence-baseplot.R")
 @
 
+\begin{figure}
+  \centering
+  \includegraphics[width=5.0in]{../figs/partial-plot-base.pdf}
+  \caption{Fig 1 from the main paper\ldots not completely finished with the new code and some of the echinoderms look suspect.}
+  \label{fig:partial-base}
+\end{figure}
+
 \section{Merging risk predictions with modern species distributions}
 
 Now we'll now use our GBM model to predict on the modern dataset:
@@ -450,6 +457,8 @@ Note which files this creates.
 source("merge-predictions-to-map.R")
 @
 
+\section{The role of the tropics}
+
 Now, let's inspect the role of tropical regions. We'll define tropical as\ldots
 
 <<test-tropical-drivers, fig.width=16.5, fig.height=11.5, out.width="7in", cache=FALSE>>=
@@ -466,6 +475,16 @@ ggplot(tropical_test,
   facet_wrap(variable~class, scales = "free") +
   stat_smooth(method = "lm", se = FALSE, lwd = 1.5)
 @
+
+\section{Mapping extinction probabilities}
+
+
+
+<<plot-class-maps>>=
+source("plot-class-ext-maps.R")
+@
+
+
 
 
 \clearpage
