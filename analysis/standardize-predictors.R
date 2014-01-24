@@ -83,7 +83,10 @@ standardize_data <- function(x) {
 ### select whether to use within-realm interpolated or non-interpolated OBIS ranges
 data <- readRDS("../data/modern-paleodb-ranges.rds")
 
-data <- drop.levels(subset(data, data$use==1 & data$occurrences >= Min_PBDB_Occurrences &  data$OBIS_occurrences >= Min_Modern_Occurrences & data$Num_Stage >= Minimum_Duration & data$class != "Foraminifera" & (data$OBIS_Ranges == Input_ranges | data$OBIS_Ranges == 0)))
+data <- drop.levels(subset(data, data$use==1 & data$occurrences >=
+    Min_PBDB_Occurrences &  data$OBIS_occurrences >= Min_Modern_Occurrences &
+    data$Num_Stage >= Minimum_Duration & data$class != "Foraminifera" &
+    (data$OBIS_Ranges == Input_ranges | data$OBIS_Ranges == 0)))
 
 ### merge in mean lats -a posteriori fix, should eventually be included in Simpson script
 mean.lats <- readRDS("../data/genus-mean-occurence-lats.rds")
