@@ -58,10 +58,10 @@ genus <- extEST$genus
 group <- extEST$group
 class <- extEST$class
 occupancy <- extEST$occupancy
-richness <- extEST$richness 
-great.circle <- extEST$great.circle 
-occurrences <- extEST$occurrences 
-lat.range <- extEST$lat_range 
+richness <- extEST$richness
+great.circle <- extEST$great.circle
+occurrences <- extEST$occurrences
+lat.range <- extEST$lat_range
 min.lat <- extEST$min.lat
 max.lat <- extEST$max.lat
 mean.lat <- extEST$mean.lat
@@ -129,7 +129,7 @@ by.prov.all <- ddply(d.eco.filled,.(PROV_CODE),each(mean.ext,median.ext,N.gen,me
 
 class.use <- rep(plot.value,length(by.prov.classes[,1]))
 all.use <- rep(plot.value,length(by.prov.all[,1]))
-     
+
 by.prov.classes$ext.plot <- ifelse(class.use == "median",by.prov.classes$median.ext,by.prov.classes$mean.ext)
 by.prov.all$ext.plot <- ifelse(all.use == "median",by.prov.all$median.ext,by.prov.all$mean.ext)
 
@@ -137,9 +137,9 @@ Prov.Areas <- read.csv("~/Dropbox/nescent_extinction_map/Final data/Spalding pro
 Prov.Sampling <- read.csv("~/Dropbox/nescent_extinction_map/Final data/OBIS.sampling.and.richness.csv",header = TRUE,stringsAsFactors = FALSE)
 
 Prov.Data <- merge(Prov.Sampling,Prov.Areas,by=c("Zone","PROV_CODE"),all.x=TRUE)
-     
+
 by.prov.classes <- merge(by.prov.classes,Prov.Data,by=c("class","PROV_CODE"))
-by.prov.all <- merge(by.prov.all,Prov.Data,by="PROV_CODE")  
+by.prov.all <- merge(by.prov.all,Prov.Data,by="PROV_CODE")
 
 
 ###read in Halpern and Burrows layers
@@ -198,7 +198,7 @@ print(p1)
 ggsave(p1,file="~/Dropbox/nescent_extinction_map/r/crossplot.of.mean.lat.range.vs.mean.risk.png",width=7,height=7)
 dev.off()
 
-     
+
 png()
 p1 <- ggplot(by.prov.classes,aes(log(OBIS_records),ext.plot)) + geom_point(size=2,pch=1) + geom_smooth(method="lm") + xlab(expression("mean species richness")) + ylab(expression("Log mean extinction susceptibility")) + opts(axis.text.x = theme_text(size=6)) + opts(axis.text.y = theme_text(size=6))+ opts(panel.background = theme_rect(colour="black", size =1, fill = "white")) + opts(panel.grid.minor = theme_blank()) + opts(panel.grid.major = theme_blank()) + facet_wrap(~class,ncol=2,scales="free") + theme(strip.background = element_rect(fill = "white")) + scale_colour_manual(values=c("blue","red"))
 
@@ -218,7 +218,7 @@ dev.off()
 
 
 #png()
-#p2 <- ggplot(d.eco.filled,aes(new.ext,colour=class))+ geom_density(fill=NA) + geom_vline(xintercept=.2,size=.25,colour#="red") + facet_wrap(~PROV_CODE,ncol=8,scales = 'free_y') 
+#p2 <- ggplot(d.eco.filled,aes(new.ext,colour=class))+ geom_density(fill=NA) + geom_vline(xintercept=.2,size=.25,colour#="red") + facet_wrap(~PROV_CODE,ncol=8,scales = 'free_y')
 #print(p2)
 #ggsave(p2,file="~/Dropbox/nescent_extinction_map/r/risk.histograms.by.province.png",width=10,height=7)
 #dev.off()
@@ -260,7 +260,7 @@ dev.off()
 
 
 #png()
-#p2 <- ggplot(d.eco.filled.zone,aes(log(new.ext),group=PROV_CODE,colour=Zone))+ geom_density(alpha#=.01) + scale_colour_manual(values=c("blue","green3","red")) + facet_wrap(~PROV_CODE,ncol=8) 
+#p2 <- ggplot(d.eco.filled.zone,aes(log(new.ext),group=PROV_CODE,colour=Zone))+ geom_density(alpha#=.01) + scale_colour_manual(values=c("blue","green3","red")) + facet_wrap(~PROV_CODE,ncol=8)
 #print(p2)
 #ggsave(p2,file="~/Dropbox/nescent_extinction_map/r/risk.boxplots.by.province.all.png",width=10,height=8)
 #dev.off()

@@ -82,8 +82,8 @@ predict_data2$class <- as.factor(predict_data2$class)
                           trControl = fitControl,
                           metric    = Optimize_Metric,
                           weights   = class_weights,
-                          verbose   = FALSE,
-                          tuneGrid  = expand.grid(.interaction.depth = 4, .n.trees = 500,.shrinkage = .001))
+                          verbose   = FALSE)
+                          #tuneGrid  = expand.grid(.interaction.depth = 3, .n.trees = 300,.shrinkage = .1))
 
 
 
@@ -93,6 +93,7 @@ predict_data2$class <- as.factor(predict_data2$class)
   ##extract extinction probabilities from suite of models
   All.Models <- list(gbm = gbmFit)
   All.Preds <- predict(All.Models,newdata = predict_data2, type = "prob")
+  browser()
   #str(All.Preds)
   Ext.Prob <- All.Preds$gbm$extinct
 
@@ -280,8 +281,8 @@ preds$pred.outcome.raw <- ifelse(preds$extinct >= .5, "extinct","survive")
 preds <- data.frame(lapply(preds,as.character), stringsAsFactors=FALSE)
 preds2 <- preds
 
-source("~/Dropbox/nescent_extinction_map/r/calibrate-models.R")
-preds2$pred.outcome.calibrated <- ifelse(preds2$calibrated_ext_prob >= .3,"extinct","survive")
+#source("~/Dropbox/nescent_extinction_map/r/calibrate-models.R")
+#preds2$pred.outcome.calibrated <- ifelse(preds2$calibrated_ext_prob >= .3,"extinct","survive")
 
 ## extract number of extinctions and survivals
 #prop.extinct <- function(df) {

@@ -16,7 +16,7 @@
 <<set-knitr-options, cache=FALSE, echo=FALSE>>=
 library(knitr)
 opts_chunk$set(fig.align='center', fig.pos="htpb", cache=TRUE, echo=TRUE,
-message=FALSE, autodep=TRUE, fig.path='figure/', fig.width=6, par=TRUE)
+message=FALSE, autodep=TRUE, fig.path='../figs/', fig.width=6, par=TRUE)
 opts_chunk$set(warning=FALSE, message=FALSE, tidy=FALSE, refresh=TRUE)
 opts_chunk$set(dev = 'pdf')
 opts_knit$set(out.format = "latex")
@@ -267,7 +267,8 @@ ggplot(val_test2_summarized,
 Now, we can use these observed extinction probabilities as calibration for our GBM-predicted extinction probability in the modern dataset. To do this, we take the predicted extinction probability from our GBM model applied to the modern dataset, we fit that value into our binning scheme, and we match it up with the empirically-observed mean extinction probability for that bin. This removes the observed non-linear bias in our model \cite{thorson2012}. Put another way, we find our predicted value on the x-axis of Figure~\ref{fig:plot-gbm-no-mal} and draw a vertical line up until we meet a blue dot. We then use the value of the blue dot as our calibrated extinction probability.
 
 \clearpage
-Notes:
+
+Things to add to the modelling supp discussion:
 
 \begin{itemize}
   \item standardizing of data by interval first --- what and why
@@ -279,6 +280,21 @@ Notes:
   \item what a partial dependence plot shows (Fig 1)
   \item the cross-interval prediction test: reason for doing it and the plot\ldots no calibration here
 \end{itemize}
+
+Supp Figures to merge in:
+
+\begin{enumerate}
+  \item density plots of the distributions of intrinsic risk in different phylogenetic groups for each of the 62 provinces
+  \item cross plots of ext.\ prob.\ vs.\ occupancy, lat range, GCD, richness, log OBIS records; separated by extratropical and tropical (maybe merge into one big \texttt{facet\_grid})?
+  \item number of OBIS occurrence records in class-province maps (use different colour scale to before)
+  \item re-create class-level maps omit single-province genera (actually, do this for main fig now)?
+  \item re-create class-level maps but base on raw OBIS ranges
+  \item re-create class-level maps but with raw (not standardized) predictors
+  \item re-create class-level maps but with rank-order risk
+  \item cross-interval matrix predictions
+  \item partial rank dependence vs.\ mean Cenozoic completeness
+  \item the cross plots of human threat, climate velocity, and intrinsic risk on global map (from what was a panel in the last main Fig)
+\end{enumerate}
 
 \clearpage
 \bibliographystyle{science}

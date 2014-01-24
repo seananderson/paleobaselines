@@ -1,17 +1,14 @@
 # Created by:    Sean C. Anderson
 # Created:       Feb 28, 2013
-# Last modified: Jun 15, 2013
+# Last modified: Jan 23, 2014
 # Purpose:       Global hotspot maps with halpern, burrows, and ext risk
-#                This version collates the useful bits from previous
-#                trials.
-
+#
 # create the dataset to map:
-
 load("prov_SpatialPolygons.rda") # needed to draw joined provinces
 load("~/Dropbox/nescent_extinction_map/Final data/by.prov.all.rda")
 
 library(maptools)
-gpclibPermit() 
+gpclibPermit()
 er <- readShapePoly("~/Dropbox/nescent_extinction_map/data/MEOW2/meow_ecos.shp")
 er@data$id = rownames(er@data)
 er.points = fortify(er, region = "id")
