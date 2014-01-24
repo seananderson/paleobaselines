@@ -10,3 +10,5 @@ cache/*
 *.tex
 *.blg
 .Rproj.user
+
+analysis/risksupp.synctex.gz
