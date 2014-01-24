@@ -9,3 +9,4 @@ cache/*
 *.toc
 *.tex
 *.blg
+.Rproj.user
