@@ -24,14 +24,16 @@ d.eco.filled <- merge(d.eco.filled, modern, by = "genus", all.x = FALSE)
 # and calculate mean values by class-province or for the provinces overall:
 
 by.prov.classes <- ddply(d.eco.filled, .(class, PROV_CODE), summarize, mean.ext
-  = mean(pred), median.ext = median(pred), N.gen = length(unique(genus)),
+  = mean(mean_observed), median.ext = median(mean_observed), N.gen = length(unique(genus)),
   mean.occupancy = mean(occupancy), mean.occurrences = mean(occurrences),
   mean.min.lat = mean(min.lat), mean.max.lat = mean(max.lat), mean.mean.lat =
   mean(mean.lat), mean.gcd = mean(great.circle), mean.lat.range =
   mean(lat.range), mean.richness = mean(richness))
+by.prov.classes <- subset(by.prov.classes, mean.ext < 0.03) # TODO note testing
+# ggplot(by.prov.classes, aes(mean.ext)) + geom_histogram() + facet_wrap(~class)
 
 by.prov.all <- ddply(d.eco.filled, .(PROV_CODE), summarize, mean.ext
-  = mean(pred), median.ext = median(pred), N.gen = length(unique(genus)),
+  = mean(mean_observed), median.ext = median(mean_observed), N.gen = length(unique(genus)),
   mean.occupancy = mean(occupancy), mean.occurrences = mean(occurrences),
   mean.min.lat = mean(min.lat), mean.max.lat = mean(max.lat), mean.mean.lat =
   mean(mean.lat), mean.gcd = mean(great.circle), mean.lat.range =
@@ -72,3 +74,4 @@ save(by.prov.classes, file = "../data/by.prov.classes.rda")
 save(by.prov.all, file = "../data/by.prov.all.rda")
 #saveRDS(er.df, file = "../data/ecoregion-df.rds")
 #saveRDS(land.fort, file = "../data/land-df.rds")
+

@@ -12,9 +12,9 @@ gpclibPermit()
 er <- readShapePoly("../data/MEOW2/meow_ecos.shp")
 er@data$id = rownames(er@data)
 er.points = fortify(er, region = "id")
-er.df <- join(er.points, er@data, by = "id")
+er.df <- plyr::join(er.points, er@data, by = "id")
 
-er.df.all <- join(er.df, by.prov.all, by = "PROV_CODE")
+er.df.all <- plyr::join(er.df, by.prov.all, by = "PROV_CODE")
 
 ## SETUP:
 today <- format(Sys.time(), "%Y-%m-%d")
