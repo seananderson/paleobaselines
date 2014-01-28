@@ -1,6 +1,6 @@
 Package: paleorisk
 Type: Package
-Title: Tools to estimating paleontological extinction risk in the oceans
+Title: Tools for estimating paleontological extinction risk in the oceans
 Version: 0.0.1
 Date: 2014-01-27
 Author: Sean C. Anderson <sean@seananderson.ca>
