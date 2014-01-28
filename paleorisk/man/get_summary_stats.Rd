@@ -1,0 +1,22 @@
+\name{get_summary_stats}
+\alias{get_summary_stats}
+\title{Get binary summary statistics}
+\usage{
+get_summary_stats(obs, pred_prob, threshold)
+}
+\arguments{
+  \item{obs}{A vector of binary observations (0 or 1).}
+
+  \item{pred_prob}{The predicted probability.}
+
+  \item{threshold}{The threshold above which to classify an
+  observation as a 1.}
+}
+\description{
+This function returns some binary classification summary
+statistics: sensitivity, specificity, and Kappa.
+}
+\examples{
+get_summary_stats(obs = rbinom(10, 1, 0.5), pred_prob = runif(10), 0.5)
+}
+

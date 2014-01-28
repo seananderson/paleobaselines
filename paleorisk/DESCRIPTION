@@ -1,0 +1,11 @@
+Package: paleorisk
+Type: Package
+Title: Tools to estimating paleontological extinction risk in the oceans
+Version: 0.0.1
+Date: 2014-01-27
+Author: Sean C. Anderson <sean@seananderson.ca>
+Maintainer: Sean C. Anderson <sean@seananderson.ca>
+Description: This package contains functions for conducting the analysis in the
+    paper "Paleontological baselines for evaluating extinction risk in the
+    coastal oceans"
+License: GPL-3
