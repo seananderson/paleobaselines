@@ -12,3 +12,5 @@ cache/*
 .Rproj.user
 
 analysis/risksupp.synctex.gz
+
+paleorisk/paleorisk.Rproj
