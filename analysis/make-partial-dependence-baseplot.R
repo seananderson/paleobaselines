@@ -34,8 +34,8 @@ g[g$.order %in% "az", ".order"] <- "Azoozanthelate"
 g[g$.order %in% "other", ".order"] <- "Other"
 g[g$.class %in% "Decapoda", ".class"] <- "Dec."
 
-class.means <- plyr::ddply(g, ".class", summarize, class.mean.resp = mean(response))
-order.means <- plyr::ddply(g, ".order", summarize, order.mean.resp = mean(response))
+class.means <- plyr::ddply(g, ".class", plyr::summarize, class.mean.resp = mean(response))
+order.means <- plyr::ddply(g, ".order", plyr::summarize, order.mean.resp = mean(response))
 
 g.all <- subset(g, stage == "all")
 g <- subset(g, stage != "all")
@@ -65,7 +65,6 @@ x.gap.lab <- -.3
 diffs <- diffs*x.gap
 g$x.pos <- g$x.pos + cumsum(c(0, diffs))
 
-
 o.names <- data.frame(predictor = c("occupancy", "occurrences", "richness",
     "great.circle", "max.lat", "min.lat", "mean.lat", "lat.range"),
   predictor.clean = c("Occupancy", "Occurrences", "Richness",
@@ -76,7 +75,7 @@ o.names <- data.frame(predictor = c("occupancy", "occurrences", "richness",
       3), "Km", rep("Absolute degrees", 3), "Degrees"), stringsAsFactors =
   FALSE)
 
-o <- join(o, o.names)
+o <- plyr::join(o, o.names)
 
 o$predictor <- factor(o$predictor, levels = c("occupancy", "occurrences",
     "richness", "great.circle", "max.lat", "min.lat", "mean.lat", "lat.range"))
@@ -170,7 +169,7 @@ box(col= col.axis)
 axis(2, at = c(0, 0.5, 1), las = 1, col = col.axis, col.axis = col.axis, cex.axis = cex.axis)
 par(xpd = NA)
 
-labs <- ddply(g, ".class", summarize, x.mid = min(x.pos) +
+labs <- plyr::ddply(g, ".class", plyr::summarize, x.mid = min(x.pos) +
   diff(range(x.pos))/2, l = min(x.pos), u = max(x.pos))
 
 with(labs, text(x = x.mid, y = -1.18, label = .class, srt = 0, col = col.main.labels, cex = 0.9, adj = c(0.5, 0)))

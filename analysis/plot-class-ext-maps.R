@@ -35,7 +35,7 @@ land.fort <- fortify(land)
 # Pull in the eco province data:
 er <- readShapePoly("../data/MEOW2/meow_ecos.shp")
 er@data$id = rownames(er@data)
-er.points = fortify(er, region = "id")
+er.points = ggplot2::fortify(er, region = "id")
 er.df <- plyr::join(er.points, er@data, by = "id")
 er.df <- plyr::join(er.df, by.prov.classes, by = "PROV_CODE")
 er.df <- drop.levels(subset(er.df,er.df$N.gen >= 5)) # TODO NOTE this number

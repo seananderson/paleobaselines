@@ -23,7 +23,7 @@ d.eco.filled <- merge(d.eco.filled, modern, by = "genus", all.x = FALSE)
 
 # and calculate mean values by class-province or for the provinces overall:
 
-by.prov.classes <- ddply(d.eco.filled, .(class, PROV_CODE), summarize, mean.ext
+by.prov.classes <- ddply(d.eco.filled, .(class, PROV_CODE), plyr::summarize, mean.ext
   = mean(mean_observed), median.ext = median(mean_observed), N.gen = length(unique(genus)),
   mean.occupancy = mean(occupancy), mean.occurrences = mean(occurrences),
   mean.min.lat = mean(min.lat), mean.max.lat = mean(max.lat), mean.mean.lat =
@@ -32,17 +32,17 @@ by.prov.classes <- ddply(d.eco.filled, .(class, PROV_CODE), summarize, mean.ext
 by.prov.classes <- subset(by.prov.classes, mean.ext < 0.03) # TODO note testing
 # ggplot(by.prov.classes, aes(mean.ext)) + geom_histogram() + facet_wrap(~class)
 
-by.prov.all <- ddply(d.eco.filled, .(PROV_CODE), summarize, mean.ext
+by.prov.all <- ddply(d.eco.filled, .(PROV_CODE), plyr::summarize, mean.ext
   = mean(mean_observed), median.ext = median(mean_observed), N.gen = length(unique(genus)),
   mean.occupancy = mean(occupancy), mean.occurrences = mean(occurrences),
   mean.min.lat = mean(min.lat), mean.max.lat = mean(max.lat), mean.mean.lat =
   mean(mean.lat), mean.gcd = mean(great.circle), mean.lat.range =
   mean(lat.range), mean.richness = mean(richness))
 
-by.prov.all2 <- ddply(by.prov.classes, .(PROV_CODE), summarize, mean.ext =
+by.prov.all2 <- ddply(by.prov.classes, .(PROV_CODE), plyr::summarize, mean.ext =
   mean(mean.ext))
 
-#check <- ddply(d.eco.filled, c("class","PROV_CODE"), summarize, n = length(pred))
+#check <- ddply(d.eco.filled, c("class","PROV_CODE"), plyr::summarize, n = length(pred))
 #dcast(check, PROV_CODE ~ class, value.var = "n")
 
 
