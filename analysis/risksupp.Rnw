@@ -396,6 +396,7 @@ modern$gbm_pred_binned <- assign_bins(modern$pred)
 modern <- plyr::join(modern,
   val_test_summarized[,c("class", "gbm_pred_binned", "mean_observed")],
   by = c("class", "gbm_pred_binned"))
+modern <- modern[!is.na(modern$mean_observed), ]
 # or skip calibration:
 # modern$mean_observed <- modern$pred
 @
@@ -420,7 +421,7 @@ saveRDS(modern, file = "../data/modern-predictions.rds")
 
 We can compare the predictions from the averaged stage models with the predictions from the GBMs based on all Neogene data pooled together. Note that we're not comparing the calibrated predictions here:
 
-<<compare-neogene-gbm-to-stage-models>>=
+<<compare-neogene-gbm-to-stage-models, fig.height=4.5>>=
 ggplot(modern, aes(pred, pred_stage_avg)) + geom_point() + 
   facet_wrap(~class) + geom_abline(intercept = 0, slope = 1) +
   xlab("Neoegene GBM") + ylab("Stage-level GBMs averaged")
