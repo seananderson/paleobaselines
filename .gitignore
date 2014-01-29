@@ -14,3 +14,6 @@ cache/*
 analysis/risksupp.synctex.gz
 
 paleorisk/paleorisk.Rproj
+
+*.rda
+*.rds
