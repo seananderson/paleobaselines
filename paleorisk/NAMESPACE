@@ -1,4 +1,6 @@
 export(assign_bins)
 export(fit_interval_gbm)
 export(get_summary_stats)
+export(get_weights)
+export(summarize_val_test)
 export(validate_gbm)

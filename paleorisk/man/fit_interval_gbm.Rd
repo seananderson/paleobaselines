@@ -3,7 +3,7 @@
 \title{Fit gbm models across paleo intervals}
 \usage{
 fit_interval_gbm(dat, stage_train, stage_test, interaction.depth = 1,
-  n.trees = 300, shrinkage = 0.1, ...)
+  n.trees = 300, shrinkage = 0.1, use_weights = FALSE, ...)
 }
 \arguments{
   \item{dat}{The data to work with. Should have columns
