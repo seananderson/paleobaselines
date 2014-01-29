@@ -7,3 +7,7 @@ pdf:
 	pdflatex risksupp
 	pdflatex risksupp
 	cp risksupp.pdf ~/Dropbox/Public/
+
+clean:
+	rm -rf ../cache/
+
