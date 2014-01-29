@@ -181,7 +181,7 @@ stcen2 <- gdata::drop.levels(subset(stcen, class != "Malacostraca"))
 
 Now, we'll run many more cross-validation iterations of our model to get precise estimates of non-linear bias so that we can use the observed mean extinction probabilities as calibration factors.
 
-<<final-gbm-validation, eval=FALSE>>=
+<<final-gbm-validation, eval=TRUE, cache=TRUE>>=
 val_test <- rdply(200, validate_gbm(stcen2, shrinkage = 0.1,
   interaction.depth = 1, n.trees = 300,
   use_weights = TRUE)$bin_validation)
