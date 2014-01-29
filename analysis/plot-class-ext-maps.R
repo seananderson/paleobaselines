@@ -41,7 +41,7 @@ er@data$id = rownames(er@data)
 er.points = ggplot2::fortify(er, region = "id")
 er.df <- plyr::join(er.points, er@data, by = "id")
 er.df <- plyr::join(er.df, by.prov.classes, by = "PROV_CODE")
-er.df <- drop.levels(subset(er.df,er.df$N.gen >= 5)) # TODO NOTE this number
+er.df <- gdata::drop.levels(subset(er.df,er.df$N.gen >= 5)) # TODO NOTE this number
 
 # is N.gen province specific?
 # ddply(er.df, c("class", "PROVINCE"), summarize, n = length(order))
