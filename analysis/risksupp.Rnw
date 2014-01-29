@@ -176,14 +176,14 @@ ggplot(val_test_alt,
 We note that Malacostraca is poorly predicted in our out-of-sample validation tests. We therefore choose here to not include Malacostraca in the model that we will predict the modern intrinsic extinction risk with.
 
 <<drop-malacostraca, cache=FALSE>>=
-stcen <- subset(stcen, class != "Malacostraca")
+stcen2 <- gdata::drop.levels(subset(stcen, class != "Malacostraca"))
 @
 
 Now, we'll run many more cross-validation iterations of our model to get precise estimates of non-linear bias so that we can use the observed mean extinction probabilities as calibration factors.
 
 <<final-gbm-validation, eval=FALSE>>=
-val_test <- rdply(200, validate_gbm(stcen, shrinkage = 0.1,
-  interaction.depth = 1, n.trees = 300, 
+val_test <- rdply(200, validate_gbm(stcen2, shrinkage = 0.1,
+  interaction.depth = 1, n.trees = 300,
   use_weights = TRUE)$bin_validation)
 @
 
@@ -198,7 +198,7 @@ And we'll plot these validation values again:
 ggplot(val_test_summarized,
   aes(gbm_pred_binned, mean_observed)) +
   geom_point(data = val_test, aes(gbm_pred_binned, obs_ext_prob),
-    alpha = 0.1) + facet_wrap(~class) + 
+    alpha = 0.1) + facet_wrap(~class) +
   geom_abline(intercept = 0, slope = 1) +
   geom_linerange(aes(ymin = l, ymax = u), colour = "#4E9DF0") +
   geom_point(aes(size = median_sample_n), colour = "#4E9DF0") +
@@ -216,9 +216,9 @@ Now, we can use these observed extinction probabilities (in \texttt{val\_test\_s
 Another way to test the predictive power of our models is to build the model on one geologic interval and predict on another. To keep this simple, we won't use our calibration factors.
 
 <<cross-intervals-gbms>>=
-stage_df <- expand.grid(stage_train = unique(stcen$stage),
-  stage_test = unique(stcen$stage))
-cross_pred <- mdply(stage_df, fit_interval_gbm, dat = stcen)
+stage_df <- expand.grid(stage_train = unique(stcen2$stage),
+  stage_test = unique(stcen2$stage))
+cross_pred <- mdply(stage_df, fit_interval_gbm, dat = stcen2)
 @
 
 Now we can compare the predictions made from other stages with the predictions from the same stage.
@@ -271,7 +271,7 @@ Now, we'll fit the models for each stage. Within each stage we'll fit the model 
 
 <<fit-marginal-stage-models>>=
 stage_models <- llply(c(stage_order, "all"), function(x)
-  rlply(20, fit_stage_models(stcen, stage_name = x)))
+  rlply(20, fit_stage_models(stcen2, stage_name = x)))
 names(stage_models) <- c(stage_order, "all")
 @
 
@@ -281,9 +281,9 @@ And, we'll go through the stage-based models and pull out the partial dependence
 vars <- c("richness", "occupancy", "occurrences", "min.lat",
   "max.lat", "lat.range", "mean.lat", "great.circle", "group")
 partial_dat <- ldply(c(stage_order, "all"), function(stage_name) {
-  p2 <- ldply(vars, function(var_name){        
-    p1 <- ldply(stage_models[[stage_name]], function(x) 
-      plot.gbm(x, return.grid = TRUE, i.var = var_name, 
+  p2 <- ldply(vars, function(var_name){
+    p1 <- ldply(stage_models[[stage_name]], function(x)
+      plot.gbm(x, return.grid = TRUE, i.var = var_name,
         type = "response"))
     names(p1) <- c("value", "response")
     p1$predictor <- var_name
@@ -299,10 +299,10 @@ Now we'll get the median and interquartile range of the marginal effects. We'll 
 <<summarize-marginal-effects>>=
 partial_dat2 <- tbl_df(partial_dat)
 partial_dat2 <- group_by(partial_dat2, stage, predictor, value)
-partial_dat2 <- summarise(partial_dat2, 
-  median = median(response), 
-  lower = quantile(response, probs = 0.25), 
-  upper = quantile(response, probs = 0.75), 
+partial_dat2 <- summarise(partial_dat2,
+  median = median(response),
+  lower = quantile(response, probs = 0.25),
+  upper = quantile(response, probs = 0.75),
   .n = n())
 @
 
@@ -312,8 +312,8 @@ Because the taxonomic variables are factors (i.e.\ they are words) and the other
 partial_groups <- partial_dat2[partial_dat2$predictor == "group", ]
 partial_continuous <- partial_dat2[partial_dat2$predictor != "group", ]
 groups_match <- data.frame(value =
-  1:length(unique(stcen$group)),
-  group = sort(unique(stcen$group)), stringsAsFactors = FALSE)
+  1:length(unique(stcen2$group)),
+  group = sort(unique(stcen2$group)), stringsAsFactors = FALSE)
 partial_groups <- plyr::join(partial_groups, groups_match)
 partial_groups$value <- NULL
 partial_groups <- plyr::rename(partial_groups, c("group" = "value"))
@@ -323,7 +323,7 @@ And we'll make some quick plots of the data:
 
 <<plot-partial-continuous, fig.width=10, fig.height=6>>=
 ggplot(partial_continuous, aes(value, median)) +
-  geom_ribbon(aes(fill = stage, colour = stage, ymax = upper, ymin = lower), 
+  geom_ribbon(aes(fill = stage, colour = stage, ymax = upper, ymin = lower),
     alpha = 0.5) +
   facet_wrap(~predictor, scales = "free_x") +
   xlab("Predictor value") +
@@ -351,12 +351,12 @@ source("make-partial-dependence-baseplot.R")
 Now we'll now use our GBM model to predict on the modern dataset. We'll run our model a number of times and take the average predictions. This is because there is some stochasiticity to the GBM algorithm. TODO implement repeated prediction averaging.
 
 <<build-main-paleo-model>>=
-w <- paleorisk::get_weights(stcen$Ex)
-weights <- ifelse(stcen$Ex == 1, w$ex_weight, w$sur_weight)
+w <- paleorisk::get_weights(stcen2$Ex)
+weights <- ifelse(stcen2$Ex == 1, w$ex_weight, w$sur_weight)
 
-m <- rlply(20, gbm(Ex ~ richness + occupancy + occurrences + min.lat + 
-    max.lat + lat.range + mean.lat + great.circle + class + group, 
-  data = stcen, n.trees = 300, interaction.depth = 1,
+m <- rlply(20, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
+    max.lat + lat.range + mean.lat + great.circle + class + group,
+  data = stcen2, n.trees = 300, interaction.depth = 1,
   distribution = "bernoulli", shrinkage = 0.1, weights = weights))
 @
 
@@ -364,16 +364,16 @@ Now we'll load the modern data:
 
 <<load-modern-data>>=
 temp_dat <- readRDS("../data/standardized-predictors-cenozoic-obis.rds")
-modern <- subset(temp_dat, 
+modern <- subset(temp_dat,
   !class %in% c("Testudines", "Malacostraca") & stage == "Modern")
 rm(temp_dat)
 @
-  
+
 And predict the modern intrinsic extinction risk from the paleo models. We'll take the average prediction across our multiple runs:
 
 <<predict-risk-modern>>=
-predictions <- laply(m, function(x) 
-  gbm::predict.gbm(x, newdata = modern, type = "response", 
+predictions <- laply(m, function(x)
+  gbm::predict.gbm(x, newdata = modern, type = "response",
     n.trees = 300))
 modern$pred <- apply(predictions, 2, mean)
 @
@@ -382,8 +382,8 @@ Now we'll use our calibration factors on our predictions:
 
 <<calibrate-risk-modern>>=
 modern$gbm_pred_binned <- assign_bins(modern$pred)
-modern <- plyr::join(modern, 
-  val_test_summarized[,c("class", "gbm_pred_binned", "mean_observed")], 
+modern <- plyr::join(modern,
+  val_test_summarized[,c("class", "gbm_pred_binned", "mean_observed")],
   by = c("class", "gbm_pred_binned"))
 
 # or skip calibration:
