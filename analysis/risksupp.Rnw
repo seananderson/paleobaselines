@@ -41,12 +41,12 @@ library("paleorisk")
 Now we'll load other packages that are needed for our analysis:
 
 <<load-other-packages, cache=FALSE, eval=TRUE>>=
-library("plyr")
-library("gdata")
-library("reshape2")
+library(plyr)
+#library("gdata")
+#library("reshape2")
 library("ggplot2")
-library("Hmisc")
-library("matrixStats")
+#library("Hmisc")
+#library("matrixStats")
 library("DMwR")
 library("gbm")
 library("maps")
@@ -60,7 +60,7 @@ theme_set(theme_bw())
 rversion <- capture.output(sessionInfo())[[1]]
 x <- capture.output(sessionInfo())
 other_line <- grep("other attached", x)
-pkgs <- x[(other_line+1):(other_line + 4)]
+pkgs <- x[(other_line+1):(other_line + 2)]
 @
 
 We used \Sexpr{rversion} and package versions
@@ -201,19 +201,20 @@ Now, we'll run many more cross-validation iterations to get more precise estimat
 % Note: manually cached chunks:
 % Switch to eval=FALSE and the next chunk to eval=TRUE to re-run
 % the many-repetition version. This will, of course, take a long time.
-<<gbm-no-mal-load, eval=TRUE, echo=FALSE>>=
+<<final-gbm-validation-load, eval=TRUE, echo=FALSE>>=
 load("../data/val_test.rda")
 load("../data/val_test_summarized.rda")
 @
 
-<<gbm-no-mal, eval=FALSE>>=
-val_test <- rdply(100, validate_gbm(stcen, shrinkage = 0.1,
-    interaction.depth = 1, n.trees = 300, smote = TRUE)$bin_validation)
+<<final-gbm-validation, eval=FALSE>>=
+val_test <- rdply(50, validate_gbm(stcen, shrinkage = 0.1,
+  interaction.depth = 1, n.trees = 300, smote = FALSE, 
+  use_weights = TRUE)$bin_validation)
 val_test_summarized <- ddply(val_test, c("class", "gbm_pred_binned"),
   summarize_val_test)
 @
 
-<<cache-gbms-save, echo=FALSE>>=
+<<cache-final-gbm-validation, echo=FALSE>>=
 save(val_test, file = "../data/val_test.rda")
 save(val_test_summarized, file = "../data/val_test_summarized.rda")
 @
@@ -360,6 +361,17 @@ temp_dat <- readRDS("../data/standardized-predictors-cenozoic-obis.rds")
 modern <- subset(temp_dat, class != "Testudines" & stage == "Modern")
 modern$pred <- gbm::predict.gbm(m, newdata = modern, type = "response", 
   n.trees = 300)
+####
+
+# smote_ratio <- function(x) {
+#   round(table(x$class, x$Ex)/rowSums(table(x$class, x$Ex)) * 100)
+# }
+# smote_ratio(stcen)
+# smote_ratio(stcen_smote)
+
+
+
+####
 @
 
 Now we'll use our calibration factors on our predictions:

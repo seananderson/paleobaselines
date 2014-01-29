@@ -36,7 +36,7 @@ Min_gcd <- 1
 standardize_data <- function(x) {
 
   message(paste("Standardizing", x, "interval"))
-  mod_data <- drop.levels(subset(data, data$Interval_Name %in% x))
+  mod_data <- gdata::drop.levels(subset(data, data$Interval_Name %in% x))
 
   data1 <- mod_data
   stage_name <- data1$Interval_Name[1]
@@ -73,7 +73,7 @@ standardize_data <- function(x) {
   stage <- rep(stage_name, length(Ex))
   stage_top <- rep(stage_top, length(Ex))
 
-  data1factors <- drop.levels(na.omit(data.frame(stage, stage_top, class, group,
+  data1factors <- gdata::drop.levels(na.omit(data.frame(stage, stage_top, class, group,
         genus, richness, occupancy, occurrences, min.lat, max.lat, lat.range,
         mean.lat, mean.lat.zone, great.circle, tropical_only, Ex)))
 
@@ -83,7 +83,7 @@ standardize_data <- function(x) {
 ### select whether to use within-realm interpolated or non-interpolated OBIS ranges
 data <- readRDS("../data/modern-paleodb-ranges.rds")
 
-data <- drop.levels(subset(data, data$use==1 & data$occurrences >=
+data <- gdata::drop.levels(subset(data, data$use==1 & data$occurrences >=
     Min_PBDB_Occurrences &  data$OBIS_occurrences >= Min_Modern_Occurrences &
     data$Num_Stage >= Minimum_Duration & data$class != "Foraminifera" &
     (data$OBIS_Ranges == Input_ranges | data$OBIS_Ranges == 0)))

@@ -4,7 +4,7 @@
 \usage{
 validate_gbm(dat, test_fraction = 0.5, threshold = 0.5, shrinkage = 0.1,
   interaction.depth = 1, n.trees = 300, bin = 0.025, smote = FALSE,
-  classification_stats = FALSE, ...)
+  use_weights = FALSE, classification_stats = FALSE, ...)
 }
 \arguments{
   \item{dat}{The input data.}
@@ -30,6 +30,11 @@ validate_gbm(dat, test_fraction = 0.5, threshold = 0.5, shrinkage = 0.1,
   \item{smote}{A logical argument: should the function
   implement SMOTE algorithm for unbalanced classification?
   Implemented via the \code{\link[DMwR]{SMOTE}} function.}
+
+  \item{use_weights}{A logical argument: should the GBM be
+  fit with weights assigned based on extinction frequency.
+  Use only \code{SMOTE = TRUE} or \code{use_weights =
+  TRUE}.}
 
   \item{classification_stats}{Should the function return
   classification statistics (sensitivity, specificity,
