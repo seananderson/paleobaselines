@@ -52,7 +52,7 @@ er.df <- gdata::drop.levels(subset(er.df,er.df$N.gen >= 5)) # TODO NOTE this num
 # purposes:
 if(plot_type == "ext") {
   yrange.all <- c(0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1)
-  er.df <- transform(er.df, value.to.plot = log(mean.ext))
+  er.df <- transform(er.df, value.to.plot = mean.ext)
 }
 if(plot_type == "OBIS_records") {
   er.df <- transform(er.df, value.to.plot = log(OBIS_records))

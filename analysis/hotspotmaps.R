@@ -49,7 +49,7 @@ oval <- mapproject(list(x = square$x, y = square$y), proj = "mollweide")
 cols <- paste(gg_color_hue(3), "", sep = "")
 cols[2] <- gg_color_hue(8)[7]
 
-er.df.all$ext.plot <- log(er.df.all$mean.ext)
+er.df.all$ext.plot <- er.df.all$mean.ext
 
 ext.plot.thresh <- as.numeric(quantile(er.df.all$ext.plot, probs = 0.8))
 halp.thresh <- as.numeric(quantile(er.df.all$Halpern, probs = 0.8, na.rm = TRUE))

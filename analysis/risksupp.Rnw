@@ -12,7 +12,7 @@
 
 <<set-knitr-options, cache=FALSE, echo=FALSE>>=
 library("knitr")
-opts_chunk$set(fig.align='center', fig.pos="htpb", cache=FALSE, echo=TRUE,
+opts_chunk$set(fig.align='center', fig.pos="htpb", cache=TRUE, echo=TRUE,
 message=FALSE, autodep=TRUE, fig.path='../figs/', fig.width=6, par=TRUE)
 opts_chunk$set(warning=FALSE, message=FALSE, tidy=FALSE, refresh=TRUE,
   cache.path="../cache/", cache.lazy=FALSE)
@@ -46,8 +46,8 @@ library("paleorisk")
 Now we'll load other packages that are needed for our analysis:
 
 <<load-other-packages, cache=FALSE, eval=TRUE>>=
-library(plyr)
-library(dplyr)
+library("plyr")
+library("dplyr")
 library("reshape2")
 library("ggplot2")
 library("DMwR")
@@ -63,7 +63,7 @@ theme_set(theme_bw())
 rversion <- capture.output(sessionInfo())[[1]]
 x <- capture.output(sessionInfo())
 other_line <- grep("other attached", x)
-pkgs <- x[(other_line+1):(other_line + 3)]
+pkgs <- x[(other_line+1):(other_line + 4)]
 @
 
 We used \Sexpr{rversion} and package versions
@@ -196,7 +196,7 @@ val_test_summarized <- ddply(val_test, c("class", "gbm_pred_binned"),
 
 And we'll plot these validation values again:
 
-<<plot-gbm-no-mal, fig.width=7.5, fig.height=7, cache=FALSE>>=
+<<plot-gbm-no-mal, fig.width=8, fig.height=5, cache=FALSE>>=
 ggplot(val_test_summarized,
   aes(gbm_pred_binned, mean_observed)) +
   geom_point(data = val_test, aes(gbm_pred_binned, obs_ext_prob),
@@ -350,7 +350,7 @@ source("make-partial-dependence-baseplot.R")
 
 \section{Merging risk predictions with modern species distributions}
 
-Now we'll now use our GBM model to predict on the modern dataset. We'll run our model a number of times and take the average predictions. This is because there is some stochasiticity to the GBM algorithm. TODO implement repeated prediction averaging.
+We'll use our GBM model to predict on the modern dataset. We'll run our model a number of times and take the average predictions. This is because there is some stochasticity to the GBM algorithm.
 
 <<build-main-paleo-model>>=
 w <- paleorisk::get_weights(stcen2$Ex)
@@ -362,7 +362,7 @@ m <- rlply(20, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
   distribution = "bernoulli", shrinkage = 0.1, weights = weights))
 @
 
-Now we'll load the modern data:
+Next, we'll load the modern data:
 
 <<load-modern-data>>=
 temp_dat <- readRDS("../data/standardized-predictors-cenozoic-obis.rds")
@@ -371,7 +371,7 @@ modern <- subset(temp_dat,
 rm(temp_dat)
 @
 
-And predict the modern intrinsic extinction risk from the paleo models. We'll take the average prediction across our multiple runs:
+And predict the modern intrinsic extinction risk from the paleontological models. We'll take the average prediction across our multiple runs:
 
 <<predict-risk-modern>>=
 predictions <- laply(m, function(x)
@@ -380,33 +380,93 @@ predictions <- laply(m, function(x)
 modern$pred <- apply(predictions, 2, mean)
 @
 
-Now we'll use our calibration factors on our predictions:
+Now we'll use our calibration factors on our predictions. We're going to set any predictions in which the median sample number of observations in our calibration is 1 or less to \texttt{NA}.
+
+<<show-calibration-NA-cutoff, fig.height=4>>=
+ggplot(val_test_summarized, aes(mean_observed, median_sample_n)) + 
+  geom_point() + facet_wrap(~class, scales = "free_y") + 
+  geom_abline(intercept = 1, slope = 0)
+@
+
 
 <<calibrate-risk-modern>>=
+val_test_summarized[val_test_summarized$median_sample_n <= 1, 
+  "mean_observed"] <- NA
 modern$gbm_pred_binned <- assign_bins(modern$pred)
 modern <- plyr::join(modern,
   val_test_summarized[,c("class", "gbm_pred_binned", "mean_observed")],
   by = c("class", "gbm_pred_binned"))
-
 # or skip calibration:
-modern$mean_observed <- modern$pred
+# modern$mean_observed <- modern$pred
+@
 
+We'll also save a version of our predictions where we build the predictions based on the average predictions across geological stage models. We've already built these models. We'll take the average predictions across replicated fits and geological stages.
+
+<<predict-risk-modern-average-version>>=
+predictions_stage_avg <- laply(stage_models, function(x) {
+    p1 <- laply(x, function(y) gbm::predict.gbm(y, newdata = modern, 
+  type = "response", n.trees = 300))
+  p2 <- apply(p1, 2, mean)
+  p2
+}) 
+modern$pred_stage_avg <- apply(predictions_stage_avg, 2, mean)
+@
+
+We'll save the \texttt{modern} data frame for future use.
+
+<<save-modern>>=
 saveRDS(modern, file = "../data/modern-predictions.rds")
 @
 
-Then, we'll merge these predictions with our modern spatial observations. At the same time, we'll merge in Halpern et al. and Spalding et al.
+We can compare the predictions from the averaged stage models with the predictions from the GBMs based on all Neogene data pooled together. Note that we're not comparing the calibrated predictions here:
 
-Note which files this creates.
+<<compare-neogene-gbm-to-stage-models>>=
+ggplot(modern, aes(pred, pred_stage_avg)) + geom_point() + 
+  facet_wrap(~class) + geom_abline(intercept = 0, slope = 1) +
+  xlab("Neoegene GBM") + ylab("Stage-level GBMs averaged")
+
+# TODO TEMP:
+# modern$mean_observed <- modern$pred_stage_avg
+@
+
+Next, we'll merge these predictions with our modern spatial observations. At the same time, we'll merge in Halpern et al. and Spalding et al.
+
+TODO Note which files this creates.
 
 <<merge-predictions-spatial, cache=FALSE>>=
 source("merge-predictions-to-map.R")
 @
 
+We can look at the distribution of predicted extinction probability. Note that the x-axis is log distributed:
+
+<<plot-density-risk, fig.height=4>>=
+ggplot(d.eco.filled, aes(mean_observed + 0.001)) + 
+  geom_density() + facet_wrap(~class) + scale_x_log10() +
+  ylab("Density") + xlab("Predicted extinction probabilty")
+@
+
+And the distribution of our predictions by province and class:
+
+<<plot-density-risk-by-province, fig.width=15, fig.height=12, out.width="7in">>=
+# merge in province names:
+er <- readShapePoly("../data/MEOW2/meow_ecos.shp")
+prov_names <- er@data[,c("PROVINCE", "PROV_CODE")]
+prov_names <- prov_names[!duplicated(prov_names), ]
+temp <- plyr::join(d.eco.filled, prov_names)
+temp <- transform(temp, PROV_pretty = paste(PROV_CODE, PROVINCE))
+ggplot(temp, aes(mean_observed + 0.001)) + 
+  geom_density(aes(fill = class, colour = class), 
+    position = "stack", alpha = 0.5) + 
+  facet_wrap(~ PROV_pretty, scales = "free_y") + 
+  scale_x_log10() +
+  ylab("Density") + xlab("Predicted extinction probabilty")
+@
+
 \section{The role of the tropics}
 
-Now, let's inspect the role of tropical regions. We'll define tropical as\ldots
+Now, let's inspect the role of tropical regions. Earlier we defined ``tropical'' as less than $30\deg$ absolute latitude.
 
-<<test-tropical-drivers, fig.width=16.5, fig.height=11.5, out.width="7in", cache=FALSE>>=
+<<test-tropical-drivers, fig.width=18, fig.height=11.5, out.width="7in", cache=FALSE>>=
 tropical_test <- reshape2::melt(by.prov.classes, id.vars =
   c("PROV_CODE", "class", "Lat_Zone"), measure.vars =
   c("mean.lat.range", "mean.occupancy", "mean.gcd", "log_OBIS_records",
@@ -415,7 +475,7 @@ tropical_test <- plyr::join(tropical_test, by.prov.classes[, c("PROV_CODE",
     "class", "Lat_Zone", "mean.ext")])
 
 ggplot(tropical_test,
-  aes(value, log(mean.ext), colour = Lat_Zone, shape = Lat_Zone)) +
+  aes(value, mean.ext, colour = Lat_Zone, shape = Lat_Zone)) +
   geom_point(alpha = 0.7) +
   facet_wrap(variable~class, scales = "free") +
   stat_smooth(method = "lm", se = FALSE, lwd = 1.5)
