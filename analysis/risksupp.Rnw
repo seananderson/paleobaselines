@@ -52,6 +52,7 @@ library("DMwR")
 library("gbm")
 library("maps")
 library("mapproj")
+library("maptools")
 library("RColorBrewer")
 @
 
@@ -193,11 +194,12 @@ val_test_summarized <- ddply(val_test, c("class", "gbm_pred_binned"),
 
 And we'll plot these validation values again:
 
-<<plot-gbm-no-mal, fig.width=7.5, fig.height=7>>=
+<<plot-gbm-no-mal, fig.width=7.5, fig.height=7, cache=FALSE>>=
 ggplot(val_test_summarized,
   aes(gbm_pred_binned, mean_observed)) +
   geom_point(data = val_test, aes(gbm_pred_binned, obs_ext_prob),
-    alpha = 0.1) + facet_wrap(~class)
+    alpha = 0.1) + facet_wrap(~class) + 
+  geom_abline(intercept = 0, slope = 1) +
   geom_linerange(aes(ymin = l, ymax = u), colour = "#4E9DF0") +
   geom_point(aes(size = median_sample_n), colour = "#4E9DF0") +
   scale_size(trans = "log10") + coord_fixed(ratio = 1) +
