@@ -1,6 +1,6 @@
 # This script creates a more customized plot using baseplot
 
-library(plyr)
+# library(plyr)
 # this creates the dataframes: others and groups
 g <- partial_groups
 o <- partial_continuous
@@ -19,8 +19,8 @@ col.axis.labels <- "grey45"
 g.ylim.l <- 0
 g.ylim.u <- 1
 o.ylim.l <- 0
-o.ylim.u <- 0.175
-o.y.axis.at <- c(0, 0.05, 0.1, 0.15)
+o.ylim.u <- 1
+o.y.axis.at <- c(0, 0.5, 1)
 g.y.axis.at <- c(0, 0.5, 1)
 rect.cols <- rep(c("grey93", NA), 99)
 
@@ -34,8 +34,8 @@ g[g$.order %in% "az", ".order"] <- "Azoozanthelate"
 g[g$.order %in% "other", ".order"] <- "Other"
 g[g$.class %in% "Decapoda", ".class"] <- "Dec."
 
-class.means <- plyr::ddply(g, ".class", plyr::summarize, class.mean.resp = mean(response))
-order.means <- plyr::ddply(g, ".order", plyr::summarize, order.mean.resp = mean(response))
+class.means <- plyr::ddply(g, ".class", plyr::summarize, class.mean.resp = mean(median))
+order.means <- plyr::ddply(g, ".order", plyr::summarize, order.mean.resp = mean(median))
 
 g.all <- subset(g, stage == "all")
 g <- subset(g, stage != "all")
@@ -43,7 +43,7 @@ g <- subset(g, stage != "all")
 #o.all <- subset(o, stage == "all")
 #o <- subset(o, stage != "all")
 
-g <- reshape2::dcast(g,  .class + .order ~ stage, value.var = "response")
+g <- reshape2::dcast(g,  .class + .order ~ stage, value.var = "median")
 g <- plyr::join(g, class.means)
 g <- plyr::join(g, order.means)
 g <- g[order(-g$class.mean.resp, -g$order.mean.resp), ]
@@ -99,7 +99,7 @@ plot(1, 1, xlim = range(x$value), ylim = c(o.ylim.l, o.ylim.u), ann = FALSE,
   axes = FALSE, xaxs = "i", yaxs = "i", type = "n")
 for(i in 1:length(unique(x$stage))) {
   dat <- subset(x, stage == unique(x$stage)[i])
-  with(dat, lines(value, response, col = pal[i], lwd = lwd.u[i]))
+  with(dat, lines(value, median, col = pal[i], lwd = lwd.u[i]))
 }
 box(col = col.axis)
 axis(1, las = 1, col = col.axis, col.axis = col.axis, cex.axis = cex.axis, padj

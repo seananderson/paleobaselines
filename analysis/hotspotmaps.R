@@ -57,7 +57,7 @@ bur.thresh <- as.numeric(quantile(er.df.all$Burrows, probs = 0.8, na.rm = TRUE))
 er.df <- transform(er.df.all, ext.hot = ifelse(ext.plot >= ext.plot.thresh, TRUE, FALSE), halp.hot = ifelse(Halpern >= halp.thresh, TRUE, FALSE), bur.hot = ifelse(Burrows >= bur.thresh, TRUE, FALSE))
 
 ### remove provinces with fewer than a specified number of genera:
-er.df <- drop.levels(subset(er.df,er.df$N.gen >=Min.Prov.Genera))
+er.df <- drop.levels(subset(er.df,er.df$N.gen >= Min.Prov.Genera))
 
 er.df <- transform(er.df, base.col = ifelse(bur.hot == FALSE & halp.hot == FALSE & ext.hot == FALSE, "grey85", NA))
 er.df$col <- NA

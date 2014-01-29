@@ -1,9 +1,9 @@
 # Take ext. risk predictions and merge them onto modern Spalding et al. map
 #
-library(maptools)
-library(gdata)
-library(ggplot2)
-library(plyr)
+#library(maptools)
+#library(gdata)
+#library(ggplot2)
+#library(plyr)
 gpclibPermit()
 
 # read in the modern genus-occupancy data:
@@ -12,7 +12,7 @@ gpclibPermit()
 d.eco.filled <- readRDS("../data/modern-province-occupancy.rds")
 #d.eco.filled <- drop.levels(subset(d.eco.filled,d.eco.filled$class != "Foraminifera"))
 Input_ranges <- "Interpolated"
-d.eco.filled <- drop.levels(subset(d.eco.filled,d.eco.filled$Ranges == Input_ranges))
+d.eco.filled <- gdata::drop.levels(subset(d.eco.filled,d.eco.filled$Ranges == Input_ranges))
 d.eco.filled$Ranges <- NULL
 
 # bring in the modern predictions:
@@ -29,7 +29,7 @@ by.prov.classes <- ddply(d.eco.filled, .(class, PROV_CODE), plyr::summarize, mea
   mean.min.lat = mean(min.lat), mean.max.lat = mean(max.lat), mean.mean.lat =
   mean(mean.lat), mean.gcd = mean(great.circle), mean.lat.range =
   mean(lat.range), mean.richness = mean(richness))
-by.prov.classes <- subset(by.prov.classes, mean.ext < 0.03) # TODO note testing
+# by.prov.classes <- subset(by.prov.classes, mean.ext < 0.03) # TODO note testing
 # ggplot(by.prov.classes, aes(mean.ext)) + geom_histogram() + facet_wrap(~class)
 
 by.prov.all <- ddply(d.eco.filled, .(PROV_CODE), plyr::summarize, mean.ext
@@ -62,7 +62,7 @@ Impacts <- data.frame(Impacts$PROV_CODE, scale(Impacts$Mean_Halpern_Province),
   scale(Impacts$Mean_Burrows_Province))
 colnames(Impacts) <- c("PROV_CODE", "Halpern", "Burrows")
 by.prov.all <- merge(by.prov.all, Impacts, by = "PROV_CODE")
-by.prov.all <- drop.levels(subset(by.prov.all, by.prov.all$class=="all"))
+by.prov.all <- gdata::drop.levels(subset(by.prov.all, by.prov.all$class=="all"))
 by.prov.classes <- merge(by.prov.classes, Impacts, by = "PROV_CODE")
 by.prov.all$log_OBIS_records <- log(by.prov.all$OBIS_records)
 by.prov.classes$log_OBIS_records <- log(by.prov.classes$OBIS_records)

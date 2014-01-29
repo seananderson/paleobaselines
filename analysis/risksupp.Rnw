@@ -4,6 +4,9 @@
 \textheight 20.5cm
 \setlength\parskip{0.11in}
 \setlength\parindent{0in}
+\let\proglang=\textsf
+\let\pkg=\textbf
+\let\fn=\texttt
 
 \begin{document}
 
@@ -32,7 +35,7 @@ References
 
 \tableofcontents
 
-This document is written with the \texttt{knitr} package for the \texttt{R} statistical environment. It can be re-created by running \texttt{knitr::knit2pdf()} on the \texttt{.Rnw} file. A number of functions that are used in this analysis have been compiled into an \texttt{R} package \texttt{paleorisk}. To start, we will load this package:
+This document is written with the \pkg{knitr} package for the \proglang{R} statistical environment. It can be re-created by running \fn{knitr::knit2pdf()} on the \texttt{.Rnw} file. A number of functions that are used in this analysis have been compiled into an \proglang{R} package \pkg{paleorisk}. To start, we will load this package:
 
 <<load-this-package>>=
 library("paleorisk")
@@ -42,11 +45,9 @@ Now we'll load other packages that are needed for our analysis:
 
 <<load-other-packages, cache=FALSE, eval=TRUE>>=
 library(plyr)
-#library("gdata")
-#library("reshape2")
+library(dplyr)
+library("reshape2")
 library("ggplot2")
-#library("Hmisc")
-#library("matrixStats")
 library("DMwR")
 library("gbm")
 library("maps")
@@ -54,13 +55,12 @@ library("mapproj")
 library("RColorBrewer")
 @
 
-
 <<preamble-work, cache=FALSE, echo=FALSE, results=FALSE>>=
 theme_set(theme_bw())
 rversion <- capture.output(sessionInfo())[[1]]
 x <- capture.output(sessionInfo())
 other_line <- grep("other attached", x)
-pkgs <- x[(other_line+1):(other_line + 2)]
+pkgs <- x[(other_line+1):(other_line + 3)]
 @
 
 We used \Sexpr{rversion} and package versions
@@ -71,11 +71,9 @@ pkgs
 
 \section{Standardizing the predictors}
 
-TODO why we're doing this
+We will start by standardizing a variety of habitat-relative characteristics within each geologic period. This is an important step to make some habitat characteristics (richness, occupancy, occurences) comparable across periods, an in particular, between the paleontological data and the modern data. Given the substantially different sampling methods within the paleontological and modern records, the absolute values of richess, occupancy, and occurences are not comparable. We therefore standardize them to values between 0 and 1 within each interval. The other variables (e.g.\ latitude variables and great circle distance) are still comparable between the paleontological and modern records --- a degree latitude is still a degree latitude and kilometer is still a kilometer.
 
-The following script does TODO
-
-The script creates the \texttt{R} data object \texttt{standardized-predictors-cenozoic-obis.rds}.
+The following script creates the \proglang{R} data object \texttt{standardized-predictors-cenozoic-obis.rds}.
 
 <<standardize-predictors>>=
 source("standardize-predictors.R")
@@ -83,7 +81,7 @@ source("standardize-predictors.R")
 
 \section{Model building, testing, and calibration}
 
-First, we'll load the standardized data and subset it for the Neogene period:
+We'll load the standardized data and subset it for the Neogene period. The modern data are also contained in this data frame with \texttt{stage\_top = 0}. Therefore, we will also exclude the modern dataset from what we call \texttt{stcen} for standardized Cenozoic.
 
 <<load-data>>=
 stcen <- readRDS("../data/standardized-predictors-cenozoic-obis.rds")
@@ -92,55 +90,33 @@ stcen <- gdata::drop.levels(subset(stcen, stcen$stage_top < 22 &
     stcen$stage_top != 0))
 @
 
-We'll also create a function to implement SMOTE upsampling on our data. TODO what SMOTE is and why\ldots
-
-<<smote-function>>=
-smote <- function(x, perc.over = 800, perc.under = 100) {
-  x$Ex <- as.factor(x$Ex)
-  x <- DMwR::SMOTE(Ex ~ ., data = x[,c("class", "group", 
-      "great.circle", "mean.lat", "lat.range", "max.lat", "min.lat", 
-      "occurrences", "occupancy", "richness", "Ex")], 
-      perc.over = perc.over, perc.under = perc.under)
-      x$Ex <- as.numeric(as.character(x$Ex))
-  x
-}
-@
-
-\texttt{validate\_gbm()} is our main validation and calibration function. This function deals with (possibly) splitting the data into training and testing portions, builds a generalized boosted regression model (GBM \cite{gbm2013}) on the training portion, and then returns predictions and classification statistics on the testing set.
+\fn{validate\_gbm()} is our main validation and calibration function. This function deals with (possibly) splitting the data into training and testing portions, builds a generalized boosted regression model (GBM \cite{gbm2013}) on the training portion, and then returns predictions and classification statistics on the testing set.
 
 Now we can test our models. To start with, we'll build the model 50 times, each time training the model on a random 50\% of the data and testing it on the other 50\%. Then we'll record the observed mean extinction probability for each predicted bin value within each taxonomic class. For example, we can group all predicted extinction values for bivalves into bins from 0 to 1 in 0.025 increments. Then we can calculate the mean observed extinction probability for each of those bins. Because we're building and testing the model on independent datasets, this is a good test of the predictive ability of our modelling approach.
 
 <<test-gbm1, cache=TRUE>>=
 val_test <- rdply(50, validate_gbm(stcen, shrinkage = 0.1,
-    interaction.depth = 1, n.trees = 300)$bin_validation)
+  interaction.depth = 1, n.trees = 300, use_weights = TRUE)$bin_validation)
 @
 
-Next, we'll compute some summary statistics for the observed extinction probability at each bin across our replicates.
+Next, we'll compute some summary statistics for the observed extinction probability at each bin across our replicates. We'll use the \fn{summarize\_val\_test()} from our \pkg{paleorisk} package. This computes means and 95\% confidence intervals (based on likelihood profiles)for each validation bin.
+
 
 <<test-gbm1-summary>>=
-summarize_val_test <- function(x) {
-  m <- glm(obs_ext_prob ~ 1, family = binomial, data = x,
-    weights = sample_n)
-  int <- boot::inv.logit(coef(m)[[1]])
-  cis <- boot::inv.logit(confint(m))
-  median_sample_n <- median(x$sample_n)
-  data.frame(mean_observed = int, l = cis[[1]], u = cis[[2]],
-    median_sample_n = median_sample_n)
-}
 val_test_summarized <- ddply(val_test, c("class", "gbm_pred_binned"),
   summarize_val_test)
 @
 
-We can plot these data to test for any non-linear biases in our predictions (Figure~\ref{fig:test-gbm1-bias-plot}).
+We can plot these data to test for any non-linear biases in our predictions. Translucent black dots show mean observed extinction probabilities for individual replicates. Blue dots show mean observed extinction probabilities across replicates and line segments show 95\% confidence intervals. The area of the dots corresponds to the median number of extinction/survival observations in that bin across replicates. The black diagonal line shows the one-to-one line.
 
-<<test-gbm1-bias-plot, fig.cap="Observed vs.\\ predicted probability of extinction risk. Translucent black dots show mean observed extinction probabilities for individual replicates. Blue dots show mean observed extinction probabilities across replicates and line segments show 95\\% confidence intervals. The area of the dots corresponds to the median number of extinction/survival observations in that bin across replicates. The black diagonal line shows the one-to-one line.", fig.width=7.5, fig.height=7>>=
+<<test-gbm1-bias-plot, fig.width=7.5, fig.height=7>>=
 ggplot(val_test_summarized,
   aes(gbm_pred_binned, mean_observed)) +
   geom_point(data = val_test, aes(gbm_pred_binned, obs_ext_prob),
     alpha = 0.1) +
   geom_linerange(aes(ymin = l, ymax = u), colour = "#4E9DF0") +
   geom_point(aes(size = median_sample_n), colour = "#4E9DF0") +
-  facet_wrap(~class) + geom_abline(intercept = 0, slope = 1) +
+  facet_wrap(~class) +
   scale_size(trans = "log10") + coord_fixed(ratio = 1) +
   ylim(0, 1) + xlim(0, 1) +
   xlab("Out-of-sample GBM-predicted extinction probability") +
@@ -152,18 +128,18 @@ Next, we can test the effect of the shrinkage, interaction depth, and number of 
 
 <<alternative-gbms, cache=TRUE>>=
 val_test_base <- rdply(50, validate_gbm(stcen, shrinkage = 0.1,
-    interaction.depth = 1, n.trees = 300)$bin_validation)
+    interaction.depth = 1, n.trees = 300, use_weights = TRUE)$bin_validation)
 val_test_shr <- rdply(50, validate_gbm(stcen, shrinkage = 0.01,
-    interaction.depth = 1, n.trees = 300)$bin_validation)
+    interaction.depth = 1, n.trees = 300, use_weights = TRUE)$bin_validation)
 val_test_int <- rdply(50, validate_gbm(stcen, shrinkage = 0.1,
-    interaction.depth = 4, n.trees = 300)$bin_validation)
+    interaction.depth = 4, n.trees = 300, use_weights = TRUE)$bin_validation)
 val_test_ntrees <- rdply(50, validate_gbm(stcen, shrinkage = 0.1,
-    interaction.depth = 1, n.trees = 1000)$bin_validation)
+    interaction.depth = 1, n.trees = 1000, use_weights = TRUE)$bin_validation)
 @
 
 <<summarize-alt-gbms>>=
 val_test_base_summ <- ddply(val_test_base, c("class",
-    "gbm_pred_binned"), summarize_val_test)
+  "gbm_pred_binned"), summarize_val_test)
 val_test_shr_summ <- ddply(val_test_shr, c("class",
     "gbm_pred_binned"), summarize_val_test)
 val_test_int_summ <- ddply(val_test_int, c("class",
@@ -183,12 +159,12 @@ val_test_alt <- rbind(val_test_base_summ, val_test_shr_summ,
 
 Now, we'll plot out the observed vs.\ predicted for these 4 versions of the model (Figure~\ref{fig:plot-alt-gbms}). We see that a larger interaction value results in near universally poorer predictive performance. Generating more trees results in similar performance at considerably increased computational time. A smaller shrinkage value (slower learning between trees) substantially reduces the range of predicted extinction probabilities, but frequently results in more biased predictions --- even in some bins with large sample sizes. We therefore continue from here on with the model we refer to as the ``base'' model above.
 
-<<plot-alt-gbms, fig.cap="Observed vs.\\ predicted probability of extinction across different \\texttt{gbm()} argument values.", fig.height=8, fig.width=13, out.width="7in">>=
+<<plot-alt-gbms, fig.height=8, fig.width=13, out.width="7in">>=
 ggplot(val_test_alt,
   aes(gbm_pred_binned, mean_observed)) +
   geom_point(aes(size = median_sample_n)) +
   geom_linerange(aes(ymin = l, ymax = u)) +
-  facet_grid(version~class) + geom_abline(intercept = 0, slope = 1) +
+  facet_grid(version~class) +
   scale_size(trans = "log10") + coord_fixed(ratio = 1) +
   ylim(0, 1) + xlim(0, 1) +
   xlab("Out-of-sample GBM-predicted extinction probability") +
@@ -196,38 +172,34 @@ ggplot(val_test_alt,
   labs(size = "Median sample #")
 @
 
-Now, we'll run many more cross-validation iterations to get more precise estimates of non-linear bias so that we can use the observed mean extinction probabilities as calibration factors.
+We note that Malacostraca is poorly predicted in our out-of-sample validation tests. We therefore choose here to not include Malacostraca in the model that we will predict the modern intrinsic extinction risk with.
 
-% Note: manually cached chunks:
-% Switch to eval=FALSE and the next chunk to eval=TRUE to re-run
-% the many-repetition version. This will, of course, take a long time.
-<<final-gbm-validation-load, eval=TRUE, echo=FALSE>>=
-load("../data/val_test.rda")
-load("../data/val_test_summarized.rda")
+<<drop-malacostraca, cache=FALSE>>=
+stcen <- subset(stcen, class != "Malacostraca")
 @
 
+Now, we'll run many more cross-validation iterations of our model to get precise estimates of non-linear bias so that we can use the observed mean extinction probabilities as calibration factors.
+
 <<final-gbm-validation, eval=FALSE>>=
-val_test <- rdply(50, validate_gbm(stcen, shrinkage = 0.1,
-  interaction.depth = 1, n.trees = 300, smote = FALSE, 
+val_test <- rdply(200, validate_gbm(stcen, shrinkage = 0.1,
+  interaction.depth = 1, n.trees = 300, 
   use_weights = TRUE)$bin_validation)
+@
+
+<<final-gbm-summarize>>=
 val_test_summarized <- ddply(val_test, c("class", "gbm_pred_binned"),
   summarize_val_test)
 @
 
-<<cache-final-gbm-validation, echo=FALSE>>=
-save(val_test, file = "../data/val_test.rda")
-save(val_test_summarized, file = "../data/val_test_summarized.rda")
-@
+And we'll plot these validation values again:
 
-<<plot-gbm-no-mal, fig.width=7.5, fig.height=7, fig.cap="Observed vs.\\ predicted extinction probability with the model repeatedly built on 50\\% of the data and tested on the other 50\\% with the SMOTE sampling algorithm implemented. See Figure~\\ref{fig:test-gbm1-bias-plot} for a full figure description.">>=
+<<plot-gbm-no-mal, fig.width=7.5, fig.height=7>>=
 ggplot(val_test_summarized,
   aes(gbm_pred_binned, mean_observed)) +
   geom_point(data = val_test, aes(gbm_pred_binned, obs_ext_prob),
-    alpha = 0.1) +
+    alpha = 0.1) + facet_wrap(~class)
   geom_linerange(aes(ymin = l, ymax = u), colour = "#4E9DF0") +
   geom_point(aes(size = median_sample_n), colour = "#4E9DF0") +
-  facet_wrap(~class) + geom_abline(intercept = 0, slope = 1/4) +
-    facet_wrap(~class) + geom_abline(intercept = 0, slope = 1) +
   scale_size(trans = "log10") + coord_fixed(ratio = 1) +
   ylim(0, 1) + xlim(0, 1) +
   xlab("Out-of-sample GBM-predicted extinction probability") +
@@ -235,21 +207,19 @@ ggplot(val_test_summarized,
   labs(size = "Median sample #")
 @
 
-Now, we can use these observed extinction probabilities (in \texttt{val\_test\_summarized}) as calibration for our GBM-predicted extinction probability in the modern dataset. To do this, we take the predicted extinction probability from our GBM model applied to the modern dataset, we fit that value into our binning scheme, and we match it up with the empirically-observed mean extinction probability for that bin. This removes the observed non-linear bias in our model \cite{thorson2012}. Put another way, we find our predicted value on the x-axis of Figure~\ref{fig:plot-gbm-no-mal} and draw a vertical line up until we meet a blue dot. We then use the value of the blue dot as our calibrated extinction probability. We'll come back to that shortly when we apply our model to the modern dataset.
+Now, we can use these observed extinction probabilities (in \texttt{val\_test\_summarized}) as calibration for our GBM-predicted extinction probability in the modern dataset. To do this, we take the predicted extinction probability from our GBM model applied to the modern dataset, we fit that value into our binning scheme, and we match it up with the empirically-observed mean extinction probability for that bin. This removes the observed non-linear bias in our model \cite{thorson2012}. Put another way, we find our predicted value on the x-axis of the last plot and draw a vertical line up until we meet a blue dot. We then use the value of the blue dot as our calibrated extinction probability. We'll come back to that shortly when we apply our model to the modern dataset.
 
 \section{Testing predictive performance across intervals}
 
-Another way to test the predictive power of our models is to build the model on one geologic interval and predict on another. For the purposes of this comparison, we are not going to implement the SMOTE algorithm here.
+Another way to test the predictive power of our models is to build the model on one geologic interval and predict on another. To keep this simple, we won't use our calibration factors.
 
 <<cross-intervals-gbms>>=
 stage_df <- expand.grid(stage_train = unique(stcen$stage),
   stage_test = unique(stcen$stage))
-cross_pred <- plyr::mdply(stage_df, fit_interval_gbm, dat = stcen)
+cross_pred <- mdply(stage_df, fit_interval_gbm, dat = stcen)
 @
 
 Now we can compare the predictions made from other stages with the predictions from the same stage.
-
-TODO add a bit about what we see.
 
 <<plot-cross-interval-gbms, fig.cap="Cross-stage prediction tests. The x-axis shows the probability of extinction as predicted by a model built on data from the same stage. The y-axis shows the probability of extinction as predicted by a model built on data from a different stage. The colours show different taxonomic classes. Note the log-distributed x- and y-axes. Since there is some stochasticity involved in the \\texttt{gbm()} fitting routine, there is some variability in predictions within the same stage (the diagonal panels).", fig.width=9, fig.height=7, cache=FALSE>>=
 # Re-order stage names:
@@ -272,38 +242,47 @@ ggplot(cross_pred, aes(pred_self, pred, colour = class)) +
 
 \section{Partial dependence plots}
 
-TODO what they are
+We will no look at the marginal effect of each predictor on extinction risk. We can do this through partial dependence plots, as shown in Figure 1. This procedure finds the marginal effect of each predictor by integrating across all other predictor values using the method described in J.H. Friedman (2001). Greedy Function Approximation: A Gradient Boosting Machine, Annals of Statistics 29(4). TODO add REF.
 
-TODO implement averaging of the partial dependence values to average across gbm() and SMOTE algorithms
+Because there's some stochasticity when running a GBM, we'll run our models a number of times, and each time record the marginal effects. We'll then take the median and interquartile range of those predictions.
 
-First, we'll extract the data to plot:
+First, a function to fit the GBM models to a given stage:
 
 <<shape-data-partial-plots>>=
 # a function to fit a GBM model to a given stage:
 fit_stage_models <- function(dat, stage_name) {
   if(stage_name == "all") {
-    d <- smote(dat)
+    d <- dat
   } else {
-    d <- smote(dat[dat$stage == stage_name, ])
+    d <- dat[dat$stage == stage_name, ]
   }
+  w <- paleorisk::get_weights(d$Ex)
+  weights <- ifelse(d$Ex == 1, w$ex_weight, w$sur_weight)
   gbm::gbm(Ex ~ richness + occupancy + occurrences + min.lat + max.lat +
     lat.range + mean.lat + great.circle + class + group, data =
     d, n.trees = 300, interaction.depth = 1,
-    distribution = "bernoulli", shrinkage = 0.1)
+    distribution = "bernoulli", shrinkage = 0.1, weights = weights)
 }
+@
 
-# fit the models for each stage:
+Now, we'll fit the models for each stage. Within each stage we'll fit the model a number of times:
+
+<<fit-marginal-stage-models>>=
 stage_models <- llply(c(stage_order, "all"), function(x)
-  fit_stage_models(stcen, stage_name = x))
+  rlply(20, fit_stage_models(stcen, stage_name = x)))
 names(stage_models) <- c(stage_order, "all")
+@
 
-# now iterate through the models and pull out the partial dependence data:
+And, we'll go through the stage-based models and pull out the partial dependence data:
+
+<<pull-out-marginal-data>>=
 vars <- c("richness", "occupancy", "occurrences", "min.lat",
   "max.lat", "lat.range", "mean.lat", "great.circle", "group")
 partial_dat <- ldply(c(stage_order, "all"), function(stage_name) {
-  p2 <- ldply(vars, function(var_name){
-    p1 <- gbm::plot.gbm(stage_models[[stage_name]], return.grid = TRUE,
-      i.var = var_name, type = "response")
+  p2 <- ldply(vars, function(var_name){        
+    p1 <- ldply(stage_models[[stage_name]], function(x) 
+      plot.gbm(x, return.grid = TRUE, i.var = var_name, 
+        type = "response"))
     names(p1) <- c("value", "response")
     p1$predictor <- var_name
     p1
@@ -311,10 +290,25 @@ partial_dat <- ldply(c(stage_order, "all"), function(stage_name) {
   p2$stage <- stage_name
   p2
   })
+@
 
-# extract the taxonomic "group" predictions, which are not numeric:
-partial_groups <- partial_dat[partial_dat$predictor == "group", ]
-partial_continuous <- partial_dat[partial_dat$predictor != "group", ]
+Now we'll get the median and interquartile range of the marginal effects. We'll use the \pkg{dplyr} package, which is slightly faster than \pkg{plyr}:
+
+<<summarize-marginal-effects>>=
+partial_dat2 <- tbl_df(partial_dat)
+partial_dat2 <- group_by(partial_dat2, stage, predictor, value)
+partial_dat2 <- summarise(partial_dat2, 
+  median = median(response), 
+  lower = quantile(response, probs = 0.25), 
+  upper = quantile(response, probs = 0.75), 
+  .n = n())
+@
+
+Because the taxonomic variables are factors (i.e.\ they are words) and the other variables are continuous and numeric, we will split these into separate data frames for plotting:
+
+<<separate-taxonomic-and-numeric-predictions>>=
+partial_groups <- partial_dat2[partial_dat2$predictor == "group", ]
+partial_continuous <- partial_dat2[partial_dat2$predictor != "group", ]
 groups_match <- data.frame(value =
   1:length(unique(stcen$group)),
   group = sort(unique(stcen$group)), stringsAsFactors = FALSE)
@@ -326,23 +320,25 @@ partial_groups <- plyr::rename(partial_groups, c("group" = "value"))
 And we'll make some quick plots of the data:
 
 <<plot-partial-continuous, fig.width=10, fig.height=6>>=
-ggplot(partial_continuous, aes(value, response)) +
-  geom_line(aes(colour = stage)) +
+ggplot(partial_continuous, aes(value, median)) +
+  geom_ribbon(aes(fill = stage, colour = stage, ymax = upper, ymin = lower), 
+    alpha = 0.5) +
   facet_wrap(~predictor, scales = "free_x") +
   xlab("Predictor value") +
   ylab("Marginal effect on probability of extinction")
 @
 
 <<plot-partial-group, out.width="4in">>=
-ggplot(partial_groups, aes(response, value)) +
-  geom_point(aes(colour = stage)) +
+ggplot(subset(partial_groups, median < 0.95), aes(value, median)) +
+  geom_pointrange(aes(colour = stage, ymin = lower, ymax = upper)) +
   xlab("Marginal effect on probability of extinction") +
-  ylab("")
+  ylab("") +
+  coord_flip()
 @
 
 We can re-create Fig.~1 in the paper, which is a more customized version of the previous plots, by sourcing the following file:
 
-TODO fix this Fig 1 plot. The black lines aren't showing the overall model. Maybe log transform the y axis.
+TODO fix this Fig 1 plot. TODO add median and interquartile ribbon to these plots. The black lines aren't showing the overall model. Maybe log transform the y axis.
 
 <<partial-plots-base>>=
 source("make-partial-dependence-baseplot.R")
@@ -350,28 +346,34 @@ source("make-partial-dependence-baseplot.R")
 
 \section{Merging risk predictions with modern species distributions}
 
-Now we'll now use our GBM model to predict on the modern dataset. We'll run out model a number of times and take the average predictions. This is because there is some stochasiticity to the SMOTE algorithm and the GBM algorithm. TODO implement repeated prediction averaging.
+Now we'll now use our GBM model to predict on the modern dataset. We'll run our model a number of times and take the average predictions. This is because there is some stochasiticity to the GBM algorithm. TODO implement repeated prediction averaging.
+
+<<build-main-paleo-model>>=
+w <- paleorisk::get_weights(stcen$Ex)
+weights <- ifelse(stcen$Ex == 1, w$ex_weight, w$sur_weight)
+
+m <- rlply(20, gbm(Ex ~ richness + occupancy + occurrences + min.lat + 
+    max.lat + lat.range + mean.lat + great.circle + class + group, 
+  data = stcen, n.trees = 300, interaction.depth = 1,
+  distribution = "bernoulli", shrinkage = 0.1, weights = weights))
+@
+
+Now we'll load the modern data:
+
+<<load-modern-data>>=
+temp_dat <- readRDS("../data/standardized-predictors-cenozoic-obis.rds")
+modern <- subset(temp_dat, 
+  !class %in% c("Testudines", "Malacostraca") & stage == "Modern")
+rm(temp_dat)
+@
+  
+And predict the modern intrinsic extinction risk from the paleo models. We'll take the average prediction across our multiple runs:
 
 <<predict-risk-modern>>=
-m <- gbm(Ex ~ richness + occupancy + occurrences + min.lat + max.lat +
-  lat.range + mean.lat + great.circle + class + group, data =
-  smote(stcen), n.trees = 300, interaction.depth = 1,
-  distribution = "bernoulli", shrinkage = 0.1)
-temp_dat <- readRDS("../data/standardized-predictors-cenozoic-obis.rds")
-modern <- subset(temp_dat, class != "Testudines" & stage == "Modern")
-modern$pred <- gbm::predict.gbm(m, newdata = modern, type = "response", 
-  n.trees = 300)
-####
-
-# smote_ratio <- function(x) {
-#   round(table(x$class, x$Ex)/rowSums(table(x$class, x$Ex)) * 100)
-# }
-# smote_ratio(stcen)
-# smote_ratio(stcen_smote)
-
-
-
-####
+predictions <- laply(m, function(x) 
+  gbm::predict.gbm(x, newdata = modern, type = "response", 
+    n.trees = 300))
+modern$pred <- apply(predictions, 2, mean)
 @
 
 Now we'll use our calibration factors on our predictions:
@@ -381,6 +383,10 @@ modern$gbm_pred_binned <- assign_bins(modern$pred)
 modern <- plyr::join(modern, 
   val_test_summarized[,c("class", "gbm_pred_binned", "mean_observed")], 
   by = c("class", "gbm_pred_binned"))
+
+# or skip calibration:
+modern$mean_observed <- modern$pred
+
 saveRDS(modern, file = "../data/modern-predictions.rds")
 @
 

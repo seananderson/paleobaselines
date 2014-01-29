@@ -7,9 +7,12 @@ today <- format(Sys.time(), "%Y-%m-%d")
 iterations <- 32
 id <- "mean-log"
 PDF <- FALSE
-plot_order <- data.frame(class = c("Mammalia", "Testudines", "Echinoidea",
-    "Decapoda", "Anthozoa", "Gastropoda", "Bivalvia", "Elasmobranchii"),
-  plot_order = 1:8)
+# find order and then set for all plots:
+# mrisk <- dplyr::summarise(group_by(by.prov.classes, class), mean = mean(mean.ext))
+# dplyr::arrange(mrisk, -mean)
+plot_order <- data.frame(class = c("Mammalia", "Elasmobranchii", 
+  "Anthozoa", "Gastropoda", "Echinoidea", "Bivalvia"),
+  plot_order = 1:6)
 # y-axis labels:
 plot_type <- "ext" # other options are "OBIS_records" and "N.gen"
 #plot_type <- "OBIS_records"
@@ -139,9 +142,9 @@ filename <- paste("class-risk-maps", today, "iter", iterations, id, type,
   plot_type, sep = "-")
 #filename <- "temp"
 if(PDF) {
-  pdf(paste0("../figs/", filename, ".pdf"), width = 6.15, height = 6.05)
+  pdf(paste0("../figs/", filename, ".pdf"), width = 6.15, height = 5)
 } else {
-  png(paste0("../figs/", filename, ".png"), width = 6.15, height = 6.05, units =
+  png(paste0("../figs/", filename, ".png"), width = 6.15, height = 5, units =
     "in", res = 250)
 }
 
@@ -150,7 +153,7 @@ mw <- 88 # map width
 mg <- 1 # map gap
 kw <- 3 # key width
 kg <- 5 # key gap
-nrow <- 4
+nrow <- 3
 N <- nrow*2*2
 
 lo <- matrix(ncol = mw*2 + kw*2 + mg*2 + kg*2, nrow = nrow)
@@ -169,7 +172,7 @@ for(row.i in seq(1, nrow)) {
 #lo <- lo[-nrow(lo), ] # we only need 3 rows now
 layout(lo)
 
-par(mar = c(0,0,0, 0), oma= c(0,0,1,1))
+par(mar = c(0,0,0, 0), oma= c(0,0,1,1.3))
 par(cex = 0.5)
 par(tck = -0.15)
 par(mgp = c(3, 0.35, 0))
