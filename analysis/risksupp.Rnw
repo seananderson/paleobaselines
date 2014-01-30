@@ -48,15 +48,23 @@ References
 
 \tableofcontents
 
-This document is written with the \pkg{knitr} package for the \proglang{R} statistical environment. It can be re-created by running \fn{knitr::knit2pdf()} on the \texttt{.Rnw} file. A number of functions that are used in this analysis have been compiled into an \proglang{R} package \pkg{paleorisk}. To start, we will load this package:
+This document is written with the \pkg{knitr} package for the \proglang{R} statistical environment. It can be re-created by running \fn{knitr::knit2pdf()} on the \texttt{.Rnw} file. A number of functions that are used in this analysis have been compiled into an \proglang{R} package \pkg{paleorisk}.
 
-<<load-this-package>>=
+You can install the package by downloading the \texttt{paleorisk} folder and running:
+
+<<install-paleorisk, eval=FALSE, echo=TRUE>>=
+install.packages("path/to/paleorisk/", repos = NULL, type = "source")
+@
+
+We will start by loading this package:
+
+<<load-this-package, cache=FALSE>>=
 library("paleorisk")
 @
 
-Now we'll load other packages that are needed for our analysis:
+Then we'll load other packages that are needed for our analysis:
 
-<<load-other-packages, cache=FALSE, eval=TRUE>>=
+<<load-other-packages, cache=FALSE>>=
 library("plyr")
 library("dplyr")
 library("reshape2")
@@ -74,12 +82,12 @@ theme_set(theme_bw())
 rversion <- capture.output(sessionInfo())[[1]]
 x <- capture.output(sessionInfo())
 other_line <- grep("other attached", x)
-pkgs <- x[(other_line+1):(other_line + 4)]
+pkgs <- x[(other_line+1):(other_line + 5)]
 @
 
 We used \Sexpr{rversion} and package versions
 
-<<versions, echo=FALSE, results=TRUE>>=
+<<versions, echo=FALSE, results=TRUE, cache=FALSE>>=
 pkgs
 @
 
@@ -108,7 +116,7 @@ stcen <- gdata::drop.levels(subset(stcen, stcen$stage_top < 22 &
 
 Now we can test our models. To start with, we'll build the model 50 times, each time training the model on a random 50\% of the data and testing it on the other 50\%. Then we'll record the observed mean extinction probability for each predicted bin value within each taxonomic class. For example, we can group all predicted extinction values for bivalves into bins from 0 to 1 in 0.025 increments. Then we can calculate the mean observed extinction probability for each of those bins. Because we're building and testing the model on independent datasets, this is a good test of the predictive ability of our modelling approach.
 
-<<test-gbm1, cache=TRUE>>=
+<<test-gbm1>>=
 val_test <- rdply(25, validate_gbm(stcen, shrinkage = 0.1,
   interaction.depth = 1, n.trees = 300, use_weights = TRUE)$bin_validation)
 @
@@ -140,7 +148,7 @@ ggplot(val_test_summarized,
 
 Next, we can test the effect of the shrinkage, interaction depth, and number of trees arguments to \texttt{gbm()}. We'll vary each argument one at a time.
 
-<<alternative-gbms, cache=TRUE>>=
+<<alternative-gbms>>=
 val_test_base <- rdply(20, validate_gbm(stcen, shrinkage = 0.1,
     interaction.depth = 1, n.trees = 300, use_weights = TRUE)$bin_validation)
 val_test_shr <- rdply(20, validate_gbm(stcen, shrinkage = 0.01,
@@ -188,27 +196,27 @@ ggplot(val_test_alt,
 
 We note that Malacostraca is poorly predicted in our out-of-sample validation tests. We therefore choose here to not include Malacostraca in the model that we will predict the modern intrinsic extinction risk with.
 
-<<drop-malacostraca, cache=FALSE>>=
+<<drop-malacostraca>>=
 stcen2 <- gdata::drop.levels(subset(stcen, class != "Malacostraca"))
 @
 
 Now, we'll run many more cross-validation iterations of our model to get precise estimates of non-linear bias so that we can use the observed mean extinction probabilities as calibration factors.
 
-<<final-gbm-validation, eval=TRUE, cache=TRUE>>=
+<<final-gbm-validation, eval=TRUE>>=
 val_test <- rdply(125, validate_gbm(stcen2, shrinkage = 0.1,
   interaction.depth = 1, n.trees = 300,
   use_weights = TRUE)$bin_validation)
 saveRDS(val_test, file = "../data/val_test.rds")
 @
 
-<<final-gbm-summarize, eval=TRUE, cache=TRUE>>=
+<<final-gbm-summarize, eval=TRUE>>=
 val_test_summarized <- ddply(val_test, c("class", "gbm_pred_binned"),
   summarize_val_test)
 @
 
 And we'll plot these validation values again:
 
-<<plot-gbm-no-mal, fig.width=8, fig.height=5, cache=FALSE>>=
+<<plot-gbm-no-mal, fig.width=8, fig.height=5>>=
 ggplot(val_test_summarized,
   aes(gbm_pred_binned, mean_observed)) +
   geom_point(data = val_test, aes(gbm_pred_binned, obs_ext_prob),
@@ -229,7 +237,7 @@ Now, we can use these observed extinction probabilities (in \texttt{val\_test\_s
 
 Another way to test the predictive power of our models is to build the model on one geologic interval and predict on another. To keep this simple, we won't use our calibration factors.
 
-<<cross-intervals-gbms, cache=TRUE>>=
+<<cross-intervals-gbms>>=
 stage_df <- expand.grid(stage_train = unique(stcen2$stage),
   stage_test = unique(stcen2$stage))
 cross_pred <- mdply(stage_df, fit_interval_gbm, dat = stcen2)
@@ -283,7 +291,7 @@ fit_stage_models <- function(dat, stage_name) {
 
 Now, we'll fit the models for each stage. Within each stage we'll fit the model a number of times:
 
-<<fit-marginal-stage-models, cache=TRUE>>=
+<<fit-marginal-stage-models>>=
 stage_models <- llply(c(stage_order, "all"), function(x)
   rlply(20, fit_stage_models(stcen2, stage_name = x)))
 names(stage_models) <- c(stage_order, "all")
@@ -291,7 +299,7 @@ names(stage_models) <- c(stage_order, "all")
 
 And, we'll go through the stage-based models and pull out the partial dependence data:
 
-<<pull-out-marginal-data, cache=TRUE>>=
+<<pull-out-marginal-data>>=
 vars <- c("richness", "occupancy", "occurrences", "min.lat",
   "max.lat", "lat.range", "mean.lat", "great.circle", "group")
 partial_dat <- ldply(c(stage_order, "all"), function(stage_name) {
@@ -310,7 +318,7 @@ partial_dat <- ldply(c(stage_order, "all"), function(stage_name) {
 
 Now we'll get the median and interquartile range of the marginal effects. We'll use the \pkg{dplyr} package, which is slightly faster than \pkg{plyr}:
 
-<<summarize-marginal-effects, cache=TRUE>>=
+<<summarize-marginal-effects>>=
 partial_dat2 <- tbl_df(partial_dat)
 partial_dat2 <- group_by(partial_dat2, stage, predictor, value)
 partial_dat2 <- summarise(partial_dat2,
@@ -404,15 +412,25 @@ modern <- plyr::join(modern,
 # modern$mean_observed <- modern$pred
 @
 
+We'll take a look at calibrated predictions vs.\ the raw model predictions (with weighted observations):
+
+<<plot-calibrations, fig.height=4>>=
+ggplot(modern, aes(pred, mean_observed)) + geom_point() +
+  facet_wrap(~class) + coord_fixed(ratio = 1) +
+  xlim(0, 0.9) + ylim(0, 0.9) +
+  geom_abline(intercept = 0, slope = 1, lty = 3) +
+  xlab("Predicted") + ylab("Calibrated prediction")
+@
+
 We'll also save a version of our predictions where we build the predictions based on the average predictions across geological stage models. We've already built these models. We'll take the average predictions across replicated fits and geological stages.
 
 <<predict-risk-modern-average-version>>=
 predictions_stage_avg <- laply(stage_models, function(x) {
-    p1 <- laply(x, function(y) gbm::predict.gbm(y, newdata = modern, 
+    p1 <- laply(x, function(y) gbm::predict.gbm(y, newdata = modern,
   type = "response", n.trees = 300))
   p2 <- apply(p1, 2, mean)
   p2
-}) 
+})
 modern$pred_stage_avg <- apply(predictions_stage_avg, 2, mean)
 @
 
@@ -425,7 +443,7 @@ saveRDS(modern, file = "../data/modern-predictions.rds")
 We can compare the predictions from the averaged stage models with the predictions from the GBMs based on all Neogene data pooled together. Note that we're not comparing the calibrated predictions here:
 
 <<compare-neogene-gbm-to-stage-models, fig.height=4.5>>=
-ggplot(modern, aes(pred, pred_stage_avg)) + geom_point() + 
+ggplot(modern, aes(pred, pred_stage_avg)) + geom_point() +
   facet_wrap(~class) + geom_abline(intercept = 0, slope = 1) +
   xlab("Neoegene GBM") + ylab("Stage-level GBMs averaged")
 
@@ -444,7 +462,7 @@ source("merge-predictions-to-map.R")
 We can look at the distribution of predicted extinction probability. Note that the x-axis is log distributed:
 
 <<plot-density-risk, fig.height=4>>=
-ggplot(d.eco.filled, aes(mean_observed + 0.001)) + 
+ggplot(d.eco.filled, aes(mean_observed + 0.001)) +
   geom_density() + facet_wrap(~class) + scale_x_log10() +
   ylab("Density") + xlab("Predicted extinction probabilty")
 @
@@ -458,11 +476,11 @@ prov_names <- er@data[,c("PROVINCE", "PROV_CODE")]
 prov_names <- prov_names[!duplicated(prov_names), ]
 temp <- plyr::join(d.eco.filled, prov_names)
 temp <- transform(temp, PROV_pretty = paste(PROV_CODE, PROVINCE))
-ggplot(temp, aes(mean_observed + 0.001)) + 
-  geom_histogram(aes(fill = class, colour = class), 
-    position = "stack", alpha = 0.5, binwidth = 0.4) + 
-  facet_wrap(~ PROV_pretty) + 
-  scale_x_log10() + 
+ggplot(temp, aes(mean_observed + 0.001)) +
+  geom_histogram(aes(fill = class, colour = class),
+    position = "stack", alpha = 0.5, binwidth = 0.4) +
+  facet_wrap(~ PROV_pretty) +
+  scale_x_log10() +
   ylab("Number of genera") + xlab("Predicted extinction probabilty")
 @
 
@@ -470,7 +488,7 @@ ggplot(temp, aes(mean_observed + 0.001)) +
 
 Now, let's inspect the role of tropical regions. Earlier we defined ``tropical'' as less than $30\deg$ absolute latitude.
 
-<<test-tropical-drivers, fig.width=18, fig.height=11.5, out.width="7in", cache=FALSE>>=
+<<test-tropical-drivers, fig.width=18, fig.height=11.5, out.width="7in">>=
 tropical_test <- reshape2::melt(by.prov.classes, id.vars =
   c("PROV_CODE", "class", "Lat_Zone"), measure.vars =
   c("mean.lat.range", "mean.occupancy", "mean.gcd", "log_OBIS_records",
