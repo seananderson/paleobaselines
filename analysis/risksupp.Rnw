@@ -103,7 +103,7 @@ stcen <- gdata::drop.levels(subset(stcen, stcen$stage_top < 22 &
 Now we can test our models. To start with, we'll build the model 50 times, each time training the model on a random 50\% of the data and testing it on the other 50\%. Then we'll record the observed mean extinction probability for each predicted bin value within each taxonomic class. For example, we can group all predicted extinction values for bivalves into bins from 0 to 1 in 0.025 increments. Then we can calculate the mean observed extinction probability for each of those bins. Because we're building and testing the model on independent datasets, this is a good test of the predictive ability of our modelling approach.
 
 <<test-gbm1, cache=TRUE>>=
-val_test <- rdply(30, validate_gbm(stcen, shrinkage = 0.1,
+val_test <- rdply(25, validate_gbm(stcen, shrinkage = 0.1,
   interaction.depth = 1, n.trees = 300, use_weights = TRUE)$bin_validation)
 @
 
@@ -189,7 +189,7 @@ stcen2 <- gdata::drop.levels(subset(stcen, class != "Malacostraca"))
 Now, we'll run many more cross-validation iterations of our model to get precise estimates of non-linear bias so that we can use the observed mean extinction probabilities as calibration factors.
 
 <<final-gbm-validation, eval=TRUE, cache=TRUE>>=
-val_test <- rdply(150, validate_gbm(stcen2, shrinkage = 0.1,
+val_test <- rdply(125, validate_gbm(stcen2, shrinkage = 0.1,
   interaction.depth = 1, n.trees = 300,
   use_weights = TRUE)$bin_validation)
 saveRDS(val_test, file = "../data/val_test.rds")
