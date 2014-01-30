@@ -449,7 +449,7 @@ ggplot(d.eco.filled, aes(mean_observed + 0.001)) +
 
 And the distribution of our predictions by province and class:
 
-<<plot-density-risk-by-province, fig.width=15, fig.height=12, out.width="7in">>=
+<<plot-density-risk-by-province, fig.width=17, fig.height=13, out.width="7in">>=
 # merge in province names:
 er <- readShapePoly("../data/MEOW2/meow_ecos.shp")
 prov_names <- er@data[,c("PROVINCE", "PROV_CODE")]
@@ -461,7 +461,7 @@ ggplot(temp, aes(mean_observed + 0.001)) +
     position = "stack", alpha = 0.5, binwidth = 0.4) + 
   facet_wrap(~ PROV_pretty) + 
   scale_x_log10() + 
-  ylab("Density") + xlab("Predicted extinction probabilty")
+  ylab("Number of genera") + xlab("Predicted extinction probabilty")
 @
 
 \section{The role of the tropics}
