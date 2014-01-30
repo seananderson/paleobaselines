@@ -7,7 +7,7 @@ PDF <- TRUE
 # mrisk <- dplyr::summarise(group_by(by.prov.classes, class), mean = mean(mean.ext))
 # dplyr::arrange(mrisk, -mean)
 plot_order <- data.frame(class = c("Mammalia", "Elasmobranchii",
-  "Anthozoa", "Gastropoda", "Echinoidea", "Bivalvia"),
+  "Anthozoa", "Gastropoda","Bivalvia", "Echinoidea"),
   plot_order = 1:6)
 # y-axis labels:
 plot_type <- "ext" # other options are "OBIS_records" and "N.gen"
@@ -142,56 +142,56 @@ ii <<- 0
 d_ply(er.df.m, "plot_order",
   function(class.dat) {
     ii <<- ii + 1
-    
+
     # Set up a blank map:
     map("world", proj = "mollweide",  col = "grey69", fill = TRUE, lwd =
         0.9, myborder = c(0, 0), type = "n", wrap = FALSE, resolution = 0,
       xlim = c(-178, 178), plot = TRUE, border = "grey69", mar = c(0,
         0, 0, 0))
-    
+
     polygon(oval, col = "grey85", border = NA, lwd = 1.2)
-    
+
     # Add the eco provinces:
     d_ply(class.dat, "group", function(class.group.dat) {
       with(class.group.dat, polygon(x, y, border = NA, col =
           col.pal.ext.risk, lwd = 1.5))
     })
-    
+
     # Add the land on top:
     map("world", proj = "", mar = c(0, 0, 0, 0), col = "grey60", fill =
         TRUE, lwd = .55, myborder = c(0, 0), border = "grey60", wrap =
         FALSE, resolution = 0, xlim = c(-178, 178), plot = TRUE, add =
         TRUE)
-    
+
     # patches:
     with(ant.patch, polygon(x, y, col = "grey60", border = FALSE))
     with(russia.patch, polygon(x-0.01, y, col = "white", border = FALSE))
-    
+
     # border:
     lines(oval, col = "grey60", lwd = 1.2)
-    
+
     # Label each panel:
     label <- unique(class.dat$class)
     if(label == "Malacostraca") label <- "Decapoda"
-    
+
     mtext(substitute(paste(phantom("g"), bold(let), " ", lab, phantom("g")),
       list(let = LETTERS[ii], lab = as.character(label))),
       line = -1.0, cex = 0.8, col = "grey30")
-    
+
     #mtext(label, line = -1.0, cex = 0.8, col = "grey30")
     usr <- par("usr")
-    
+
     # Colour key:
     par(las = 1)
     col.regions <- with(class.dat, seq(unique(lower.col.cut),
       unique(upper.col.cut), length.out = 10))
     loc.limits <- with(class.dat, c(min(value.to.plot), max(value.to.plot)))
     add_locator <- FALSE
-    
+
     ll <- exp(min(er.df$value.to.plot))
     uu <- exp(max(er.df$value.to.plot))
     yrange <- yrange.all[yrange.all >= ll & yrange.all <= uu]
-    
+
     col_box_key(col.pal = col.pal, limits = c(min(er.df$value.to.plot),
       max(er.df$value.to.plot)), width = .3, col.regions =
         col.regions, N = 10, bg = "grey85", border.col = "grey60", at =
@@ -199,7 +199,7 @@ d_ply(er.df.m, "plot_order",
       add_locator = add_locator, loc_limits =
         loc.limits, loc_col = "black", loc_width = 2)
     if(add_default_axis4) axis(4)
-    
+
   })
 
 dev.off()
