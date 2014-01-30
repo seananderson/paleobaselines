@@ -523,9 +523,9 @@ Supp Figures to merge in:
 
 \clearpage
 
-\setcounter{table}{0}
-\setcounter{figure}{0}
 
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{\arabic{figure}}
 
 \begin{figure}[!ht]
   \begin{center}
