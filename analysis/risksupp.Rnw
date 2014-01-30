@@ -23,8 +23,8 @@ opts_chunk$set(warning=FALSE, message=FALSE, tidy=FALSE, refresh=TRUE,
   cache.path="../cache/", cache.lazy=FALSE)
 opts_chunk$set(dev = 'pdf')
 opts_knit$set(out.format = "latex")
-thm = knit_theme$get("github.css")
-knit_theme$set(thm)
+# thm = knit_theme$get("github.css")
+# knit_theme$set(thm)
 @
 
 \title{Supplementary Materials for Paleontological Baselines for Evaluating Contemporary Extinction Risk in the Coastal Oceans}
