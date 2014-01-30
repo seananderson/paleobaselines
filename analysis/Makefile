@@ -3,10 +3,16 @@ all: pdf
 pdf:
 	Rscript -e "knitr::knit('risksupp.Rnw')"
 	xelatex risksupp
+	cp risksupp.pdf ~/Dropbox/Public/
+
+tex:
+	xelatex risksupp
+
+bib:
+	xelatex risksupp
 	bibtex risksupp
 	xelatex risksupp
 	xelatex risksupp
-	cp risksupp.pdf ~/Dropbox/Public/
 
 clean:
 	rm -rf ../cache/
