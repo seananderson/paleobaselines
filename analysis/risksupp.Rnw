@@ -381,14 +381,7 @@ predictions <- laply(m, function(x)
 modern$pred <- apply(predictions, 2, mean)
 @
 
-Now we'll use our calibration factors on our predictions. We're going to set any predictions in which the median sample number of observations in our calibration is 1 or less to \texttt{NA}.
-
-<<show-calibration-NA-cutoff, fig.height=4>>=
-ggplot(val_test_summarized, aes(mean_observed, median_sample_n)) + 
-  geom_point() + facet_wrap(~class, scales = "free_y") + 
-  geom_abline(intercept = 1, slope = 0)
-@
-
+Now we'll use our calibration factors on our predictions.
 
 <<calibrate-risk-modern>>=
 val_test_summarized[val_test_summarized$median_sample_n <= 1, 
