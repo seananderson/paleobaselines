@@ -456,10 +456,10 @@ prov_names <- prov_names[!duplicated(prov_names), ]
 temp <- plyr::join(d.eco.filled, prov_names)
 temp <- transform(temp, PROV_pretty = paste(PROV_CODE, PROVINCE))
 ggplot(temp, aes(mean_observed + 0.001)) + 
-  geom_density(aes(fill = class, colour = class), 
-    position = "stack", alpha = 0.5) + 
-  facet_wrap(~ PROV_pretty, scales = "free_y") + 
-  scale_x_log10() +
+  geom_histogram(aes(fill = class, colour = class), 
+    position = "stack", alpha = 0.5, binwidth = 0.4) + 
+  facet_wrap(~ PROV_pretty) + 
+  scale_x_log10() + 
   ylab("Density") + xlab("Predicted extinction probabilty")
 @
 
