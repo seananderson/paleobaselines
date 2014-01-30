@@ -59,12 +59,12 @@ validate_gbm <- function(dat, test_fraction = 0.5, threshold = 0.5,
   # just in case these already exist:
   dat_test$gbm_pred <- NULL
   
-   if(use_weights) {   
-     w <- get_weights(dat_train$Ex)
-     weights <- ifelse(dat_train$Ex == 1, w$ex_weight, w$sur_weight)
-   } else {
-     weights <- rep(1, nrow(dat_train))
-   }
+  if(use_weights) {   
+    w <- get_weights(dat_train$Ex)
+    weights <- ifelse(dat_train$Ex == 1, w$ex_weight, w$sur_weight)
+  } else {
+    weights <- rep(1, nrow(dat_train))
+  }
   
   # model fitting:
   m <- gbm::gbm(Ex ~ richness + occupancy + occurrences + min.lat + max.lat +
@@ -132,15 +132,34 @@ smote <- function(x, perc.over = 800, perc.under = 100) {
 }
 
 #' Summarize a validation test
-#'
+#' 
+#' @param x A data frame that has a column named \code{obs_ext_prob}. This 
+#'   column should contain 0s and 1s (or factors with two levels) that can be 
+#'   modelled as a binomial process.
+#' @param type One of either \code{"glm"} for mean and 95% 
+#'   likelihood-profile-based confidence intervals or \code{"quantile"} for 
+#'   median and 50% percentile intervals (interquartile range).
+#' @return A data frame containing the columns \code{mean_observed} (the 
+#'   calibration value), \code{l} (the lower confidence interval), \code{u} (the
+#'   upper confidence interval), and \code{median_sample_n} (the median number
+#'   of samples in each model, i.e. in each cross-validation).
 #' @export
 #' @rdname validate_gbm
 
-summarize_val_test <- function(x) {
-  m <- stats::glm(obs_ext_prob ~ 1, family = binomial, data = x,
-    weights = sample_n)
-  int <- boot::inv.logit(coef(m)[[1]])
-  cis <- boot::inv.logit(confint(m))
+summarize_val_test <- function(x, type = c("glm", "quantile")) {
+  if(!type[1] %in% c("glm", "quantile"))
+    stop("type must be one of glm or quantile")
+  if(type[1] == "glm") {
+    m <- stats::glm(obs_ext_prob ~ 1, family = binomial, data = x,
+      weights = sample_n)
+    int <- boot::inv.logit(coef(m)[[1]])
+    cis <- boot::inv.logit(confint(m))
+  }
+  if(type[1] == "quantile") {
+    median_sample_n <- median(x$sample_n)
+    int <- median(x$obs_ext_prob)
+    cis <- quantile(x$obs_ext_prob, probs = c(0.25, 0.75))
+  }
   median_sample_n <- median(x$sample_n)
   data.frame(mean_observed = int, l = cis[[1]], u = cis[[2]],
     median_sample_n = median_sample_n)
