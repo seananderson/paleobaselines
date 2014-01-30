@@ -17,3 +17,7 @@ paleorisk/paleorisk.Rproj
 
 *.rda
 *.rds
+
+*.fff
+
+*.lof
