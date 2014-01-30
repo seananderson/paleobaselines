@@ -1,8 +1,5 @@
-# Created by:    Sean C. Anderson
-# Created:       Feb 28, 2013
-# Last modified: Jan 23, 2014
-# Purpose:       Global hotspot maps with halpern, burrows, and ext risk
-#
+# Global hotspot maps with halpern, burrows, and ext risk
+
 # create the dataset to map:
 load("../data/prov_SpatialPolygons.rda") # needed to draw joined provinces
 load("../data/by.prov.all.rda")
@@ -17,8 +14,8 @@ er.df <- plyr::join(er.points, er@data, by = "id")
 er.df.all <- plyr::join(er.df, by.prov.all, by = "PROV_CODE")
 
 ## SETUP:
-today <- format(Sys.time(), "%Y-%m-%d")
-iterations <- 31
+# today <- format(Sys.time(), "%Y-%m-%d")
+# iterations <- 31
 id <- "mean-log"
 ##
 
@@ -42,7 +39,7 @@ N <- 100
 x.s <- seq(-180, 180, length.out = N)
 y.s <- seq(-90, 90, length.out = N)
 square <- data.frame(x = c(x.s, rep(x.s[N], N), rev(x.s), rep(x.s[1],
-      N)), y = c(rep(y.s[1], N), y.s, rep(y.s[N], N), rev(y.s)))
+  N)), y = c(rep(y.s[1], N), y.s, rep(y.s[N], N), rev(y.s)))
 
 oval <- mapproject(list(x = square$x, y = square$y), proj = "mollweide")
 
@@ -81,7 +78,7 @@ land.fort.m$y <- land.fort.mol$y
 cols <- paste(gg_color_hue(3), "", sep = "")
 
 ### and the plotting:
-filename <- paste("hotspots", today, "iter", iterations, id, sep = "-")
+filename <- paste("hotspots", id, sep = "-")
 pdf(paste0("../figs/", filename, ".pdf"), width = 7, height = 4)
 par(mar = c(0,0,0, 0), oma= c(0,0,0,0))
 map("world", proj = "mollweide",  col = "grey69", fill = TRUE, lwd = 0.9, myborder = c(0, 0), wrap = FALSE, resolution = 0, xlim = c(-178, 178), plot = TRUE, border = "grey69", type = "n")
@@ -108,17 +105,17 @@ d_ply(er.df.m, "PROV_CODE", function(x) {
   prov.dat$y <- prov.dat.m$y
   halp.hot <- unique(subset(er.df, PROV_CODE == PROV)$halp.hot)
   if(length(halp.hot) > 1) warnings("More than one Halpern value per province")
-
+  
   d_ply(prov.dat, "group", function(z) {
     with(z, polygon(x, y, border = c(NA, "grey20")[halp.hot+1], lwd = 2.2))
-})
-
+  })
+  
 })
 
 # burr
 d_ply(er.df.m, "group", function(x) {
   with(x, polygon(x, y, border = NA, col = c(NA, "grey20")[bur.hot+1],
-      lwd = 1.5, density = c(NA, 23)[bur.hot+1], angle = 45))
+    lwd = 1.5, density = c(NA, 23)[bur.hot+1], angle = 45))
 })
 
 # land
@@ -126,8 +123,8 @@ d_ply(er.df.m, "group", function(x) {
 #with(x, polygon(x, y, border = NA, lwd = 0.5, col = "grey77"))
 #})
 map("world", proj = "", mar = c(0, 0, 0, 0), col = "grey64", fill =
-  TRUE, lwd = .95, myborder = c(0, 0), border = "grey64", wrap =
-  FALSE, resolution = 0, xlim = c(-178, 178), plot = TRUE, add = TRUE)
+    TRUE, lwd = .95, myborder = c(0, 0), border = "grey64", wrap =
+    FALSE, resolution = 0, xlim = c(-178, 178), plot = TRUE, add = TRUE)
 
 # patches:
 with(ant.patch, polygon(x, y, col = "grey64", border = FALSE))
@@ -144,4 +141,3 @@ legend(1.4, -.75, fill = c(col.pal[6],NA, "grey50"), col = c(col.pal[6], "black"
 #text(-1,-1.12,filename, pos = 4)
 
 dev.off()
-
