@@ -105,11 +105,11 @@ d_ply(er.df.m, "PROV_CODE", function(x) {
   prov.dat$y <- prov.dat.m$y
   halp.hot <- unique(subset(er.df, PROV_CODE == PROV)$halp.hot)
   if(length(halp.hot) > 1) warnings("More than one Halpern value per province")
-  
+
   d_ply(prov.dat, "group", function(z) {
     with(z, polygon(x, y, border = c(NA, "grey20")[halp.hot+1], lwd = 2.2))
   })
-  
+
 })
 
 # burr
@@ -135,7 +135,7 @@ lines(oval, col = "grey64", lwd = 2.8)
 
 # legend
 par(xpd = NA)
-legend(1.4, -.75, fill = c(col.pal[6],NA, "grey50"), col = c(col.pal[6], "black", "black"), legend = c("Paleo", "Halpern", "Burrows"), bty = "n", density = c(NA, NA, 25), angle = c(NA, NA, 45), border = c(NA, "black", NA), box.lwd = c(0, 3, 1))
+legend(1.4, -.75, fill = c(col.pal[6],NA, "grey50"), col = c(col.pal[6], "black", "black"), legend = c("Intrinsic risk", "Human impact", "Climate velocity"), bty = "n", density = c(NA, NA, 25), angle = c(NA, NA, 45), border = c(NA, "black", NA), box.lwd = c(0, 3, 1))
 
 # text printing at bottom
 #text(-1,-1.12,filename, pos = 4)
