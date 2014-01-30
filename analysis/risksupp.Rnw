@@ -8,6 +8,11 @@
 \let\pkg=\textbf
 \let\fn=\texttt
 
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\tablename}{Table}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\renewcommand{\figurename}{Figure}
+
 \begin{document}
 
 <<set-knitr-options, cache=FALSE, echo=FALSE>>=
@@ -517,5 +522,36 @@ Supp Figures to merge in:
 \clearpage
 \bibliographystyle{science}
 \bibliography{/Users/seananderson/Dropbox/tex/jshort,risksupp}
+
+\clearpage
+
+\setcounter{table}{0}
+\setcounter{figure}{0}
+
+
+\begin{figure}[!ht]
+  \begin{center}
+    \includegraphics[width=4.86in]{../figs/partial-plot-base.pdf}
+  \end{center}
+  \caption{}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[!ht]
+  \begin{center}
+    \includegraphics[width=4.86in]{../figs/class-risk-maps-mean-log-ext.pdf}
+  \end{center}
+  \caption{}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[!ht]
+  \begin{center}
+    \includegraphics[width=4.86in]{../figs/hotspots-mean-log.pdf}
+  \end{center}
+  \caption{}
+\end{figure}
 
 \end{document}
