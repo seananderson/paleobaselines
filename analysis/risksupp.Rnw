@@ -51,6 +51,8 @@ References
 
 \tableofcontents
 
+\clearpage
+
 This document is written with the \pkg{knitr} package \cite{xie2013a,xie2013b,xie2013c} for the \proglang{R} statistical environment \cite{r2013}. It can be re-created by running \fn{knitr::knit2pdf()} on the \texttt{.Rnw} file. A number of functions that are used in this analysis have been compiled into an \proglang{R} package \pkg{paleorisk}.
 
 You can install the package by downloading the \texttt{paleorisk} folder and running:
@@ -86,7 +88,7 @@ theme_set(theme_bw())
 rversion <- capture.output(sessionInfo())[[1]]
 x <- capture.output(sessionInfo())
 other_line <- grep("other attached", x)
-pkgs <- x[(other_line+1):(other_line + 4)]
+pkgs <- x[(other_line+1):(other_line + 5)]
 @
 
 We used \Sexpr{rversion} and package versions:
@@ -95,9 +97,21 @@ We used \Sexpr{rversion} and package versions:
 pkgs
 @
 
+\section{Choice of taxa}
+
+\section{Data sources}
+
+\section{Standardizing the taxonomic data}
+
+\section{Interpolation of OBIS occurrence data}
+
+Describe process and link to the code that runs this.
+
+\section{Choice of prediction variables}
+
 \section{Standardizing the predictors}
 
-We will start by standardizing a variety of habitat-relative characteristics within each geologic stage. This is an important step to make some habitat characteristics (richness, occupancy, occurrences) comparable across periods, an in particular, between the paleontological data and the contemporary data. Given the substantially different sampling methods within the paleontological and contemporary records, the absolute values of richness, occupancy, and occurrences are not comparable. We therefore standardize them to values between 0 and 1 within each interval. The other variables (e.g.\ latitude variables and great circle distance) are still comparable between the paleontological and contemporary records --- a degree latitude is still a degree latitude and kilometre is still a kilometre.
+We will start by standardizing a variety of habitat-relative characteristics within each geologic stage. This is an important step to make some habitat characteristics (richness, occupancy, occurrences) comparable across periods, an in particular, between the paleontological data and the contemporary data. Given the substantially different sampling methods within the paleontological and contemporary records, the absolute values of richness, occupancy, and occurrences are not comparable. We therefore standardize them to values between 0 and 1 within each interval. The other variables (e.g.\ latitude variables and great circle distance) are still comparable between the paleontological and contemporary records --- a degree latitude is still a degree latitude and a kilometre is still a kilometre.
 
 The following script creates the \proglang{R} data object \texttt{stand-predictors-cen-obis.rds}:
 
@@ -204,7 +218,7 @@ val_test_alt <- rbind(val_test_base_summ, val_test_shr_summ,
   val_test_int_summ, val_test_ntrees_summ)
 @
 
-Now, we will plot out the observed vs.\ predicted for these 4 versions of the model. We see that a larger interaction value results in near universally poorer predictive performance. Generating more trees results in similar performance at considerably increased computational time. A smaller shrinkage value (slower learning between trees) substantially reduces the range of predicted extinction probabilities, but frequently results in more biased predictions --- even in some bins with large sample sizes. We therefore continue from here on with the model we refer to as the ``base'' model above.
+We will plot out the observed vs.\ predicted for these 4 versions of the model. We see that a larger interaction value results in near universally poorer predictive performance. Generating more trees results in similar performance at considerably increased computational time. A smaller shrinkage value (slower learning between trees) substantially reduces the range of predicted extinction probabilities, but frequently results in more biased predictions --- even in some bins with large sample sizes. We therefore continue from here on with the model we refer to as the ``base'' model above.
 
 <<plot-alt-gbms, fig.height=8, fig.width=13, out.width="7in">>=
 ggplot(val_test_alt,
@@ -225,7 +239,7 @@ We note that Malacostraca is poorly predicted in our out-of-sample validation te
 stcen2 <- gdata::drop.levels(subset(stcen, class != "Malacostraca"))
 @
 
-Now, we will run many more cross-validation iterations of our model to get precise estimates of non-linear bias so that we can use the observed mean extinction probabilities as calibration factors:
+We will run many more cross-validation iterations of our model to get precise estimates of non-linear bias so that we can use the observed mean extinction probabilities as calibration factors:
 
 <<final-gbm-validation, eval=TRUE>>=
 val_test <- rdply(50, validate_gbm(stcen2, shrinkage = 0.1,
@@ -256,7 +270,7 @@ ggplot(val_test_summarized,
   labs(size = "Median sample #")
 @
 
-Now, we can use these observed extinction probabilities (in \texttt{val\_test\_summarized}) as calibration for our GBM-predicted extinction probability in the contemporary dataset. To do this, we take the predicted extinction probability from our GBM model applied to the contemporary dataset, we fit that value into our binning scheme, and we match it up with the empirically-observed mean extinction probability for that bin. This removes the observed non-linear bias in our model \cite{thorson2012}. Put another way, we find our predicted value on the x-axis of the last plot and draw a vertical line up until we meet a blue dot. We then use the value of the blue dot as our calibrated extinction probability. We will come back to that shortly when we apply our model to the contemporary dataset.
+We can use these observed extinction probabilities (in \texttt{val\_test\_summarized}) as calibration for our GBM-predicted extinction probability in the contemporary dataset. To do this, we take the predicted extinction probability from our GBM model applied to the contemporary dataset, we fit that value into our binning scheme, and we match it up with the empirically-observed mean extinction probability for that bin. This removes the observed non-linear bias in our model \cite{thorson2012}. Put another way, we find our predicted value on the x-axis of the last plot and draw a vertical line up until we meet a blue dot. We then use the value of the blue dot as our calibrated extinction probability. We will come back to that shortly when we apply our model to the contemporary dataset.
 
 \section{Testing predictive performance across intervals}
 
@@ -268,9 +282,9 @@ stage_df <- expand.grid(stage_train = unique(stcen2$stage),
 cross_pred <- mdply(stage_df, fit_interval_gbm, dat = stcen2)
 @
 
-Now we can compare the predictions made from other stages with the predictions from the same stage. This code produces Figure~\ref{fig:plot-cross-interval-gbms}.
+We can compare the predictions made from other stages with the predictions from the same stage. This code produces Figure~\ref{fig:plot-cross-interval-gbms}.
 
-<<plot-cross-interval-gbms, fig.cap="Cross-stage prediction tests. The x-axis shows the probability of extinction as predicted by a model built on data from the same stage. The y-axis shows the probability of extinction as predicted by a model built on data from a different stage. The colours show different taxonomic classes. Note the log-distributed x- and y-axes. Since there is some stochasticity involved in the \\texttt{gbm()} fitting routine, there is some variability in predictions within the same stage (the diagonal panels).", fig.width=9, fig.height=7, cache=FALSE>>=
+<<plot-cross-interval-gbms, fig.cap="Cross-stage prediction tests. The x-axis shows the probability of extinction as predicted by a model built on data from the same stage. The y-axis shows the probability of extinction as predicted by a model built on data from a different stage. The colours show different taxonomic classes. Note the log-distributed x- and y-axes. Since there is some stochasticity involved in the \\texttt{gbm()} fitting routine, there is some variability in predictions within the same stage (the diagonal panels).", fig.width=9, fig.height=7, cache=TRUE>>=
 # Re-order stage names:
 stage_order <- c("Lower Miocene", "Middle Miocene", "Upper Miocene",
   "Plio-Pleistocene")
@@ -283,7 +297,7 @@ ggplot(cross_pred, aes(pred_self, pred, colour = class)) +
   geom_point(alpha = 0.3) +
   facet_grid(stage_train ~ stage_test) +
   scale_y_log10() + scale_x_log10() +
-  scale_colour_brewer(palette="Set2") +
+  scale_colour_brewer(palette = "Set2") +
   xlab("Probability of extinction predicted within the same stage") +
   ylab("Probability of extinction predicted from a different stage") +
   guides(colour = guide_legend(override.aes = list(alpha = 1)))
@@ -314,7 +328,7 @@ fit_stage_models <- function(dat, stage_name) {
 }
 @
 
-Now, we will fit the models for each stage. Within each stage we will fit the model a number of times:
+We will fit the models for each stage. Within each stage we will fit the model a number of times:
 
 <<fit-marginal-stage-models>>=
 stage_models <- llply(c(stage_order, "all"), function(x)
@@ -341,7 +355,7 @@ partial_dat <- ldply(c(stage_order, "all"), function(stage_name) {
   })
 @
 
-Now we will get the median and interquartile range of the marginal effects.
+We will get the median and interquartile range of the marginal effects.
 
 <<summarize-marginal-effects>>=
 partial_dat2 <- tbl_df(partial_dat)
@@ -425,7 +439,7 @@ predictions <- laply(m, function(x)
 modern$pred <- apply(predictions, 2, mean)
 @
 
-Now we will use our calibration factors on our predictions.
+We will use our calibration factors on our predictions.
 
 <<calibrate-risk-modern>>=
 modern$gbm_pred_binned <- assign_bins(modern$pred)
@@ -529,7 +543,7 @@ Impacts <- data.frame(Impacts$PROV_CODE, scale(Impacts$Mean_Halpern_Province),
   scale(Impacts$Mean_Burrows_Province))
 colnames(Impacts) <- c("PROV_CODE", "Halpern", "Burrows")
 by.prov.all <- merge(by.prov.all, Impacts, by = "PROV_CODE")
-by.prov.all <- gdata::drop.levels(subset(by.prov.all, by.prov.all$class=="all"))
+by.prov.all <- gdata::drop.levels(subset(by.prov.all, by.prov.all$class == "all"))
 by.prov.classes <- merge(by.prov.classes, Impacts, by = "PROV_CODE")
 by.prov.all$log_OBIS_records <- log(by.prov.all$OBIS_records)
 by.prov.classes$log_OBIS_records <- log(by.prov.classes$OBIS_records)
@@ -570,9 +584,9 @@ ggplot(temp, aes(mean_observed + 0.001)) +
 
 \section{The role of the tropics}
 
-Now, let's inspect the role of tropical regions. Earlier we defined ``tropical'' as less than $30\deg$ absolute latitude.
+We can inspect the role of tropical regions. Earlier we defined ``tropical'' as less than 30$^{\circ}$ absolute latitude. This code produces Figure~\ref{fig:test-tropical-drivers}.
 
-<<test-tropical-drivers, fig.width=18, fig.height=11.5, out.width="7in">>=
+<<test-tropical-drivers, fig.width=18, fig.height=11.5, out.width="7in", fig.cap="log(Predicted extinction probability) vs.\\ various predictors across taxonomic classes. Tropical regions are shown with blue lines and extratropical regions (everything else) are shown with organge lines.">>=
 tropical_test <- reshape2::melt(by.prov.classes, id.vars =
   c("PROV_CODE", "class", "Lat_Zone"), measure.vars =
   c("mean.lat.range", "mean.occupancy", "mean.gcd", "log_OBIS_records",
@@ -631,6 +645,8 @@ Supp Figures to merge in:
 
 \clearpage
 
+Main-text figures (here temporarily for reference).
+
 \begin{center}
   \includegraphics[width=4.86in]{../figs/partial-plot-base.pdf}\\
   \smallskip
@@ -652,5 +668,9 @@ Supp Figures to merge in:
   \smallskip
   Figure 3
 \end{center}
+
+\newpage
+
+\section{Supplementary Figures}
 
 \end{document}
