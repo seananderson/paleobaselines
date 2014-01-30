@@ -2,7 +2,7 @@
 \alias{assign_bins}
 \title{Assign bins}
 \usage{
-assign_bins(x, bin = 0.025, lower = 0, upper = 1)
+assign_bins(x, bin = 0.05, lower = 0, upper = 1)
 }
 \arguments{
   \item{x}{A vector to bin.}

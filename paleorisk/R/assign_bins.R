@@ -11,7 +11,7 @@
 #' @examples
 #' assign_bins(runif(10))
 
-assign_bins <- function(x, bin = 0.025, lower = 0, upper = 1) {
+assign_bins <- function(x, bin = 0.05, lower = 0, upper = 1) {
   # create vector of cuts to bin probabilities into:
   # assign the mid value from each bin:
   prob_cuts <- seq(lower, upper, bin)
