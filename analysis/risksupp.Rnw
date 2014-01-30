@@ -389,13 +389,11 @@ modern$pred <- apply(predictions, 2, mean)
 Now we'll use our calibration factors on our predictions.
 
 <<calibrate-risk-modern>>=
-val_test_summarized[val_test_summarized$median_sample_n <= 1, 
-  "mean_observed"] <- NA
 modern$gbm_pred_binned <- assign_bins(modern$pred)
 modern <- plyr::join(modern,
   val_test_summarized[,c("class", "gbm_pred_binned", "mean_observed")],
   by = c("class", "gbm_pred_binned"))
-modern <- modern[!is.na(modern$mean_observed), ]
+# modern <- modern[!is.na(modern$mean_observed), ]
 # or skip calibration:
 # modern$mean_observed <- modern$pred
 @
