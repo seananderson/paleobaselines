@@ -136,7 +136,6 @@ par(mar = c(0,0,0, 0), oma= c(0,0,1,1.3))
 par(cex = 0.5)
 par(tck = -0.15)
 par(mgp = c(3, 0.35, 0))
-source("col-box-key.r")
 
 ii <<- 0
 
@@ -187,7 +186,7 @@ d_ply(er.df.m, "plot_order",
     col.regions <- with(class.dat, seq(unique(lower.col.cut),
       unique(upper.col.cut), length.out = 10))
     loc.limits <- with(class.dat, c(min(value.to.plot), max(value.to.plot)))
-    add_locator <- ifelse(type == "shift", TRUE, FALSE)
+    add_locator <- FALSE
     
     ll <- exp(min(er.df$value.to.plot))
     uu <- exp(max(er.df$value.to.plot))
