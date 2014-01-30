@@ -95,10 +95,32 @@ pkgs
 
 We will start by standardizing a variety of habitat-relative characteristics within each geologic period. This is an important step to make some habitat characteristics (richness, occupancy, occurences) comparable across periods, an in particular, between the paleontological data and the modern data. Given the substantially different sampling methods within the paleontological and modern records, the absolute values of richess, occupancy, and occurences are not comparable. We therefore standardize them to values between 0 and 1 within each interval. The other variables (e.g.\ latitude variables and great circle distance) are still comparable between the paleontological and modern records --- a degree latitude is still a degree latitude and kilometer is still a kilometer.
 
-The following script creates the \proglang{R} data object \texttt{standardized-predictors-cenozoic-obis.rds}.
+The following script creates the \proglang{R} data object \texttt{stand-predictors-cen-obis.rds}:
 
 <<standardize-predictors>>=
-source("standardize-predictors.R")
+data <- readRDS("../data/modern-paleodb-ranges.rds")
+mean.lats <- readRDS("../data/genus-mean-occurence-lats.rds")
+data <- merge(data, mean.lats)
+stage_names <- unique(data$Interval_Name)
+stcen <- ldply(stage_names, function(x)
+  standardize_data(data, interval_name = x))
+saveRDS(stcen, file = "../data/stand-predictors-cen-obis.rds")
+@
+
+We'll set some global variables. These should be integrated elsewhere.
+
+<<legacy-globals>>=
+Min.Prov.Genera <- 100
+# choose the minimum number of equal-area grid cells occupied for inclusion
+Min_Occupancy <- 1
+# choose the minimum number of PaleoDB localities for inclusion
+Min_PBDB_Loc <- 1
+# choose the minimum number of OBIS localities for inclusion
+Min_OBIS_Loc <- 1
+# choose the minimum number of Spalding provinces occupied for inclusion (applies only to modern genera)
+Min_Prov <- 1
+# set minimum great circle distance for inclusion (single occurrence PBDB genera assigned great.circle = 200)
+Min_gcd <- 1
 @
 
 \section{Model building, testing, and calibration}
