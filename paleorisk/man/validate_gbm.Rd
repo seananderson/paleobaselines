@@ -13,7 +13,7 @@ get_weights(x)
 
 smote(x, perc.over = 800, perc.under = 100)
 
-summarize_val_test(x)
+summarize_val_test(x, type = c("glm", "quantile"))
 }
 \arguments{
   \item{dat}{The input data.}
@@ -54,6 +54,16 @@ summarize_val_test(x)
 
   \item{x}{A vector of 0s and 1s with 0s representing
   non-extinctions and 1s representing extinctions.}
+
+  \item{x}{A data frame that has a column named
+  \code{obs_ext_prob}. This column should contain 0s and 1s
+  (or factors with two levels) that can be modelled as a
+  binomial process.}
+
+  \item{type}{One of either \code{"glm"} for mean and 95%
+  likelihood-profile-based confidence intervals or
+  \code{"quantile"} for median and 50% percentile intervals
+  (interquartile range).}
 }
 \value{
 A list. If \code{classification_stats = TRUE} then the list
@@ -68,6 +78,12 @@ only have the prediction and bin validation data frames.
 
 A list with extiction and survival weights to be passed to
 a model.
+
+A data frame containing the columns \code{mean_observed}
+(the calibration value), \code{l} (the lower confidence
+interval), \code{u} (the upper confidence interval), and
+\code{median_sample_n} (the median number of samples in
+each model, i.e. in each cross-validation).
 }
 \description{
 This function fits \code{\link[gbm]{gbm}} benoulli models
