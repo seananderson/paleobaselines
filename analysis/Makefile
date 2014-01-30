@@ -10,4 +10,5 @@ pdf:
 
 clean:
 	rm -rf ../cache/
+	rm -rf ../figs/
 
