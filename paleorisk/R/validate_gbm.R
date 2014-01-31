@@ -105,7 +105,7 @@ validate_gbm <- function(dat, test_fraction = 0.5, threshold = 0.5,
 #' @examples
 #' get_weights(c(0, 0, 1))
 #' @export
-#' @rdname validate_gbm
+#' @rdname get_weights
 
 get_weights <- function(x) {
   obs <- length(x)
@@ -119,7 +119,7 @@ get_weights <- function(x) {
 } 
 
 #' SMOTE our data
-#' @rdname validate_gbm
+#' @rdname smote
 
 smote <- function(x, perc.over = 800, perc.under = 100) {
   x$Ex <- as.factor(x$Ex)
@@ -144,7 +144,7 @@ smote <- function(x, perc.over = 800, perc.under = 100) {
 #'   upper confidence interval), and \code{median_sample_n} (the median number
 #'   of samples in each model, i.e. in each cross-validation).
 #' @export
-#' @rdname validate_gbm
+#' @rdname summarize_val_test
 
 summarize_val_test <- function(x, type = c("glm", "quantile")) {
   if(!type[1] %in% c("glm", "quantile"))

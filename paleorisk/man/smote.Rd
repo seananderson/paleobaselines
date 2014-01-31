@@ -1,0 +1,10 @@
+\name{smote}
+\alias{smote}
+\title{SMOTE our data}
+\usage{
+smote(x, perc.over = 800, perc.under = 100)
+}
+\description{
+SMOTE our data
+}
+
