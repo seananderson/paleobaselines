@@ -47,7 +47,7 @@ er.df <- gdata::drop.levels(subset(er.df,er.df$N.gen >= 5)) # TODO NOTE this num
 # First scale the median extinction risk by class for colour scale
 # purposes:
 if(plot_type == "ext") {
-  yrange.all <- c(0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1)
+  yrange.all <- c(0.002, 0.01, 0.05, 0.1, 0.2, 0.5, 1)
   er.df <- transform(er.df, value.to.plot = mean.ext)
 }
 if(plot_type == "OBIS_records") {
@@ -102,9 +102,9 @@ er.df.m <- plyr::join(er.df.m, plot_order)
 # And make the maps:
 filename <- paste("class-risk-maps", id, plot_type, sep = "-")
 if(PDF) {
-  pdf(paste0("../figs/", filename, ".pdf"), width = 6.15, height = 5)
+  pdf(paste0("../figs/", filename, ".pdf"), width = 6.25, height = 4.8)
 } else {
-  png(paste0("../figs/", filename, ".png"), width = 6.15, height = 5, units =
+  png(paste0("../figs/", filename, ".png"), width = 6.25, height = 4.8, units =
       "in", res = 250)
 }
 
@@ -132,7 +132,7 @@ for(row.i in seq(1, nrow)) {
 
 layout(lo)
 
-par(mar = c(0,0,0, 0), oma= c(0,0,1,1.3))
+par(mar = c(0,0,0, 0), oma = c(0,0,1,3.5))
 par(cex = 0.5)
 par(tck = -0.15)
 par(mgp = c(3, 0.35, 0))
@@ -176,7 +176,7 @@ d_ply(er.df.m, "plot_order",
 
     mtext(substitute(paste(phantom("g"), bold(let), " ", lab, phantom("g")),
       list(let = LETTERS[ii], lab = as.character(label))),
-      line = -1.0, cex = 0.8, col = "grey30")
+      line = -1.2, cex = 0.8, col = "grey30")
 
     #mtext(label, line = -1.0, cex = 0.8, col = "grey30")
     usr <- par("usr")
@@ -201,5 +201,7 @@ d_ply(er.df.m, "plot_order",
     if(add_default_axis4) axis(4)
 
   })
+
+mtext("Intrinsic extinction probability", side = 4, outer = TRUE, line = 2.0, las = 0, cex = 0.8, col = "grey30")
 
 dev.off()
