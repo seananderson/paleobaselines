@@ -128,8 +128,6 @@ saveRDS(stcen, file = "../data/stand-predictors-cen-obis.rds")
 We'll set some global variables. These should be integrated elsewhere.
 
 <<legacy-globals>>=
-Min.Prov.Genera <- 100
-# choose the minimum number of equal-area grid cells occupied for inclusion
 Min_Occupancy <- 1
 # choose the minimum number of PaleoDB localities for inclusion
 Min_PBDB_Loc <- 1
@@ -604,12 +602,38 @@ ggplot(tropical_test,
 \section{Mapping extinction probabilities}
 
 <<plot-class-maps, cache=FALSE>>=
-source("plot-class-ext-maps.R")
+# source("plot-class-ext-maps.R")
 @
 
 <<plot-hotspots, cache=FALSE>>=
-source("hotspotmaps.R")
+# create the dataset to map:
+load("../data/by.prov.all.rda")
+er <- maptools::readShapePoly("../data/MEOW2/meow_ecos.shp")
+er@data$id = rownames(er@data)
+er_points = ggplot2::fortify(er, region = "id")
+er_dat <- plyr::join(er_points, er@data, by = "id")
+er_dat <- plyr::join(er_dat, by.prov.all, by = "PROV_CODE")
+
+pdf("../figs/hotspots.pdf", width = 7, height = 4)
+map_hotspots(er_dat)
+dev.off()
 @
+
+Let's look at the effect of the minimum-genera-per-province cutoff:
+
+<<min-gen-thresh-sensitivity, fig.height=8, fig.width=13>>=
+par(mfrow = c(2, 2))
+par(mar = c(0, 0, 2, 0), oma = c(2, 2, 2, 2))
+map_hotspots(er_dat, min_prov_genera = 25, legend = FALSE, hotspots = FALSE)
+mtext("Min. genera = 25", cex = 2)
+map_hotspots(er_dat, min_prov_genera = 50, legend = FALSE, hotspots = FALSE)
+mtext("Min. genera = 50", cex = 2)
+map_hotspots(er_dat, min_prov_genera = 100, legend = FALSE, hotspots = FALSE)
+mtext("Min. genera = 100", cex = 2)
+map_hotspots(er_dat, min_prov_genera = 200, legend = FALSE, hotspots = FALSE)
+mtext("Min. genera = 200", cex = 2)
+@
+
 
 \clearpage
 
@@ -664,7 +688,7 @@ Main-text figures (here temporarily for reference).
 \clearpage
 
 \begin{center}
-  \includegraphics[width=4.86in]{../figs/hotspots-mean-log.pdf}\\
+  \includegraphics[width=4.86in]{../figs/hotspots.pdf}\\
   \smallskip
   Figure 3
 \end{center}
