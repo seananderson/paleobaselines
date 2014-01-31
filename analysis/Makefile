@@ -7,12 +7,14 @@ pdf:
 
 tex:
 	xelatex risksupp
+	cp risksupp.pdf ~/Dropbox/Public/
 
 bib:
 	xelatex risksupp
 	bibtex risksupp
 	xelatex risksupp
 	xelatex risksupp
+	cp risksupp.pdf ~/Dropbox/Public/
 
 clean:
 	rm -rf ../cache/
