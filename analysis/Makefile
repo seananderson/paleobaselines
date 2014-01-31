@@ -5,6 +5,9 @@ pdf:
 	xelatex risksupp
 	cp risksupp.pdf ~/Dropbox/Public/
 
+knit:
+	Rscript -e "knitr::knit('risksupp.Rnw')"
+
 tex:
 	xelatex risksupp
 	cp risksupp.pdf ~/Dropbox/Public/
