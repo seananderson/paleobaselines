@@ -624,13 +624,13 @@ Let's look at the effect of the minimum-genera-per-province cutoff:
 <<min-gen-thresh-sensitivity, fig.height=8, fig.width=13>>=
 par(mfrow = c(2, 2))
 par(mar = c(0, 0, 2, 0), oma = c(2, 2, 2, 2))
-map_hotspots(er_dat, min_prov_genera = 25, legend = FALSE, hotspots = FALSE)
+map_hotspots(er_dat, min_prov_genera = 25, hotspots = FALSE)
 mtext("Min. genera = 25", cex = 2)
-map_hotspots(er_dat, min_prov_genera = 50, legend = FALSE, hotspots = FALSE)
+map_hotspots(er_dat, min_prov_genera = 50, hotspots = FALSE)
 mtext("Min. genera = 50", cex = 2)
-map_hotspots(er_dat, min_prov_genera = 100, legend = FALSE, hotspots = FALSE)
+map_hotspots(er_dat, min_prov_genera = 100, hotspots = FALSE)
 mtext("Min. genera = 100", cex = 2)
-map_hotspots(er_dat, min_prov_genera = 200, legend = FALSE, hotspots = FALSE)
+map_hotspots(er_dat, min_prov_genera = 200, hotspots = FALSE)
 mtext("Min. genera = 200", cex = 2)
 @
 

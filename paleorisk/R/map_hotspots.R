@@ -14,13 +14,11 @@
 #' @param hotspot_thresh Percentile threshold to declare a contemporary hotspot.
 #' @param col_pal The colour palette to plot with. Should be approximately a
 #'   vector of length 9.
-#' @param legend Show the legend?
 #' @param hotspots Show the contemporary hotspots?
 #' @export
 
 map_hotspots <- function(er_dat, min_prov_genera = 100, hotspot_thresh = 0.8, 
-  col_pal = RColorBrewer::brewer.pal(9, "YlOrRd"), legend = TRUE, 
-  hotspots = TRUE) {
+  col_pal = RColorBrewer::brewer.pal(9, "YlOrRd"), hotspots = TRUE) {
   
   er.df.all <- er_dat
   # Create a box/oval to outline the map:
@@ -82,20 +80,17 @@ map_hotspots <- function(er_dat, min_prov_genera = 100, hotspot_thresh = 0.8,
       prov.dat$x <- prov.dat.m$x
       prov.dat$y <- prov.dat.m$y
       halp.hot <- unique(subset(er.df, PROV_CODE == PROV)$halp.hot)
-      if(length(halp.hot) > 1) warnings("More than one Halpern value per province")
-      
+      if(length(halp.hot) > 1) warnings("More than one Halpern value per province")      
       plyr::d_ply(prov.dat, "group", function(z) {
         with(z, polygon(x, y, border = c(NA, "grey20")[halp.hot+1], lwd = 2.2))
-      })
-      
+      })      
     })
     
     
     # Burrows et al.
     plyr::d_ply(er.df.m, "group", function(x) {
       with(x, polygon(x, y, border = NA, col = c(NA, "grey20")[bur.hot+1],
-        lwd = 1.5, density = c(NA, 23)[bur.hot+1], angle = 45))
-    })
+        lwd = 1.5, density = c(NA, 23)[bur.hot+1], angle = 45))})
   }
   
   maps::map("world", proj = "", mar = c(0, 0, 0, 0), col = "grey64", fill =
@@ -109,7 +104,7 @@ map_hotspots <- function(er_dat, min_prov_genera = 100, hotspot_thresh = 0.8,
   # outer oval:
   lines(oval, col = "grey64", lwd = 2.8)
   
-  if(legend) {
+  if(hotspots) {
     par(xpd = NA)
     legend(1.2, -.75, fill = c(col_pal[6],NA, "grey50"), col = c(col_pal[6],
       "black", "black"), legend = c("Intrinsic risk", "Human impact",

@@ -3,8 +3,7 @@
 \title{Make global intrinsic extinction probability hotspot maps}
 \usage{
 map_hotspots(er_dat, min_prov_genera = 100, hotspot_thresh = 0.8,
-  col_pal = RColorBrewer::brewer.pal(9, "YlOrRd"), legend = TRUE,
-  hotspots = TRUE)
+  col_pal = RColorBrewer::brewer.pal(9, "YlOrRd"), hotspots = TRUE)
 }
 \arguments{
   \item{er_dat}{A data frame with the data to plot. Should
@@ -23,8 +22,6 @@ map_hotspots(er_dat, min_prov_genera = 100, hotspot_thresh = 0.8,
 
   \item{col_pal}{The colour palette to plot with. Should be
   approximately a vector of length 9.}
-
-  \item{legend}{Show the legend?}
 
   \item{hotspots}{Show the contemporary hotspots?}
 }
