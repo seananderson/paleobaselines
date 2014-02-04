@@ -21,11 +21,13 @@ bib:
 
 clean:
 	rm -rf ../cache/
-	rm -rf ../figs/
+	#rm -rf ../figs/
 	rm *.aux
 	rm *.log
 	rm *.bbl
 	rm *.blg
 	rm *.toc
 	rm risksupp.tex
+	#mkdir ../figs/
+	mkdir ../cache/
 
