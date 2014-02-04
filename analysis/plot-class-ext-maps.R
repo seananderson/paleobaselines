@@ -23,7 +23,8 @@ library(mapproj)
 library(RColorBrewer)
 
 # some polygons to patch the world map
-source("patches.r")
+#source("patches.r")
+
 
 load("../data/by.prov.classes.rda")
 
@@ -100,7 +101,8 @@ er.df.m <- ddply(er.df.m, "class", transform, med.mean.ext =
 er.df.m <- plyr::join(er.df.m, plot_order)
 
 # And make the maps:
-filename <- paste("class-risk-maps", id, plot_type, sep = "-")
+#filename <- paste("class-risk-maps", id, plot_type, sep = "-")
+filename <- "class-risk-maps-mean-log-ext"
 if(PDF) {
   pdf(paste0("../figs/", filename, ".pdf"), width = 6.25, height = 4.8)
 } else {
@@ -164,8 +166,9 @@ d_ply(er.df.m, "plot_order",
         TRUE)
 
     # patches:
-    with(ant.patch, polygon(x, y, col = "grey60", border = FALSE))
-    with(russia.patch, polygon(x-0.01, y, col = "white", border = FALSE))
+
+    with(ant_patch, polygon(x, y, col = "grey60", border = FALSE))
+    with(russia_patch, polygon(x-0.01, y, col = "white", border = FALSE))
 
     # border:
     lines(oval, col = "grey60", lwd = 1.2)
