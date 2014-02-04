@@ -1,4 +1,5 @@
 export(assign_bins)
+export(calibrate_fossil)
 export(col_box_key)
 export(fit_interval_gbm)
 export(get_summary_stats)

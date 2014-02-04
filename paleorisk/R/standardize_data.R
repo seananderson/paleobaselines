@@ -35,10 +35,10 @@ standardize_data <- function(dat, interval_name, min_lat_bin = 10, max_lat_bin =
 
   message(paste("Standardizing", interval_name, "interval"))
 
-data <- gdata::drop.levels(subset(dat, dat$use==1 & dat$occurrences >=
-    min_pbdb_occurrences & dat$OBIS_occurrences >= min_modern_occurrences &
-    dat$Num_Stage >= minimum_duration & dat$class != "Foraminifera" &
-    (dat$OBIS_Ranges == input_ranges | dat$OBIS_Ranges == 0)))
+  data <- gdata::drop.levels(subset(dat, dat$use==1 & dat$occurrences >=
+      min_pbdb_occurrences & dat$OBIS_occurrences >= min_modern_occurrences &
+      dat$Num_Stage >= minimum_duration & dat$class != "Foraminifera" &
+      (dat$OBIS_Ranges == input_ranges | dat$OBIS_Ranges == 0)))
 
   mod_data <- gdata::drop.levels(subset(data, data$Interval_Name %in% interval_name))
 
@@ -81,5 +81,6 @@ data <- gdata::drop.levels(subset(dat, dat$use==1 & dat$occurrences >=
         genus, richness, occupancy, occurrences, min.lat, max.lat, lat.range,
         mean.lat, mean.lat.zone, great.circle, tropical_only, Ex)))
 
-  stand_dat
+
+  return(stand_dat)
 }

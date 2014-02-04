@@ -123,6 +123,9 @@ stage_names <- unique(data$Interval_Name)
 stcen <- ldply(stage_names, function(x)
   standardize_data(data, interval_name = x))
 saveRDS(stcen, file = "../data/stand-predictors-cen-obis.rds")
+
+# Calibrate based on Plio-Pleistocene?
+stcen <- calibrate_fossil(stcen)
 @
 
 We'll set some global variables. These should be integrated elsewhere.
