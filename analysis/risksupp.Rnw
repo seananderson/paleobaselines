@@ -122,10 +122,11 @@ data <- merge(data, mean.lats)
 stage_names <- unique(data$Interval_Name)
 stcen <- ldply(stage_names, function(x)
   standardize_data(data, interval_name = x))
-saveRDS(stcen, file = "../data/stand-predictors-cen-obis.rds")
 
 # Calibrate based on Plio-Pleistocene?
 stcen <- calibrate_fossil(stcen)
+
+saveRDS(stcen, file = "../data/stand-predictors-cen-obis.rds")
 @
 
 We'll set some global variables. These should be integrated elsewhere.
@@ -605,7 +606,7 @@ ggplot(tropical_test,
 \section{Mapping extinction probabilities}
 
 <<plot-class-maps, cache=FALSE>>=
-# source("plot-class-ext-maps.R")
+source("plot-class-ext-maps.R")
 @
 
 <<plot-hotspots, cache=FALSE>>=
