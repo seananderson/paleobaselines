@@ -40,7 +40,6 @@ calibrate_fossil <- function(dat) {
     #p + geom_point() + facet_wrap(~variable,ncol=3,scales="free") + geom_smooth(method="lm")
 
     ### make table of regressions for each class-variable combination
-
     coefs <- function(df) {
       model <- lm(df$Modern ~ df$Plio_Pleistocene)
       slope <- coefficients(model)[2]
@@ -50,15 +49,7 @@ calibrate_fossil <- function(dat) {
     }
     regressions <- plyr::ddply(comp.data,.(class,variable),each(coefs))
 
-    #names(regressions) <- c(".class", ".variable", "slope", "intercept", "n.gen")
-    #regressions2 <- reshape2::melt(regressions,id=c(".class", ".variable"),
-      #measured=c("slope","intercept","n.gen"))
-    #regressions3 <- reshape2::dcast(regressions2, .class + .variable  ~ variable)
-    #regressions2 <- regressions3
-    #regressions2 <- plyr::rename(regressions2, c(".variable" = "variable", ".class" = "class"))
-
     ### merge regression table to original data tables, extract new range parameters
-
     ## set aside modern, remove from the dataset
 
     Modern <- dat[dat$stage == "Modern", ]
