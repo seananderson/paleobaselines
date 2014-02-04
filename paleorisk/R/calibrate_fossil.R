@@ -76,5 +76,7 @@ calibrate_fossil <- function(dat) {
     data.out2[[i]] <- data
   }
   out <- do.call("rbind", data.out2)
+  out$stage_top <- as.numeric(as.character(out$stage_top))
+  out <- rbind(out, Modern)
   return(out)
 }
