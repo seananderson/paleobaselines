@@ -2,7 +2,7 @@
 \alias{map_hotspots}
 \title{Make global intrinsic extinction probability hotspot maps}
 \usage{
-map_hotspots(er_dat, min_prov_genera = 100, hotspot_thresh = 0.8,
+map_hotspots(er_dat, min_prov_genera = 50, hotspot_thresh = 0.8,
   col_pal = RColorBrewer::brewer.pal(9, "YlOrRd"), hotspots = TRUE)
 }
 \arguments{
