@@ -1,0 +1,58 @@
+.background {
+  color: #002b36;
+}
+
+/* numeric */
+/* magenta */
+.num {
+  color: #d33682;
+}
+
+/* string */
+/* cyan */
+.str {
+  color: #2aa198;
+}
+
+/* comment */
+/* base01 comments/secondary content */
+.com {
+  color: #586e75;
+  font-style: italic;
+}
+
+/* +, - etc */
+/* green */
+.opt {
+  color: #859900;
+}
+
+/* brackets and object names*/
+/* base0 (body text) */
+.std {
+  color: #839496;
+}
+
+/* the word `function` */
+/* yellow */
+.kwa {
+  color: #b58900;
+}
+
+/* <- :*/
+/* green */
+.kwb {
+  color: #859900;
+}
+
+/* argument names */
+/* base0 body text / default code */
+.kwc {
+  color: #839496;
+}
+
+/* base R function names */
+/* blue */
+.kwd {
+  color: #268bd2;
+}

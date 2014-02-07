@@ -32,7 +32,7 @@ opts_chunk$set(warning=FALSE, message=FALSE, tidy=FALSE, refresh=TRUE,
   cache.path="../cache/", cache.lazy=FALSE)
 opts_chunk$set(dev = 'pdf')
 opts_knit$set(out.format = "latex")
-thm <- knit_theme$get("solarized.css")
+thm <- knit_theme$get("solarized-dark.css")
 knit_theme$set(thm)
 @
 
@@ -406,8 +406,7 @@ We can re-create Fig.~1 in the paper, which is a more customized version of the 
 
 TODO fix this Fig 1 plot. TODO add median and interquartile ribbon to these plots. The black lines aren't showing the overall model. Maybe log transform the y axis.
 
-<<partial-plots-base, cache=FALSE, eval=TRUE>>=
-source("make-partial-dependence-baseplot.R")
+<<partial-plots-base, child='make-partial-dependence-baseplot.Rnw', echo=FALSE, results=FALSE>>=
 @
 
 \section{Merging risk predictions with contemporary species distributions}
