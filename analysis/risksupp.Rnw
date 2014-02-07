@@ -355,7 +355,7 @@ partial_dat <- ldply(c(stage_order, "all"), function(stage_name) {
     })
   p2$stage <- stage_name
   p2
-  })
+})
 @
 
 We will get the median and interquartile range of the marginal effects.
@@ -577,7 +577,7 @@ We can also look at the distribution of our predictions by province and class. T
 er <- readShapePoly("../data/MEOW2/meow_ecos.shp")
 prov_names <- er@data[,c("PROVINCE", "PROV_CODE")]
 prov_names <- prov_names[!duplicated(prov_names), ]
-temp <- plyr::join(d.eco.filled, prov_names)
+temp <- plyr::join(d.eco.filled, prov_names, by = "PROV_CODE")
 temp <- transform(temp, PROV_pretty = paste(PROV_CODE, PROVINCE))
 ggplot(temp, aes(mean_observed + 0.001)) +
   geom_histogram(aes(fill = class, colour = class),
@@ -597,7 +597,7 @@ tropical_test <- reshape2::melt(by.prov.classes, id.vars =
   c("mean.lat.range", "mean.occupancy", "mean.gcd", "log_OBIS_records",
     "mean.richness"))
 tropical_test <- plyr::join(tropical_test, by.prov.classes[, c("PROV_CODE",
-    "class", "Lat_Zone", "mean.ext")])
+    "class", "Lat_Zone", "mean.ext")], by = c("PROV_CODE", "class", "Lat_Zone"))
 
 ggplot(tropical_test,
   aes(value, mean.ext, colour = Lat_Zone, shape = Lat_Zone)) +
