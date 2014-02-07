@@ -1,0 +1,166 @@
+#' Make class-level extinction probability maps
+#'
+#' This function makes a multipanel figure showing extinction probability (or
+#' other measure) by phylogenetic class.
+#'
+#' @param er_dat A data frame with the data to plot. Should have
+#'   \code{\link[ggplot2]{fortify}} data from a
+#'   \code{\link[maptools]{readShapePoly}} version of the EcoRegion data. Also
+#'   should have columns \code{N.gen}, \code{mean.ext}. \code{mean.ext} should
+#'   contain *log*-transformed extinction probability.
+#' @param min_prov_genera The minimum contemporary genera per province *per
+#' class* required to plot.
+#' @param col_pal The colour palette to plot with. Should be approximately a
+#'   vector of length 9.
+#' @param plot_column A character value giving the name of the column to plot.
+#' @param plot_order A vector of character giving the order of the class panels
+#' to plot. Should contain \code{c("Mammalia", "Elasmobranchii", "Anthozoa",
+#' "Gastropoda","Bivalvia", "Echinoidea")}.
+#' @param yticks Locations of y-axis labels.
+#' @param ylabel Text to label the colour axis with.
+#' @export
+
+map_class_ext <- function(er_dat, min_prov_genera = 20,
+  col_pal = RColorBrewer::brewer.pal(9, "YlOrRd"),
+  plot_column = "mean.ext", plot_order = c("Mammalia", "Elasmobranchii",
+    "Anthozoa", "Gastropoda", "Echinoidea", "Bivalvia"),
+  yticks = c(0.002, 0.01, 0.05, 0.1, 0.2, 0.5, 1),
+  ylabel = "Intrinsic extinction probability") {
+
+  plot_order <- data.frame(class = plot_order, plot_order = 1:length(plot_order))
+
+  er.df <- er_dat
+  plot_col_n <- (1:ncol(er_dat))[names(er_dat) %in% plot_column]
+  er.df$value.to.plot <- NULL
+  er.df$value.to.plot <- er.df[, plot_col_n]
+
+  # remove provinces with fewer than a specified number of genera:
+  er.df <- gdata::drop.levels(subset(er.df, er.df$N.gen >= min_prov_genera))
+
+  er.df <- plyr::ddply(er.df, "class", transform, value.to.plot.01 =
+      range01(value.to.plot))
+  er.df <- plyr::ddply(er.df, "class", transform, lower.col.cut =
+      min(value.to.plot), upper.col.cut = max(value.to.plot))
+  # colours to plot:
+  er.df$col.pal.ext.risk <- col_pal[findInterval(er.df$value.to.plot.01,
+    seq(-0.0001, 1.0001, length.out = 10))]
+
+  # add projected x and y values to plot:
+  er.df.mol <- mapproject(list(x = er.df$long, y = er.df$lat), proj = "mollweide")
+  er.df.m <- er.df
+  er.df.m$x <- er.df.mol$x
+  er.df.m$y <- er.df.mol$y
+
+  # Create a box/oval to outline the map:
+  N <- 100
+  x.s <- seq(-180, 180, length.out = N)
+  y.s <- seq(-90, 90, length.out = N)
+  square <- data.frame(x = c(x.s, rep(x.s[N], N), rev(x.s), rep(x.s[1],
+    N)), y = c(rep(y.s[1], N), y.s, rep(y.s[N], N), rev(y.s)))
+  oval <- mapproj::mapproject(list(x = square$x, y = square$y), proj = "mollweide")
+
+  er.df.m <- plyr::join(er.df.m, plot_order, by = "class")
+
+  # layout:
+  mw <- 88 # map width
+  mg <- 1 # map gap
+  kw <- 3 # key width
+  kg <- 5 # key gap
+  nrow <- 3
+  N <- nrow*2*2
+
+  lo <- matrix(ncol = mw*2 + kw*2 + mg*2 + kg*2, nrow = nrow)
+  for(row.i in seq(1, nrow)) {
+    i <- (row.i - 1) * 4 + 1
+    lo[row.i, ] <-
+      c(rep(i+0, mw), # map width
+        rep(N+i+0, mg), # map gap
+        rep(i+1, kw), # key width
+        rep(N+i+1, kg), # key gap
+        rep(i+2, mw), # map width
+        rep(N+i+2, mg), # map gap
+        rep(i+3, kw), # key width
+        rep(N+i+3, kg)) # key gap
+  }
+
+  layout(lo)
+
+  par(mar = c(0,0,0, 0), oma = c(0,0,1,3.5))
+  par(cex = 0.5)
+  par(tck = -0.15)
+  par(mgp = c(3, 0.35, 0))
+
+  ii <<- 0 # for panel counting
+
+  plyr::d_ply(er.df.m, "plot_order",
+    function(class.dat) {
+      ii <<- ii + 1
+      message(paste("Plotting", unique(class.dat$class)))
+
+      # remove provinces with fewer than a specified number of genera:
+      class.dat <- gdata::drop.levels(subset(class.dat, class.dat$N.gen >=
+          min_prov_genera))
+
+      # Set up a blank map:
+      maps::map("world", proj = "mollweide",  col = "grey69", fill = TRUE, lwd =
+          0.9, myborder = c(0, 0), type = "n", wrap = FALSE, resolution = 0,
+        xlim = c(-178, 178), plot = TRUE, border = "grey69", mar = c(0,
+          0, 0, 0))
+
+      polygon(oval, col = "grey85", border = NA, lwd = 1.2)
+
+      # Add the eco provinces:
+      plyr::d_ply(class.dat, "group", function(class.group.dat) {
+        with(class.group.dat, polygon(x, y, border = NA, col =
+            col.pal.ext.risk, lwd = 1.5))
+      })
+
+      # Add the land on top:
+      maps::map("world", proj = "", mar = c(0, 0, 0, 0), col = "grey60", fill =
+          TRUE, lwd = .55, myborder = c(0, 0), border = "grey60", wrap =
+          FALSE, resolution = 0, xlim = c(-178, 178), plot = TRUE, add =
+          TRUE)
+
+      # patches:
+      with(ant_patch, polygon(x, y, col = "grey60", border = FALSE))
+      with(russia_patch, polygon(x-0.01, y, col = "white", border = FALSE))
+
+      # border:
+      lines(oval, col = "grey60", lwd = 1.2)
+
+      # Label each panel:
+      label <- unique(class.dat$class)
+      if(label == "Malacostraca") label <- "Decapoda"
+
+      mtext(substitute(paste(phantom("g"), bold(let), " ", lab, phantom("g")),
+        list(let = LETTERS[ii], lab = as.character(label))),
+        line = -1.2, cex = 0.8, col = "grey30")
+
+      usr <- par("usr")
+
+      # Colour key:
+      par(las = 1)
+      col.regions <- with(class.dat, seq(unique(lower.col.cut),
+        unique(upper.col.cut), length.out = 10))
+      loc.limits <- with(class.dat, c(min(value.to.plot), max(value.to.plot)))
+      add_locator <- FALSE
+
+      ll <- exp(min(er.df$value.to.plot))
+      uu <- exp(max(er.df$value.to.plot))
+      yrange <- yticks[yticks >= ll & yticks <= uu]
+
+      col_box_key(col.pal = col_pal, limits = c(min(er.df$value.to.plot),
+        max(er.df$value.to.plot)), width = .3, col.regions =
+          col.regions, N = 10, bg = "grey85", border.col = "grey60", at =
+          log(yrange), at.labels = yrange,
+        add_locator = add_locator, loc_limits =
+          loc.limits, loc_col = "black", loc_width = 2)
+
+    })
+  mtext(ylabel, side = 4, outer = TRUE, line = 2.0, las = 0, cex = 0.8, col = "grey30")
+}
+
+
+#' Put data on range from 0 to 1 and assign colours
+range01 <- function(x){(x-min(x))/(max(x)-min(x))}
+

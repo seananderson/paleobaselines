@@ -606,7 +606,17 @@ ggplot(tropical_test,
 \section{Mapping extinction probabilities}
 
 <<plot-class-maps, cache=FALSE>>=
-source("plot-class-ext-maps.R")
+# create the dataset to map:
+load("../data/by.prov.classes.rda")
+er <- maptools::readShapePoly("../data/MEOW2/meow_ecos.shp")
+er@data$id = rownames(er@data)
+er_points = ggplot2::fortify(er, region = "id")
+er_dat_class <- plyr::join(er_points, er@data, by = "id")
+er_dat_class <- plyr::join(er_dat_class, by.prov.classes, by = "PROV_CODE")
+
+pdf("../figs/class-risk-maps-mean-log-ext.pdf", width = 6.25, height = 4.8)
+map_class_ext(er_dat_class)
+dev.off()
 @
 
 <<plot-hotspots, cache=FALSE>>=

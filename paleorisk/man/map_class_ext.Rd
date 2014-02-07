@@ -1,0 +1,41 @@
+\name{map_class_ext}
+\alias{map_class_ext}
+\title{Make class-level extinction probability maps}
+\usage{
+map_class_ext(er_dat, min_prov_genera = 20,
+  col_pal = RColorBrewer::brewer.pal(9, "YlOrRd"), plot_column = "mean.ext",
+  plot_order = c("Mammalia", "Elasmobranchii", "Anthozoa", "Gastropoda",
+  "Echinoidea", "Bivalvia"), yticks = c(0.002, 0.01, 0.05, 0.1, 0.2, 0.5, 1),
+  ylabel = "Intrinsic extinction probability")
+}
+\arguments{
+  \item{er_dat}{A data frame with the data to plot. Should
+  have \code{\link[ggplot2]{fortify}} data from a
+  \code{\link[maptools]{readShapePoly}} version of the
+  EcoRegion data. Also should have columns \code{N.gen},
+  \code{mean.ext}. \code{mean.ext} should contain
+  *log*-transformed extinction probability.}
+
+  \item{min_prov_genera}{The minimum contemporary genera
+  per province *per class* required to plot.}
+
+  \item{col_pal}{The colour palette to plot with. Should be
+  approximately a vector of length 9.}
+
+  \item{plot_column}{A character value giving the name of
+  the column to plot.}
+
+  \item{plot_order}{A vector of character giving the order
+  of the class panels to plot. Should contain
+  \code{c("Mammalia", "Elasmobranchii", "Anthozoa",
+  "Gastropoda","Bivalvia", "Echinoidea")}.}
+
+  \item{yticks}{Locations of y-axis labels.}
+
+  \item{ylabel}{Text to label the colour axis with.}
+}
+\description{
+This function makes a multipanel figure showing extinction
+probability (or other measure) by phylogenetic class.
+}
+
