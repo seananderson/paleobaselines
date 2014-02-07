@@ -406,7 +406,7 @@ We can re-create Fig.~1 in the paper, which is a more customized version of the 
 
 TODO fix this Fig 1 plot. TODO add median and interquartile ribbon to these plots. The black lines aren't showing the overall model. Maybe log transform the y axis.
 
-<<partial-plots-base>>=
+<<partial-plots-base, cache=FALSE, eval=TRUE>>=
 source("make-partial-dependence-baseplot.R")
 @
 
