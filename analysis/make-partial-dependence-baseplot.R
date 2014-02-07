@@ -5,6 +5,7 @@
 g <- partial_groups
 o <- partial_continuous
 g <- subset(g, !is.na(value))
+g <- subset(g, median < 0.98)
 
 pal <- rev(colorspace::rainbow_hcl(4, c = 90, l = 65))
 pal <- c(pal, "black")
@@ -37,15 +38,15 @@ g[g$.class %in% "Decapoda", ".class"] <- "Dec."
 class.means <- plyr::ddply(g, ".class", plyr::summarize, class.mean.resp = mean(median))
 order.means <- plyr::ddply(g, ".order", plyr::summarize, order.mean.resp = mean(median))
 
-g.all <- subset(g, stage == "all")
-g <- subset(g, stage != "all")
+#g.all <- subset(g, stage == "all")
+#g <- subset(g, stage != "all")
 
 #o.all <- subset(o, stage == "all")
 #o <- subset(o, stage != "all")
 
 g <- reshape2::dcast(g,  .class + .order ~ stage, value.var = "median")
-g <- plyr::join(g, class.means)
-g <- plyr::join(g, order.means)
+g <- plyr::join(g, class.means, by = ".class")
+g <- plyr::join(g, order.means, by = ".order")
 g <- g[order(-g$class.mean.resp, -g$order.mean.resp), ]
 
 # for convenience:
@@ -54,7 +55,7 @@ n.tot <- nrow(g)
 
 # assign class numbers for convenience:
 c.num.df <- data.frame(c.num = 1:n.class, .class = unique(g$.class), stringsAsFactors = FALSE)
-g <- plyr::join(g, c.num.df)
+g <- plyr::join(g, c.num.df, by = ".class")
 
 # figure out x positions:
 g$x.pos <- 1:nrow(g)
@@ -75,10 +76,16 @@ o.names <- data.frame(predictor = c("occupancy", "occurrences", "richness",
       3), "Km", rep("Absolute degrees", 3), "Degrees"), stringsAsFactors =
   FALSE)
 
-o <- plyr::join(o, o.names)
+o <- plyr::join(o, o.names, by = "predictor")
 
 o$predictor <- factor(o$predictor, levels = c("occupancy", "occurrences",
     "richness", "great.circle", "max.lat", "min.lat", "mean.lat", "lat.range"))
+
+col_df <- data.frame(stage = c("Lower Miocene", "Middle Miocene",
+    "Upper Miocene", "Plio-Pleistocene", "all"), col = pal,
+  stage_order = 1:length(pal), lwd = lwd.u, stringsAsFactors = FALSE)
+
+o <- plyr::join(o, col_df, by = "stage")
 
 l <- rbind(c(1,2,3,4),
            c(5,6,7,8),
@@ -98,8 +105,8 @@ x <- x[order(x$value), ]
 plot(1, 1, xlim = range(x$value), ylim = c(o.ylim.l, o.ylim.u), ann = FALSE,
   axes = FALSE, xaxs = "i", yaxs = "i", type = "n")
 for(i in 1:length(unique(x$stage))) {
-  dat <- subset(x, stage == unique(x$stage)[i])
-  with(dat, lines(value, median, col = pal[i], lwd = lwd.u[i]))
+  dat <- subset(x, stage_order == i)
+  with(dat, lines(value, median, col = col, lwd = lwd))
 }
 box(col = col.axis)
 axis(1, las = 1, col = col.axis, col.axis = col.axis, cex.axis = cex.axis, padj
@@ -148,15 +155,18 @@ abline(v = g$x.pos, col = "grey88", lwd = .5)
 # the points and lines:
 # and add data:
 add.seg <- TRUE
-cols.plot <- 3:7
+
+stage_ord <- c("Lower Miocene", "Middle Miocene", "Upper Miocene", "Plio-Pleistocene", "all")
+
 for(i in 1:5) {
-  ci <- cols.plot[i] # [c]olumn [i]
+  ci <- which(names(g) == stage_ord[i]) # [c]olumn [i]
   points(g$x.pos, 0.001 + g[,ci], col = pal[i], pch = pch[i], cex = cex[i])
   if(add.seg) { # for speed of development
   plyr::d_ply(g, ".class", function(x) {
     for(j in 1:(nrow(x)-1)){
       if(nrow(x) > 1)
-        segments(x[j,"x.pos"], x[j, ci] + 0.001, x[j,"x.pos"]+1, x[j+1, ci] + 0.001, col = pal[i], lwd = lwd[i])
+        segments(x[j,"x.pos"], x[j, ci] + 0.001, x[j,"x.pos"]+1, x[j+1, ci] +
+          0.001, col = pal[i], lwd = lwd[i])
       #else
         #points(x[1,"x.pos"], x[1, ci], col = pal[i], cex[i])
     }
