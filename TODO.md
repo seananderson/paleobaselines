@@ -1,7 +1,7 @@
 # TODO
 
-[ ] move the class mapping code over to a function (hotspots one is done)
-  
+[x] move the class mapping code over to a function (hotspots one is done)
+
 [ ] then start cranking out class and overall sensitivity analysis maps, starting with what we had and probably toggling some other options too
 
 [ ] fixing the real figure 1
