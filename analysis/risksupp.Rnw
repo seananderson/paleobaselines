@@ -336,6 +336,7 @@ We will fit the models for each stage. Within each stage we will fit the model a
 stage_models <- llply(c(stage_order, "all"), function(x)
   rlply(20, fit_stage_models(stcen2, stage_name = x)))
 names(stage_models) <- c(stage_order, "all")
+saveRDS(stage_models, file = "../data/stage_models.rds")
 @
 
 And, we will go through the stage-based models and pull out the partial dependence data:
