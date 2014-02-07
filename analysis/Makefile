@@ -2,21 +2,21 @@ all: pdf
 
 pdf:
 	Rscript -e "knitr::knit('risksupp.Rnw')"
-	xelatex risksupp
+	pdflatex risksupp
 	cp risksupp.pdf ~/Dropbox/Public/
 
 knit:
 	Rscript -e "knitr::knit('risksupp.Rnw')"
 
 tex:
-	xelatex risksupp
+	pdflatex risksupp
 	cp risksupp.pdf ~/Dropbox/Public/
 
 bib:
-	xelatex risksupp
+	pdflatex risksupp
 	bibtex risksupp
-	xelatex risksupp
-	xelatex risksupp
+	pdflatex risksupp
+	pdflatex risksupp
 	cp risksupp.pdf ~/Dropbox/Public/
 
 clean:
