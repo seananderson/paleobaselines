@@ -162,5 +162,8 @@ map_class_ext <- function(er_dat, min_prov_genera = 20,
 
 
 #' Put data on range from 0 to 1 and assign colours
+#'
+#' @param x A numeric vector to scaled between 0 and 1.
+#'
+#' @export
 range01 <- function(x){(x-min(x))/(max(x)-min(x))}
-

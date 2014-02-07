@@ -4,6 +4,9 @@
 \usage{
 range01(x)
 }
+\arguments{
+  \item{x}{A numeric vector to scaled between 0 and 1.}
+}
 \description{
 Put data on range from 0 to 1 and assign colours
 }
