@@ -8,11 +8,11 @@
 \let\pkg=\textbf
 \let\fn=\texttt
 
-\usepackage{fontspec}
-\defaultfontfeatures{Ligatures=TeX}
-\setsansfont{Calibri}
-\setmonofont{Inconsolata}
-\setmainfont{Linux Libertine}
+% \usepackage{fontspec}
+% \defaultfontfeatures{Ligatures=TeX}
+% \setsansfont{Calibri}
+% \setmonofont{Inconsolata}
+% \setmainfont{Linux Libertine}
 
 \usepackage[nofiglist,notablist,nomarkers,figuresfirst]{endfloat}
 \renewcommand{\theposttable}{S\arabic{posttbl}}
@@ -608,7 +608,7 @@ ggplot(tropical_test,
 
 \section{Mapping extinction probabilities}
 
-<<plot-class-maps, cache=FALSE>>=
+<<plot-class-maps>>=
 # create the dataset to map:
 load("../data/by.prov.classes.rda")
 er <- maptools::readShapePoly("../data/MEOW2/meow_ecos.shp")
@@ -622,17 +622,15 @@ map_class_ext(er_dat_class)
 dev.off()
 @
 
-<<plot-hotspots, cache=FALSE>>=
+<<plot-hotspots>>=
 # create the dataset to map:
 load("../data/by.prov.all.rda")
-er <- maptools::readShapePoly("../data/MEOW2/meow_ecos.shp")
-er@data$id = rownames(er@data)
-er_points = ggplot2::fortify(er, region = "id")
 er_dat <- plyr::join(er_points, er@data, by = "id")
 er_dat <- plyr::join(er_dat, by.prov.all, by = "PROV_CODE")
 
 pdf("../figs/hotspots.pdf", width = 7, height = 4)
-map_hotspots(er_dat)
+par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0))
+map_hotspots(er_dat, min_prov_genera = 100)
 dev.off()
 @
 
