@@ -124,7 +124,7 @@ stcen <- ldply(stage_names, function(x)
   standardize_data(data, interval_name = x))
 
 # Calibrate based on Plio-Pleistocene?
-stcen <- calibrate_fossil(stcen)
+# stcen <- calibrate_fossil(stcen)
 
 saveRDS(stcen, file = "../data/stand-predictors-cen-obis.rds")
 @
@@ -512,19 +512,21 @@ modern <- readRDS("../data/modern-predictions.rds")
 d.eco.filled <- merge(d.eco.filled, modern, by = "genus", all.x = FALSE)
 
 # and calculate mean values by class-province or for the provinces overall:
-by.prov.classes <- summarise(group_by(d.eco.filled, class, PROV_CODE), mean.ext
-  = mean(log(mean_observed + 0.001)), median.ext = median(mean_observed), N.gen
-  = length(unique(genus)), mean.occupancy = mean(occupancy), mean.occurrences =
-  mean(occurrences), mean.min.lat = mean(min.lat), mean.max.lat =
-  mean(max.lat), mean.mean.lat = mean(mean.lat), mean.gcd = mean(great.circle),
-  mean.lat.range = mean(lat.range), mean.richness = mean(richness))
+by.prov.classes <- summarise(group_by(na.omit(d.eco.filled), class,
+    PROV_CODE), mean.ext = mean(log(mean_observed + 0.001)), median.ext =
+  median(mean_observed), N.gen = length(unique(genus)), mean.occupancy =
+  mean(occupancy), mean.occurrences = mean(occurrences), mean.min.lat =
+  mean(min.lat), mean.max.lat = mean(max.lat), mean.mean.lat = mean(mean.lat),
+  mean.gcd = mean(great.circle), mean.lat.range = mean(lat.range),
+  mean.richness = mean(richness))
 
-by.prov.all <- summarise(group_by(d.eco.filled, PROV_CODE), mean.ext =
+by.prov.all <- summarise(group_by(na.omit(d.eco.filled), PROV_CODE), mean.ext =
   mean(log(mean_observed + 0.001)), median.ext = median(mean_observed), N.gen =
   length(unique(genus)), mean.occupancy = mean(occupancy), mean.occurrences =
   mean(occurrences), mean.min.lat = mean(min.lat), mean.max.lat =
-  mean(max.lat), mean.mean.lat = mean(mean.lat), mean.gcd = mean(great.circle),
-  mean.lat.range = mean(lat.range), mean.richness = mean(richness))
+  mean(max.lat), mean.mean.lat = mean(mean.lat), mean.gcd =
+  mean(great.circle), mean.lat.range = mean(lat.range), mean.richness =
+  mean(richness))
 
 # A second version that takes the mean of the class means:
 by.prov.all2 <- summarise(group_by(by.prov.classes, PROV_CODE),
