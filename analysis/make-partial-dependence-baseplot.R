@@ -14,6 +14,7 @@ o <- plyr::ddply(o, c("stage", "predictor"), plyr::mutate, adj = - mean(median,
 #g <- plyr::ddply(g, "stage", plyr::mutate, adj = - mean(median, na.rm = TRUE) +
   #0.5, median = median + adj, lower = lower + adj, upper = upper + adj)
 
+lwd.u <- c(rep(2.0, 4), 3.9)
 pal <- rev(colorspace::rainbow_hcl(4, c = 90, l = 65))
 pal <- c(pal, "#000000")
 pch <- c(rep(19, 4), 19)
@@ -24,12 +25,12 @@ cex.axis <- 0.85
 cols.plot <- 3:7
 col.main.labels <- "grey15"
 col.axis.labels <- "grey45"
-col.left.axis.label <- "grey30"
+col.left.axis.label <- "grey20"
 g.ylim.l <- 0
 g.ylim.u <- 1
-o.ylim.l <- 0
-o.ylim.u <- 1
-o.y.axis.at <- c(0, 0.5, 1)
+o.ylim.l <- 0.25
+o.ylim.u <- 0.98
+o.y.axis.at <- c(0.3, 0.6, 0.9)
 g.y.axis.at <- c(0, 0.5, 1)
 rect.cols <- rep(c("grey93", NA), 99)
 
@@ -99,9 +100,9 @@ o.names <- data.frame(predictor = c("occupancy", "occurrences", "richness",
     "Great circle distance", "Maximum latitude", "Minimum latitude",
     "Mean latitude", "Latitude range"),
     axis.1 = c(rep("c(0, 0.4, 0.8)", 3), "c(5000, 15000)",
-    rep("c(20, 40, 60)", 3), "c(20, 60, 100)"), units = c(rep("Scaled value",
-      3), "Km", rep("Absolute degrees", 3), "Degrees"), stringsAsFactors =
-  FALSE)
+    rep("c(20, 40, 60)", 3), "c(20, 40, 60)"), units = c(rep("Scaled value",
+      3), "Km", rep("Absolute degrees", 3), "Absolute Degrees"),
+  stringsAsFactors = FALSE)
 
 o <- plyr::join(o, o.names, by = "predictor")
 
@@ -125,7 +126,6 @@ layout(l)
 par(oma = c(5, 2.7, 1.2, .6), cex = 0.8, tck = -0.03, mgp = c(2, 0.35,
     0), mar = c(2.4,.2,0,0))
 ii <<- 0
-lwd.u <- c(rep(2.0, 4), 3.9)
 plyr::d_ply(o, "predictor", function(x) {
   ii <<- ii + 1
 x <- x[order(x$value), ]
@@ -149,14 +149,14 @@ if(ii == 3) {
   legend_stages <- col_df$stage
   legend_stages <- sub("all", "Entire Neogene", legend_stages)
 
-legend(-2.11, par("usr")[4] * 1.23, legend = legend_stages, bty = "n", cex
+legend(-2.11, par("usr")[4] * 1.18, legend = legend_stages, bty = "n", cex
   = 0.8, text.col = "grey40", fill = pal, border = pal, horiz = TRUE)
   par(xpd = FALSE)
 }
 
 u <- par("usr")
 par(xpd = NA)
-text(x = u[1] + (u[2]-u[1])*0.03, y = u[3] + (u[4]-u[3])*.035,
+text(x = u[1] + (u[2]-u[1])*0.03, y = u[4] - (u[4]-u[3])*0.155,
   substitute(paste(bold(let), " ", lab, phantom("g")), list(let = LETTERS[ii],
       lab = unique(dat$predictor.clean))), cex = 0.8, adj = c(0, 0), col =
   col.main.labels)
