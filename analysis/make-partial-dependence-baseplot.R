@@ -5,18 +5,26 @@
 g <- partial_groups
 o <- partial_continuous
 g <- subset(g, !is.na(value))
-g <- subset(g, median < 0.98)
+g <- subset(g, median < 0.95)
+
+o <- plyr::ddply(o, c("stage", "predictor"), plyr::mutate, adj = - mean(median,
+    na.rm = TRUE) + 0.5, median = median + adj, lower = lower + adj, upper =
+  upper + adj)
+
+#g <- plyr::ddply(g, "stage", plyr::mutate, adj = - mean(median, na.rm = TRUE) +
+  #0.5, median = median + adj, lower = lower + adj, upper = upper + adj)
 
 pal <- rev(colorspace::rainbow_hcl(4, c = 90, l = 65))
-pal <- c(pal, "black")
+pal <- c(pal, "#000000")
 pch <- c(rep(19, 4), 19)
-cex <- c(rep(0.55, 4), .8) * 1.2
+cex <- c(rep(0.55, 4), .75) * 1.4
 lwd <- c(rep(1.5, 4), 2.6)
 col.axis <- "grey55"
 cex.axis <- 0.85
 cols.plot <- 3:7
 col.main.labels <- "grey15"
 col.axis.labels <- "grey45"
+col.left.axis.label <- "grey30"
 g.ylim.l <- 0
 g.ylim.u <- 1
 o.ylim.l <- 0
@@ -35,8 +43,10 @@ g[g$.order %in% "az", ".order"] <- "Azoozanthelate"
 g[g$.order %in% "other", ".order"] <- "Other"
 g[g$.class %in% "Decapoda", ".class"] <- "Dec."
 
-class.means <- plyr::ddply(g, ".class", plyr::summarize, class.mean.resp = mean(median))
-order.means <- plyr::ddply(g, ".order", plyr::summarize, order.mean.resp = mean(median))
+class.means <- plyr::ddply(subset(g, stage == "all"), ".class", plyr::summarize,
+  class.mean.resp = mean(median))
+order.means <- plyr::ddply(subset(g, stage == "all"), ".order", plyr::summarize,
+  order.mean.resp = mean(median))
 
 #g.all <- subset(g, stage == "all")
 #g <- subset(g, stage != "all")
@@ -44,10 +54,21 @@ order.means <- plyr::ddply(g, ".order", plyr::summarize, order.mean.resp = mean(
 #o.all <- subset(o, stage == "all")
 #o <- subset(o, stage != "all")
 
+g.l <- reshape2::dcast(g,  .class + .order ~ stage, value.var = "lower")
+g.u <- reshape2::dcast(g,  .class + .order ~ stage, value.var = "upper")
 g <- reshape2::dcast(g,  .class + .order ~ stage, value.var = "median")
+
 g <- plyr::join(g, class.means, by = ".class")
 g <- plyr::join(g, order.means, by = ".order")
 g <- g[order(-g$class.mean.resp, -g$order.mean.resp), ]
+
+g.l <- plyr::join(g.l, class.means, by = ".class")
+g.l <- plyr::join(g.l, order.means, by = ".order")
+g.l <- g.l[order(-g.l$class.mean.resp, -g.l$order.mean.resp), ]
+
+g.u <- plyr::join(g.u, class.means, by = ".class")
+g.u <- plyr::join(g.u, order.means, by = ".order")
+g.u <- g.u[order(-g.u$class.mean.resp, -g.u$order.mean.resp), ]
 
 # for convenience:
 n.class <- length(unique(g$.class))
@@ -56,15 +77,21 @@ n.tot <- nrow(g)
 # assign class numbers for convenience:
 c.num.df <- data.frame(c.num = 1:n.class, .class = unique(g$.class), stringsAsFactors = FALSE)
 g <- plyr::join(g, c.num.df, by = ".class")
+g.u <- plyr::join(g.u, c.num.df, by = ".class")
+g.l <- plyr::join(g.l, c.num.df, by = ".class")
 
 # figure out x positions:
 g$x.pos <- 1:nrow(g)
+g.l$x.pos <- 1:nrow(g.l)
+g.u$x.pos <- 1:nrow(g.u)
 diffs <- diff(g$c.num)
 g$diffs <- c(1, diffs)
 x.gap <- .4
 x.gap.lab <- -.3
 diffs <- diffs*x.gap
 g$x.pos <- g$x.pos + cumsum(c(0, diffs))
+g.l$x.pos <- g.l$x.pos + cumsum(c(0, diffs))
+g.u$x.pos <- g.u$x.pos + cumsum(c(0, diffs))
 
 o.names <- data.frame(predictor = c("occupancy", "occurrences", "richness",
     "great.circle", "max.lat", "min.lat", "mean.lat", "lat.range"),
@@ -106,6 +133,8 @@ plot(1, 1, xlim = range(x$value), ylim = c(o.ylim.l, o.ylim.u), ann = FALSE,
   axes = FALSE, xaxs = "i", yaxs = "i", type = "n")
 for(i in 1:length(unique(x$stage))) {
   dat <- subset(x, stage_order == i)
+  with(dat, polygon(c(value, rev(value)), c(lower, rev(upper)), border = NA,
+      col = paste0(col, "50")))
   with(dat, lines(value, median, col = col, lwd = lwd))
 }
 box(col = col.axis)
@@ -116,14 +145,18 @@ if(ii %in% c(1, 5)) axis(2, at = o.y.axis.at, las = 1, col = col.axis, col.axis
 
 if(ii == 3) {
   par(xpd = NA)
-legend(-2.11, par("usr")[4] * 1.23, legend = names(g)[cols.plot], bty = "n", cex
+
+  legend_stages <- col_df$stage
+  legend_stages <- sub("all", "Entire Neogene", legend_stages)
+
+legend(-2.11, par("usr")[4] * 1.23, legend = legend_stages, bty = "n", cex
   = 0.8, text.col = "grey40", fill = pal, border = pal, horiz = TRUE)
   par(xpd = FALSE)
 }
 
 u <- par("usr")
 par(xpd = NA)
-text(x = u[1] + (u[2]-u[1])*0.03, y = u[4] - (u[4]-u[3])*.135,
+text(x = u[1] + (u[2]-u[1])*0.03, y = u[3] + (u[4]-u[3])*.035,
   substitute(paste(bold(let), " ", lab, phantom("g")), list(let = LETTERS[ii],
       lab = unique(dat$predictor.clean))), cex = 0.8, adj = c(0, 0), col =
   col.main.labels)
@@ -133,7 +166,7 @@ par(xpd = FALSE)
 
 ## lower half:
 # make blank plot:
-plot(1, 1, xlim = c(0.3, max(g$x.pos)+0.5), ylim = c(0.001, 1), yaxs = "i", axes =
+plot(1, 1, xlim = c(0.3, max(g$x.pos)+0.5), ylim = c(0, 1), yaxs = "i", axes =
   FALSE, ann = FALSE, type = "n", xaxs = "i", log = "")
 
 # shading:
@@ -142,7 +175,7 @@ rects <- subset(g, diffs == 1)
 rects <- rbind(rects, rects[nrow(rects), ])
 rects[nrow(rects), "x.pos"] <- 99
 for(i in 1:(nrow(rects)-1)) {
-  rect(rects[i, "x.pos"]-x.gap + x.gap.lab, 0.001, rects[i+1, "x.pos"]-x.gap
+  rect(rects[i, "x.pos"]-x.gap + x.gap.lab, 0, rects[i+1, "x.pos"]-x.gap
     + x.gap.lab, 1, border = NA, col = rect.cols[i])
 }
 
@@ -157,25 +190,28 @@ abline(v = g$x.pos, col = "grey88", lwd = .5)
 add.seg <- TRUE
 
 stage_ord <- c("Lower Miocene", "Middle Miocene", "Upper Miocene", "Plio-Pleistocene", "all")
+box(col= col.axis)
 
 for(i in 1:5) {
   ci <- which(names(g) == stage_ord[i]) # [c]olumn [i]
-  points(g$x.pos, 0.001 + g[,ci], col = pal[i], pch = pch[i], cex = cex[i])
+  par(xpd = NA)
+  points(g$x.pos, g[,ci], col = pal[i], pch = pch[i], cex = cex[i])
+  par(xpd = FALSE)
+  segments(g.l$x.pos, g.l[,ci], g.u$x.pos, g.u[,ci], col = paste0(pal[i], 99), lwd = 1.5)
   if(add.seg) { # for speed of development
   plyr::d_ply(g, ".class", function(x) {
     for(j in 1:(nrow(x)-1)){
-      if(nrow(x) > 1)
-        segments(x[j,"x.pos"], x[j, ci] + 0.001, x[j,"x.pos"]+1, x[j+1, ci] +
-          0.001, col = pal[i], lwd = lwd[i])
-      #else
-        #points(x[1,"x.pos"], x[1, ci], col = pal[i], cex[i])
+      if(nrow(x) > 1) {
+        # the lines connecting the dots:
+        segments(x[j,"x.pos"], x[j, ci], x[j,"x.pos"]+1, x[j+1, ci] , col =
+          paste0(pal[i], 70), lwd = lwd[i])
+      }
     }
 })
   }
 }
 
 # axes and labels:
-box(col= col.axis)
 axis(2, at = c(0, 0.5, 1), las = 1, col = col.axis, col.axis = col.axis, cex.axis = cex.axis)
 par(xpd = NA)
 
@@ -198,13 +234,9 @@ par(xpd = FALSE)
 u <- par("usr")
 par(xpd = NA)
 
-#text(x = u[2] - 5.5, y = u[4] - (u[4]-u[3])*0.09, substitute(paste(bold(let), " ", lab), list(let = "I", lab = "Taxonomy")), pos = 4, offset = 0.5, cex = 0.8)
+text(x = 0.60, y = u[3] + (u[4]-u[3])*.035, substitute(paste(bold(let), " ", lab, phantom("g")), list(let = LETTERS[ii+1], lab = "Taxonomy")), cex = 0.8, adj = c(0, 0), col = col.main.labels)
 
-#text(x = u[1] + (u[2]-u[1])*0.01, y = u[4] - (u[4]-u[3])*.135, substitute(paste(bold(let), " ", lab, phantom("g")), list(let = LETTERS[ii+1], lab = "Taxonomy")), cex = 0.8, adj = c(0, 0), col = col.main.labels)
-text(x = 24.12, y = u[4] - (u[4]-u[3])*.135, substitute(paste(bold(let), " ", lab, phantom("g")), list(let = LETTERS[ii+1], lab = "Taxonomy")), cex = 0.8, adj = c(0, 0), col = col.main.labels)
-
-#mtext("Marginal probability of extinction", side = 2, outer = FALSE, col = col.axis.labels, line = 1.7, cex = 0.75)
-mtext("Marginal probability of extinction", side = 2, outer = FALSE, col = col.axis.labels, line = 1.7, cex = 0.75, adj = -1)
+mtext("Scaled marginal effect on probability of extinction", side = 2, outer = FALSE, col = col.left.axis.label, line = 1.7, cex = 0.75, adj = -0.1)
 
 dev.off()
 
