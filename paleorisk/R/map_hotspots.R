@@ -39,6 +39,9 @@ map_hotspots <- function(er_dat, min_prov_genera = 50, hotspot_thresh = 0.8,
     halp.hot = ifelse(Halpern >= halp.thresh, TRUE, FALSE),
     bur.hot = ifelse(Burrows >= bur.thresh, TRUE, FALSE))
 
+  # remove provinces with fewer than a specified number of genera:
+  er.df <- gdata::drop.levels(subset(er.df,er.df$N.gen >= min_prov_genera))
+
   er.df <- transform(er.df, base.col = ifelse(bur.hot == FALSE & halp.hot ==
       FALSE, "grey85", NA))
 
