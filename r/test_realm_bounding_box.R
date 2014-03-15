@@ -1,7 +1,7 @@
 # ====================================================================
 # Created by:    Sean Anderson, sean@seananderson.ca
 # Created:       Sep 24, 2012
-# Last modified: Feb 20, 2014
+# Last modified: Mar 15, 2014
 # Purpose:       test the realm_bouning_box.R output
 # ====================================================================
 
@@ -20,7 +20,7 @@ composite.occ2 <- composite.occ2[!composite.occ2$group %in% c("Mammalia", "Elasm
 d <- interpolated_provs
 
 # the ecoregion data:
-er <- readShapePoly("~/Dropbox/nescent_extinction_map/data/MEOW2/meow_ecos.shp")
+er <- readShapePoly("../data/MEOW2/meow_ecos.shp")
 er@data$id = rownames(er@data)
 er.points = fortify(er, region = "id")
 er.df <- join(er.points, er@data, by = "id")
