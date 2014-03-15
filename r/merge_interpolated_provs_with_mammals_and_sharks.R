@@ -1,8 +1,8 @@
 # ====================================================================
 # Created by:    Sean Anderson, sean@seananderson.ca
 # Created:       Sep 29, 2012
-# Last modified: Oct 10, 2012
-# Purpose:       Merge the shark and mammal data (which Derek joined) 
+# Last modified: Feb 20, 2014
+# Purpose:       Merge the shark and mammal data (which Derek joined)
 #                with the interpolated province data from the rest.
 #                20121009 - SA - updated to bring in revised data from
 #                Derek that has all sharks
@@ -10,11 +10,11 @@
 #                sharks
 # ====================================================================
 
-setwd("~/Dropbox/nescent_extinction_map/r")
-
-#sharks <- read.csv("../data/SharkProvinceJoinNoBuffer_20121009.csv", stringsAsFactors = FALSE)[,c("PROV_CODE", "species")]
-sharks <- read.csv("../data/SharkProvinceJoin2pt5DegreeBuffer_20121009.csv", stringsAsFactors = FALSE)[,c("PROV_CODE", "species")]
-mar_mamm <- read.csv("../data/MarineMammalProvinceJoin2.csv", stringsAsFactors = FALSE)[,c("PROV_CODE", "BINOMIAL")]
+# TODO bring this data over:
+sharks <- read.csv("../data/SharkProvinceJoin2pt5DegreeBuffer_20121009.csv",
+  stringsAsFactors = FALSE)[,c("PROV_CODE", "species")]
+mar_mamm <- read.csv("../data/MarineMammalProvinceJoin2.csv",
+  stringsAsFactors = FALSE)[,c("PROV_CODE", "BINOMIAL")]
 names(mar_mamm) <- c("PROV_CODE", "species")
 
 sharks$genus <- gsub("([a-zA-Z]+)_[a-zA-Z]+", "\\1", sharks$species)
@@ -57,7 +57,7 @@ interpolated_provs_alt$RLM_CODE <- NULL
 interpolated_provs_all_taxa <- rbind(interpolated_provs, sharks_and_mamm)
 interpolated_provs_alt_all_taxa <- rbind(interpolated_provs_alt, sharks_and_mamm)
 
-save(interpolated_provs_all_taxa, file = "../data/interpolated_provs_all_taxa.rda")
-save(interpolated_provs_alt_all_taxa, file = "../data/interpolated_provs_alt_all_taxa.rda")
-
-# DONE!
+save(interpolated_provs_all_taxa,
+  file = "../data/interpolated_provs_all_taxa.rda")
+save(interpolated_provs_alt_all_taxa,
+  file = "../data/interpolated_provs_alt_all_taxa.rda")

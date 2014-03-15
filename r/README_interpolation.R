@@ -1,7 +1,7 @@
 # ====================================================================
 # Created by:    Sean Anderson, sean@seananderson.ca
 # Created:       Sep 29, 2012
-# Last modified: Feb 06, 2013
+# Last modified: Feb 20, 2014
 # Purpose:       Steps to do interpolation of modern occurrence data
 #                and overlay grid etc.
 # ====================================================================
@@ -22,10 +22,9 @@ source("test_realm_bounding_box.R")
 # to generate these data.
 source("merge_interpolated_provs_with_mammals_and_sharks.R")
 
-# Overlay a grid on the interpolated data to derive an equal area grid version 
+# Overlay a grid on the interpolated data to derive an equal area grid version
 # for extracting range parameters for modelling.
 source("overlay_grid_on_interpolated_provinces.R")
 
 # alternative version without interpolation:
 source("overlay_grid_on_raw_occurrences.R")
-

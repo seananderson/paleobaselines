@@ -1,13 +1,10 @@
 # ====================================================================
 # Created by:    Sean Anderson, sean@seananderson.ca
 # Created:       Sep 21, 2012
-# Last modified: Sep 29, 2012
+# Last modified: Feb 20, 2014
 # Purpose:       Implement the by-realm bounding box.
 # ====================================================================
 
-#
-rm(list = ls())
-setwd("~/Dropbox/nescent_extinction_map/r/")
 require(plyr)
 require(sp)
 require(rgeos) # for overlays with 2 sets of polygons
@@ -16,15 +13,16 @@ require(maptools)
 gpclibPermit()
 gc()
 
-check_plot <- FALSE # Do you want to plot out a diagnostic plot with each genus? Probably not a good thing to enable to if you're running the whole dataset.
+# Do you want to plot out a diagnostic plot with each genus? Probably not a
+# good thing to enable to if you're running the whole dataset.
+check_plot <- FALSE
 
-###
 # add spalding regions to the occurrence data
 load("../data/composite.occ2.rda")
 
-#composite.occ2.mammals.elasmobranchs <- composite.occ2[composite.occ2$group %in% c("Mammalia", "Elasmobranchii"), ] # these came from range maps; no interpolation necessary
-
-composite.occ2 <- composite.occ2[!composite.occ2$group %in% c("Mammalia", "Elasmobranchii"), ] # these came from range maps; no interpolation necessary
+composite.occ2 <- composite.occ2[!composite.occ2$group %in%
+  c("Mammalia", "Elasmobranchii"), ]
+# these came from range maps; no interpolation necessary
 
 er <- readShapePoly("../data/MEOW2/meow_ecos.shp")
 pts <- SpatialPoints(composite.occ2[,c("longitude", "latitude")])
@@ -42,24 +40,19 @@ oc.df <- oc.df[!is.na(oc.df$RLM_CODE), ]
 # and remove redundant rows:
 oc.df <- oc.df[!duplicated(oc.df), ]
 
-####
+# --------
 # now re-arrange the spalding data into a dataframe:
 er@data$id = rownames(er@data)
 er.points = fortify(er, region = "id")
 er.df <- join(er.points, er@data, by = "id")
 er@data$ID <- 1:nrow(er@data)
 
-# get a data frame with the unique taxonomic info:
-#unique_taxa_info <- composite.occ2[,c("group", "match", "genus")][!duplicated(composite.occ2[,c("group", "match", "genus")]), c("group", "match", "genus")]
-#row.names(unique_taxa_info) <- NULL
-
 rm(composite.occ2, pts.over)
 gc()
-####
 # So, oc.df = the occurrence dataframe.
 # And, er.df = the ecoregion dataframe.
 
-####
+# -----------
 # Now I'm going to pull out merged versions of the realm and province
 # polygons.
 #
@@ -75,7 +68,8 @@ realms_SpatialPolygons <- dlply(er@data, "RLM_CODE", function(x) {
   }
   realm_with_many_regions <- SpatialPolygons(regions_to_join)
 # now join them where possible:
-  realm_union_regions <- unionSpatialPolygons(SpP = realm_with_many_regions, IDs = rep(1, length(realm_with_many_regions)))
+  realm_union_regions <- unionSpatialPolygons(SpP = realm_with_many_regions,
+    IDs = rep(1, length(realm_with_many_regions)))
   realm_union_regions
 })
 save(realms_SpatialPolygons, file = "realms_SpatialPolygons.rda")
@@ -92,23 +86,24 @@ prov_SpatialPolygons <- dlply(er@data, "PROV_CODE", function(x) {
   }
   prov_with_many_regions <- SpatialPolygons(regions_to_join)
 # now join them where possible:
-  prov_union_regions <- unionSpatialPolygons(SpP = prov_with_many_regions, IDs = rep(1, length(prov_with_many_regions)))
+  prov_union_regions <- unionSpatialPolygons(SpP = prov_with_many_regions,
+    IDs = rep(1, length(prov_with_many_regions)))
   prov_union_regions
 })
 save(prov_SpatialPolygons, file = "prov_SpatialPolygons.rda")
 
 # Now create a handy lookup table to make this all possible.
 # ddply automatically orders things, so we can do this:
-er_lookup <- ddply(er@data, "PROV_CODE", function(x) {data.frame(PROV_CODE = unique(x$PROV_CODE), RLM_CODE = unique(x$RLM_CODE))})
+er_lookup <- ddply(er@data, "PROV_CODE", function(x) {
+  data.frame(PROV_CODE = unique(x$PROV_CODE), RLM_CODE = unique(x$RLM_CODE))
+})
 save(er_lookup, file = "er_lookup.rda")
 
-#####################################
-# OK, now let's go through each realm of occurrence data and see which
+# -------------------------------------------------
+# Now let's go through each realm of occurrence data and see which
 # provinces to fill in.
 # the main function:
 interpolate_provinces <- function(y) {
-#iter <<- iter + 1
-#print(paste(round(iter/total_iter*100, 1), "% done", sep = ""))
 
 # check if we need to deal with the 180 degree boundary:
 y <- y[order(y$longitude), ] # first order the longitudes so we can check for gaps
@@ -155,8 +150,7 @@ box_east_Polygons <- Polygons(list(box_east_Polygon), ID = 1)
 
 box_SpatialPolygons <- SpatialPolygons(list(box_east_Polygons, box_west_Polygons))
 
-
-} else { # doesn't cross 180 border, so once 1 box will do
+} else { # doesn't cross 180 border, so one 1 box will do
 # Get bounding box coordinates:
 min_lat <- min(y$latitude)
 max_lat <- max(y$latitude)
@@ -175,7 +169,7 @@ box_Polygons <- Polygons(list(box_Polygon), ID = 1)
 box_SpatialPolygons <- SpatialPolygons(list(box_Polygons))
 }
 
-# NOW, time to figure out which provinces are within these bounding
+# Now, time to figure out which provinces are within these bounding
 # boxes
 
 # return the province ids that are overlapped
@@ -190,20 +184,25 @@ provs_to_check <- er_lookup[er_lookup$RLM_CODE %in% unique(y$RLM_CODE), "PROV_CO
 
 if(check_plot) {
   par(mfrow = c(1,1))
-  plot(1,1, xlim = c(-180, 180), ylim= c(-90, 90), type = "n", xlab = "", ylab = "", axes = FALSE)
+  plot(1,1, xlim = c(-180, 180), ylim= c(-90, 90), type = "n", xlab = "",
+    ylab = "", axes = FALSE)
   box()
 }
 
 provs_to_interpolate <- sapply(provs_to_check, function(j) {
-  
-  if(check_plot) plot(prov_SpatialPolygons[[j]], xlim = c(-180, 180), ylim = c(-90, 90), col = "#00000020", add = T)
-  
+
+  if(check_plot) {
+    plot(prov_SpatialPolygons[[j]], xlim = c(-180, 180),
+      ylim = c(-90, 90), col = "#00000020", add = T)
+  }
+
   ol <- gOverlaps(prov_SpatialPolygons[[j]],box_SpatialPolygons)
   co1 <- gContains(box_SpatialPolygons,prov_SpatialPolygons[[j]])
   co2 <- gContains(prov_SpatialPolygons[[j]],box_SpatialPolygons) # reversed
   if(check_plot){
-    plot(prov_SpatialPolygons[[j]], xlim = c(-180, 180), ylim = c(-90, 90), col = "#00000050", add = T)
-  }  
+    plot(prov_SpatialPolygons[[j]], xlim = c(-180, 180), ylim = c(-90, 90),
+      col = "#00000050", add = T)
+  }
   if(ol | co1 | co2) {
     j
   } else NA
@@ -224,17 +223,21 @@ gc()
 # 2a. for just those realms
 # 2b. for just those realms, but merged across the 2 realms
 
-#total_iter <- length(unique(paste(oc.df$genus, oc.df$RLM_CODE))) # for a counter
-#iter <<- 0
 # 1.
-interpolated_provs_no_indo <- ddply(subset(oc.df, !REALM %in% c("Central Indo-Pacific", "Western Indo-Pacific")), c("genus", "RLM_CODE"), function(y) interpolate_provinces(y))
+interpolated_provs_no_indo <- ddply(subset(oc.df, !REALM %in%
+    c("Central Indo-Pacific", "Western Indo-Pacific")),
+  c("genus", "RLM_CODE"), function(y) interpolate_provinces(y))
 
 gc()
 # now just indo pacific:
 # 2a.
-interpolated_provs_indo_only <- ddply(subset(oc.df, REALM %in% c("Central Indo-Pacific", "Western Indo-Pacific")), c("genus", "RLM_CODE"), function(y) interpolate_provinces(y))
+interpolated_provs_indo_only <- ddply(subset(oc.df, REALM %in%
+    c("Central Indo-Pacific", "Western Indo-Pacific")),
+  c("genus", "RLM_CODE"), function(y) interpolate_provinces(y))
 # 2b.
-interpolated_provs_indo_only_merged <- ddply(subset(oc.df, REALM %in% c("Central Indo-Pacific", "Western Indo-Pacific")), "genus", function(y) interpolate_provinces(y))
+interpolated_provs_indo_only_merged <- ddply(subset(oc.df, REALM %in%
+    c("Central Indo-Pacific", "Western Indo-Pacific")),
+  "genus", function(y) interpolate_provinces(y))
 
 # now remove the realm column since it doesn't mean much for the
 # merged version
@@ -242,20 +245,17 @@ interpolated_provs_indo_only$RLM_CODE <- NULL
 interpolated_provs_no_indo$RLM_CODE <- NULL
 
 # troubleshooting:
-#print(names(interpolated_provs_no_indo))
-#print(names(interpolated_provs_indo_only))
+# print(names(interpolated_provs_no_indo))
+# print(names(interpolated_provs_indo_only))
 
 # bring back in the rest of the data from the first time we ran the
 # function:
 interpolated_provs <- rbind(interpolated_provs_no_indo, interpolated_provs_indo_only)
 interpolated_provs_alt <- rbind(interpolated_provs_no_indo, interpolated_provs_indo_only_merged)
 
-# now add the interpolated data back to the unique taxonomic info:
-#interpolated_provs <- merge(interpolated_provs, unique_taxa_info, all.x = TRUE)
-#interpolated_provs_alt <- merge(interpolated_provs_alt, unique_taxa_info, all.x = TRUE)
-
 interpolated_provs <- interpolated_provs[!duplicated(interpolated_provs), ]
-interpolated_provs_alt <- interpolated_provs_alt[!duplicated(interpolated_provs_alt), ]
+interpolated_provs_alt <-
+  interpolated_provs_alt[!duplicated(interpolated_provs_alt), ]
 
 save(interpolated_provs, file = "../data/interpolated_provs.rda")
 save(interpolated_provs_alt, file = "../data/interpolated_provs_alt.rda")

@@ -1,14 +1,15 @@
+# ====================================================================
 # Created by:    Sean C. Anderson
 # Created:       Feb 06, 2012
-# Last modified: Feb 06, 2013
+# Last modified: Feb 20, 2014
 # Purpose:       Overlay the equal area grid on the raw occurrence
 #                data as a sensitivity test for our interpolation
 #                method.
-
+# ====================================================================
 
 load("../data/composite.occ2.rda")
 comp.dat <- composite.occ2
-#comp.dat <- composite.occ2[sample(1:nrow(composite.occ2), 30000), ] # for testing
+# comp.dat <- composite.occ2[sample(1:nrow(composite.occ2), 30000), ] # for testing
 rm(composite.occ2)
 load("../data/equal_area_grid/global_45x14.rda")
 grid_mid_lat <- read.csv("../data/grid_mid_lat.csv")$x
@@ -40,8 +41,6 @@ gc()
 oc.df.init <- oc.df
 oc.df <- oc.df[!is.na(oc.df$RLM_CODE), ]
 
-#pts2 <- SpatialPoints(oc.df[,c("longitude", "latitude")])
-
 oc.df$longitude[oc.df$longitude == 180] <- 179.99 # to avoid NAs on findInterval
 # remove those with latitudes outside of our equal area grid:
 oc.df <- subset(oc.df, latitude > min(global_45x14$latitude) & latitude < max(global_45x14$latitude))
@@ -53,12 +52,11 @@ genus_cells_no_interpolation <- data.frame(genus = oc.df$genus, X_mid = oc.df$X_
 genus_cells_no_interpolation <- genus_cells_no_interpolation[!duplicated(genus_cells_no_interpolation), ]
 
 library(plyr)
-genus_cells_no_interpolation <- ddply(genus_cells_no_interpolation, c("X_mid", "Y_mid"), transform, num_cells = length(genus))
+genus_cells_no_interpolation <- ddply(genus_cells_no_interpolation,
+  c("X_mid", "Y_mid"), transform, num_cells = length(genus))
 
-#pts3 <- SpatialPoints(genus_cells_no_interpolation[,c("X_mid", "Y_mid")])
-
-genus_cells_no_interpolation <- genus_cells_no_interpolation[,c("genus", "num_cells", "X_mid", "Y_mid")]
+genus_cells_no_interpolation <- genus_cells_no_interpolation[ ,
+  c("genus", "num_cells", "X_mid", "Y_mid")]
 save(genus_cells_no_interpolation, file = "../data/genus_cells_no_interpolation.rda")
 
 rm(genus_cells_no_interpolation, comp.dat, grid_mid_lat, grid_mid_long, oc.df, er, pts)
-

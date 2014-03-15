@@ -1,12 +1,11 @@
 # ====================================================================
 # Created by:    Sean Anderson, sean@seananderson.ca
 # Created:       Sep 24, 2012
-# Last modified: Oct 09, 2012
+# Last modified: Feb 20, 2014
 # Purpose:       Take the interpolated provinces (by bounding box
 # within realms) and overlay a grid.
 # ====================================================================
 
-setwd("~/Dropbox/nescent_extinction_map/r")
 # bring in data:
 load("../data/interpolated_provs_all_taxa.rda")
 load("../data/interpolated_provs_alt_all_taxa.rda")
@@ -17,21 +16,29 @@ library(sp)
 library(plyr)
 library(maptools)
 
-# not sure why, but in older versions there were still some duplicated rows:
+# in older versions there were still some duplicated rows
 # so, just in case, since it will create errors below:
-interpolated_provs_all_taxa <- interpolated_provs_all_taxa[!duplicated(interpolated_provs_all_taxa), ]
-interpolated_provs_alt_all_taxa <- interpolated_provs_alt_all_taxa[!duplicated(interpolated_provs_alt_all_taxa), ]
+interpolated_provs_all_taxa <-
+  interpolated_provs_all_taxa[!duplicated(interpolated_provs_all_taxa), ]
+interpolated_provs_alt_all_taxa <-
+  interpolated_provs_alt_all_taxa[!duplicated(interpolated_provs_alt_all_taxa), ]
 
+# TODO bring over these files:
 grid_mid_lat <- read.csv("../data/grid_mid_lat.csv")$x
 grid_mid_long <- read.csv("../data/grid_mid_long.csv")$x
 
-grid_mid_to_lower_left_corner_long <- data.frame(X = global_45x14$longitude[-length(global_45x14$longitude)], X_mid = grid_mid_long) 
-grid_mid_to_lower_left_corner_lat <- data.frame(Y = global_45x14$latitude[-length(global_45x14$latitude)], Y_mid = grid_mid_lat) 
+grid_mid_to_lower_left_corner_long <-
+  data.frame(X = global_45x14$longitude[-length(global_45x14$longitude)],
+    X_mid = grid_mid_long)
+grid_mid_to_lower_left_corner_lat <-
+  data.frame(Y = global_45x14$latitude[-length(global_45x14$latitude)],
+    Y_mid = grid_mid_lat)
 
 combine_province_shapefiles <- function(prov_ids) {
   junk <- list()
   for(i in 1:length(prov_ids)){
-    junk[[i]] <- Polygons(prov_SpatialPolygons[[prov_ids[i]]]@polygons[[1]]@Polygons, prov_ids[i])
+    junk[[i]] <- Polygons(prov_SpatialPolygons[[prov_ids[i]]]@polygons[[1]]@Polygons,
+      prov_ids[i])
   }
   out <- SpatialPolygons(junk)
   out
@@ -70,7 +77,6 @@ get_num_grid_cells <- function(SpatialPolygon_object, test_plot = FALSE) {
   fc_xy_mid <- merge(fc_xy_lower_left, grid_mid_to_lower_left_corner_long, all.x = TRUE)
   fc_xy_mid <- merge(fc_xy_mid, grid_mid_to_lower_left_corner_lat, all.x = TRUE)
 
-  #fc_ps_nodup <- fc_ps[!duplicated(fc_ps), ]
   num_cells <- nrow(fc_xy_lower_left)
   cell_coords <- fc_xy_mid[,c("X_mid", "Y_mid")]
   if(test_plot){
@@ -78,23 +84,23 @@ get_num_grid_cells <- function(SpatialPolygon_object, test_plot = FALSE) {
     box(col = "grey")
     with(cell_coords, points(X_mid, Y_mid, pch = 4,cex = 1.5, col = "red"))
   }
-  return(data.frame(num_cells = rep(num_cells, nrow(cell_coords)), X_mid = cell_coords$X_mid, Y_mid = cell_coords$Y_mid))
+  return(data.frame(num_cells = rep(num_cells, nrow(cell_coords)),
+      X_mid = cell_coords$X_mid, Y_mid = cell_coords$Y_mid))
 }
 
 # example:
-#shp_file <- combine_province_shapefiles(c(1, 2, 3))
-#get_num_grid_cells(shp_file)
+# shp_file <- combine_province_shapefiles(c(1, 2, 3))
+# get_num_grid_cells(shp_file)
 gc()
 
-
-genus_cells <- ddply(interpolated_provs_all_taxa, "genus", function(x) { 
+genus_cells <- ddply(interpolated_provs_all_taxa, "genus", function(x) {
   shp_file <- combine_province_shapefiles(x$PROV_CODE)
   get_num_grid_cells(shp_file)
 })
 
 gc()
 
-genus_cells_alt <- ddply(interpolated_provs_alt_all_taxa, "genus", function(x) { 
+genus_cells_alt <- ddply(interpolated_provs_alt_all_taxa, "genus", function(x) {
   shp_file <- combine_province_shapefiles(x$PROV_CODE)
   get_num_grid_cells(shp_file)
 })
@@ -102,11 +108,11 @@ genus_cells_alt <- ddply(interpolated_provs_alt_all_taxa, "genus", function(x) {
 save(genus_cells, file = "../data/genus_cells.rda")
 save(genus_cells_alt, file = "../data/genus_cells_alt.rda")
 
-
+# ---------
 # get 6 genuses to sample:
 genus_to_plot <- unique(interpolated_provs_all_taxa$genus)[sample(1:length(unique(interpolated_provs_all_taxa$genus)), 6)]
 
-pdf("../fig/test_grid_overlay.pdf", width = 8, height = 9)
+pdf("../figs/test_grid_overlay.pdf", width = 8, height = 9)
 par(mfrow = c(3, 2), cex = 0.7, oma = c(0,0,0,0))
 for(i in 1:6){
 temp <- subset(interpolated_provs_all_taxa, genus == genus_to_plot[i])
