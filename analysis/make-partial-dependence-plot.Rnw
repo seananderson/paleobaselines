@@ -1,7 +1,6 @@
 <<partial-plots-base-child>>=
 # This script creates a more customized plot using baseplot
 
-# library(plyr)
 # this creates the dataframes: others and groups
 g <- partial_groups
 o <- partial_continuous
