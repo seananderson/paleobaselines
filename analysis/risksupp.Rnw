@@ -593,7 +593,8 @@ We will plot the number of genera per province by class:
 <<plot-n-genera-prov, fig.cap="Number of OBIS occurrence records for each biogeographic province \\cite{spalding2007}. Scale bars on the right (log-distributed scale) indicate the range for a given group, and this scale is used to plot relative sampling intensity heatmaps.", fig.width=6.25, fig.height=4.8, out.width="5.5in">>=
 map_class_ext(er_dat_class, plot_column = "log_OBIS_records",
   min_prov_genera = 0, ylab = "Number of OBIS records",
-  yticks = c(2, 20, 200, 2000, 20000))
+  yticks = c(2, 20, 200, 2000, 20000),
+  col_pal = RColorBrewer::brewer.pal(9, "YlGnBu"))
 @
 
 <<plot-class-prov-ext-raw-ranges, fig.cap="Mean predicted extinction susceptibility of genera inhabiting different ocean biogeographic provinces \\cite{spalding2007} for each of the eight major groups considered, as in Fig.~3, but \\textbf{with predictions based on raw ranges in OBIS without the within-realm minimum bounding box interpolation}. Scale bars on the right indicate the range of log extinction susceptibility values for a given group, and this scale is used to plot mean extinction susceptibility heatmaps on the left.", fig.width=6.25, fig.height=4.8, out.width="5.5in">>=
