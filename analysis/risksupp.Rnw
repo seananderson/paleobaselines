@@ -3,6 +3,7 @@
 % TODO map with raw instead of standardized predictors  Fig S11
 % TODO same maps but with rank order risk Fig S12
 % TODO What was Fig S13 - completeness, need to talk to Seth
+% TODO the cross plots of human threat, climate velocity, and intrinsic risk on global map (from what was a panel in the last main Fig)
 
 \documentclass[11pt]{article}
 \usepackage{geometry}
@@ -642,19 +643,6 @@ Things to add to the modelling supp discussion:
   \item what a partial dependence plot shows (Fig 1)
   \item the cross-interval prediction test: reason for doing it and the plot\ldots no calibration here
 \end{itemize}
-
-Supp Figures to merge in:
-
-\begin{enumerate}
-  \item density plots of the distributions of intrinsic risk in different phylogenetic groups for each of the 62 provinces
-  \item number of OBIS occurrence records in class-province maps (use different colour scale to before)
-  \item re-create class-level maps omit single-province genera (actually, do this for main fig now)?
-  \item re-create class-level maps but base on raw OBIS ranges
-  \item re-create class-level maps but with raw (not standardized) predictors
-  \item re-create class-level maps but with rank-order risk
-  \item partial rank dependence vs.\ mean Cenozoic completeness
-  \item the cross plots of human threat, climate velocity, and intrinsic risk on global map (from what was a panel in the last main Fig)
-\end{enumerate}
 
 \clearpage
 \bibliographystyle{science}
