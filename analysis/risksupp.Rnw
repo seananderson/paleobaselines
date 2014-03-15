@@ -112,13 +112,42 @@ pkgs
 
 \section{Interpolation of OBIS occurrence data}
 
-Describe process and link to the code that runs this.
+Sampling in the modern is patchy.
+
+We assume that if a genus is identified within a biogeographic realm \cite{spalding2007}, it is likely to be found throughout that realm.
+
+We used a minimum bounding box method to interpolate within biogeographic realms across biogeographic provinces.
+
+We are assuming that the interpolated contemporary biogeographic provinces cover the ``true'' range.
+
+This is similar to the method used in Ref.~\cite{belanger2012}.
+
+We didn't interpolate the marine mammals or elasmobranch datasets since these were based on range maps.
+
+We split gaps of $90\,^{\circ}$ longitude or greater into separate bounding boxes.
+
+For the contemporary dataset, we took the interpolated provinces, overlaid an equal area grid, recorded the centre points of that grid for all cells that overlapped a province, and then calculated the range statistics based on the centre points from the grid overlay.
+
+For the paleontological dataset, we overlaid the same grid, took the centre points of the grid cells for cells that overlapped any occurrences, and calculated the range statistics on the centre points from the grid overlay.
+
+As an example, the following plot shows the interpolations for 6 genera. The red crosses indicate sampling observations in the OBIS database. The various biogeographic realms are shown in different colour shadings.
+The outlined provinces are all the provinces within any realm that has occurrences.
+The grey-shaded polygons represent biogeographic provinces that are added based on the minimum-bounding-box interpolation scheme.
+Outlined provinces that aren't shaded are provinces that the bounding box didn't overlap.
+Keep in mind that some realms wrap from one side of the plot to the other.
+
+\includegraphics[width=\textwidth]{../static-figs/province_interpolation_test_eg.pdf}
 
 The interpolation process can be re-run by sourcing the file \texttt{README\_interpolation.R} in the \texttt{r} folder. Note that this script will take a very long time to run and requires considerable RAM.
 
 <<interporlation, eval=FALSE, echo=TRUE>>=
 source("../r/README_interpolation.R")
 @
+
+
+
+
+
 
 \section{Choice of prediction variables}
 
@@ -574,7 +603,7 @@ er_dat_class <- plyr::join(er_dat_class, by.prov.classes, by = "PROV_CODE")
 
 # make the figure:
 pdf("../figs/class-risk-maps-mean-log-ext.pdf", width = 6.25, height = 4.8)
-map_class_ext(er_dat_class)
+map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.03, 0.05))
 dev.off()
 @
 
@@ -590,25 +619,25 @@ dev.off()
 
 We will plot the number of genera per province by class:
 
-<<plot-n-genera-prov, fig.cap="Number of OBIS occurrence records for each biogeographic province \\cite{spalding2007}. Scale bars on the right (log-distributed scale) indicate the range for a given group, and this scale is used to plot relative sampling intensity heatmaps.", fig.width=6.25, fig.height=4.8, out.width="5.5in">>=
+<<plot-n-genera-prov, fig.cap="Number of OBIS occurrence records for each biogeographic province \\cite{spalding2007}. Scale bars on the right (log-distributed scale) indicate the range for a given group, and this scale is used to plot relative sampling intensity heatmaps.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
 map_class_ext(er_dat_class, plot_column = "log_OBIS_records",
   min_prov_genera = 0, ylab = "Number of OBIS records",
   yticks = c(2, 20, 200, 2000, 20000),
   col_pal = RColorBrewer::brewer.pal(9, "YlGnBu"))
 @
 
-<<plot-class-prov-ext-raw-ranges, fig.cap="Mean predicted extinction susceptibility of genera inhabiting different ocean biogeographic provinces \\cite{spalding2007} for each of the eight major groups considered, as in Fig.~3, but \\textbf{with predictions based on raw ranges in OBIS without the within-realm minimum bounding box interpolation}. Scale bars on the right indicate the range of log extinction susceptibility values for a given group, and this scale is used to plot mean extinction susceptibility heatmaps on the left.", fig.width=6.25, fig.height=4.8, out.width="5.5in">>=
+<<plot-class-prov-ext-raw-ranges, fig.cap="Mean predicted extinction susceptibility of genera inhabiting different ocean biogeographic provinces \\cite{spalding2007} for each of the eight major groups considered, as in Fig.~3, but \\textbf{with predictions based on raw ranges in OBIS without the within-realm minimum bounding box interpolation}. Scale bars on the right indicate the range of log extinction susceptibility values for a given group, and this scale is used to plot mean extinction susceptibility heatmaps on the left.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
 plot(1, 1, type = "n", xlab = "", ylab = "")
 mtext("TODO", line = -3)
 @
 
-<<plot-class-prov-ext-raw-predictors, fig.cap="Mean predicted extinction susceptibility of genera inhabiting different ocean biogeographic provinces \\cite{spalding2007} for each of the eight major groups considered, as in Fig.~3, but \\textbf{raw rather than standardized predictors used for both fossil and modern genera}. Scale bars on the right indicate the range of log extinction susceptibility values for a given group, and this scale is used to plot mean extinction susceptibility heatmaps on the left.", fig.width=6.25, fig.height=4.8, out.width="5.5in">>=
+<<plot-class-prov-ext-raw-predictors, fig.cap="Mean predicted extinction susceptibility of genera inhabiting different ocean biogeographic provinces \\cite{spalding2007} for each of the eight major groups considered, as in Fig.~3, but \\textbf{raw rather than standardized predictors used for both fossil and modern genera}. Scale bars on the right indicate the range of log extinction susceptibility values for a given group, and this scale is used to plot mean extinction susceptibility heatmaps on the left.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
 plot(1, 1, type = "n", xlab = "", ylab = "")
 mtext("TODO", line = -3)
 @
 
 
-<<plot-preservation-completeness, fig.cap="Extinction risk scores for groups in Fig.~1 plotted against the mean preservation probability (completeness) for genera within those groups in the Cenozoic fossil record. Completeness is measured as the proportion of all of the intervals within the stratigraphic range of a genus (excluding first and last) in which it is represented by at least one occurrence record in the Paleobiology Database. Genera with high completeness are sampled in most intervals within their stratigraphic ranges, genera with low completeness have many sampling gaps. The lack of a relationship between partial risk dependence and mean completeness suggests that the noise introduced by among-group variation in preservation probability is does not cause a systematic bias in risk assessment.", fig.width=6.25, fig.height=4.8, out.width="5.5in">>=
+<<plot-preservation-completeness, fig.cap="Extinction risk scores for groups in Fig.~1 plotted against the mean preservation probability (completeness) for genera within those groups in the Cenozoic fossil record. Completeness is measured as the proportion of all of the intervals within the stratigraphic range of a genus (excluding first and last) in which it is represented by at least one occurrence record in the Paleobiology Database. Genera with high completeness are sampled in most intervals within their stratigraphic ranges, genera with low completeness have many sampling gaps. The lack of a relationship between partial risk dependence and mean completeness suggests that the noise introduced by among-group variation in preservation probability is does not cause a systematic bias in risk assessment.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
 plot(1, 1, type = "n", xlab = "", ylab = "")
 mtext("TODO", line = -3)
 @
