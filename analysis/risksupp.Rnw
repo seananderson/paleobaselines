@@ -151,11 +151,6 @@ The grey-shaded polygons represent biogeographic provinces that are added based 
 Outlined provinces that aren't shaded are provinces that the bounding box didn't overlap.
 Keep in mind that some realms wrap from one side of the plot to the other.
 
-NOTES:
-
-Within each realm, we bounded the outermost points with a rectangle and recorded all provinces that the bounding box crossed.
-
-We then overlaid a 45x14 cell equal-area grid (longitudes starting at -180 degrees and increasing by 8 degrees, latitudes at -74.8, -55.6, -43.3, -33.1, -24, -15.5, -7.3, 0.7, 8.7, 17, 25.5, 34.8, 45.3, 58.2, 81.8) and recorded the centre coordinates for all grid cells that overlapped with a province with observations or interpolated observations.
 
 
 \includegraphics[width=\textwidth]{../static-figs/province_interpolation_test_eg.pdf}
@@ -165,6 +160,12 @@ For the contemporary dataset, we took the interpolated provinces, overlaid an eq
 For the paleontological dataset, we overlaid the same grid, took the centre points of the grid cells for cells that overlapped any occurrences, and calculated the range statistics on the centre points from the grid overlay.
 
 The interpolation process can be re-run by sourcing the file \texttt{README\_interpolation.R} in the \texttt{r} folder. Note that this script will take a very long time to run and requires considerable RAM.
+
+MORE NOTES:
+
+\textit{Within each realm, we bounded the outermost points with a rectangle and recorded all provinces that the bounding box crossed.}
+
+\textit{We then overlaid a 45x14 cell equal-area grid (longitudes starting at -180 degrees and increasing by 8 degrees, latitudes at -74.8, -55.6, -43.3, -33.1, -24, -15.5, -7.3, 0.7, 8.7, 17, 25.5, 34.8, 45.3, 58.2, 81.8) and recorded the centre coordinates for all grid cells that overlapped with a province with observations or interpolated observations.}
 
 <<interporlation, eval=FALSE, echo=TRUE>>=
 source("../r/README_interpolation.R")
