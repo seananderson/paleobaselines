@@ -8,6 +8,7 @@
 \documentclass[11pt]{article}
 \usepackage{geometry}
 \usepackage{graphicx}
+\usepackage{url}
 \textheight 20.5cm
 \setlength\parskip{0.11in}
 \setlength\parindent{0in}
@@ -104,31 +105,45 @@ We used \Sexpr{rversion} and package versions:
 pkgs
 @
 
+% Load Fig S1 here to make sure it's the first figure.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=6in]{../static-figs/didactic_method.pdf}
+\caption{Schematic illustration of the sequence of steps used to build the modern genus range dataset and to make intrinsic risk predictions for modern genera from the Neogene fossil record.}
+\label{fig:didactic}
+\end{figure}
+
 \section{Choice of taxa}
+
+We focused on groups of marine organisms that are common constituents of coastal ecosystems and have relatively well-sampled modern and Neogene distributions. These include bivalves, decapods, echinoids, elasmobranchs, gastropods, marine mammals, scleractinian corals, and testudines. We omitted groups with intrinsically low preservation potential (i.e.,\ groups consisting solely of soft-bodied organisms, parasitic life habit, and \textit{list of variety of traits here that are associated with low preservation rates (Crampton and Cooper and others NZ preservation reference in Geology; Valentine et al. 2006 PNAS paper on preservation potential in bivalves) such as (example) and (example)}. Some additional groups were also omitted due to the limited taxonomic resolution of fossil occurrences. Ray-finned fishes, for example, are diverse and abundant in modern and ancient seas, yet their fossil record consists primarily of isolated otoliths and teeth which frequently confounds attempts to identify remains to the genus or species levels (REF). Where possible we also consulted taxonomic experts to see if the biogeographic diversity patterns recorded in our raw data sources (described below) were consistent with their knowledge of global diversity patterns in their group of expertise in select instances this resulted in the exclusion of groups with generally high preservation potential (i.e.,\ foraminifera, brachiopoda, and ostracoda). With additional targeted sampling and literature compilation, these groups hold promise for inclusion in the types of analyses we present in the main text.
+
 
 \section{Data sources}
 
+Modern occurrence data for major marine groups came from two primary sources. For most groups, occurrence data were downloaded from the Ocean Biogeographic Information System (OBIS, \url{http://www.iobis.org/}) \cite{obis}. OBIS is a marine biogeographical database initially developed as part of the Census of Marine Life, and currently containing around 37 million geolocated records of marine taxa. These data were downloaded on TODO date using the following selection criteria: TODO. The complete dataset consists of xx occurrences for yy taxa (supplementary figure showing data coverage --- e.g.,\ with cells color coded by occurrence frequency?).
+
+For cetaceans and sharks, OBIS data were not used, since recent efforts have compiled range maps at global scales for all species in these groups \cite{schipper2008, lucifora2011}, obviating the need to correct for sampling effort. Data were quality-controlled as per Ref.\ \cite{tittensor2010}. These range maps were converted to occurrence data by (I think this is what we did) laying down a grid of z cell-size resolution and at each intersection generating an occurrence for that genus. OBIS remains the largest single source of modern-day geolocated marine biological data, synthesising many different data sources and individual databases; however, the sampling is very uneven by taxa, by approach, by region, and by depth \cite{webb2010}, so significant caution is necessary to account for these issues of sampling effort when using the database. The database tends to be best applied to relatively well-studied and well-described taxa (e.g.\ fishes, corals).
+
+TODO ADD REFS:
+All of the fossil occurrence data used for this study were downloaded from the Paleobiology Database (PaleoDB, \url{http://paleobiodb.org}), a global compilation of the spatial and temporal occurrences of taxa in the fossil record. The Paleobiology Database has been used in previous investigations of marine extinction rates \cite{harnik2012} (Alroy 2010, Foote 2008, Hannisdal \& Peters 2011, etc.), extinction selectivity (Heim and Peters 2011, other refs), and geographic range (Payne and Finnegan 2007 PNAS, Harnik et al. 2012 Proc B). The data used for our study were downloaded from the PaleoDB on xx date, using the following selection criteria: xxxxxxxx. The complete dataset consists of xx occurrences for yy genera from more than zz localities globally (include figure showing distribution of Neogene localities on present-day global map).
+
 \section{Standardizing the taxonomic data}
+
+First, standardization of taxonomy and removal of erroneous names or taxa (e.g.\ pulmonate gastropods) that do not belong.  Next, genus names from OBIS matched to higher taxonomic groups using the WORMS database.  Higher taxonomy of WORMS and of PDBD standardized to the greatest degree possible.
 
 \section{Interpolation of OBIS occurrence data}
 
-Sampling in the modern is patchy.
-
-We assume that if a genus is identified within a biogeographic realm \cite{spalding2007}, it is likely to be found throughout that realm.
-
-We used a minimum bounding box method to interpolate within biogeographic realms across biogeographic provinces.
-
+Sampling of species' distributions in the contemporary OBIS data set is incomplete.
+Therefore, we used an interpolation algorithm to infer the contemporary distribution of genera.
+We assumed that if a genus was identified within a biogeographic realm \cite{spalding2007}, it was likely to be found throughout that realm.
+We used a minimum-bounding-box method to interpolate within biogeographic realms across biogeographic provinces.
 We are assuming that the interpolated contemporary biogeographic provinces cover the ``true'' range.
-
-This is similar to the method used in Ref.~\cite{belanger2012}.
+This minimum-bounding-box method is similar to that used in Ref.~\cite{belanger2012}.
 
 We didn't interpolate the marine mammals or elasmobranch datasets since these were based on range maps.
 
-We split gaps of $90\,^{\circ}$ longitude or greater into separate bounding boxes.
-
-For the contemporary dataset, we took the interpolated provinces, overlaid an equal area grid, recorded the centre points of that grid for all cells that overlapped a province, and then calculated the range statistics based on the centre points from the grid overlay.
-
-For the paleontological dataset, we overlaid the same grid, took the centre points of the grid cells for cells that overlapped any occurrences, and calculated the range statistics on the centre points from the grid overlay.
+To apply a bounding-box approach to a globe, we needed to decide on a maximum gap between points to be considered part of the same box. We split gaps of $90\,^{\circ}$ longitude or greater into separate bounding boxes. For the most part, this rule did not affect our results, since most biogeographic realms were smaller than $90\,^{\circ}$.
 
 As an example, the following plot shows the interpolations for 6 genera. The red crosses indicate sampling observations in the OBIS database. The various biogeographic realms are shown in different colour shadings.
 The outlined provinces are all the provinces within any realm that has occurrences.
@@ -136,18 +151,24 @@ The grey-shaded polygons represent biogeographic provinces that are added based 
 Outlined provinces that aren't shaded are provinces that the bounding box didn't overlap.
 Keep in mind that some realms wrap from one side of the plot to the other.
 
+NOTES:
+
+Within each realm, we bounded the outermost points with a rectangle and recorded all provinces that the bounding box crossed.
+
+We then overlaid a 45x14 cell equal-area grid (longitudes starting at -180 degrees and increasing by 8 degrees, latitudes at -74.8, -55.6, -43.3, -33.1, -24, -15.5, -7.3, 0.7, 8.7, 17, 25.5, 34.8, 45.3, 58.2, 81.8) and recorded the centre coordinates for all grid cells that overlapped with a province with observations or interpolated observations.
+
+
 \includegraphics[width=\textwidth]{../static-figs/province_interpolation_test_eg.pdf}
+
+For the contemporary dataset, we took the interpolated provinces, overlaid an equal area grid, recorded the centre points of that grid for all cells that overlapped a province, and then calculated the range statistics based on the centre points from the grid overlay.
+
+For the paleontological dataset, we overlaid the same grid, took the centre points of the grid cells for cells that overlapped any occurrences, and calculated the range statistics on the centre points from the grid overlay.
 
 The interpolation process can be re-run by sourcing the file \texttt{README\_interpolation.R} in the \texttt{r} folder. Note that this script will take a very long time to run and requires considerable RAM.
 
 <<interporlation, eval=FALSE, echo=TRUE>>=
 source("../r/README_interpolation.R")
 @
-
-
-
-
-
 
 \section{Choice of prediction variables}
 
@@ -156,6 +177,22 @@ source("../r/README_interpolation.R")
 We will start by standardizing a variety of habitat-relative characteristics within each geologic stage. This is an important step to make some habitat characteristics (richness, occupancy, occurrences) comparable across periods, an in particular, between the paleontological data and the contemporary data. Given the substantially different sampling methods within the paleontological and contemporary records, the absolute values of richness, occupancy, and occurrences are not comparable. We therefore standardize them to values between 0 and 1 within each interval. The other variables (e.g.\ latitude variables and great circle distance) are still comparable between the paleontological and contemporary records --- a degree latitude is still a degree latitude and a kilometre is still a kilometre.
 
 The following script creates the \proglang{R} data object \texttt{stand-predictors-cen-obis.rds}:
+
+\section{Choice of gradient boosting models}
+
+%[Some draft notes below. See the nescent_extinction_map/literature folder for PDFs and citation data.  - SA]
+- good overall and highly cited introduction to boosted regression for ecology: \cite{elith2008}
+
+Advantages of gbms over random forests: (From Elith et al. 2008)
+``While BT (bagged trees) and RF (random forests) reduce variance more than single trees, they cannot achieve any bias reduction, because each tree is based on a bootstrap sample that will be distributed in much the same way as the original training set. As a consequence, the resulting average bias is identical to the bias of any one tree. By contrast, boosting grows the suite of trees by sequentially modelling the residuals throughout all parts of the data space, including those for atypical observations that depart from the dominant patterns explained by the initial trees. In this way, it reduces both bias (through forward stagewise fitting) and variance (through model averaging).''
+
+We used GBMs (\cite{friedman2001}; ``gradient boosting machine'' models or ``generalized boosted regression models'') to predict \ldots GBMs are a form of supervised machine learning based on an ensemble of decision trees. Supervised refers to the fact that the model is built with training data and ensemble of decision trees refers to how the final model is a product of many weakly informative models fit in succession. Compared to parametric modelling, machine learning makes minimal assumptions about the relationship between predictors and response and prioritizes predictive performance over probabilistic inference about the model itself.
+
+Boosting models work, in general, by building a sequence of models, each fit to the residuals of the previous model with larger residuals being given stronger weights. This means that each subsequent model focuses more heavily on data which were poorly fit by previous models. In theory, this ensemble of weak models can be combined to produce one strong overall predictive model with reduced bias compared to other machine learning methods, such as random forests \cite{elith2008}.
+
+Although not universal, boosted tree methods have been shown to outperform other machine learning methods in many cases \cite{caruana2006} (e.g. and Niculescu-Mizil 2006), and are commonly used in applied prediction problems (e.g. by Yahoo for website rankings; \cite{cossock2008}. Early work with our dataset demonstrated that GBMs outperformed other common machine learning techniques (in both bias and precision?), such as random forests, in out of sample prediction.
+
+We fit GBMs with the \pkg{gbm} package \cite{gbm2013} for the \proglang{R} statistical language and environment \cite{r2013}. The \pkg{gbm} package implements GBMs based on Ref.\ \cite{friedman2001} with some minor modifications (gbm vignette REF). Further, the \pkg{gbm} package implements the stochastic method proposed in Ref.\ \cite{friedman2001} in which a random subsample of the data is chosen at each model iteration. This random subsample is used to fit the model before computing residuals for that step thereby reducing chances of overfitting the data. At each step, we left out 50\% of the data as a random subset --- the default in the \texttt{gbm()} function.
 
 <<standardize-predictors>>=
 data <- readRDS("../data/modern-paleodb-ranges.rds")
@@ -330,7 +367,8 @@ cross_pred <- mdply(stage_df, fit_interval_gbm, dat = stcen2)
 
 We can compare the predictions made from other stages with the predictions from the same stage. This code produces Fig.~\ref{fig:plot-cross-interval-gbms}.
 
-<<plot-cross-interval-gbms, fig.cap="Cross-stage prediction tests. The x-axis shows the probability of extinction as predicted by a model built on data from the same stage. The y-axis shows the probability of extinction as predicted by a model built on data from a different stage. The colours show different taxonomic classes. Note the log-distributed x- and y-axes. Since there is some stochasticity involved in the \\texttt{gbm()} fitting routine, there is some variability in predictions within the same stage (the diagonal panels).", fig.width=9, fig.height=7, cache=TRUE, echo=FALSE>>=
+
+<<plot-cross-interval-gbms, fig.cap="Cross-interval comparison of genus risk estimates from gradient boosting models. The x-axis shows the probability of extinction as predicted by a model built on data from the same stage. The y-axis shows the probability of extinction as predicted by a model built on data from a different stage. The colours show different taxonomic classes. Note the log-distributed x- and y-axes. Since there is some stochasticity involved in the gradient boosting machine fitting routine, there is some variability in predictions within the same stage (the diagonal panels). In general, there is substantial similarity in extinction regimes between succeeding intervals with respect to the evaluated taxonomic and geographic range predictor variables.", fig.width=9, fig.height=7, cache=TRUE, echo=FALSE>>=
 # Re-order stage names:
 stage_order <- c("Lower Miocene", "Middle Miocene", "Upper Miocene",
   "Plio-Pleistocene")
@@ -427,24 +465,24 @@ partial_groups$value <- NULL
 partial_groups <- plyr::rename(partial_groups, c("group" = "value"))
 @
 
-And we will make some quick plots of the data.
+%And we will make some quick plots of the data.
 
-<<plot-partial-continuous, fig.width=10, fig.height=6, echo=FALSE>>=
-ggplot(partial_continuous, aes(value, median)) +
-  geom_ribbon(aes(fill = stage, colour = stage, ymax = upper, ymin = lower),
-    alpha = 0.5) +
-  facet_wrap(~predictor, scales = "free_x") +
-  xlab("Predictor value") +
-  ylab("Marginal effect on probability of extinction")
-@
-
-<<plot-partial-group, out.width="4in", echo=FALSE>>=
-ggplot(subset(partial_groups, median < 0.95), aes(value, median)) +
-  geom_pointrange(aes(colour = stage, ymin = lower, ymax = upper)) +
-  xlab("Marginal effect on probability of extinction") +
-  ylab("") +
-  coord_flip()
-@
+% <<plot-partial-continuous, fig.width=10, fig.height=6, echo=FALSE>>=
+% ggplot(partial_continuous, aes(value, median)) +
+%   geom_ribbon(aes(fill = stage, colour = stage, ymax = upper, ymin = lower),
+%     alpha = 0.5) +
+%   facet_wrap(~predictor, scales = "free_x") +
+%   xlab("Predictor value") +
+%   ylab("Marginal effect on probability of extinction")
+% @
+%
+% <<plot-partial-group, out.width="4in", echo=FALSE>>=
+% ggplot(subset(partial_groups, median < 0.95), aes(value, median)) +
+%   geom_pointrange(aes(colour = stage, ymin = lower, ymax = upper)) +
+%   xlab("Marginal effect on probability of extinction") +
+%   ylab("") +
+%   coord_flip()
+% @
 
 We can re-create Fig.~1 in the paper, which is a more customized version of the previous plots, by running the code in \texttt{make-partial-dependence-plot.Rnw}. We'll suppress the code here to save space.
 
@@ -534,9 +572,7 @@ ggplot(modern, aes(pred, pred_stage_avg)) + geom_point() +
 # modern$mean_observed <- modern$pred_stage_avg
 @
 
-Next, we will merge these predictions with our contemporary spatial observations. At the same time, we will merge in Halpern et al. and Spalding et al.
-
-TODO Note which files this creates.
+Next, we will merge these predictions with our contemporary spatial observations. At the same time, we will merge in the data from Ref.\ \cite{halpern2011} Ref.\ \cite{spalding2007}.
 
 <<merge-predictions-spatial, child='merge-predictions-spatial-child.Rnw', echo=FALSE>>=
 @
@@ -557,6 +593,9 @@ er <- readShapePoly("../data/MEOW2/meow_ecos.shp")
 prov_names <- er@data[,c("PROVINCE", "PROV_CODE")]
 prov_names <- prov_names[!duplicated(prov_names), ]
 temp <- plyr::join(d.eco.filled, prov_names, by = "PROV_CODE")
+# add "0" to the single digit numbers for alphabetical ordering:
+temp$PROV_CODE[nchar(temp$PROV_CODE) == 1] <-
+  paste0("0", temp$PROV_CODE[nchar(temp$PROV_CODE) == 1])
 temp <- transform(temp, PROV_pretty = paste(PROV_CODE, PROVINCE))
 ggplot(temp, aes(mean_observed + 0.001)) +
   geom_histogram(aes(fill = class, colour = class),
