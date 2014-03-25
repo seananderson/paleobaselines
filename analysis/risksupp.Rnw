@@ -131,17 +131,27 @@ pkgs
 
 \subsection{Choice of taxa}
 
-We focused on groups of marine organisms that are common constituents of coastal ecosystems and have relatively well-sampled modern and Neogene distributions. These include bivalves, decapods, echinoids, elasmobranchs, gastropods, marine mammals, scleractinian corals, and testudines. We omitted groups with intrinsically low preservation potential (i.e.,\ groups consisting solely of soft-bodied organisms, parasitic life habit, and \textit{list of variety of traits here that are associated with low preservation rates (Crampton and Cooper and others NZ preservation reference in Geology; Valentine et al. 2006 PNAS paper on preservation potential in bivalves) such as (example) and (example)}. Some additional groups were also omitted due to the limited taxonomic resolution of fossil occurrences. Ray-finned fishes, for example, are diverse and abundant in modern and ancient seas, yet their fossil record consists primarily of isolated otoliths and teeth which frequently confounds attempts to identify remains to the genus or species levels (REF). Where possible we also consulted taxonomic experts to see if the biogeographic diversity patterns recorded in our raw data sources (described below) were consistent with their knowledge of global diversity patterns in their group of expertise in select instances this resulted in the exclusion of groups with generally high preservation potential (i.e.,\ foraminifera, brachiopoda, and ostracoda). With additional targeted sampling and literature compilation, these groups hold promise for inclusion in the types of analyses we present in the main text.
+We initially focused on groups of marine organisms that are common constituents of coastal ecosystems and have relatively well-sampled modern and Neogene distributions. These include bivalves, echinoids, elasmobranchs, gastropods, marine mammals, scleractinian corals, and testudines. We omitted groups with intrinsically low preservation potential (i.e.,\ groups consisting solely of soft-bodied organisms, parasitic life habit, and
+TODO Paul will work on this section
+\textit{list of variety of traits here that are associated with low preservation rates (Crampton and Cooper and others NZ preservation reference in Geology; Valentine et al. 2006 PNAS paper on preservation potential in bivalves) such as (example) and (example)}. Some additional groups were also omitted due to the limited taxonomic resolution of fossil occurrences. Ray-finned fishes, for example, are diverse and abundant in modern and ancient seas, yet their fossil record consists primarily of isolated otoliths and teeth which frequently confounds attempts to identify remains to the genus or species levels (REF). Where possible we also consulted taxonomic experts to see if the biogeographic diversity patterns recorded in our raw data sources (described below) were consistent with their knowledge of global diversity patterns in their group of expertise in select instances this resulted in the exclusion of groups with generally high preservation potential (i.e.,\ foraminifera, brachiopoda, and ostracoda). With additional targeted sampling and literature compilation, these groups hold promise for inclusion in the types of analyses we present in the main text.
 
 
-\subsection{Sources of data}
+\subsection{Sources of contemporary data}
 
 Modern occurrence data for major marine groups came from two primary sources. For most groups, occurrence data were downloaded from the Ocean Biogeographic Information System (OBIS, \url{http://www.iobis.org/}) \cite{obis}. OBIS is a marine biogeographical database initially developed as part of the Census of Marine Life, and currently containing around 37 million geolocated records of marine taxa. These data were downloaded on TODO date using the following selection criteria: TODO. The complete dataset consists of xx occurrences for yy taxa (supplementary figure showing data coverage --- e.g.,\ with cells color coded by occurrence frequency?).
 
-For cetaceans and sharks, OBIS data were not used, since recent efforts have compiled range maps at global scales for all species in these groups \cite{schipper2008, lucifora2011}, obviating the need to correct for sampling effort. Data were quality-controlled as per Ref.\ \cite{tittensor2010}. These range maps were converted to occurrence data by (I think this is what we did) laying down a grid of z cell-size resolution and at each intersection generating an occurrence for that genus. OBIS remains the largest single source of modern-day geolocated marine biological data, synthesising many different data sources and individual databases; however, the sampling is very uneven by taxa, by approach, by region, and by depth \cite{webb2010}, so significant caution is necessary to account for these issues of sampling effort when using the database. The database tends to be best applied to relatively well-studied and well-described taxa (e.g.\ fishes, corals).
+TODO This area perhaps is ripe for Seth or David Lindberg to try their hand at
+
+For cetaceans and sharks, OBIS data were not used, since recent efforts have compiled range maps at global scales for all species in these groups \cite{schipper2008, lucifora2011}, obviating the need to correct for sampling effort. Data were quality-controlled as per Ref.\ \cite{tittensor2010}. These range maps were converted to occurrence data by laying down a grid of z cell-size resolution and at each intersection generating an occurrence for that genus. OBIS remains the largest single source of modern-day geolocated marine biological data, synthesising many different data sources and individual databases; however, the sampling is very uneven by taxa, by approach, by region, and by depth \cite{webb2010}, so significant caution is necessary to account for these issues of sampling effort when using the database. The database tends to be best applied to relatively well-studied and well-described taxa (e.g.\ fishes, corals).
+
+TODO we should include a few recent sample references here
+
+\subsection{Sources of paleontological data}
 
 TODO ADD REFS:
 All of the fossil occurrence data used for this study were downloaded from the Paleobiology Database (PaleoDB, \url{http://paleobiodb.org}), a global compilation of the spatial and temporal occurrences of taxa in the fossil record. The Paleobiology Database has been used in previous investigations of marine extinction rates \cite{harnik2012} (Alroy 2010, Foote 2008, Hannisdal \& Peters 2011, etc.), extinction selectivity (Heim and Peters 2011, other refs), and geographic range (Payne and Finnegan 2007 PNAS, Harnik et al. 2012 Proc B). The data used for our study were downloaded from the PaleoDB on xx date, using the following selection criteria: xxxxxxxx. The complete dataset consists of xx occurrences for yy genera from more than zz localities globally (include figure showing distribution of Neogene localities on present-day global map).
+
+TODO insert content from Carl here
 
 \subsection{Standardizing the taxonomic data}
 
@@ -166,11 +176,19 @@ We used a minimum-bounding-box method to interpolate within biogeographic realms
 We are assuming that the interpolated contemporary biogeographic provinces cover the ``true'' range.
 This minimum-bounding-box method is similar to that used in Ref.~\cite{belanger2012}.
 
+TODO expand this last sentence slightly so that people don't miss the point that we aren't the first to attempt to account for variable sampling in this way
+
 We didn't interpolate the marine mammals or elasmobranch datasets since these were based on range maps.
 
 To apply a bounding-box approach to a globe, we needed to decide on a maximum gap between points to be considered part of the same box. We split gaps of $90\,^{\circ}$ longitude or greater into separate bounding boxes. For the most part, this rule did not affect our results, since most biogeographic realms were smaller than $90\,^{\circ}$.
 
-As an example, the following plot shows the interpolations for 6 genera. The red crosses indicate sampling observations in the OBIS database. The various biogeographic realms are shown in different colour shadings.
+As one illustrative example, here's a simplified plot of the interpolation process for the genus Petrophyllia, a scleractinian coral:
+
+\includegraphics[width=2.5in]{../static-figs/petrophyllia-cropped.pdf}
+
+We've only shown the biogeographic realm containing any contemporary observations (all shaded region combined). Individual polygons represent biogeographic regions. We've shown two occurrences as red crosses. We then draw a minimum bounding box around those observations (the rectangle) and shade with a darker grey the single biogeographic province crossed by the bounding box. We record this darker biogeographic province as containing the genus.
+
+As another example on a larger scale, the following plot shows the interpolations for 6 genera. The red crosses indicate sampling observations in the OBIS database. The various biogeographic realms are shown in different colour shadings.
 The outlined provinces are all the provinces within any realm that has occurrences.
 The grey-shaded polygons represent biogeographic provinces that are added based on the minimum-bounding-box interpolation scheme.
 Outlined provinces that aren't shaded are provinces that the bounding box didn't overlap.
@@ -742,7 +760,7 @@ Things to add to the modelling supp discussion:
 
 \clearpage
 
-Main-text figures (here temporarily for reference).
+\section{Main Figures}
 
 \begin{center}
   \includegraphics[width=4.86in]{../figs/partial-plot-base.pdf}\\
