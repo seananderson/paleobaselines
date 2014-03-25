@@ -9,6 +9,7 @@
 \usepackage{geometry}
 \usepackage{graphicx}
 \usepackage{url}
+\usepackage[nottoc,numbib]{tocbibind} % to add bibliography to TOC
 \textheight 20.5cm
 \setlength\parskip{0.11in}
 \setlength\parindent{0in}
