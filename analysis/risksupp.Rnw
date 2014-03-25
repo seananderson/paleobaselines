@@ -44,7 +44,7 @@ thm <- knit_theme$get("solarized-light.css")
 knit_theme$set(thm)
 @
 
-\title{Supplementary Materials for Paleontological Baselines for Evaluating Contemporary Extinction Risk in the Coastal Oceans}
+\title{Supplementary Materials for Paleontological Baselines for Evaluating Contemporary Extinction Risk in Coastal Oceans}
 \author{Seth Finnegan\textsuperscript{$\ast$} \and Sean C. Anderson \and Paul G. Harnik \and Carl Simpson \and Derek P. Tittensor \and Jarrett E. Byrnes \and Zoe V. Finkel \and David R. Lindberg \and Lee Hsiang Liow \and Rowan Lockwood \and Heike K. Lotze \and Craig M. McClain \and Jenny L. McGuire \and Aaron O'Dea \and John M. Pandolfi}
 \date{}
 \maketitle
