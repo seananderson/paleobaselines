@@ -62,9 +62,25 @@ References
 
 \clearpage
 
+
+% Load Fig S1 here to make sure it's the first figure.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=6in]{../static-figs/didactic_method.pdf}
+\caption{Schematic illustration of the sequence of steps used to build the modern genus range dataset and to make intrinsic risk predictions for modern genera from the Neogene fossil record.}
+\label{fig:didactic}
+\end{figure}
+
+\section{Introduction}
+
+TODO introduce what's in this document.
+
+TODO store data somewhere and link to it here.
+
 This document is written with the \pkg{knitr} package \cite{xie2013a,xie2013b,xie2013c} for the \proglang{R} statistical environment \cite{r2013}. It can be re-created by running \fn{knitr::knit2pdf()} on the \texttt{.Rnw} file. A number of functions that are used in this analysis have been compiled into an \proglang{R} package \pkg{paleorisk}.
 
-You can install the package by downloading the \texttt{paleorisk} folder and running:
+You can install the package by downloading the \texttt{paleorisk} folder from \url{https://github.com/seananderson/riskmaps} and running:
 
 <<install-paleorisk, eval=FALSE, echo=TRUE>>=
 install.packages("path/to/paleorisk/", repos = NULL, type = "source")
@@ -89,6 +105,9 @@ library("maps")
 library("mapproj")
 library("maptools")
 library("RColorBrewer")
+@
+
+<<gpclibPermit, cache=FALSE, echo=FALSE, results='hide'>>=
 gpclibPermit()
 @
 
@@ -102,25 +121,20 @@ pkgs <- x[(other_line+1):(other_line + 5)]
 
 We used \Sexpr{rversion} and package versions:
 
+Some of the code in this PDF document has been suppressed for brevity, however, the complete analysis is available by downloading the \texttt{.Rnw} file.
+
 <<versions, echo=FALSE, results=TRUE, cache=FALSE>>=
 pkgs
 @
 
-% Load Fig S1 here to make sure it's the first figure.
+\section{Description and preparation of the data}
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=6in]{../static-figs/didactic_method.pdf}
-\caption{Schematic illustration of the sequence of steps used to build the modern genus range dataset and to make intrinsic risk predictions for modern genera from the Neogene fossil record.}
-\label{fig:didactic}
-\end{figure}
-
-\section{Choice of taxa}
+\subsection{Choice of taxa}
 
 We focused on groups of marine organisms that are common constituents of coastal ecosystems and have relatively well-sampled modern and Neogene distributions. These include bivalves, decapods, echinoids, elasmobranchs, gastropods, marine mammals, scleractinian corals, and testudines. We omitted groups with intrinsically low preservation potential (i.e.,\ groups consisting solely of soft-bodied organisms, parasitic life habit, and \textit{list of variety of traits here that are associated with low preservation rates (Crampton and Cooper and others NZ preservation reference in Geology; Valentine et al. 2006 PNAS paper on preservation potential in bivalves) such as (example) and (example)}. Some additional groups were also omitted due to the limited taxonomic resolution of fossil occurrences. Ray-finned fishes, for example, are diverse and abundant in modern and ancient seas, yet their fossil record consists primarily of isolated otoliths and teeth which frequently confounds attempts to identify remains to the genus or species levels (REF). Where possible we also consulted taxonomic experts to see if the biogeographic diversity patterns recorded in our raw data sources (described below) were consistent with their knowledge of global diversity patterns in their group of expertise in select instances this resulted in the exclusion of groups with generally high preservation potential (i.e.,\ foraminifera, brachiopoda, and ostracoda). With additional targeted sampling and literature compilation, these groups hold promise for inclusion in the types of analyses we present in the main text.
 
 
-\section{Data sources}
+\subsection{Sources of data}
 
 Modern occurrence data for major marine groups came from two primary sources. For most groups, occurrence data were downloaded from the Ocean Biogeographic Information System (OBIS, \url{http://www.iobis.org/}) \cite{obis}. OBIS is a marine biogeographical database initially developed as part of the Census of Marine Life, and currently containing around 37 million geolocated records of marine taxa. These data were downloaded on TODO date using the following selection criteria: TODO. The complete dataset consists of xx occurrences for yy taxa (supplementary figure showing data coverage --- e.g.,\ with cells color coded by occurrence frequency?).
 
@@ -129,11 +143,21 @@ For cetaceans and sharks, OBIS data were not used, since recent efforts have com
 TODO ADD REFS:
 All of the fossil occurrence data used for this study were downloaded from the Paleobiology Database (PaleoDB, \url{http://paleobiodb.org}), a global compilation of the spatial and temporal occurrences of taxa in the fossil record. The Paleobiology Database has been used in previous investigations of marine extinction rates \cite{harnik2012} (Alroy 2010, Foote 2008, Hannisdal \& Peters 2011, etc.), extinction selectivity (Heim and Peters 2011, other refs), and geographic range (Payne and Finnegan 2007 PNAS, Harnik et al. 2012 Proc B). The data used for our study were downloaded from the PaleoDB on xx date, using the following selection criteria: xxxxxxxx. The complete dataset consists of xx occurrences for yy genera from more than zz localities globally (include figure showing distribution of Neogene localities on present-day global map).
 
-\section{Standardizing the taxonomic data}
+\subsection{Standardizing the taxonomic data}
 
 First, standardization of taxonomy and removal of erroneous names or taxa (e.g.\ pulmonate gastropods) that do not belong.  Next, genus names from OBIS matched to higher taxonomic groups using the WORMS database.  Higher taxonomy of WORMS and of PDBD standardized to the greatest degree possible.
 
-\section{Interpolation of OBIS occurrence data}
+\subsection{Choice of predictor variables}
+
+\subsection{Standardizing the predictor variables}
+
+We will start by standardizing a variety of habitat-relative characteristics within each geologic stage. This is an important step to make some habitat characteristics (richness, occupancy, occurrences) comparable across periods, an in particular, between the paleontological data and the contemporary data. Given the substantially different sampling methods within the paleontological and contemporary records, the absolute values of richness, occupancy, and occurrences are not comparable. We therefore standardize them to values between 0 and 1 within each interval. The other variables (e.g.\ latitude variables and great circle distance) are still comparable between the paleontological and contemporary records --- a degree latitude is still a degree latitude and a kilometre is still a kilometre.
+
+The following script creates the \proglang{R} data object \texttt{stand-predictors-cen-obis.rds}:
+
+TODO INSERT CODE
+
+\subsection{Interpolation of OBIS occurrence data}
 
 Sampling of species' distributions in the contemporary OBIS data set is incomplete.
 Therefore, we used an interpolation algorithm to infer the contemporary distribution of genera.
@@ -151,8 +175,6 @@ The outlined provinces are all the provinces within any realm that has occurrenc
 The grey-shaded polygons represent biogeographic provinces that are added based on the minimum-bounding-box interpolation scheme.
 Outlined provinces that aren't shaded are provinces that the bounding box didn't overlap.
 Keep in mind that some realms wrap from one side of the plot to the other.
-
-
 
 \includegraphics[width=\textwidth]{../static-figs/province_interpolation_test_eg.pdf}
 
@@ -172,15 +194,9 @@ MORE NOTES:
 source("../r/README_interpolation.R")
 @
 
-\section{Choice of prediction variables}
+\section{Modelling contemporary extinction risk with paleontological data}
 
-\section{Standardizing the predictors}
-
-We will start by standardizing a variety of habitat-relative characteristics within each geologic stage. This is an important step to make some habitat characteristics (richness, occupancy, occurrences) comparable across periods, an in particular, between the paleontological data and the contemporary data. Given the substantially different sampling methods within the paleontological and contemporary records, the absolute values of richness, occupancy, and occurrences are not comparable. We therefore standardize them to values between 0 and 1 within each interval. The other variables (e.g.\ latitude variables and great circle distance) are still comparable between the paleontological and contemporary records --- a degree latitude is still a degree latitude and a kilometre is still a kilometre.
-
-The following script creates the \proglang{R} data object \texttt{stand-predictors-cen-obis.rds}:
-
-\section{Choice of gradient boosting models}
+\subsection{Choice of gradient boosting models}
 
 %[Some draft notes below. See the nescent_extinction_map/literature folder for PDFs and citation data.  - SA]
 - good overall and highly cited introduction to boosted regression for ecology: \cite{elith2008}
@@ -222,7 +238,7 @@ saveRDS(stcen, file = "../data/stand-predictors-cen-obis.rds")
 # Min_gcd <- 1
 @
 
-\section{Model building, testing, and calibration}
+\subsection{Model building, testing, and calibration}
 
 We will load the standardized data and subset it for the Neogene period. The contemporary data are also contained in this data frame with \texttt{stage\_top = 0}. Therefore, we will also exclude the contemporary dataset from what we call \texttt{stcen}.
 
@@ -357,7 +373,7 @@ ggplot(val_test_summarized,
 
 We can use these observed extinction probabilities (in \texttt{val\_test\_summarized}) as calibration for our GBM-predicted extinction probability in the contemporary dataset. To do this, we take the predicted extinction probability from our GBM model applied to the contemporary dataset, we fit that value into our binning scheme, and we match it up with the empirically-observed mean extinction probability for that bin. This removes the observed non-linear bias in our model \cite{thorson2012}. Put another way, we find our predicted value on the x-axis of the last plot and draw a vertical line up until we meet a blue dot. We then use the value of the blue dot as our calibrated extinction probability. We will come back to that shortly when we apply our model to the contemporary dataset.
 
-\section{Testing predictive performance across intervals}
+\subsection{Testing predictive performance across geologic stages}
 
 Another way to test the predictive power of our models is to build the model on one geologic stage and predict on another. To keep this simple, we won't use our calibration factors.
 
@@ -389,9 +405,9 @@ ggplot(cross_pred, aes(pred_self, pred, colour = class)) +
   guides(colour = guide_legend(override.aes = list(alpha = 1)))
 @
 
-\section{Partial dependence plots}
+\subsection{Evaluating the marginal effects of predictor variables}
 
-We will no look at the marginal effect of each predictor on extinction risk. We can do this through partial dependence plots, as shown in Fig.~1. This procedure finds the marginal effect of each predictor by integrating across all other predictor values using the method described in Friedman \cite{friedman2001}.
+We will now look at the marginal effect of each predictor on extinction risk. We can do this through partial dependence plots, as shown in Fig.~1. This procedure finds the marginal effect of each predictor by integrating across all other predictor values using the method described in Friedman \cite{friedman2001}.
 
 Because there's some stochasticity when running a GBM, we will run our models a number of times, and each time record the marginal effects. We will then take the median and interquartile range of those predictions.
 
@@ -491,7 +507,7 @@ We can re-create Fig.~1 in the paper, which is a more customized version of the 
 <<partial-plots-base, child='make-partial-dependence-plot.Rnw', echo=FALSE, results='hide'>>=
 @
 
-\section{Merging risk predictions with contemporary species distributions}
+\subsection{Predicting contemporary extinction risk with paleontological models}
 
 We will use our GBM model to predict on the contemporary dataset. We will run our model a number of times and take the average predictions. This is because there is some stochasticity to the GBM algorithm.
 
@@ -607,29 +623,7 @@ ggplot(temp, aes(mean_observed + 0.001)) +
   ylab("Number of genera") + xlab("Predicted extinction probabilty")
 @
 
-\section{The role of the tropics}
-
-We can inspect the role of tropical regions. Earlier we defined ``tropical'' as less than 30$^{\circ}$ absolute latitude. This code produces Fig.~\ref{fig:test-tropical-drivers}.
-
-<<test-tropical-drivers, fig.width=18, fig.height=11.5, out.width="7in", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus various predictors for that province. Each point represents a single biogeographic province and colour indicates whether the province is tropical or extratropical (anything other than tropical). Colored lines and gray-shaded regions indicate linear regressions and 95\\% confidence intervals.", echo=FALSE>>=
-tropical_test <- reshape2::melt(by.prov.classes, id.vars =
-  c("PROV_CODE", "class", "Lat_Zone"), measure.vars =
-  c("mean.lat.range", "mean.occupancy", "mean.gcd", "log_OBIS_records",
-    "mean.richness"))
-tropical_test <- plyr::join(tropical_test, by.prov.classes[,
-  c("PROV_CODE", "class", "Lat_Zone", "mean.ext")],
-  by = c("PROV_CODE", "class", "Lat_Zone"))
-
-ggplot(tropical_test,
-  aes(value, mean.ext, colour = Lat_Zone, shape = Lat_Zone)) +
-  geom_point(alpha = 0.7) +
-  facet_wrap(variable~class, scales = "free") +
-  stat_smooth(method = "lm", se = TRUE, lwd = 1.5) +
-  ylab("log(Mean intrinsic extinction risk)") +
-  xlab("Predictor value")
-@
-
-\section{Mapping extinction probabilities}
+\subsection{Mapping risk predictions using contemporary species distributions}
 
 Now, we'll create Fig.~1 and Fig.~2 from the paper.
 
@@ -658,6 +652,31 @@ map_hotspots(er_dat, min_prov_genera = 100)
 dev.off()
 @
 
+\section{Model exploration and sensitivity analyses}
+
+\subsection{The role of the tropic in risk predictions}
+
+We can inspect the role of tropical regions. Earlier we defined ``tropical'' as less than 30$^{\circ}$ absolute latitude. This code produces Fig.~\ref{fig:test-tropical-drivers}.
+
+<<test-tropical-drivers, fig.width=18, fig.height=11.5, out.width="7in", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus various predictors for that province. Each point represents a single biogeographic province and colour indicates whether the province is tropical or extratropical (anything other than tropical). Colored lines and gray-shaded regions indicate linear regressions and 95\\% confidence intervals.", echo=TRUE>>=
+tropical_test <- reshape2::melt(by.prov.classes, id.vars =
+  c("PROV_CODE", "class", "Lat_Zone"), measure.vars =
+  c("mean.lat.range", "mean.occupancy", "mean.gcd", "log_OBIS_records",
+    "mean.richness"))
+tropical_test <- plyr::join(tropical_test, by.prov.classes[,
+  c("PROV_CODE", "class", "Lat_Zone", "mean.ext")],
+  by = c("PROV_CODE", "class", "Lat_Zone"))
+
+ggplot(tropical_test,
+  aes(value, mean.ext, colour = Lat_Zone, shape = Lat_Zone)) +
+  geom_point(alpha = 0.7) +
+  facet_wrap(variable~class, scales = "free") +
+  stat_smooth(method = "lm", se = TRUE, lwd = 1.5) +
+  ylab("log(Mean intrinsic extinction risk)") +
+  xlab("Predictor value")
+@
+
+\subsection{Exploring contemporary sampling intensity}
 We will plot the number of genera per province by class:
 
 <<plot-n-genera-prov, fig.cap="Number of OBIS occurrence records for each biogeographic province \\cite{spalding2007}. Scale bars on the right (log-distributed scale) indicate the range for a given group, and this scale is used to plot relative sampling intensity heatmaps.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
@@ -666,6 +685,8 @@ map_class_ext(er_dat_class, plot_column = "log_OBIS_records",
   yticks = c(2, 20, 200, 2000, 20000),
   col_pal = RColorBrewer::brewer.pal(9, "YlGnBu"))
 @
+
+\subsection{Alternative maps of contemporary extinction risk}
 
 <<plot-class-prov-ext-raw-ranges, fig.cap="Mean predicted extinction susceptibility of genera inhabiting different ocean biogeographic provinces \\cite{spalding2007} for each of the eight major groups considered, as in Fig.~3, but \\textbf{with predictions based on raw ranges in OBIS without the within-realm minimum bounding box interpolation}. Scale bars on the right indicate the range of log extinction susceptibility values for a given group, and this scale is used to plot mean extinction susceptibility heatmaps on the left.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
 plot(1, 1, type = "n", xlab = "", ylab = "")
