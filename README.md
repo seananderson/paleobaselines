@@ -49,7 +49,7 @@ To cite something, probably the easiest option is to just leave a marker (like `
 
 If you want to do it yourself, export the citation from your reference manager as a BibTeX file, paste it into `risksupp.bib` and use the "citekey" (the text after `@article{`) as in `\cite{smith2012}`.
 
-The stuff between `<<>>==` and `@` symbols is R code.
+The stuff between `<<>>==` and `@` symbols is R code. You can safely ignore it.
 
 Wrap URLs with `\url{}`.
 
@@ -60,3 +60,7 @@ If you use a `%` symbol, you need to escape it with a backslash `\%` because `%`
 Feel free to leave TODO markers where there's something to do.
 
 Feel free to leave COMMENT markers where you have a comment. E.g. `COMMENT SA: should we worry about XX here?`.
+
+Italics: `\textit{something}`
+
+Bold: `\textbf{something}`
