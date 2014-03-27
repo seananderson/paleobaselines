@@ -7,7 +7,7 @@ The in-progress Supporting Material document (which also reproduces the analyses
 An up-to-date version of the Supporting Materials document is available here:
 <https://dl.dropboxusercontent.com/u/254940/risksupp.pdf>
 
-# Instructions for editing the SOM on GitHub
+## Instructions for editing the SOM on GitHub
 
 Find the file `risksupp.Rnw` in the folder `analysis`:
 
@@ -39,3 +39,24 @@ When you're done, (first exit Zen Mode if you're in it) head to the bottom of th
 
 It's best if you make a number of incremental edits and commits. This makes the version history easier to follow, reduces the chances you'll try and edit the same line as someone else at the same time, and reduces the chances of losing your work before saving. 
 
+## All the LaTeX you need to know
+
+Sections: `\section{A section name}`
+
+Subsections: `\subsection{A subsection name}`
+
+To cite something, probably the easiest option is to just leave a marker (like `REF Smith et al. 2012`) and I'll fix it up. 
+
+If you want to do it yourself, export the citation from your reference manager as a BibTeX file, paste it into `risksupp.bib` and use the "citekey" (the text after `@article{`) as in `\cite{smith2012}`.
+
+The stuff between `<<>>==` and `@` symbols is R code.
+
+Wrap URLs with `\url{}`.
+
+Line breaks (i.e. hitting the Return key) get ignored unless there's a full blank line. Don't worry about this.
+
+If you use a `%` symbol, you need to escape it with a backslash `\%` because `%` is the comment character in LaTeX.
+
+Feel free to leave TODO markers where there's something to do.
+
+Feel free to leave COMMENT markers where you have a comment. E.g. `COMMENT SA: should we worry about XX here?`.
