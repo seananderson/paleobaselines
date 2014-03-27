@@ -23,6 +23,8 @@ Enable the `Soft wrap` option:
 
 Now edit!
 
+![](https://dl.dropboxusercontent.com/u/254940/riskmaps-wiki/regular-editing.png)
+
 Or, you might find the "Zen Mode" easier to work in. Click this button:
 
 ![](https://dl.dropboxusercontent.com/u/254940/riskmaps-wiki/enter-zen-mode.png)
