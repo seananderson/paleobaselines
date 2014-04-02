@@ -190,12 +190,8 @@ Sampling of species' distributions in the contemporary OBIS data set is incomple
 Therefore, we used an interpolation algorithm to infer the contemporary distribution of genera.
 We assumed that if a genus was identified within a biogeographic realm \cite{spalding2007}, it was likely to be found throughout that realm.
 We used a minimum-bounding-box method to interpolate within biogeographic realms across biogeographic provinces.
-We are assuming that the interpolated contemporary biogeographic provinces cover the ``true'' range.
-This minimum-bounding-box method is similar to that used in Ref.~\cite{belanger2012}.
-
-TODO expand this last sentence slightly so that people don't miss the point that we aren't the first to attempt to account for variable sampling in this way
-
-We didn't interpolate the marine mammals or elasmobranch datasets since these were based on range maps.
+We are assuming that the interpolated contemporary biogeographic provinces cover the ``true'' range. A similar minimum-bounding-box approach has been used in the literature before to account for variable sampling, for example Ref.~\cite{belanger2012}.
+We did not interpolate the marine mammals or elasmobranch datasets since these were based on range maps.
 
 To apply a bounding-box approach to a globe, we needed to decide on a maximum gap between points to be considered part of the same box. We split gaps of $90\,^{\circ}$ longitude or greater into separate bounding boxes. For the most part, this rule did not affect our results, since most biogeographic realms were smaller than $90\,^{\circ}$.
 
@@ -205,29 +201,20 @@ As one illustrative example, here's a simplified plot of the interpolation proce
 
 We've only shown the biogeographic realm containing any contemporary observations (all shaded region combined). Individual polygons represent biogeographic regions. We've shown two occurrences as red crosses. We then draw a minimum bounding box around those observations (the rectangle) and shade with a darker grey the single biogeographic province crossed by the bounding box. We record this darker biogeographic province as containing the genus.
 
-As another example on a larger scale, the following plot shows the interpolations for 6 genera. The red crosses indicate sampling observations in the OBIS database. The various biogeographic realms are shown in different colour shadings.
-The outlined provinces are all the provinces within any realm that has occurrences.
-The grey-shaded polygons represent biogeographic provinces that are added based on the minimum-bounding-box interpolation scheme.
-Outlined provinces that aren't shaded are provinces that the bounding box didn't overlap.
-Keep in mind that some realms wrap from one side of the plot to the other.
+As another example on a larger scale, the following plot shows the interpolations for 6 genera. The red crosses indicate sampling observations in the OBIS database. The various biogeographic realms are shown in different colour shadings. The outlined provinces are all the provinces within any realm that has occurrences. The grey-shaded polygons represent biogeographic provinces that are added based on the minimum-bounding-box interpolation scheme. Outlined provinces that aren't shaded are provinces that the bounding box didn't overlap. Keep in mind that some realms wrap from one side of the plot to the other.
 
 \includegraphics[width=\textwidth]{../static-figs/province_interpolation_test_eg.pdf}
 
-For the contemporary dataset, we took the interpolated provinces, overlaid an equal area grid, recorded the centre points of that grid for all cells that overlapped a province, and then calculated the range statistics based on the centre points from the grid overlay.
+For the contemporary dataset, we took the interpolated provinces, overlaid an equal-area grid, recorded the centre points of that grid for all cells that overlapped a province, and then calculated the range statistics based on the centre points from the grid overlay.
 
-For the paleontological dataset, we overlaid the same grid, took the centre points of the grid cells for cells that overlapped any occurrences, and calculated the range statistics on the centre points from the grid overlay.
+Our equal-area grid was divided into 45 east-west cells and 14 north-south cells. The longitudes started at $-180\,^{\circ}$ and increased by $8\,^{\circ}$ to $180\,^{\circ}$. The latitude values of the grid line (in degrees) were: -74.8, -55.6, -43.3, -33.1, -24, -15.5, -7.3, 0.7, 8.7, 17, 25.5, 34.8, 45.3, 58.2, 81.8. We recorded the centre coordinates for all grid cells that overlapped with a province with observations or interpolated observations. TODO ADD CENTRE COORDINATES.
 
-We have suppressed the interpolation code for brevity.
+For the paleontological dataset, we overlaid the same equal-area grid, took the centre points of the grid cells for cells that overlapped any occurrences, and calculated the range statistics on the centre points from the grid overlay.
+
+We have suppressed and cached the following interpolation code for brevity.
 <<interporlation, eval=FALSE, echo=TRUE>>=
 source("../r/README_interpolation.R")
 @
-
-%The interpolation process can be re-run by sourcing the file \texttt{README\_interpolation.R} in the \texttt{r} folder. Note that this script will take a very long time to run and requires considerable RAM.
-
-
-\textit{Within each realm, we bounded the outermost points with a rectangle and recorded all provinces that the bounding box crossed.}
-
-\textit{We then overlaid a 45x14 cell equal-area grid (longitudes starting at -180 degrees and increasing by 8 degrees, latitudes at -74.8, -55.6, -43.3, -33.1, -24, -15.5, -7.3, 0.7, 8.7, 17, 25.5, 34.8, 45.3, 58.2, 81.8) and recorded the centre coordinates for all grid cells that overlapped with a province with observations or interpolated observations.}
 
 \section{Modelling contemporary extinction risk with paleontological data}
 
