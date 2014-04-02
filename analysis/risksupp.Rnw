@@ -154,6 +154,22 @@ TODO insert content from Carl here
 
 First, standardization of taxonomy and removal of erroneous names or taxa (e.g.\ pulmonate gastropods) that do not belong.  Next, genus names from OBIS matched to higher taxonomic groups using the WORMS database.  Higher taxonomy of WORMS and of PDBD standardized to the greatest degree possible.
 
+We will standardize the data with the following \proglang{R} code:
+
+<<standardize-predictors>>=
+data <- readRDS("../data/modern-paleodb-ranges.rds")
+mean.lats <- readRDS("../data/genus-mean-occurence-lats.rds")
+data <- merge(data, mean.lats)
+stage_names <- unique(data$Interval_Name)
+stcen <- ldply(stage_names, function(x)
+  standardize_data(data, interval_name = x))
+
+# Calibrate based on Plio-Pleistocene?
+# stcen <- calibrate_fossil(stcen)
+
+saveRDS(stcen, file = "../data/stand-predictors-cen-obis.rds")
+@
+
 \subsection{Choice of predictor variables}
 
 \subsection{Standardizing the predictor variables}
@@ -217,51 +233,12 @@ source("../r/README_interpolation.R")
 
 \subsection{Choice of gradient boosting models}
 
-Why ensemble learning method in general
+We modelled intrinsic contemporary extinction probability from paleontological data using a form of ensemble learning called gradient boosting models (GBMs; \cite{friedman2001}).
+\textit{Ensemble learning} refers to how the final model is a product of many weakly informative models fit in succession. Compared to parametric modelling, GBMs (along with other forms of machine learning) make minimal assumptions about the relationship between predictors and response and prioritize predictive performance over probabilistic inference about the model itself \cite{elith2008}.
 
-TODO - note that this section is merely a grouping of quotes and notes right now. Not cohesive yet.
+Boosting models work, in general, by building a sequence of models, each fit to the residuals of the previous model with larger residuals being given stronger weights. This means that each subsequent model focuses more heavily on data which were poorly fit by previous models. In theory, this ensemble of weak models can be combined to produce one strong overall predictive model with reduced bias compared to other machine learning methods, such as random forests \cite{elith2008}. Boosted tree methods have been shown to outperform other machine learning methods in many cases \cite{caruana2006} and are commonly used in applied prediction problems (e.g. by Yahoo for website rankings; \cite{cossock2008}).
 
-%[Some draft notes below. See the nescent_extinction_map/literature folder for PDFs and citation data.  - SA]
-- good overall and highly cited introduction to boosted regression for ecology: \cite{elith2008}
-
-Advantages of gbms over random forests: (From Elith et al. 2008)
-``While BT (bagged trees) and RF (random forests) reduce variance more than single trees, they cannot achieve any bias reduction, because each tree is based on a bootstrap sample that will be distributed in much the same way as the original training set. As a consequence, the resulting average bias is identical to the bias of any one tree. By contrast, boosting grows the suite of trees by sequentially modelling the residuals throughout all parts of the data space, including those for atypical observations that depart from the dominant patterns explained by the initial trees. In this way, it reduces both bias (through forward stagewise fitting) and variance (through model averaging).''
-
-We used GBMs (\cite{friedman2001}; ``gradient boosting machine'' models or ``generalized boosted regression models'') to predict \ldots GBMs are a form of supervised machine learning based on an ensemble of decision trees. Supervised refers to the fact that the model is built with training data and ensemble of decision trees refers to how the final model is a product of many weakly informative models fit in succession. Compared to parametric modelling, machine learning makes minimal assumptions about the relationship between predictors and response and prioritizes predictive performance over probabilistic inference about the model itself.
-
-Boosting models work, in general, by building a sequence of models, each fit to the residuals of the previous model with larger residuals being given stronger weights. This means that each subsequent model focuses more heavily on data which were poorly fit by previous models. In theory, this ensemble of weak models can be combined to produce one strong overall predictive model with reduced bias compared to other machine learning methods, such as random forests \cite{elith2008}.
-
-Although not universal, boosted tree methods have been shown to outperform other machine learning methods in many cases \cite{caruana2006} (e.g. and Niculescu-Mizil 2006), and are commonly used in applied prediction problems (e.g. by Yahoo for website rankings; \cite{cossock2008}. Early work with our dataset demonstrated that GBMs outperformed other common machine learning techniques (in both bias and precision?), such as random forests, in out of sample prediction.
-
-TODO explain out of sample
-
-We fit GBMs with the \pkg{gbm} package \cite{gbm2013} for the \proglang{R} statistical language and environment \cite{r2013}. The \pkg{gbm} package implements GBMs based on Ref.\ \cite{friedman2001} with some minor modifications (gbm vignette REF). Further, the \pkg{gbm} package implements the stochastic method proposed in Ref.\ \cite{friedman2001} in which a random subsample of the data is chosen at each model iteration. This random subsample is used to fit the model before computing residuals for that step thereby reducing chances of overfitting the data. At each step, we left out 50\% of the data as a random subset --- the default in the \texttt{gbm()} function.
-
-<<standardize-predictors>>=
-data <- readRDS("../data/modern-paleodb-ranges.rds")
-mean.lats <- readRDS("../data/genus-mean-occurence-lats.rds")
-data <- merge(data, mean.lats)
-stage_names <- unique(data$Interval_Name)
-stcen <- ldply(stage_names, function(x)
-  standardize_data(data, interval_name = x))
-
-# Calibrate based on Plio-Pleistocene?
-# stcen <- calibrate_fossil(stcen)
-
-saveRDS(stcen, file = "../data/stand-predictors-cen-obis.rds")
-@
-
-<<legacy-globals, echo=FALSE, eval=FALSE>>=
-# Min_Occupancy <- 1
-# choose the minimum number of PaleoDB localities for inclusion
-# Min_PBDB_Loc <- 1
-# choose the minimum number of OBIS localities for inclusion
-# Min_OBIS_Loc <- 1
-# choose the minimum number of Spalding provinces occupied for inclusion (applies only to modern genera)
-# Min_Prov <- 1
-# set minimum great circle distance for inclusion (single occurrence PBDB genera assigned great.circle = 200)
-# Min_gcd <- 1
-@
+We fit GBMs with the \pkg{gbm} package \cite{gbm2013} for the \proglang{R} statistical language and environment \cite{r2013}. The \pkg{gbm} package implements GBMs based on Ref.\ \cite{friedman2001} with some minor modifications \cite{gbm2013}. Further, the \pkg{gbm} package implements the stochastic method proposed in Ref.\ \cite{friedman2001} in which a random subsample of the data is chosen at each model iteration. This random subsample is used to fit the model before computing residuals for that step thereby reducing chances of overfitting the data. Specifically, we chose to leave out 50\% of the data as a random subset on each iteration --- the default in the \texttt{gbm()} function.
 
 \subsection{Model building, testing, and calibration}
 
@@ -274,11 +251,9 @@ stcen <- gdata::drop.levels(subset(stcen, stcen$stage_top < 22 &
     stcen$stage_top != 0))
 @
 
-TODO EDIT THIS: why we needed to test and calibrate at the class level --- model built across all classes to pool habitat information, unlike multi-level parametric modelling there is no straightforward way to partially pool info in a GBM, therefore we tested and calibrated at the class level post-modelling \ldots important because we are generating maps at the class level, and so we want to minimize bias at the class level while modelling at aggregate level\ldots plus even without the class-level issue, out-of-sample performance can be non-linearly biased.
+We will start by building GBM models and testing their ability to predict data separate from the data they are built on. This is call out-of-sample prediction or cross validation. We are building our GBM models on the entire Neogene paleontological dataset to pool predictive power from range-characteristics. However, we are interested in unbiased predictions at the taxonomic class level. Therefore, we will examine out-of-sample prediction at the class level and use class-level cross validation to calibrate our models.
 
-\fn{validate\_gbm()} in the \pkg{paleorisk} package is our main validation and calibration function. This function deals with possibly splitting the data into training and testing portions, builds a generalized boosted regression model (GBM \cite{gbm2013}) on the training portion, and then returns predictions and classification statistics on the testing set.
-
-We will start by testing some GBM models. To start with, we will build the model 25 times, each time training the model on a random 50\% of the data and testing it on the other 50\%. Then we will record the observed mean extinction probability for each predicted bin value within each taxonomic class. For example, we can group all predicted extinction values for bivalves into bins from 0 to 1 in 0.05 increments. Then we can calculate the mean observed extinction probability for each of those bins. Because we're building and testing the model on independent datasets, this is a good test of the out-of-sample predictive ability of our modelling approach.
+\fn{validate\_gbm()} in the \pkg{paleorisk} package is our main validation and calibration function. This function deals with splitting the data into training (fitting) and testing portions, builds a GBM on the training portion, and then returns predictions and classification statistics on the testing set. We will start by testing some GBM models. To start with, we will build the model 25 times, each time training the model on a random 50\% of the data and testing it on the other 50\%. Then we will record the observed mean extinction probability for each predicted bin value within each taxonomic class. For example, we can group all predicted extinction values for bivalves into bins from 0 to 1 in 0.05 increments. Then we can calculate the mean observed extinction probability for each of those bins. Because we're building and testing the model on independent datasets, this is a good test of the out-of-sample predictive ability of our modelling approach.
 
 <<test-gbm1>>=
 val_test <- rdply(25, validate_gbm(stcen, shrinkage = 0.1,
@@ -309,9 +284,8 @@ ggplot(val_test_summarized,
   labs(size = "Median sample #")
 @
 
-Next, we can test the effect of the shrinkage, interaction depth, and number of trees arguments to \texttt{gbm()}. We will vary each argument one at a time.
-
-TODO describe these arguments here
+Next, we will examine the effect of varying some of the main arguments to the \texttt{gbm()} function.
+We will test the effect of the \texttt{shrinkage} (the rate of improvement between each tree iteration), \texttt{interaction.depth} (the maximum number of variable interactions), and \texttt{n.trees} (the total number of trees to build) arguments. We will vary each argument one at a time.
 
 <<alternative-gbms>>=
 val_test_base <- rdply(20, validate_gbm(stcen, shrinkage = 0.1,
@@ -348,7 +322,7 @@ val_test_alt <- rbind(val_test_base_summ, val_test_shr_summ,
   val_test_int_summ, val_test_ntrees_summ)
 @
 
-We will plot out the observed vs.\ predicted for these 4 versions of the model. We see that a larger interaction value results in near universally poorer predictive performance. Generating more trees results in similar performance at considerably increased computational time. A smaller shrinkage value (slower learning between trees) substantially reduces the range of predicted extinction probabilities, but frequently results in more biased predictions --- even in some bins with large sample sizes. We therefore continue from here on with the model we refer to as the ``base'' model above.
+We will plot out the observed vs.\ predicted extinction probabilities for these 4 versions of the model. We fail to find substantially improved model performance with any of these alternatives, despite considerably increased computational requirements. We therefore continue from here on with the model we refer to as the ``base'' model above.
 
 <<plot-alt-gbms, fig.height=8, fig.width=13, out.width="7in", echo=FALSE>>=
 ggplot(val_test_alt,
@@ -363,13 +337,13 @@ ggplot(val_test_alt,
   labs(size = "Median sample #")
 @
 
-We note that Malacostraca is poorly predicted in our out-of-sample validation tests. We therefore choose here to not include Malacostraca from here on in. If we can't reliably predict Malacostraca extinctions in the paleontological data then we can't justify attempting to predict contemporary patterns of extinction.
+In the previous two plots, we note that Malacostraca is poorly predicted in our out-of-sample validation tests. We therefore choose here to not include Malacostraca from here on in. If we can't reliably predict Malacostraca extinctions in the paleontological data then we can't justify attempting to predict contemporary patterns of extinction.
 
 <<drop-malacostraca>>=
 stcen2 <- gdata::drop.levels(subset(stcen, class != "Malacostraca"))
 @
 
-We will run many more cross-validation iterations of our model to get precise estimates of non-linear bias so that we can use the observed mean extinction probabilities as calibration factors:
+Since there is some stochasticity in GBM models (one run to the next will not give exactly the same results), we will run many more cross-validation iterations of our model to get precise estimates of non-linear bias. We will use the observed mean extinction probabilities as calibration factors.
 
 <<final-gbm-validation, eval=TRUE>>=
 val_test <- rdply(50, validate_gbm(stcen2, shrinkage = 0.1,
@@ -402,11 +376,9 @@ ggplot(val_test_summarized,
 
 We can use these observed extinction probabilities (in \texttt{val\_test\_summarized}) as calibration for our GBM-predicted extinction probability in the contemporary dataset. To do this, we take the predicted extinction probability from our GBM model applied to the contemporary dataset, we fit that value into our binning scheme, and we match it up with the empirically-observed mean extinction probability for that bin. This removes the observed non-linear bias in our model \cite{thorson2012}. Put another way, we find our predicted value on the x-axis of the last plot and draw a vertical line up until we meet a blue dot. We then use the value of the blue dot as our calibrated extinction probability. We will come back to that shortly when we apply our model to the contemporary dataset.
 
-TODO add a sentence talking about the causes of non-linear bias
-
 \subsection{Testing predictive performance across geologic stages}
 
-Another way to test the predictive power of our models is to build the model on one geologic stage and predict on another. To keep this simple, we won't use our calibration factors.
+Another way to test the predictive power of our models is to build the model on one geologic stage and predict on another. We will not use our calibration factors in this test keep the code as simple as possible and to minimize computational time.
 
 <<cross-intervals-gbms>>=
 stage_df <- expand.grid(stage_train = unique(stcen2$stage),
@@ -439,16 +411,13 @@ We see that in general there is substantial similarity in extinction regimes bet
 
 \subsection{Evaluating the marginal effects of predictor variables}
 
-We will now look at the marginal effect of each predictor on extinction risk. We can do this through partial dependence plots, as shown in Fig.~1. This procedure finds the marginal effect of each predictor by integrating across all other predictor values using the method described in Friedman \cite{friedman2001}.
+We will now look at the marginal effect of each predictor on extinction risk. We can do this through partial dependence plots, as shown in Fig.~1. This procedure finds the marginal effect of each predictor by integrating across all other predictor values using the method described in Ref.~\cite{friedman2001}.
 
-Because there's some stochasticity when running a GBM, we will run our models a number of times, and each time record the marginal effects. We will then take the median and interquartile range of those predictions.
+Because there's some stochasticity when running a GBM, we will run our models a number of times, and each time record the marginal effects. We will then take the median and interquartile range of those predictions for plotting. 
 
-First, a function to fit the GBM models to a given stage:
-
-TODO note how we centered the marginal effects to compare across intervals
+First, we will write a function to fit the GBM models to a given stage:
 
 <<shape-data-partial-plots, cache=FALSE>>=
-# a function to fit a GBM model to a given stage:
 fit_stage_models <- function(dat, stage_name) {
   if(stage_name == "all") {
     d <- dat
@@ -492,7 +461,7 @@ partial_dat <- ldply(c(stage_order, "all"), function(stage_name) {
 })
 @
 
-We will get the median and interquartile range of the marginal effects.
+We will get the median and interquartile range of the marginal effects:
 
 <<summarize-marginal-effects>>=
 partial_dat2 <- tbl_df(partial_dat)
@@ -504,7 +473,7 @@ partial_dat2 <- summarise(partial_dat2,
   .n = n())
 @
 
-Because the taxonomic variables are factors (i.e.\ they are words) and the other variables are continuous and numeric, we will split these into separate data frames for plotting.
+Because the taxonomic variables are factors (i.e.\ they are words) and the other variables are continuous and numeric, we will split these into separate data frames for plotting:
 
 <<separate-taxonomic-and-numeric-predictions>>=
 partial_groups <- partial_dat2[partial_dat2$predictor == "group", ]
@@ -536,14 +505,14 @@ partial_groups <- plyr::rename(partial_groups, c("group" = "value"))
 %   coord_flip()
 % @
 
-We can re-create Fig.~1 in the paper, which is a more customized version of the previous plots, by running the code in \texttt{make-partial-dependence-plot.Rnw}. We'll suppress the code here to save space.
+We can re-create Fig.~1 in the paper by running the code in \texttt{make-partial-dependence-plot.Rnw}. We will suppress the code here to save space. Note that in this plotting code we centre the marginal effects for each geologic stage for visual purposes (so that the mean marginal effect of each variable is 0.5). We need to do this since the base rate of extinction is different in each geologic stage.
 
 <<partial-plots-base, child='make-partial-dependence-plot.Rnw', echo=FALSE, results='hide'>>=
 @
 
 \subsection{Predicting contemporary extinction risk with paleontological models}
 
-We will use our GBM model built on the entire Neogene period to predict extinction risk in the contemporary dataset. Because of the slight stochasticity from run to run of a GBM, we will run our model a number of times and take the average predictions.
+We will use our GBM model built on the entire Neogene period to predict extinction risk in the contemporary dataset. Because of the slight stochasticity from run to run of a GBM, we will run our model a number of times and take the average predictions:
 
 <<build-main-paleo-model>>=
 w <- paleorisk::get_weights(stcen2$Ex)
@@ -555,7 +524,7 @@ m <- rlply(20, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
   distribution = "bernoulli", shrinkage = 0.1, weights = weights))
 @
 
-Next, we will load the contemporary data.
+Next, we will load the contemporary data:
 
 <<load-modern-data>>=
 temp_dat <- readRDS("../data/standardized-predictors-cenozoic-obis.rds")
@@ -564,7 +533,7 @@ modern <- subset(temp_dat,
 rm(temp_dat)
 @
 
-And predict the contemporary intrinsic extinction risk from the paleontological models. We will take the average prediction across our multiple runs.
+And predict the contemporary intrinsic extinction risk from the paleontological models. We will take the average prediction across our multiple runs:
 
 <<predict-risk-modern>>=
 predictions <- laply(m, function(x)
@@ -573,7 +542,7 @@ predictions <- laply(m, function(x)
 modern$pred <- apply(predictions, 2, mean)
 @
 
-We will use our calibration factors on our predictions.
+We will use our calibration factors on our predictions:
 
 <<calibrate-risk-modern>>=
 modern$gbm_pred_binned <- assign_bins(modern$pred)
@@ -659,7 +628,7 @@ ggplot(temp, aes(mean_observed + 0.001)) +
 
 \subsection{Mapping risk predictions using contemporary species distributions}
 
-Now, we'll create Fig.~1 and Fig.~2 from the paper.
+Now, we will create Fig.~1 and Fig.~2 from the paper.
 
 <<plot-class-maps, results='hide'>>=
 # create the dataset to map:
