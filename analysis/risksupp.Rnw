@@ -59,6 +59,7 @@ References
 \clearpage
 
 \tableofcontents
+\clearpage
 
 % Load Fig S1 here to make sure it's the first figure.
 
@@ -541,7 +542,7 @@ modern <- plyr::join(modern,
 # modern$mean_observed <- modern$pred
 @
 
-To see the effect of using our calibration factors, we will compare contemporary risk predictions from the calibrated model (y-axis) with the uncalibrated model (the x-axis). In other words, in the following graph, out averaged GBM model predicts the value shown on the x-axis, and our calibration factor adjusts that prediction to the value shown on the y-axis.
+To see the effect of using our calibration factors, we will compare contemporary risk predictions from the calibrated model (y-axis) with the uncalibrated model (the x-axis). In other words, in the following graph, our averaged GBM model predicts the value shown on the x-axis, and our calibration factor adjusts that prediction to the value shown on the y-axis.
 
 <<plot-calibrations, fig.height=4, echo=FALSE>>=
 ggplot(modern, aes(pred, mean_observed)) + geom_point() +
