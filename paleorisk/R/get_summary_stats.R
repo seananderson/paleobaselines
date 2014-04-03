@@ -1,14 +1,14 @@
 #' Get binary summary statistics
 #'
-#' This function returns some binary classification summary statistics: 
+#' This function returns some binary classification summary statistics:
 #' sensitivity, specificity, and Kappa.
-#' 
+#'
 #' @param obs A vector of binary observations (0 or 1).
 #' @param pred_prob The predicted probability.
 #' @param threshold The threshold above which to classify an observation as a 1.
-#' 
+#'
 #' @export
-#' @examples 
+#' @examples
 #' get_summary_stats(obs = rbinom(10, 1, 0.5), pred_prob = runif(10), 0.5)
 
 get_summary_stats <- function(obs, pred_prob, threshold) {

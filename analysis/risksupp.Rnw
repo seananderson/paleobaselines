@@ -414,7 +414,7 @@ fit_stage_models <- function(dat, stage_name) {
   w <- paleorisk::get_weights(d$Ex)
   weights <- ifelse(d$Ex == 1, w$ex_weight, w$sur_weight)
   gbm::gbm(Ex ~ richness + occupancy + occurrences + min.lat + max.lat +
-    lat.range + mean.lat + great.circle + class + group, data =
+    lat.range + mean.lat + great.circle + group, data =
     d, n.trees = 300, interaction.depth = 1,
     distribution = "bernoulli", shrinkage = 0.1, weights = weights)
 }
@@ -525,7 +525,7 @@ w <- paleorisk::get_weights(stcen2$Ex)
 weights <- ifelse(stcen2$Ex == 1, w$ex_weight, w$sur_weight)
 
 m <- rlply(20, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
-    max.lat + lat.range + mean.lat + great.circle + class + group,
+    max.lat + lat.range + mean.lat + great.circle + group,
   data = stcen2, n.trees = 300, interaction.depth = 1,
   distribution = "bernoulli", shrinkage = 0.1, weights = weights))
 @

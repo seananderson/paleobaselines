@@ -10,7 +10,7 @@ fit_interval_gbm(dat, stage_train, stage_test, interaction.depth = 1,
   named \code{stage}, \code{Ex} (0 or 1 for not extinct or
   extinct), as well as the predictors: \code{richness +
   occupancy + occurrences + min.lat + max.lat + lat.range +
-  mean.lat + great.circle + class + group}.}
+  mean.lat + great.circle + group}.}
 
   \item{stage_train}{The paleo stage to train the model
   on.}
