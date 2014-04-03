@@ -219,12 +219,11 @@ source("../r/README_interpolation.R")
 
 \section{Modelling contemporary extinction risk with paleontological data}
 
-\subsection{Choice of gradient boosting models}
+\subsection{Choice of modelling framework}
 
-We modelled intrinsic contemporary extinction probability from paleontological data using a form of ensemble learning called gradient boosting models (GBMs; \cite{friedman2001}).
-\textit{Ensemble learning} refers to how the final model is a product of many weakly informative models fit in succession. Compared to parametric modelling, GBMs (along with other forms of machine learning) make minimal assumptions about the relationship between predictors and response and prioritize predictive performance over probabilistic inference about the model itself \cite{elith2008}.
+We modelled intrinsic contemporary extinction probability from paleontological data using a form of ensemble learning called generalized boosting models (GBMs; \cite{friedman2001}). \textit{Ensemble learning} refers to how the final model is a product of many weakly informative models fit in succession. Compared to parametric modelling, GBMs (along with other forms of machine learning) make minimal assumptions about the relationship between predictors and response and prioritize predictive performance over probabilistic inference about the model itself \cite{elith2008}.
 
-Boosting models work, in general, by building a sequence of models, each fit to the residuals of the previous model with larger residuals being given stronger weights. This means that each subsequent model focuses more heavily on data which were poorly fit by previous models. In theory, this ensemble of weak models can be combined to produce one strong overall predictive model with reduced bias compared to other machine learning methods, such as random forests \cite{elith2008}. Boosted \textit{regression trees} use regression trees \cite{breiman1984} as the underlying model that is iteratively fitted. Boosted tree methods have been shown to outperform other machine learning methods in many cases \cite{caruana2006} and are commonly used in applied prediction problems (e.g. by Yahoo for website rankings; \cite{cossock2008}).
+Boosting models work, in general, by building a sequence of models, each fit to the residuals of the previous model with larger residuals being given stronger weights. This means that each subsequent model focuses more heavily on data which were poorly fit by previous models. In theory, this ensemble of weak models can be combined to produce one strong overall predictive model with reduced bias compared to other machine learning methods, such as random forests \cite{elith2008}. Boosted tree methods have been shown to outperform other machine learning methods in many cases \cite{caruana2006} and are commonly used in applied prediction problems (e.g. by Yahoo for website rankings; \cite{cossock2008}).
 
 We fit GBMs with the \pkg{gbm} package \cite{gbm2013} for the \proglang{R} statistical language and environment \cite{r2013}. The \pkg{gbm} package implements GBMs based on Ref.\ \cite{friedman2001} with some minor modifications \cite{gbm2013}. Further, the \pkg{gbm} package implements the stochastic method proposed in Ref.\ \cite{friedman2001} in which a random subsample of the data is chosen at each model iteration. This random subsample is used to fit the model before computing residuals for that step thereby reducing chances of overfitting the data. Specifically, we chose to leave out 50\% of the data as a random subset on each iteration --- the default in the \texttt{gbm()} function.
 
@@ -376,7 +375,7 @@ cross_pred <- mdply(stage_df, fit_interval_gbm, dat = stcen2)
 
 We can compare the predictions made from other stages with the predictions from the same stage. This code produces Fig.~\ref{fig:plot-cross-interval-gbms}.
 
-<<plot-cross-interval-gbms, fig.cap="Cross-interval comparison of genus risk estimates from gradient boosting models. The x-axis shows the probability of extinction as predicted by a model built on data from the same stage. The y-axis shows the probability of extinction as predicted by a model built on data from a different stage. The colours show different taxonomic classes. Note the log-distributed x- and y-axes. Since there is some stochasticity involved in the gradient boosting machine fitting routine, there is some variability in predictions within the same stage (the diagonal panels). In general, there is substantial similarity in extinction regimes between succeeding intervals with respect to the evaluated taxonomic and geographic range predictor variables.", fig.width=9, fig.height=7, cache=TRUE, echo=TRUE>>=
+<<plot-cross-interval-gbms, fig.cap="Cross-interval comparison of genus risk estimates from generalized boosting models. The x-axis shows the probability of extinction as predicted by a model built on data from the same stage. The y-axis shows the probability of extinction as predicted by a model built on data from a different stage. The colours show different taxonomic classes. Note the log-distributed x- and y-axes. Since there is some stochasticity involved in the generalized boosting machine fitting routine, there is some variability in predictions within the same stage (the diagonal panels). In general, there is substantial similarity in extinction regimes between succeeding intervals with respect to the evaluated taxonomic and geographic range predictor variables.", fig.width=9, fig.height=7, cache=TRUE, echo=TRUE>>=
 # Re-order stage names:
 stage_order <- c("Lower Miocene", "Middle Miocene", "Upper Miocene",
   "Plio-Pleistocene")
@@ -401,7 +400,7 @@ We see that in general there is substantial similarity in extinction regimes bet
 
 We will now look at the marginal effect of each predictor on extinction risk. We can do this through partial dependence plots, as shown in Fig.~1. This procedure finds the marginal effect of each predictor by integrating across all other predictor values using the method described in Ref.~\cite{friedman2001}.
 
-Because there's some stochasticity when running a GBM, we will run our models a number of times, and each time record the marginal effects. We will then take the median and interquartile range of those predictions for plotting. 
+Because there's some stochasticity when running a GBM, we will run our models a number of times, and each time record the marginal effects. We will then take the median and interquartile range of those predictions for plotting.
 
 First, we will write a function to fit the GBM models to a given stage:
 
