@@ -497,6 +497,25 @@ We can re-create Fig.~1 in the paper by running the code in \texttt{make-partial
 <<partial-plots-base, child='make-partial-dependence-plot.Rnw', echo=FALSE, results='hide'>>=
 @
 
+We will also identify relative contribution of taxonomy vs.\ range and occupancy characteristics. To do this, we'll look at the relative importance of each of the GBM predictors using the \texttt{relative.influence()} function in the \pkg{gbm} package, which uses the algorithm as described in Ref.~\cite{friedman2001}:
+
+<<taxonomy-range-contributions, out.width="3in", fig.height=4, fig.width=4>>=
+w <- paleorisk::get_weights(stcen2$Ex)
+weights <- ifelse(stcen2$Ex == 1, w$ex_weight, w$sur_weight)
+m_relative <- gbm(Ex ~ richness + occupancy + occurrences + min.lat +
+    max.lat + lat.range + mean.lat + great.circle + group,
+  data = stcen2, n.trees = 300, interaction.depth = 1,
+  distribution = "bernoulli", shrinkage = 0.1, weights = weights)
+ri <- rev(gbm::relative.influence(m_relative, scale. = TRUE,
+    sort. = TRUE, n.trees = 300))
+par(xpd = NA, mar = c(4, 8, 1, 1), cex = 0.8)
+plot(ri, 1:length(ri), xlab = "Relative influence", ylab = "",
+  xlim = c(0, 1), xaxs = "i", pch = 19, yaxt = "n")
+axis(2, at = 1:length(ri), labels = names(ri), las = 1)
+@
+
+The \texttt{group} variable refers to the taxonomic groupings (primarily order) and has the greatest relative importance followed by the great circle distance of range.
+
 \subsection{Predicting contemporary extinction risk with paleontological models}
 
 We will use our GBM model built on the entire Neogene period to predict extinction risk in the contemporary dataset. Because of the slight stochasticity from run to run of a GBM, we will run our model a number of times and take the average predictions:
