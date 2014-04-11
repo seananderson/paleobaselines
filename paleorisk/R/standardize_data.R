@@ -6,7 +6,6 @@
 #' @param max_lat_bin TODO
 #' @param lat_range_bin TODO
 #' @param mean_lat_bin TODO
-#' @param mean_lat_zone_bin TODO
 #' @param tropical_only_bin
 #' @param great_circle_bin
 #' @param num_bins Number of bins to use for standardizing richness,
@@ -27,18 +26,20 @@
 #' @export
 
 standardize_data <- function(dat, interval_name, min_lat_bin = 10, max_lat_bin = 10,
-  lat_range_bin = 10, mean_lat_bin = 10, mean_lat_zone_bin = 0.5,
+  lat_range_bin = 10, mean_lat_bin = 10,
   tropical_only_bin = 1, great_circle_bin = 2000, num_bins = 10,
   num_risk_quantiles = 10, input_ranges = "Interpolated",
-  min_pbdb_occurrences = 2, min_modern_occurrences = 2,
-  minimum_duration = 1) {
+  min_occurrences = 2, minimum_duration = 1) {
 
   message(paste("Standardizing", interval_name, "interval"))
 
-  data <- gdata::drop.levels(subset(dat, dat$use==1 & dat$occurrences >=
-      min_pbdb_occurrences & dat$OBIS_occurrences >= min_modern_occurrences &
-      dat$Num_Stage >= minimum_duration & dat$class != "Foraminifera" &
-      (dat$OBIS_Ranges == input_ranges | dat$OBIS_Ranges == 0)))
+  #data <- gdata::drop.levels(subset(dat, dat$use==1 & dat$occurrences >=
+      #min_pbdb_occurrences & dat$OBIS_occurrences >= min_modern_occurrences &
+      #dat$Num_Stage >= minimum_duration & dat$class != "Foraminifera" &
+      #(dat$OBIS_Ranges == input_ranges | dat$OBIS_Ranges == 0)))
+
+  data  <- gdata::drop.levels(subset(dat, dat$occurrences >= min_occurrences
+      & dat$class != "Foraminifera"))
 
   mod_data <- gdata::drop.levels(subset(data, data$Interval_Name %in% interval_name))
 
@@ -60,7 +61,7 @@ standardize_data <- function(dat, interval_name, min_lat_bin = 10, max_lat_bin =
   max.occurrences <- max(round(log(data1$occurrences), 0))
   occurrences <- round(log(data1$occurrences), 0)/max.occurrences
 
-  gcd <- data1$gcd_corrected
+  gcd <- data1$gcd
   great.circle <- ceiling(gcd/great_circle_bin)*great_circle_bin
   lats <- data.frame(abs(data1$MinLat), abs(data1$MaxLat))
 
@@ -69,7 +70,6 @@ standardize_data <- function(dat, interval_name, min_lat_bin = 10, max_lat_bin =
   max.lat <- ceiling(apply(lats, 1, max)/max_lat_bin)*max_lat_bin
   lat.range <- max.lat-min.lat
   mean.lat <- round(abs(data1$mean_lat)/mean_lat_bin)*mean_lat_bin
-  mean.lat.zone <- round(data1$mean_lat_zone/mean_lat_zone_bin)*mean_lat_zone_bin
   tropical_only <- ifelse(max.lat > 30, 0, 1)
 
   Ex <- data1$Extinct.in.stage
@@ -79,7 +79,7 @@ standardize_data <- function(dat, interval_name, min_lat_bin = 10, max_lat_bin =
 
   stand_dat <- gdata::drop.levels(na.omit(data.frame(stage, stage_top, class, group,
         genus, richness, occupancy, occurrences, min.lat, max.lat, lat.range,
-        mean.lat, mean.lat.zone, great.circle, tropical_only, Ex)))
+        mean.lat, great.circle, tropical_only, Ex)))
 
 
   return(stand_dat)
