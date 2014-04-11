@@ -50,7 +50,7 @@ Contemporary Extinction Risk in Coastal Oceans}
 \author{Seth Finnegan\textsuperscript{$\ast$} \and Sean C. Anderson \and Paul
 G. Harnik \and Carl Simpson \and Derek P. Tittensor \and Jarrett E. Byrnes \and
 Zoe V. Finkel \and David R. Lindberg \and Lee Hsiang Liow \and Rowan Lockwood
-\and Heike K. Lotze \and Craig M. McClain \and Jenny L. McGuire \and 
+\and Heike K. Lotze \and Craig M. McClain \and Jenny L. McGuire \and
 Aaron O'Dea \and John M. Pandolfi}
 \date{}
 \maketitle
@@ -677,13 +677,12 @@ partial_dat <- ldply(c(stage_order, "all"), function(stage_name) {
 We will get the median and interquartile range of the marginal effects:
 
 <<summarize-marginal-effects>>=
-partial_dat2 <- tbl_df(partial_dat)
-partial_dat2 <- group_by(partial_dat2, stage, predictor, value)
-partial_dat2 <- summarise(partial_dat2,
+partial_dat2 <- plyr::ddply(partial_dat,
+  c("stage", "predictor", "value"),
+  plyr::summarize,
   median = median(response),
   lower = quantile(response, probs = 0.25),
-  upper = quantile(response, probs = 0.75),
-  .n = n())
+  upper = quantile(response, probs = 0.75))
 @
 
 Because the taxonomic variables are factors (i.e.\ they are words) and the
@@ -775,9 +774,10 @@ m <- rlply(20, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
 Next, we will load the contemporary data:
 
 <<load-modern-data>>=
-temp_dat <- readRDS("../data/standardized-predictors-cenozoic-obis.rds")
+temp_dat <- readRDS("../data/stand-predictors-cen-obis.rds")
 modern <- subset(temp_dat,
-  !class %in% c("Testudines", "Malacostraca") & stage == "Modern")
+  !class %in% c("Testudines", "Malacostraca") & stage == "Modern_merged")
+modern$stage <- "Modern"
 rm(temp_dat)
 @
 

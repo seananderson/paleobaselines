@@ -97,7 +97,7 @@ extract_ranges <- function() {
   }
 
   # Apply it to the modern range data:
-  byGenus.OBIS <- ddply(OBIS.grid.2[1:10000,],
+  byGenus.OBIS <- ddply(OBIS.grid.2,
     .(Spalding.version,Interval,class,MatchTaxon,genus),
     ranges, .progress="text")
 
