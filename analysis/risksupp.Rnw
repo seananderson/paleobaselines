@@ -107,6 +107,7 @@ Then we will load other packages that are needed for our analysis:
 <<load-other-packages, cache=FALSE>>=
 library("plyr")
 library("dplyr")
+library("gdata")
 library("reshape2")
 library("ggplot2")
 library("DMwR")
