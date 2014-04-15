@@ -297,8 +297,6 @@ pbdb$stage <- ifelse(pbdb$interval_base <= 5.333 & pbdb$interval_top >= .0117,"P
   #qplot(plot.data$Mod.eac,plot.data$Plio.eac) + geom_smooth(method="lm")
 }
 extract_ranges()
-@
-
 ###Temporary code to make plots to check distributions
 
 
@@ -316,3 +314,4 @@ extract_ranges()
 #p <- ggplot(ExMeans,aes(log(eac),means,size=log(number),colour=Interval))
 #p + geom_point() + facet_wrap(~class)
 
+@
