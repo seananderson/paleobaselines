@@ -763,13 +763,6 @@ stochasticity from run to run of a GBM, we will run our model a number of times
 and take the average predictions:
 
 <<build-main-paleo-model>>=
-w <- paleorisk::get_weights(stcen2$Ex)
-weights <- ifelse(stcen2$Ex == 1, w$ex_weight, w$sur_weight)
-
-m <- rlply(20, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
-    max.lat + lat.range + mean.lat + great.circle + group,
-  data = stcen2, n.trees = 300, interaction.depth = 1,
-  distribution = "bernoulli", shrinkage = 0.1, weights = weights))
 @
 
 Next, we will load the contemporary data:
