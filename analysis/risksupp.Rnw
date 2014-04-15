@@ -326,7 +326,7 @@ kilometre is still a kilometre.
 The code in \texttt{extract-ranges.Rnw} creates the \proglang{R} data object
 \texttt{modern\_and\_paleo\_ranges.rds}.
 
-<<standardize-predictors, child='extract-ranges.Rnw', eval=FALSE>>=
+<<standardize-predictors, child='extract-ranges.Rnw', eval=TRUE>>=
 @
 
 \subsection{Standardizing the predictor data}
