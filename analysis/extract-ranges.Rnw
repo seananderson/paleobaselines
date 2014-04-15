@@ -130,11 +130,10 @@ extract_ranges <- function() {
   stage.dates <- data.frame(stage,bottom,top)
 
   ### create a column of stage names
-  pbdb$stage <- ifelse(pbdb$ma_max <= 5.333 & pbdb$ma_min >= .0117,"Plio-Pleistocene",
-    ifelse(pbdb$ma_max <= 11.608 & pbdb$ma_min >= 5.333,"Upper Miocene",
-      ifelse(pbdb$ma_max <= 15.97 & pbdb$ma_min >= 11.608,"Middle Miocene",
-        ifelse(pbdb$ma_max <= 23.03 & pbdb$ma_min >= 15.97,"Lower Miocene",
-          NA))))
+pbdb$stage <- ifelse(pbdb$interval_base <= 5.333 & pbdb$interval_top >= .0117,"Plio-Pleistocene", 
+                     ifelse(pbdb$interval_base <= 11.608 & pbdb$interval_top >= 5.333,"Upper Miocene",
+                            ifelse(pbdb$interval_base <= 15.97 & pbdb$interval_top >= 11.608,"Middle Miocene",
+                                   ifelse(pbdb$interval_base <= 23.03 & pbdb$interval_top >= 15.97,"Lower Miocene",NA))))
 
   ### drop unmatched rows
   pbdb<- pbdb[-which(is.na(pbdb$stage)), ]
@@ -189,8 +188,8 @@ extract_ranges <- function() {
       ifelse(pbdb$order_name == "Testudines","Testudines_Testudines",
         "none")))
 
-  pbdb <- merge(pbdb,pbdb.fams,by.x="family_name",by.y="family",all.x=TRUE)
-  pbdb <- merge(pbdb,pbdb.gen,by="occurrence.genus_name",all.x=TRUE)
+  pbdb <- merge(pbdb,pbdb.fams,by.x="family_name",by.y="family",all.x=FALSE, all.y=FALSE)
+  pbdb <- merge(pbdb,pbdb.gen,by="occurrence.genus_name",all.x=FALSE, all.y=FALSE)
 
   levels(pbdb$order.Group) <- c(levels(pbdb$order.Group), "none")
   levels(pbdb$family.Group) <- c(levels(pbdb$family.Group), "none")
@@ -299,3 +298,21 @@ extract_ranges <- function() {
 }
 extract_ranges()
 @
+
+###Temporary code to make plots to check distributions
+
+
+#d <- readRDS("../data/modern_and_paleo_ranges.rds")
+#data <- d
+
+#p <- ggplot(d,aes(richness+1,fill=class))
+#p + geom_histogram() + facet_wrap(~Interval, scales="free") + scale_y_log10()
+
+
+#means <- function(df) mean(df$Ex)
+#number <-function(df) length(df$Ex)
+#ExMeans <- ddply(data,.(Interval,class,eac),each(means,number))
+
+#p <- ggplot(ExMeans,aes(log(eac),means,size=log(number),colour=Interval))
+#p + geom_point() + facet_wrap(~class)
+
