@@ -1,7 +1,6 @@
 #' Standardize paleontological and contemporary datasets
 #'
 #' @param dat The data frame to standardize.
-#' @param interval_name The geologic stage name to work with.
 #' @param min_lat_bin TODO
 #' @param max_lat_bin TODO
 #' @param lat_range_bin TODO
@@ -25,25 +24,14 @@
 #'
 #' @export
 
-standardize_data <- function(dat, interval_name, min_lat_bin = 10, max_lat_bin = 10,
+standardize_data <- function(dat, min_lat_bin = 10, max_lat_bin = 10,
   lat_range_bin = 10, mean_lat_bin = 10,
   tropical_only_bin = 1, great_circle_bin = 2000, num_bins = 10,
   num_risk_quantiles = 10, input_ranges = "Interpolated",
   min_occurrences = 2, minimum_duration = 1) {
 
-  message(paste("Standardizing", interval_name, "interval"))
+  data1  <- gdata::drop.levels(subset(dat, dat$occurrences >= min_occurrences))
 
-  #data <- gdata::drop.levels(subset(dat, dat$use==1 & dat$occurrences >=
-      #min_pbdb_occurrences & dat$OBIS_occurrences >= min_modern_occurrences &
-      #dat$Num_Stage >= minimum_duration & dat$class != "Foraminifera" &
-      #(dat$OBIS_Ranges == input_ranges | dat$OBIS_Ranges == 0)))
-
-  data  <- gdata::drop.levels(subset(dat, dat$occurrences >= min_occurrences
-      & dat$class != "Foraminifera"))
-
-  mod_data <- gdata::drop.levels(subset(data, data$Interval_Name %in% interval_name))
-
-  data1 <- mod_data
   stage_name <- data1$Interval_Name[1]
   stage_top <- data1$stage_top[1]
 
