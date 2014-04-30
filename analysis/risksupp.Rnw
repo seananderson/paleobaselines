@@ -347,6 +347,7 @@ dat <- rename(dat, c("Interval" = "Interval_Name",
     "MaxAbsLat" = "MaxLat", "MinAbsLat" = "MinLat",
     "group" = "MatchTaxon", "top" = "stage_top",
     "MeanAbsLat" = "mean_lat", "Ex" = "Extinct.in.stage"))
+dat <- subset(dat, class != "Foraminifera")
 #mean.lats <- readRDS("../data/genus-mean-occurence-lats.rds")
 #dat <- merge(data, mean.lats)
 #stage_names <- unique(dat$Interval_Name)
