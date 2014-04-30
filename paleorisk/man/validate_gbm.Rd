@@ -3,7 +3,7 @@
 \title{Validate and calibrate models}
 \usage{
 validate_gbm(dat, test_fraction = 0.5, threshold = 0.5, shrinkage = 0.1,
-  interaction.depth = 1, n.trees = 300, bin = 0.1, smote = FALSE,
+  interaction.depth = 1, n.trees = 300, bin = 0.05, smote = FALSE,
   use_weights = FALSE, classification_stats = FALSE, ...)
 }
 \arguments{
