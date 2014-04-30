@@ -2,18 +2,14 @@
 \alias{standardize_data}
 \title{Standardize paleontological and contemporary datasets}
 \usage{
-standardize_data(dat, interval_name, min_lat_bin = 10, max_lat_bin = 10,
-  lat_range_bin = 10, mean_lat_bin = 10, mean_lat_zone_bin = 0.5,
-  tropical_only_bin = 1, great_circle_bin = 2000, num_bins = 10,
-  num_risk_quantiles = 10, input_ranges = "Interpolated",
-  min_pbdb_occurrences = 2, min_modern_occurrences = 2,
+standardize_data(dat, min_lat_bin = 10, max_lat_bin = 10,
+  lat_range_bin = 10, mean_lat_bin = 10, tropical_only_bin = 1,
+  great_circle_bin = 2000, num_bins = 10, num_risk_quantiles = 10,
+  input_ranges = "Interpolated", min_occurrences = 2,
   minimum_duration = 1)
 }
 \arguments{
   \item{dat}{The data frame to standardize.}
-
-  \item{interval_name}{The geologic stage name to work
-  with.}
 
   \item{min_lat_bin}{TODO}
 
@@ -22,8 +18,6 @@ standardize_data(dat, interval_name, min_lat_bin = 10, max_lat_bin = 10,
   \item{lat_range_bin}{TODO}
 
   \item{mean_lat_bin}{TODO}
-
-  \item{mean_lat_zone_bin}{TODO}
 
   \item{tropical_only_bin}{}
 
