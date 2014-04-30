@@ -225,7 +225,7 @@ pbdb <- merge(pbdb,pbdb.fams,by.x="family_name",by.y="family",all.x=TRUE)
         X = as.numeric(as.vector(df$paleolngdec)),
         Y = as.numeric(as.vector(df$paleolatdec)))
       events <- PBSmapping::as.EventData(na.omit(events), projection = "UTM")
-      fc <- findCells(events, polys)
+      fc <- PBSmapping::findCells(events, polys)
       richness <- length(unique(df$occurrence.species_name))
       eac <- length(unique(subset(fc, select = c(PID, SID)))[,
         1])
