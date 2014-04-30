@@ -93,14 +93,19 @@ You can install the package by downloading the \texttt{paleorisk} folder from
 \url{https://github.com/seananderson/riskmaps} and running:
 
 <<install-paleorisk, eval=FALSE, echo=TRUE>>=
-install.packages("~/Documents/riskmaps/paleorisk/", repos = NULL, type = "source")
+install.packages("/your/path/to/riskmaps/paleorisk/", repos = NULL, type = "source")
 @
 
 We will start by loading this package:
 
-<<load-this-package, cache=FALSE>>=
+<<load-this-package, cache=FALSE, eval=FALSE>>=
 library("paleorisk")
 @
+
+<<load-all, cache=FALSE, eval=TRUE, echo=FALSE>>=
+devtools::load_all("../paleorisk/")
+@
+
 
 Then we will load other packages that are needed for our analysis:
 
