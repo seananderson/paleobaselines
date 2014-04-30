@@ -122,7 +122,7 @@ extract_ranges <- function() {
   #save(pbdb,file='~/Dropbox/nescent_extinction_map/data/PaleoDB downloads/4.6.2014/4.6.2014.occs.rda')
 
   load('~/Dropbox/nescent_extinction_map/data/PaleoDB downloads/4.6.2014/4.6.2014.occs.rda')
-  
+
   ### redefine Plio-Pleistocene FR_2 Bin
   pbdb$FR2_bin <- ifelse(pbdb$interval_base <= 5.333 & pbdb$interval_top >= .0117,"Plio-Pleistocene",as.character(pbdb$FR2_bin))
 
@@ -132,10 +132,10 @@ extract_ranges <- function() {
   top <- c(.0117,.0177,.0177,5.333,11.608,15.97)
   bottom <- c(5.333,5.33,5.33,11.608,15.97,23.03)
   stage.dates <- data.frame(FR2_bin,stage.name,bottom,top)
-  
+
   pbdb <- merge(pbdb,stage.dates,by="FR2_bin")
-  
- 
+
+
   ### drop any name without a taxon #
   pbdb <- pbdb[!(is.na(pbdb$taxon_no) | pbdb$taxon_no==0), ]
 
