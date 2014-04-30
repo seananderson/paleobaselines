@@ -122,6 +122,9 @@ extract_ranges <- function() {
   #save(pbdb,file='~/Dropbox/nescent_extinction_map/data/PaleoDB downloads/4.6.2014/4.6.2014.occs.rda')
 
   load('~/Dropbox/nescent_extinction_map/data/PaleoDB downloads/4.6.2014/4.6.2014.occs.rda')
+  
+  ### redefine Plio-Pleistocene FR_2 Bin
+  pbdb$FR2_bin <- ifelse(pbdb$interval_base <= 5.333 & pbdb$interval_top >= .0117,"Plio-Pleistocene",as.character(pbdb$FR2_bin))
 
   #define the stages we want to use, for reference
   stage <- c("Plio-Pleistocene","Upper Miocene","Middle Miocene","Lower Miocene")

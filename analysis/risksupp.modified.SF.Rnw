@@ -93,7 +93,7 @@ You can install the package by downloading the \texttt{paleorisk} folder from
 \url{https://github.com/seananderson/riskmaps} and running:
 
 <<install-paleorisk, eval=FALSE, echo=TRUE>>=
-install.packages("~/Documents/riskmaps/paleorisk/", repos = NULL, type = "source")
+install.packages("path/to/paleorisk/", repos = NULL, type = "source")
 @
 
 We will start by loading this package:
@@ -326,7 +326,7 @@ kilometre is still a kilometre.
 The code in \texttt{extract-ranges.Rnw} creates the \proglang{R} data object
 \texttt{modern\_and\_paleo\_ranges.rds}.
 
-<<extract-ranges, child='extract-ranges.Rnw', eval=TRUE, echo=FALSE, results='hide'>>=
+<<standardize-predictors, child='extract-ranges.Rnw', eval=FALSE>>=
 @
 
 \subsection{Standardizing the predictor data}
@@ -397,8 +397,7 @@ call \texttt{stcen}.
 stcen <- readRDS("../data/stand-predictors-cen-obis.rds")
 stcen <- subset(stcen, class != "Testudines")
 # can throw out less than 22 - neogene only
-stcen <- gdata::drop.levels(subset(stcen, stcen$stage_top < 22 &
-    stcen$stage_top != 0))
+stcen <- gdata::drop.levels(subset(stcen,stcen$stage_top != 0))
 @
 
 We will start by building GBM models and testing their ability to predict data
@@ -762,14 +761,11 @@ extinction risk in the contemporary dataset. Because of the slight
 stochasticity from run to run of a GBM, we will run our model a number of times
 and take the average predictions:
 
-<<build-main-paleo-model>>=
+<<build-main-paleo-model>>=	
 w <- paleorisk::get_weights(stcen2$Ex)
 weights <- ifelse(stcen2$Ex == 1, w$ex_weight, w$sur_weight)
 
-m <- rlply(20, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
-    max.lat + lat.range + mean.lat + great.circle + group,
-  data = stcen2, n.trees = 300, interaction.depth = 1,
-  distribution = "bernoulli", shrinkage = 0.1, weights = weights))
+m <- rlply(20, gbm(Ex ~ richness + occupancy + occurrences + min.lat + max.lat + lat.range + mean.lat + great.circle + group, data = stcen2, n.trees = 300, interaction.depth = 1, distribution = "bernoulli", shrinkage = 0.1, weights = weights))
 @
 
 Next, we will load the contemporary data:
@@ -1020,6 +1016,7 @@ mtext("Min. genera = 200", cex = 2)
 \end{center}
 
 \newpage
+
 
 \section{Supplementary Figures}
 

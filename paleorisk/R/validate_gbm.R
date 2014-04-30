@@ -35,7 +35,7 @@
 #' @rdname validate_gbm
 
 validate_gbm <- function(dat, test_fraction = 0.5, threshold = 0.5,
-  shrinkage = 0.1, interaction.depth = 1, n.trees = 300, bin = 0.05,
+  shrinkage = 0.1, interaction.depth = 1, n.trees = 300, bin = 0.1,
   smote = FALSE, use_weights = FALSE, classification_stats = FALSE, ...) {
 
   if(smote & use_weights) stop("Use only one of smote and use_weights.")
