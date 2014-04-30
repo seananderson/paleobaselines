@@ -29,10 +29,10 @@ extract_ranges <- function() {
   # Now extract range parameters from the OBIS data
 
   # Load required packages:
-  library(fields)
-  library(plyr)
-  library(PBSmapping)
-  library(gdata)
+  # library(fields)
+  # library(plyr)
+  # library(PBSmapping)
+  # library(gdata)
 
   latitude <- round(OBIS.for.plot$lat_mid)
   longitude <- round(OBIS.for.plot$long_mid)
