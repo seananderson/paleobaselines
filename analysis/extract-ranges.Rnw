@@ -73,7 +73,7 @@ extract_ranges <- function() {
       fc <- PBSmapping::findCells(events, polys)
       richness <- mean(unique(drop.levels(df$richness)))
       eac <-length(unique(subset(fc,select=c(PID,SID)))[,1])
-      gcd <-max(fields::rdist.earth(events[,2:3], mile = TRUE))
+      gcd <-max(fields::rdist.earth(events[,2:3], mile = FALSE))
       MaxLat <- max(df$latitude)
       MinLat <- min(df$latitude)
       MaxAbsLat <- max(abs(df$latitude))
