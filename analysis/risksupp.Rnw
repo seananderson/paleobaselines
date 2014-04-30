@@ -98,14 +98,9 @@ install.packages("/your/path/to/riskmaps/paleorisk/", repos = NULL, type = "sour
 
 We will start by loading this package:
 
-<<load-this-package, cache=FALSE, eval=FALSE>>=
+<<load-this-package, cache=FALSE, eval=TRUE>>=
 library("paleorisk")
 @
-
-<<load-all, cache=FALSE, eval=TRUE, echo=FALSE>>=
-devtools::load_all("../paleorisk/")
-@
-
 
 Then we will load other packages that are needed for our analysis:
 
