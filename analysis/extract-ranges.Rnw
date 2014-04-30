@@ -292,7 +292,13 @@ pbdb <- merge(pbdb,pbdb.fams,by.x="family_name",by.y="family",all.x=TRUE)
   #plot.data <- merge(Modern,PlioPleis, by='Genus')
   #qplot(plot.data$Mod.eac,plot.data$Plio.eac) + geom_smooth(method="lm")
 }
-extract_ranges()
+if(!file.exists("../data/modern_and_paleo_ranges.rds")) {
+  extract_ranges()
+} else {
+  message("Using previously extracted range data.")
+  message("Delete data/modern_and_paleo_ranges.rds and re-run to re-extract.")
+}
+
 ###Temporary code to make plots to check distributions
 
 
