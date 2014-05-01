@@ -973,7 +973,7 @@ mtext("TODO", line = -3)
 @
 
 
-Let's look at the effect of the minimum-genera-per-province cutoff:
+We will look at the effect of the changing the cutoff for the minimum-genera-per-province-class combination. In other words, as we increase this threshold, some classes with fewer genera in a given province are removed.
 
 <<min-gen-thresh-sensitivity, fig.height=8, fig.width=13>>=
 par(mfrow = c(2, 2))
