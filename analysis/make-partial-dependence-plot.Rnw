@@ -5,7 +5,7 @@
 g <- partial_groups
 o <- partial_continuous
 g <- subset(g, !is.na(value))
-g <- subset(g, median < 0.95)
+g <- subset(g, median < 0.999)
 
 o <- plyr::ddply(o, c("stage", "predictor"), plyr::mutate, adj = -
   mean(median, na.rm = TRUE) + 0.5, median = median + adj, lower = lower
