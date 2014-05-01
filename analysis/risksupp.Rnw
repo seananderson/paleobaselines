@@ -904,7 +904,8 @@ er_dat_class <- plyr::join(er_dat_class, by.prov.classes, by = "PROV_CODE")
 
 # make the figure:
 pdf("../figs/class-risk-maps-mean-log-ext.pdf", width = 6.25, height = 4.8)
-map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.03, 0.05))
+map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.03, 0.05), 
+  min_prov_genera = 5)
 dev.off()
 @
 
