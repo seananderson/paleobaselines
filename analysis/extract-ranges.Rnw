@@ -130,7 +130,7 @@ extract_ranges <- function() {
   FR2_bin <- c("Pleistocene","Pliocene","Plio-Pleistocene","Upper Miocene","Middle Miocene","Lower Miocene")
   stage.name <- c("Plio-Pleistocene","Plio-Pleistocene","Plio-Pleistocene","Upper Miocene","Middle Miocene","Lower Miocene")
   top <- c(.0117,.0117,.0117,5.333,11.608,15.97)
-  bottom <- c(5.333,5.33,5.33,11.608,15.97,23.03)
+  bottom <- c(5.333,5.333,5.333,11.608,15.97,23.03)
   stage.dates <- data.frame(FR2_bin,stage.name,bottom,top)
 
   pbdb <- merge(pbdb,stage.dates,by="FR2_bin")
