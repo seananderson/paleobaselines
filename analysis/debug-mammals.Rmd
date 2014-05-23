@@ -1,0 +1,105 @@
+```{r}
+load("~/Dropbox/Public/oldmammals_raw.rda")
+dat <- readRDS("../data/modern_and_paleo_ranges.rds")
+m <- subset(dat, class == "Mammalia")
+m <- subset(m, Interval != "Modern_raw")
+m <- subset(m, Interval != "Modern_merged")
+m <- droplevels(m)
+```
+
+```{r}
+as.character(unique(m$genus))[!as.character(unique(m$genus)) %in% as.character(unique(oldmammals_raw$genus))]
+
+missing <- as.character(unique(oldmammals_raw$genus))[!as.character(unique(oldmammals_raw$genus)) %in% as.character(unique(m$genus))]
+print(missing)
+```
+
+```{r}
+missing.m <- subset(oldmammals_raw, genus %in% missing)
+missing.m <- droplevels(missing.m)
+hist(missing.m$occurrences)
+
+hist(missing.m$gcd)
+hist(m$gcd, ylim = c(0, 180), breaks = seq(0, 20000, 500))
+hist(oldmammals_raw$gcd, ylim = c(0, 180), breaks = seq(0, 20000, 500))
+subset(m, gcd < 500)[,c("Interval", "genus", "group", "gcd", "occurrences")]
+table(m$occurrences)
+table(oldmammals_raw$occurrences)
+hist(m$Ex)
+###
+hist(oldmammals_raw$Extinct.in.stage)
+unique(m$group)
+unique(oldmammals_raw$MatchTaxon)
+subset(oldmammals_raw, MatchTaxon == "Mammalia_Archaeoceti")
+subset(oldmammals_raw, bad.taxon == 1)
+```
+
+```{r}
+hist(subset(m, occurrences <= 1)$gcd, ylim = c(0, 180), breaks = seq(0, 20000, 500))
+hist(subset(m, occurrences > 1)$gcd, ylim = c(0, 180), breaks = seq(0, 20000, 500))
+hist(subset(oldmammals_raw, occurrences > 1)$gcd, ylim = c(0, 180), breaks = seq(0, 20000, 500))
+```
+
+```{r}
+load("~/Dropbox/nescent_extinction_map/data/PaleoDB downloads/4.6.2014/4.6.2014.occs.rda")
+pb <- subset(pbdb, order_name %in% c("Artiodactyla", "Carnivora"))
+pb <- droplevels(pb)
+pb_genera <- as.character(sort(unique(pb$occurrence.genus_name)))
+missing[missing %in% pb_genera]
+missing
+```
+
+How many are missing after removing single occurrences:
+
+```{r}
+oldmammals_raw_culled <- subset(oldmammals_raw, occurrences > 1)
+missing <- as.character(unique(oldmammals_raw_culled$genus))[!as.character(unique(oldmammals_raw_culled$genus)) %in% as.character(unique(m$genus))]
+print(missing)
+pb <- subset(pbdb, order_name %in% c("Artiodactyla", "Carnivora"))
+pb <- droplevels(pb)
+pb_genera <- as.character(sort(unique(pb$occurrence.genus_name)))
+missing[missing %in% pb_genera]
+missing
+
+
+pb_missing <- pb[pb$occurrence.genus_name %in% missing, ]
+table(pb_missing$FR2_bin)
+
+```
+
+
+OK, let's compare the data with the new .csv match file:
+
+```{r}
+dat0 <- readRDS("~/Desktop/modern_and_paleo_ranges.rds")
+dat0 <- rename(dat0, c("Interval" = "Interval_Name",
+"MaxAbsLat" = "MaxLat", "MinAbsLat" = "MinLat",
+"group" = "MatchTaxon", "top" = "stage_top",
+"MeanAbsLat" = "mean_lat", "Ex" = "Extinct.in.stage"))
+
+dat <- readRDS("../data/modern_and_paleo_ranges.rds")
+dat <- rename(dat, c("Interval" = "Interval_Name",
+    "MaxAbsLat" = "MaxLat", "MinAbsLat" = "MinLat",
+    "group" = "MatchTaxon", "top" = "stage_top",
+    "MeanAbsLat" = "mean_lat", "Ex" = "Extinct.in.stage"))
+
+nrow(dat0)
+nrow(dat)
+
+dat0 <- subset(dat0, Interval_Name != "Modern_raw")
+dat0 <- subset(dat0, Interval_Name != "Modern_merged")
+dat0 <- subset(dat0, class == "Mammalia")
+dat0 <- subset(dat0, occurrences > 1)
+
+dat <- subset(dat, Interval_Name != "Modern_raw")
+dat <- subset(dat, Interval_Name != "Modern_merged")
+dat <- subset(dat, class == "Mammalia")
+dat <- subset(dat, occurrences > 1)
+
+sort(unique(dat$genus)[!unique(dat$genus) %in% unique(dat0$genus)])
+
+oldmammals_raw_culled <- subset(oldmammals_raw, occurrences > 1)
+
+sort(unique(oldmammals_raw_culled$genus)[!unique(oldmammals_raw_culled$genus) %in% unique(dat0$genus)])
+
+```
