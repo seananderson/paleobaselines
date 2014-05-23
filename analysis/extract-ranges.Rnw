@@ -97,8 +97,6 @@ extract_ranges <- function() {
   }
 
   # Apply it to the modern range data:
-  # Delete "../data/OBIS.ranges.processed.csv to make this re-run
-  if(!file.exists("../data/OBIS.ranges.processed.csv")) {
     byGenus.OBIS <- ddply(OBIS.grid.2,
       .(Spalding.version,Interval,class,MatchTaxon,genus),
       ranges, .progress="text")
@@ -106,9 +104,6 @@ extract_ranges <- function() {
       "occurrences","eac","gcd","richness","MaxAbsLat","MinAbsLat",
       "MeanAbsLat","Ex")
     write.table(byGenus.OBIS, "../data/OBIS.ranges.processed.csv", sep = ",")
-  } else {
-    byGenus.OBIS <- read.csv("../data/OBIS.ranges.processed.csv")
-  }
 
   # byGenus.OBIS.list <- summarise(group_by(tbl_df(OBIS.grid.2[1:6000,]),
   #     Spalding.version, Interval, class, MatchTaxon, genus), ranges)
@@ -263,8 +258,6 @@ pbdb <- merge(pbdb,pbdb.fams,by.x="family_name",by.y="family",all.x=TRUE)
   }
 
   #####  now apply it to the PBDB data
-  # delete ../data/PBDB.ranges.process.csv to regenerate:
-  if(!file.exists("../data/PBDB.ranges.processed.csv")) {
   byGenus.PBDB <- ddply(pbdb, .(stage.name, top, class,
       Group, occurrence.genus_name),ranges,
     .progress="text")
@@ -272,9 +265,6 @@ pbdb <- merge(pbdb,pbdb.fams,by.x="family_name",by.y="family",all.x=TRUE)
     "group","genus","occurrences","eac","gcd",
     "richness","MaxAbsLat","MinAbsLat","MeanAbsLat","Ex")
   write.table(byGenus.PBDB,"../data/PBDB.ranges.processed.csv", sep = ",")
-  } else {
-    byGenus.PBDB <- read.csv("../data/PBDB.ranges.processed.csv")
-  }
 
   ####### now merge modern and paleo data#######
 
