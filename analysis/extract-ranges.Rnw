@@ -97,19 +97,24 @@ extract_ranges <- function() {
   }
 
   # Apply it to the modern range data:
-  byGenus.OBIS <- ddply(OBIS.grid.2,
-    .(Spalding.version,Interval,class,MatchTaxon,genus),
-    ranges, .progress="text")
+  # Delete "../data/OBIS.ranges.processed.csv to make this re-run
+  if(!file.exists("../data/OBIS.ranges.processed.csv")) {
+    byGenus.OBIS <- ddply(OBIS.grid.2,
+      .(Spalding.version,Interval,class,MatchTaxon,genus),
+      ranges, .progress="text")
+    colnames(byGenus.OBIS) <- c("Interval","top","class","group","genus",
+      "occurrences","eac","gcd","richness","MaxAbsLat","MinAbsLat",
+      "MeanAbsLat","Ex")
+    write.table(byGenus.OBIS, "../data/OBIS.ranges.processed.csv", sep = ",")
+  } else {
+    byGenus.OBIS <- read.csv("../data/OBIS.ranges.processed.csv")
+  }
 
   # byGenus.OBIS.list <- summarise(group_by(tbl_df(OBIS.grid.2[1:6000,]),
   #     Spalding.version, Interval, class, MatchTaxon, genus), ranges)
   # byGenus.OBIS <- rbind_all(byGenus.OBIS.list)
   # rm(byGenus.OBIS.list)
 
-  colnames(byGenus.OBIS) <- c("Interval","top","class","group","genus",
-    "occurrences","eac","gcd","richness","MaxAbsLat","MinAbsLat",
-    "MeanAbsLat","Ex")
-  write.table(byGenus.OBIS, "../data/OBIS.ranges.processed.csv", sep = ",")
 
   ################# now process PaleoDB data   #################
 
@@ -137,7 +142,7 @@ extract_ranges <- function() {
 
 
   ### drop any name without a taxon #
-  pbdb <- pbdb[!(is.na(pbdb$taxon_no) | pbdb$taxon_no==0), ]
+  pbdb <- pbdb[!(is.na(pbdb$taxon_no) | pbdb$taxon_no==0), ] # not removing anything
 
 
   ### make column of class-genus to avoid mixing up different groups
@@ -161,7 +166,10 @@ extract_ranges <- function() {
   # had already been placed within in a group.  For the final version, this step
   # should be eliminated.
 
-  pbdb.gen.cats <- read.csv("../data/PBDB.genera.Groups.csv",header=TRUE)
+  pbdb.gen.cats <- read.csv("../data/PBDB.genera.Groups.2.0.csv", header=TRUE)
+
+  genera.to.drop <- unique(pbdb$occurrence.genus_name)[!unique(pbdb$occurrence.genus_name) %in% unique(pbdb.gen.cats$Genus)]
+  pbdb.dropped <- pbdb[pbdb$occurrence.genus_name %in% genera.to.drop, ]
 
   pbdb.gen <- data.frame(pbdb$class_name,pbdb$order_name,
     pbdb$family_name, pbdb$occurrence.genus_name)
@@ -255,6 +263,8 @@ pbdb <- merge(pbdb,pbdb.fams,by.x="family_name",by.y="family",all.x=TRUE)
   }
 
   #####  now apply it to the PBDB data
+  # delete ../data/PBDB.ranges.process.csv to regenerate:
+  if(!file.exists("../data/PBDB.ranges.processed.csv")) {
   byGenus.PBDB <- ddply(pbdb, .(stage.name, top, class,
       Group, occurrence.genus_name),ranges,
     .progress="text")
@@ -262,6 +272,9 @@ pbdb <- merge(pbdb,pbdb.fams,by.x="family_name",by.y="family",all.x=TRUE)
     "group","genus","occurrences","eac","gcd",
     "richness","MaxAbsLat","MinAbsLat","MeanAbsLat","Ex")
   write.table(byGenus.PBDB,"../data/PBDB.ranges.processed.csv", sep = ",")
+  } else {
+    byGenus.PBDB <- read.csv("../data/PBDB.ranges.processed.csv")
+  }
 
   ####### now merge modern and paleo data#######
 
