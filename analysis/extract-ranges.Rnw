@@ -161,7 +161,7 @@ extract_ranges <- function() {
   # had already been placed within in a group.  For the final version, this step
   # should be eliminated.
 
-  pbdb.gen.cats <- read.csv("../data/PBDB.genera.Groups.2.0.csv", header=TRUE)
+  pbdb.gen.cats <- read.csv("../data/PBDB.genera.Groups.csv", header=TRUE)
 
   genera.to.drop <- unique(pbdb$occurrence.genus_name)[!unique(pbdb$occurrence.genus_name) %in% unique(pbdb.gen.cats$Genus)]
   pbdb.dropped <- pbdb[pbdb$occurrence.genus_name %in% genera.to.drop, ]
