@@ -344,10 +344,14 @@ ggplot(val_test_alt,
   labs(size = "Median sample #")
 @
 
-In the previous two plots, we note that Malacostraca is poorly predicted in our out-of-sample validation tests. We therefore choose here to not include Malacostraca from here on in. If we can't reliably predict Malacostraca extinctions in the paleontological data then we can't justify attempting to predict contemporary patterns of extinction.
+%In the previous two plots, we note that Malacostraca is poorly predicted in our out-of-sample validation tests. We therefore choose here to not include Malacostraca from here on in. If we can't reliably predict Malacostraca extinctions in the paleontological data then we can't justify attempting to predict contemporary patterns of extinction.
 
 <<drop-malacostraca>>=
-stcen2 <- gdata::drop.levels(subset(stcen, class != "Malacostraca"))
+stcen2 <- drop.levels(stcen)
+stcen2$class <- as.character(stcen2$class)
+stcen2$class[stcen2$class == "Malacostraca"] <- "Decapoda"
+stcen2$class <- as.factor(stcen2$class)
+# stcen2 <- gdata::drop.levels(subset(stcen, class != "Malacostraca"))
 @
 
 Since there is some stochasticity in GBM models (one run to the next will not give exactly the same results), we will run many more cross-validation iterations of our model to get precise estimates of non-linear bias. We will use the observed mean extinction probabilities as calibration factors.
@@ -570,7 +574,10 @@ Next, we will load the contemporary data:
 <<load-modern-data>>=
 temp_dat <- readRDS("../data/stand-predictors-cen-obis.rds")
 modern <- subset(temp_dat,
-  !class %in% c("Testudines", "Malacostraca") & stage == "Modern_merged")
+  !class %in% "Testudines" & stage == "Modern_merged")
+modern$class <- as.character(modern$class)
+modern$class[modern$class == "Malacostraca"] <- "Decapoda"
+modern$class <- as.factor(modern$class)
 modern$stage <- "Modern"
 rm(temp_dat)
 @
@@ -680,9 +687,9 @@ er_dat_class <- plyr::join(er_points, er@data, by = "id")
 er_dat_class <- plyr::join(er_dat_class, by.prov.classes, by = "PROV_CODE")
 
 # make the figure:
-pdf("../figs/class-risk-maps-mean-log-ext-20.pdf", width = 6.25, height = 4.8)
-map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.03, 0.05), 
-  min_prov_genera = 20)
+pdf("../figs/class-risk-maps-mean-log-ext.pdf", width = 6.25, height = 6.0)
+map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10, 0.20), 
+  min_prov_genera = 10)
 dev.off()
 @
 

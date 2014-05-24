@@ -15,7 +15,7 @@
 #' @param plot_column A character value giving the name of the column to plot.
 #' @param plot_order A vector of character giving the order of the class panels
 #' to plot. Should contain \code{c("Mammalia", "Elasmobranchii", "Anthozoa",
-#' "Gastropoda","Bivalvia", "Echinoidea")}.
+#' "Gastropoda","Bivalvia", "Decapoda", "Echinoidea")}.
 #' @param yticks Locations of y-axis labels.
 #' @param ylabel Text to label the colour axis with.
 #' @export
@@ -23,7 +23,7 @@
 map_class_ext <- function(er_dat, min_prov_genera = 20,
   col_pal = RColorBrewer::brewer.pal(9, "YlOrRd"),
   plot_column = "mean.ext", plot_order = c("Mammalia", "Elasmobranchii",
-    "Anthozoa", "Gastropoda", "Echinoidea", "Bivalvia"),
+    "Anthozoa", "Gastropoda", "Decapoda", "Echinoidea", "Bivalvia"),
   yticks = c(0.002, 0.01, 0.05, 0.1, 0.2, 0.5, 1),
   ylabel = "Intrinsic extinction probability") {
 
@@ -66,7 +66,7 @@ map_class_ext <- function(er_dat, min_prov_genera = 20,
   mg <- 1 # map gap
   kw <- 3 # key width
   kg <- 5 # key gap
-  nrow <- 3
+  nrow <- 4
   N <- nrow*2*2
 
   lo <- matrix(ncol = mw*2 + kw*2 + mg*2 + kg*2, nrow = nrow)

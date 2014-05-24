@@ -38,6 +38,7 @@ Prov.Areas <- read.csv("../data/spalding-province-areas.csv",
   header = TRUE, stringsAsFactors = FALSE)
 Prov.Sampling <- read.csv("../data/obis.sampling.and.richness.csv",
   header = TRUE, stringsAsFactors = FALSE)
+Prov.Sampling$class[Prov.Sampling$class == "Malacostraca"] <- "Decapoda"
 Prov.Data <- merge(Prov.Sampling, Prov.Areas, by = c("Zone", "PROV_CODE"),
   all.x = TRUE)
 by.prov.classes <- merge(by.prov.classes, Prov.Data,
