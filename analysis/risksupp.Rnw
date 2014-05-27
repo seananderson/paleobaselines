@@ -347,10 +347,7 @@ ggplot(val_test_alt,
 %In the previous two plots, we note that Malacostraca is poorly predicted in our out-of-sample validation tests. We therefore choose here to not include Malacostraca from here on in. If we can't reliably predict Malacostraca extinctions in the paleontological data then we can't justify attempting to predict contemporary patterns of extinction.
 
 <<drop-malacostraca>>=
-stcen2 <- drop.levels(stcen)
-stcen2$class <- as.character(stcen2$class)
-stcen2$class[stcen2$class == "Malacostraca"] <- "Decapoda"
-stcen2$class <- as.factor(stcen2$class)
+stcen2 <- droplevels(stcen)
 # stcen2 <- gdata::drop.levels(subset(stcen, class != "Malacostraca"))
 @
 
@@ -575,11 +572,30 @@ Next, we will load the contemporary data:
 temp_dat <- readRDS("../data/stand-predictors-cen-obis.rds")
 modern <- subset(temp_dat,
   !class %in% "Testudines" & stage == "Modern_merged")
-modern$class <- as.character(modern$class)
-modern$class[modern$class == "Malacostraca"] <- "Decapoda"
-modern$class <- as.factor(modern$class)
 modern$stage <- "Modern"
 rm(temp_dat)
+@
+
+We will look at the distribution of the predictors across the taxonomic classes in the contemporary dataset:
+
+<<modern-predictor-distributions, fig.width=13, fig.height=12>>=
+modern_long <- reshape2::melt(modern, id.vars = c("class", "group", "genus"),
+  measure.vars = c("richness", "occupancy", "occurrences",
+    "min.lat", "max.lat", "lat.range", "mean.lat", "great.circle"))
+p <- ggplot(modern_long, aes(value)) +
+  geom_histogram(aes(colour = class, fill = class)) +
+  facet_grid(class~variable, scales = "free")
+@
+
+And the distribution of predictors across the taxonomic class in the paleontological dataset:
+
+<<paleo-predictor-distributions, fig.width=13, fig.height=12>>=
+paleo_long <- reshape2::melt(stcen2, id.vars = c("class", "group", "genus"),
+  measure.vars = c("richness", "occupancy", "occurrences",
+    "min.lat", "max.lat", "lat.range", "mean.lat", "great.circle"))
+p <- ggplot(paleo_long, aes(value)) +
+  geom_histogram(aes(colour = class, fill = class)) +
+  facet_grid(class~variable, scales = "free")
 @
 
 And predict the contemporary intrinsic extinction risk from the paleontological models. We will take the average prediction across our multiple runs:
@@ -688,8 +704,8 @@ er_dat_class <- plyr::join(er_dat_class, by.prov.classes, by = "PROV_CODE")
 
 # make the figure:
 pdf("../figs/class-risk-maps-mean-log-ext.pdf", width = 6.25, height = 6.0)
-map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10, 0.20), 
-  min_prov_genera = 10)
+map_class_ext(subset(er_dat_class, class != "Malacostraca"), yticks = c(0.005, 0.01, 0.02, 0.05, 0.10, 0.20),
+  min_prov_genera = 10, col_range = TRUE)
 dev.off()
 @
 
@@ -704,6 +720,127 @@ dev.off()
 @
 
 \section{Model exploration and sensitivity analyses}
+
+\subsection{The effect of interpolation of OBIS records}
+
+We can create a version of the final maps without bounding-box interpolation of the OBIS records.
+
+<<predict-no-bounding-box>>=
+# Read in raw (not interpolated) contemporary data:
+temp_dat <- readRDS("../data/stand-predictors-cen-obis.rds")
+modern_raw <- subset(temp_dat,
+  !class %in% "Testudines" & stage == "Modern_raw")
+modern_raw$stage <- "Modern"
+rm(temp_dat)
+
+# Predict from the models we previously ran:
+predictions_raw <- laply(m, function(x)
+  gbm::predict.gbm(x, newdata = modern_raw, type = "response",
+    n.trees = 300))
+modern_raw$pred_raw <- apply(predictions_raw, 2, mean)
+
+# Calibrate:
+modern_raw$gbm_pred_binned <- assign_bins(modern_raw$pred_raw)
+modern_raw <- plyr::join(modern_raw,
+  val_test_summarized[,c("class", "gbm_pred_binned", "mean_observed")],
+  by = c("class", "gbm_pred_binned"))
+modern_raw <- plyr::rename(modern_raw,
+  c("mean_observed" = "mean_observed_raw"))
+
+# Bring in interpolated version for comparison:
+modern_raw <- plyr::join(modern_raw,
+  modern[,c("class", "genus", "mean_observed")])
+@
+
+<<compare-bounding-box>>=
+m2 <- modern
+m2 <- plyr::rename(m2, c("richness" = "richness_bb",
+    "occupancy" = "occupancy_bb",
+    "occurrences" = "occurrences_bb",
+    "great.circle" = "great.circle_bb"))
+m2 <- plyr::join(m2, modern_raw[,c("class", "genus",
+    "richness", "occupancy", "occurrences", "great.circle")])
+
+ggplot(modern_raw, aes(mean_observed, mean_observed_raw)) +
+  geom_point(alpha = 0.2) + facet_wrap(~class)
+
+ggplot(m2, aes(richness_bb, richness)) +
+  geom_point(alpha = 0.2) + facet_wrap(~class)
+
+ggplot(m2, aes(occurrences_bb, occurrences)) +
+  geom_point(alpha = 0.2) + facet_wrap(~class)
+
+ggplot(m2, aes(occupancy_bb, occupancy)) +
+  geom_point(alpha = 0.2) + facet_wrap(~class)
+
+ggplot(m2, aes(great.circle_bb, great.circle)) +
+  geom_point(alpha = 0.2) + facet_wrap(~class)
+@
+
+Next we'll re-create the main maps with the raw contemporary data:
+
+<<map-bounding-box-comparison>>=
+d.eco.filled <- readRDS("../data/modern-province-occupancy.rds")
+Input_ranges <- "Interpolated"
+d.eco.filled <- gdata::drop.levels(subset(d.eco.filled,
+    d.eco.filled$Ranges == Input_ranges))
+d.eco.filled$Ranges <- NULL
+
+# Merge occurrence data with risk predictions:
+d.eco.filled <- merge(d.eco.filled, modern_raw, by = "genus", all.x = FALSE)
+
+# And calculate mean values by class-province or for the provinces overall:
+by.prov.classes.raw <- dplyr::summarise(dplyr::group_by(na.omit(d.eco.filled),
+    class, PROV_CODE),
+  mean.ext = mean(log(mean_observed_raw + 0.001)),
+  N.gen = length(unique(genus)))
+
+by.prov.all.raw <- dplyr::summarise(dplyr::group_by(na.omit(d.eco.filled),
+    PROV_CODE),
+  mean.ext = mean(log(mean_observed_raw + 0.001)),
+  N.gen = length(unique(genus)))
+
+# Create some fake columns: (we need these columns for the plotting functions)
+by.prov.all.raw$Halpern <- 1
+by.prov.all.raw$Burrows <- 1
+
+# Create the dataset to map:
+er_dat_class_raw <- plyr::join(er_points, er@data, by = "id")
+er_dat_class_raw <- plyr::join(er_dat_class_raw, by.prov.classes.raw, by = "PROV_CODE")
+
+# Make the class figure:
+map_class_ext(subset(er_dat_class_raw, class != "Malacostraca"),
+  yticks = c(0.005, 0.01, 0.02, 0.05, 0.10, 0.20),
+  min_prov_genera = 10, col_range = TRUE)
+@
+
+<<no-bounding-box-overall-map>>=
+# Make the overall figure:
+er_dat_raw <- plyr::join(er_points, er@data, by = "id")
+er_dat_raw <- plyr::join(er_dat_raw, by.prov.all.raw, by = "PROV_CODE")
+par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0))
+map_hotspots(er_dat, min_prov_genera = 100)
+@
+
+\subsection{Jackknife analysis}
+
+We can recreate the global intrinsic extinction probability map leaving out each taxonomic class in succession in a jackknife analysis. This gives us an idea if any one class is driving the pattern.
+
+<<jackknife-map>>=
+load("../data/by.prov.all.jk.rda")
+classes <- as.character(unique(modern$class))
+
+pdf("../figs/hotspots-jk.pdf", width = 7, height = 9)
+par(mfrow = c(4, 2))
+par(mar = c(0, 0, 1.5, 0), oma = c(2, 2, 2, 2))
+for(i in 1:length(classes)) {
+  er_dat <- plyr::join(er_points, er@data, by = "id")
+  er_dat <- plyr::join(er_dat, by.prov.all.jk[[i]], by = "PROV_CODE")
+  map_hotspots(er_dat, min_prov_genera = 100, hotspots = FALSE)
+  mtext(paste("Exclude", classes[i]), line = -0.5)
+}
+dev.off()
+@
 
 \subsection{The role of the tropic in risk predictions}
 
