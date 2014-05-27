@@ -7,6 +7,29 @@ The in-progress Supporting Material document (which also reproduces the analyses
 An up-to-date version of the Supporting Materials document is available here:
 <https://dl.dropboxusercontent.com/u/254940/risksupp.pdf>
 
+## How to recreate the whole analysis
+
+Clone the whole Git repository:
+
+```
+git clone https://github.com/seananderson/riskmaps.git
+```
+
+Or [download the .zip version](https://github.com/seananderson/riskmaps/archive/master.zip) and unzip it.
+
+Install the paleorisk R package in an R console:
+
+```
+# setwd() to this root folder, then:
+install.packages("paleorisk", type = "source", repos = NULL)
+```
+
+Then, on the command line `cd` to the `analysis` folder and run `make`.
+
+If you want to trash all the cached data files, run `make clean` and then run `make` again.
+
+If you want to re-create the predictor data, delete the file `data/modern_and_paleo_ranges.rds` and re-run `make`. This file gets created the first time you run `make` and will take a long time (~10-20 minutes).
+
 ## Instructions for editing the SOM on GitHub
 
 Find the file `risksupp.Rnw` in the folder `analysis`:
