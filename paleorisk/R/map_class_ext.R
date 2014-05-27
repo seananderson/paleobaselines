@@ -18,6 +18,11 @@
 #' "Gastropoda","Bivalvia", "Decapoda", "Echinoidea")}.
 #' @param yticks Locations of y-axis labels.
 #' @param ylabel Text to label the colour axis with.
+#' @param col_range If \code{TRUE} the colour range will be set
+#'   (on a multiplicative scale) to the same for each panel. This can
+#'   help to avoid overemphasizing small differences in some panels. If set to
+#'   \code{FALSE} then each panel will have a colour scale that range from the
+#'   minimum to maximum value for a given panel.
 #' @export
 
 map_class_ext <- function(er_dat, min_prov_genera = 20,
@@ -25,7 +30,7 @@ map_class_ext <- function(er_dat, min_prov_genera = 20,
   plot_column = "mean.ext", plot_order = c("Mammalia", "Elasmobranchii",
     "Anthozoa", "Gastropoda", "Decapoda", "Echinoidea", "Bivalvia"),
   yticks = c(0.002, 0.01, 0.05, 0.1, 0.2, 0.5, 1),
-  ylabel = "Intrinsic extinction probability") {
+  ylabel = "Intrinsic extinction probability", col_range = FALSE) {
 
   plot_order <- data.frame(class = plot_order, plot_order = 1:length(plot_order))
 
@@ -37,11 +42,29 @@ map_class_ext <- function(er_dat, min_prov_genera = 20,
   # remove provinces with fewer than a specified number of genera:
   er.df <- gdata::drop.levels(subset(er.df, er.df$N.gen >= min_prov_genera))
 
-  er.df <- plyr::ddply(er.df, "class", transform, value.to.plot.01 =
-      range01(value.to.plot))
-  er.df <- plyr::ddply(er.df, "class", transform, lower.col.cut =
-      min(value.to.plot), upper.col.cut = max(value.to.plot))
-  # colours to plot:
+  if(!col_range) { # colour range goes from min to max value:
+    # transform values to a 0 to 1 range for cutting into colours:
+    er.df <- plyr::ddply(er.df, "class", transform, value.to.plot.01 =
+        range01(value.to.plot))
+    # get lower and upper values to place colour ramp on axis later:
+    er.df <- plyr::ddply(er.df, "class", transform, lower.col.cut =
+        min(value.to.plot), upper.col.cut = max(value.to.plot))
+  } else { # colour range goes from +/- some fixed multiplicative value
+    er.df <- plyr::ddply(er.df, "class", mutate, range.val =
+        abs(diff(range(value.to.plot))))
+    max_range <- max(er.df$range.val)
+    er.df <- plyr::ddply(er.df, "class", transform, value.to.plot.01.temp =
+        range01(value.to.plot))
+    er.df$prop_range <- er.df$range.val / max_range
+    er.df$value.to.plot.01 <- er.df$value.to.plot.01.temp * er.df$prop_range +
+      (1 - er.df$prop_range) / 2
+    er.df <- plyr::ddply(er.df, "class", transform,
+      mean.value.to.plot = mean(value.to.plot))
+    er.df$lower.col.cut <- er.df$mean.value.to.plot - max_range / 2
+    er.df$upper.col.cut <- er.df$mean.value.to.plot + max_range / 2
+  }
+
+  # get colours to plot:
   er.df$col.pal.ext.risk <- col_pal[findInterval(er.df$value.to.plot.01,
     seq(-0.0001, 1.0001, length.out = 10))]
 
@@ -142,7 +165,8 @@ map_class_ext <- function(er_dat, min_prov_genera = 20,
       par(las = 1)
       col.regions <- with(class.dat, seq(unique(lower.col.cut),
         unique(upper.col.cut), length.out = 10))
-      loc.limits <- with(class.dat, c(min(value.to.plot), max(value.to.plot)))
+      #loc.limits <- with(class.dat, c(min(value.to.plot), max(value.to.plot)))
+      loc.limits <- with(class.dat, c(lower.col.cut, upper.col.cut))
       add_locator <- FALSE
 
       ll <- exp(min(er.df$value.to.plot))
