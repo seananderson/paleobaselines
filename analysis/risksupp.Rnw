@@ -264,7 +264,7 @@ We will start by building GBM models and testing their ability to predict data s
 \fn{validate\_gbm()} in the \pkg{paleorisk} package is our main validation and calibration function. This function deals with splitting the data into training (fitting) and testing portions, builds a GBM on the training portion, and then returns predictions and classification statistics on the testing set. We will start by testing some GBM models. To start with, we will build the model 25 times, each time training the model on a random 50\% of the data and testing it on the other 50\%. Then we will record the observed mean extinction probability for each predicted bin value within each taxonomic class. For example, we can group all predicted extinction values for bivalves into bins from 0 to 1 in 0.05 increments. Then we can calculate the mean observed extinction probability for each of those bins. Because we're building and testing the model on independent datasets, this is a good test of the out-of-sample predictive ability of our modelling approach.
 
 <<test-gbm1>>=
-val_test <- rdply(25, validate_gbm(stcen, shrinkage = 0.1,
+val_test <- rdply(25, validate_gbm(stcen, shrinkage = 0.05,
   interaction.depth = 1, n.trees = 300, use_weights = TRUE)$bin_validation)
 @
 
@@ -295,16 +295,16 @@ ggplot(val_test_summarized,
 Next, we will examine the effect of varying some of the main arguments to the \texttt{gbm()} function. We will test the effect of the \texttt{shrinkage} (the rate of improvement between each tree iteration), \texttt{interaction.depth} (the maximum number of variable interactions), and \texttt{n.trees} (the total number of trees to build) arguments. We will vary each argument one at a time.
 
 <<alternative-gbms>>=
-val_test_base <- rdply(20, validate_gbm(stcen, shrinkage = 0.1,
+val_test_base <- rdply(20, validate_gbm(stcen, shrinkage = 0.05,
     interaction.depth = 1, n.trees = 300,
     use_weights = TRUE)$bin_validation)
 val_test_shr <- rdply(20, validate_gbm(stcen, shrinkage = 0.01,
     interaction.depth = 1, n.trees = 300,
     use_weights = TRUE)$bin_validation)
-val_test_int <- rdply(20, validate_gbm(stcen, shrinkage = 0.1,
+val_test_int <- rdply(20, validate_gbm(stcen, shrinkage = 0.05,
     interaction.depth = 4, n.trees = 300,
     use_weights = TRUE)$bin_validation)
-val_test_ntrees <- rdply(20, validate_gbm(stcen, shrinkage = 0.1,
+val_test_ntrees <- rdply(20, validate_gbm(stcen, shrinkage = 0.05,
     interaction.depth = 1, n.trees = 1000,
     use_weights = TRUE)$bin_validation)
 @
@@ -354,7 +354,7 @@ stcen2 <- droplevels(stcen)
 Since there is some stochasticity in GBM models (one run to the next will not give exactly the same results), we will run many more cross-validation iterations of our model to get precise estimates of non-linear bias. We will use the observed mean extinction probabilities as calibration factors.
 
 <<final-gbm-validation, eval=TRUE>>=
-val_test <- rdply(50, validate_gbm(stcen2, shrinkage = 0.1,
+val_test <- rdply(50, validate_gbm(stcen2, shrinkage = 0.05,
   interaction.depth = 1, n.trees = 300,
   use_weights = TRUE)$bin_validation)
 saveRDS(val_test, file = "../data/val_test.rds")
@@ -437,7 +437,7 @@ fit_stage_models <- function(dat, stage_name) {
   gbm::gbm(Ex ~ richness + occupancy + occurrences + min.lat + max.lat +
     lat.range + mean.lat + great.circle + group, data =
     d, n.trees = 300, interaction.depth = 1,
-    distribution = "bernoulli", shrinkage = 0.1, weights = weights)
+    distribution = "bernoulli", shrinkage = 0.05, weights = weights)
 }
 @
 
@@ -525,12 +525,12 @@ weights <- ifelse(stcen2$Ex == 1, w$ex_weight, w$sur_weight)
 m_relative <- gbm(Ex ~ richness + occupancy + occurrences + min.lat +
     max.lat + lat.range + mean.lat + great.circle + group,
   data = stcen2, n.trees = 300, interaction.depth = 1,
-  distribution = "bernoulli", shrinkage = 0.1, weights = weights)
+  distribution = "bernoulli", shrinkage = 0.05, weights = weights)
 ri <- rdply(50, function(x) {
   m_relative <- gbm(Ex ~ richness + occupancy + occurrences + min.lat +
     max.lat + lat.range + mean.lat + great.circle + group,
   data = stcen2, n.trees = 300, interaction.depth = 1,
-  distribution = "bernoulli", shrinkage = 0.1, weights = weights)
+  distribution = "bernoulli", shrinkage = 0.05, weights = weights)
   gbm::relative.influence(m_relative, scale. = TRUE,
     sort. = FALSE, n.trees = 300)
   })
@@ -563,7 +563,7 @@ weights <- ifelse(stcen2$Ex == 1, w$ex_weight, w$sur_weight)
 m <- rlply(20, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
     max.lat + lat.range + mean.lat + great.circle + group,
   data = stcen2, n.trees = 300, interaction.depth = 1,
-  distribution = "bernoulli", shrinkage = 0.1, weights = weights))
+  distribution = "bernoulli", shrinkage = 0.05, weights = weights))
 @
 
 Next, we will load the contemporary data:
@@ -779,9 +779,9 @@ ggplot(m2, aes(great.circle_bb, great.circle)) +
 
 Next we'll re-create the main maps with the raw contemporary data:
 
-<<map-bounding-box-comparison>>=
+<<prepare-bounding-box-comparison>>=
 d.eco.filled <- readRDS("../data/modern-province-occupancy.rds")
-Input_ranges <- "Interpolated"
+Input_ranges <- "Raw"
 d.eco.filled <- gdata::drop.levels(subset(d.eco.filled,
     d.eco.filled$Ranges == Input_ranges))
 d.eco.filled$Ranges <- NULL
@@ -807,7 +807,9 @@ by.prov.all.raw$Burrows <- 1
 # Create the dataset to map:
 er_dat_class_raw <- plyr::join(er_points, er@data, by = "id")
 er_dat_class_raw <- plyr::join(er_dat_class_raw, by.prov.classes.raw, by = "PROV_CODE")
+@
 
+<<no-bounding-box-class-map>>=
 # Make the class figure:
 map_class_ext(subset(er_dat_class_raw, class != "Malacostraca"),
   yticks = c(0.005, 0.01, 0.02, 0.05, 0.10, 0.20),
