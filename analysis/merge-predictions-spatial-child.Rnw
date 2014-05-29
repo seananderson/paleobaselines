@@ -1,10 +1,10 @@
 <<merge-predictions-spatial-child>>=
 # read in the modern genus-occupancy data:
-d.eco.filled <- readRDS("../data/modern-province-occupancy.rds")
-Input_ranges <- "Interpolated"
-d.eco.filled <- gdata::drop.levels(subset(d.eco.filled,
-    d.eco.filled$Ranges == Input_ranges))
-d.eco.filled$Ranges <- NULL
+load("../data/interpolated_provs_all_taxa.rda")
+d.eco.filled <- interpolated_provs_all_taxa
+# d.eco.filled <- gdata::drop.levels(subset(d.eco.filled,
+#     d.eco.filled$Ranges == "Interpolated"))
+# d.eco.filled$Ranges <- NULL
 
 # bring in the modern predictions:
 modern <- readRDS("../data/modern-predictions.rds")
@@ -83,8 +83,7 @@ Impacts <- data.frame(Impacts$PROV_CODE,
   scale(Impacts$Mean_Burrows_Province))
 colnames(Impacts) <- c("PROV_CODE", "Halpern", "Burrows")
 by.prov.all <- merge(by.prov.all, Impacts, by = "PROV_CODE")
-by.prov.all <- gdata::drop.levels(subset(by.prov.all,
-    by.prov.all$class == "all"))
+by.prov.all <- droplevels(subset(by.prov.all, by.prov.all$class == "all"))
 by.prov.classes <- merge(by.prov.classes, Impacts, by = "PROV_CODE")
 by.prov.all$log_OBIS_records <- log(by.prov.all$OBIS_records)
 by.prov.classes$log_OBIS_records <- log(by.prov.classes$OBIS_records)
