@@ -1,7 +1,7 @@
 # ====================================================================
 # Created by:    Sean Anderson, sean@seananderson.ca
 # Created:       Sep 21, 2012
-# Last modified: Feb 20, 2014
+# Last modified: May 27, 2014
 # Purpose:       Implement the by-realm bounding box.
 # ====================================================================
 
@@ -97,7 +97,7 @@ save(prov_SpatialPolygons, file = "prov_SpatialPolygons.rda")
 er_lookup <- ddply(er@data, "PROV_CODE", function(x) {
   data.frame(PROV_CODE = unique(x$PROV_CODE), RLM_CODE = unique(x$RLM_CODE))
 })
-save(er_lookup, file = "er_lookup.rda")
+save(er_lookup, file = "../data/er_lookup.rda")
 
 # -------------------------------------------------
 # Now let's go through each realm of occurrence data and see which
