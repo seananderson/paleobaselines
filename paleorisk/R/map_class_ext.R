@@ -89,7 +89,7 @@ map_class_ext <- function(er_dat, min_prov_genera = 20,
   mg <- 1 # map gap
   kw <- 3 # key width
   kg <- 5 # key gap
-  nrow <- 4
+  nrow <- 3
   N <- nrow*2*2
 
   lo <- matrix(ncol = mw*2 + kw*2 + mg*2 + kg*2, nrow = nrow)
