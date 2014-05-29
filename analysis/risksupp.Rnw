@@ -200,6 +200,7 @@ Our equal-area grid was divided into 45 east-west cells and 14 north-south cells
 For the paleontological dataset, we overlaid the same equal-area grid, took the centre points of the grid cells for cells that overlapped any occurrences, and calculated the range statistics on the centre points from the grid overlay.
 
 We have suppressed and cached the following interpolation code for brevity.
+TODO clean up these files the paths are right:
 <<interporlation, eval=FALSE, echo=TRUE>>=
 source("../r/README_interpolation.R")
 @
@@ -229,7 +230,7 @@ dat <- rename(dat, c("Interval" = "Interval_Name",
     "MaxAbsLat" = "MaxLat", "MinAbsLat" = "MinLat",
     "group" = "MatchTaxon", "top" = "stage_top",
     "MeanAbsLat" = "mean_lat", "Ex" = "Extinct.in.stage"))
-dat <- subset(dat, class != "Foraminifera")
+dat <- subset(dat, !class %in% c("Foraminifera", "Testudines", "Malacostraca"))
 #mean.lats <- readRDS("../data/genus-mean-occurence-lats.rds")
 #dat <- merge(data, mean.lats)
 stcen <- ddply(dat, "Interval_Name", standardize_data)
@@ -253,9 +254,8 @@ We will load the standardized data and subset it for the Neogene period. The con
 
 <<load-data>>=
 stcen <- readRDS("../data/stand-predictors-cen-obis.rds")
-stcen <- subset(stcen, class != "Testudines")
 # can throw out less than 22 - neogene only
-stcen <- gdata::drop.levels(subset(stcen, stcen$stage_top < 22 &
+stcen <- droplevels(subset(stcen, stcen$stage_top < 22 &
     stcen$stage_top != 0))
 @
 
@@ -570,8 +570,7 @@ Next, we will load the contemporary data:
 
 <<load-modern-data>>=
 temp_dat <- readRDS("../data/stand-predictors-cen-obis.rds")
-modern <- subset(temp_dat,
-  !class %in% "Testudines" & stage == "Modern_merged")
+modern <- subset(temp_dat, stage == "Modern_merged")
 modern$stage <- "Modern"
 rm(temp_dat)
 @
@@ -691,7 +690,7 @@ ggplot(temp, aes(mean_observed + 0.001)) +
 
 \subsection{Mapping risk predictions using contemporary species distributions}
 
-Now, we will create Fig.~1 and Fig.~2 from the paper.
+Now, we will create Fig.~2 and Fig.~3 from the paper.
 
 <<plot-class-maps, results='hide'>>=
 # create the dataset to map:
@@ -703,8 +702,8 @@ er_dat_class <- plyr::join(er_points, er@data, by = "id")
 er_dat_class <- plyr::join(er_dat_class, by.prov.classes, by = "PROV_CODE")
 
 # make the figure:
-pdf("../figs/class-risk-maps-mean-log-ext.pdf", width = 6.25, height = 6.0)
-map_class_ext(subset(er_dat_class, class != "Malacostraca"), yticks = c(0.005, 0.01, 0.02, 0.05, 0.10, 0.20),
+pdf("../figs/class-risk-maps-mean-log-ext.pdf", width = 6.25, height = 5.5)
+map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10, 0.20),
   min_prov_genera = 10, col_range = TRUE)
 dev.off()
 @
@@ -728,8 +727,7 @@ We can create a version of the final maps without bounding-box interpolation of 
 <<predict-no-bounding-box>>=
 # Read in raw (not interpolated) contemporary data:
 temp_dat <- readRDS("../data/stand-predictors-cen-obis.rds")
-modern_raw <- subset(temp_dat,
-  !class %in% "Testudines" & stage == "Modern_raw")
+modern_raw <- subset(temp_dat, stage == "Modern_raw")
 modern_raw$stage <- "Modern"
 rm(temp_dat)
 
@@ -780,22 +778,19 @@ ggplot(m2, aes(great.circle_bb, great.circle)) +
 Next we'll re-create the main maps with the raw contemporary data:
 
 <<prepare-bounding-box-comparison>>=
-d.eco.filled <- readRDS("../data/modern-province-occupancy.rds")
-Input_ranges <- "Raw"
-d.eco.filled <- gdata::drop.levels(subset(d.eco.filled,
-    d.eco.filled$Ranges == Input_ranges))
-d.eco.filled$Ranges <- NULL
+d.eco.filled_raw <- readRDS("../data/obis_prov_obs_no_interp.rds")
+d.eco.filled_raw$n_obs <- NULL
 
 # Merge occurrence data with risk predictions:
-d.eco.filled <- merge(d.eco.filled, modern_raw, by = "genus", all.x = FALSE)
+d.eco.filled_raw <- merge(d.eco.filled_raw, modern_raw, by = "genus", all.x = FALSE)
 
 # And calculate mean values by class-province or for the provinces overall:
-by.prov.classes.raw <- dplyr::summarise(dplyr::group_by(na.omit(d.eco.filled),
+by.prov.classes.raw <- dplyr::summarise(dplyr::group_by(na.omit(d.eco.filled_raw),
     class, PROV_CODE),
   mean.ext = mean(log(mean_observed_raw + 0.001)),
   N.gen = length(unique(genus)))
 
-by.prov.all.raw <- dplyr::summarise(dplyr::group_by(na.omit(d.eco.filled),
+by.prov.all.raw <- dplyr::summarise(dplyr::group_by(na.omit(d.eco.filled_raw),
     PROV_CODE),
   mean.ext = mean(log(mean_observed_raw + 0.001)),
   N.gen = length(unique(genus)))
@@ -809,19 +804,23 @@ er_dat_class_raw <- plyr::join(er_points, er@data, by = "id")
 er_dat_class_raw <- plyr::join(er_dat_class_raw, by.prov.classes.raw, by = "PROV_CODE")
 @
 
-<<no-bounding-box-class-map>>=
+The follow code produces Fig.~\ref{fig:plot-class-prov-ext-raw-ranges}.
+
+<<plot-class-prov-ext-raw-ranges, fig.cap="Mean predicted extinction susceptibility of genera inhabiting different ocean biogeographic provinces \\cite{spalding2007} for each of the eight major groups considered, as in Fig.~3, but \\textbf{with predictions based on raw ranges in OBIS without the within-realm minimum bounding box interpolation}. Scale bars on the right indicate the range of log extinction susceptibility values for a given group, and this scale is used to plot mean extinction susceptibility heatmaps on the left.", fig.width=6.25, fig.height=5.5, out.width="6.25in">>=
 # Make the class figure:
-map_class_ext(subset(er_dat_class_raw, class != "Malacostraca"),
+map_class_ext(er_dat_class_raw,
   yticks = c(0.005, 0.01, 0.02, 0.05, 0.10, 0.20),
   min_prov_genera = 10, col_range = TRUE)
 @
 
-<<no-bounding-box-overall-map>>=
+The follow code produces Fig.~\ref{fig:no-bounding-box-overall-map}.
+
+<<no-bounding-box-overall-map, fig.cap="Mean predicted extinction susceptibility, \\ldots \\textbf{no bounding box}.", fig.width=6, fig.height=4, outwidth="6in">>=
 # Make the overall figure:
 er_dat_raw <- plyr::join(er_points, er@data, by = "id")
 er_dat_raw <- plyr::join(er_dat_raw, by.prov.all.raw, by = "PROV_CODE")
 par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0))
-map_hotspots(er_dat, min_prov_genera = 100)
+map_hotspots(er_dat_raw, min_prov_genera = 100, hotspots = FALSE)
 @
 
 \subsection{Jackknife analysis}
@@ -875,23 +874,45 @@ map_class_ext(er_dat_class, plot_column = "log_OBIS_records",
   col_pal = RColorBrewer::brewer.pal(9, "YlGnBu"))
 @
 
+\subsection{Exploring the distribution of the predictors}
+
+<<plot-n-gen-genera-prov, fig.cap="Number of genera.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
+er_dat_class$log.N.gen <- log(er_dat_class$N.gen)
+map_class_ext(er_dat_class, plot_column = "log.N.gen",
+  min_prov_genera = 0, ylab = "Number of genera",
+  yticks = c(1, 10, 100, 500),
+  col_pal = RColorBrewer::brewer.pal(9, "YlGnBu"))
+@
+
+<<plot-gcd-genera-prov, fig.cap="Mean GCD.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
+er_dat_class$log.mean.gcd <- log(er_dat_class$mean.gcd)
+map_class_ext(er_dat_class, plot_column = "log.mean.gcd",
+  min_prov_genera = 0, ylab = "Mean great circle distance",
+  yticks = c(10000, 20000),
+  col_pal = RColorBrewer::brewer.pal(9, "YlGnBu"))
+@
+
+<<plot-richness-genera-prov, fig.cap="Mean richness.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
+er_dat_class$log.mean.richness <- log(er_dat_class$mean.richness)
+map_class_ext(er_dat_class, plot_column = "log.mean.richness",
+  min_prov_genera = 0, ylab = "Mean standardized richness (0-1)",
+  yticks = c(0.1, 0.2, 0.5, 1),
+  col_pal = RColorBrewer::brewer.pal(9, "YlGnBu"))
+@
+
+
 \subsection{Alternative maps of contemporary extinction risk}
 
-<<plot-class-prov-ext-raw-ranges, fig.cap="Mean predicted extinction susceptibility of genera inhabiting different ocean biogeographic provinces \\cite{spalding2007} for each of the eight major groups considered, as in Fig.~3, but \\textbf{with predictions based on raw ranges in OBIS without the within-realm minimum bounding box interpolation}. Scale bars on the right indicate the range of log extinction susceptibility values for a given group, and this scale is used to plot mean extinction susceptibility heatmaps on the left.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
-plot(1, 1, type = "n", xlab = "", ylab = "")
-mtext("TODO", line = -3)
-@
-
-<<plot-class-prov-ext-raw-predictors, fig.cap="Mean predicted extinction susceptibility of genera inhabiting different ocean biogeographic provinces \\cite{spalding2007} for each of the eight major groups considered, as in Fig.~3, but \\textbf{raw rather than standardized predictors used for both fossil and modern genera}. Scale bars on the right indicate the range of log extinction susceptibility values for a given group, and this scale is used to plot mean extinction susceptibility heatmaps on the left.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
-plot(1, 1, type = "n", xlab = "", ylab = "")
-mtext("TODO", line = -3)
-@
-
-
-<<plot-preservation-completeness, fig.cap="Extinction risk scores for groups in Fig.~1 plotted against the mean preservation probability (completeness) for genera within those groups in the Cenozoic fossil record. Completeness is measured as the proportion of all of the intervals within the stratigraphic range of a genus (excluding first and last) in which it is represented by at least one occurrence record in the Paleobiology Database. Genera with high completeness are sampled in most intervals within their stratigraphic ranges, genera with low completeness have many sampling gaps. The lack of a relationship between partial risk dependence and mean completeness suggests that the noise introduced by among-group variation in preservation probability is does not cause a systematic bias in risk assessment.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
-plot(1, 1, type = "n", xlab = "", ylab = "")
-mtext("TODO", line = -3)
-@
+% <<plot-class-prov-ext-raw-predictors, fig.cap="Mean predicted extinction susceptibility of genera inhabiting different ocean biogeographic provinces \\cite{spalding2007} for each of the eight major groups considered, as in Fig.~3, but \\textbf{raw rather than standardized predictors used for both fossil and modern genera}. Scale bars on the right indicate the range of log extinction susceptibility values for a given group, and this scale is used to plot mean extinction susceptibility heatmaps on the left.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
+% plot(1, 1, type = "n", xlab = "", ylab = "")
+% mtext("TODO", line = -3)
+% @
+% 
+% 
+% <<plot-preservation-completeness, fig.cap="Extinction risk scores for groups in Fig.~1 plotted against the mean preservation probability (completeness) for genera within those groups in the Cenozoic fossil record. Completeness is measured as the proportion of all of the intervals within the stratigraphic range of a genus (excluding first and last) in which it is represented by at least one occurrence record in the Paleobiology Database. Genera with high completeness are sampled in most intervals within their stratigraphic ranges, genera with low completeness have many sampling gaps. The lack of a relationship between partial risk dependence and mean completeness suggests that the noise introduced by among-group variation in preservation probability is does not cause a systematic bias in risk assessment.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
+% plot(1, 1, type = "n", xlab = "", ylab = "")
+% mtext("TODO", line = -3)
+% @
 
 We will look at the effect of the changing the cutoff for the minimum-genera-per-province-class combination. In other words, as we increase this threshold, some classes with fewer genera in a given province are removed.
 
