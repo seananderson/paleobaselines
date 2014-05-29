@@ -1,7 +1,7 @@
 # ====================================================================
 # Created by:    Sean C. Anderson
 # Created:       Feb 06, 2012
-# Last modified: Feb 20, 2014
+# Last modified: May 27, 2014
 # Purpose:       Overlay the equal area grid on the raw occurrence
 #                data as a sensitivity test for our interpolation
 #                method.
@@ -11,7 +11,7 @@ load("../data/composite.occ2.rda")
 comp.dat <- composite.occ2
 # comp.dat <- composite.occ2[sample(1:nrow(composite.occ2), 30000), ] # for testing
 rm(composite.occ2)
-load("../data/equal_area_grid/global_45x14.rda")
+load("../data/global_45x14.rda")
 grid_mid_lat <- read.csv("../data/grid_mid_lat.csv")$x
 grid_mid_long <- read.csv("../data/grid_mid_long.csv")$x
 
@@ -28,11 +28,11 @@ er <- readShapePoly("../data/MEOW2/meow_ecos.shp")
 pts <- SpatialPoints(comp.dat[,c("longitude", "latitude")])
 # save time if the file exists
 # NEED TO DELETE THE FILE IF YOU WANT TO FEED IN NEW DATA!
-if(file.exists("pts.over.all.cache.rda")) {
-  load("pts.over.all.cache.rda")
+if(file.exists("../data/pts.over.all.cache.rda")) {
+  load("../data/pts.over.all.cache.rda")
 }else{
   pts.over <- over(pts, er)
-  save(pts.over, file = "pts.over.all.cache.rda")
+  save(pts.over, file = "../data/pts.over.all.cache.rda")
 }
 oc.df <- cbind(comp.dat, pts.over)
 rm(pts.over)

@@ -1,7 +1,7 @@
 # ====================================================================
 # Created by:    Sean Anderson, sean@seananderson.ca
 # Created:       Sep 24, 2012
-# Last modified: Feb 20, 2014
+# Last modified: May 27, 2014
 # Purpose:       Take the interpolated provinces (by bounding box
 # within realms) and overlay a grid.
 # ====================================================================
@@ -9,8 +9,8 @@
 # bring in data:
 load("../data/interpolated_provs_all_taxa.rda")
 load("../data/interpolated_provs_alt_all_taxa.rda")
-load("prov_SpatialPolygons.rda")
-load("../data/equal_area_grid/global_45x14.rda")
+load("../data/prov_SpatialPolygons.rda")
+load("../data/global_45x14.rda")
 library(PBSmapping)
 library(sp)
 library(plyr)
