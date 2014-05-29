@@ -59,4 +59,15 @@ genus_cells_no_interpolation <- genus_cells_no_interpolation[ ,
   c("genus", "num_cells", "X_mid", "Y_mid")]
 save(genus_cells_no_interpolation, file = "../data/genus_cells_no_interpolation.rda")
 
-rm(genus_cells_no_interpolation, comp.dat, grid_mid_lat, grid_mid_long, oc.df, er, pts)
+
+# also save a data frame with the raw province-genera combinations we observe:
+oc.df.temp <- oc.df[,c("genus", "PROV_CODE")]
+#obis_prov_obs_no_interp <- data.frame(dplyr::summarise(dplyr::group_by(oc.df.temp, genus, PROV_CODE),
+  #n_obs = length(genus), genus = genus[1]))
+
+obis_prov_obs_no_interp <- plyr::ddply(oc.df.temp, c("genus", "PROV_CODE"), function(x) {
+  data.frame(genus = x$genus[1], n_obs = length(x$genus))}, .progress = "text")
+saveRDS(obis_prov_obs_no_interp, file = "../data/obis_prov_obs_no_interp.rds")
+
+rm(genus_cells_no_interpolation, comp.dat, grid_mid_lat, grid_mid_long, oc.df, er, pts, oc.df.temp)
+
