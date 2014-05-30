@@ -1,9 +1,6 @@
-% TODO map provincial-class maps omitting single-province genera (or has this already been done for the main fig? this was Fig S9)
-% TODO map provincial-class maps without bounding box interpol. Was Fig S10
-% TODO map with raw instead of standardized predictors  Fig S11
-% TODO same maps but with rank order risk Fig S12
-% TODO What was Fig S13 - completeness, need to talk to Seth
-% TODO the cross plots of human threat, climate velocity, and intrinsic risk on global map (from what was a panel in the last main Fig)
+% TODO map provincial-class maps omitting single-province genera?
+% TODO same maps but with rank order risk?
+% TODO the cross plots of human threat, climate velocity, and intrinsic risk on global map?
 
 \documentclass[11pt]{article}
 \usepackage{geometry}
@@ -17,12 +14,6 @@
 \let\pkg=\textbf
 \let\fn=\texttt
 
-% \usepackage{fontspec}
-% \defaultfontfeatures{Ligatures=TeX}
-% \setsansfont{Calibri}
-% \setmonofont{Inconsolata}
-% \setmainfont{Linux Libertine}
-
 \usepackage[nofiglist,notablist,nomarkers,figuresfirst]{endfloat}
 \renewcommand{\theposttable}{S\arabic{posttbl}}
 \renewcommand{\thepostfigure}{S\arabic{postfig}}
@@ -35,7 +26,7 @@
 
 <<set-knitr-options, cache=FALSE, echo=FALSE>>=
 library("knitr")
-opts_chunk$set(fig.align='center', fig.pos="htpb", cache=TRUE, echo=TRUE,
+opts_chunk$set(fig.align='center', fig.pos="htpb", cache=TRUE, echo=FALSE,
 message=FALSE, autodep=TRUE, fig.path='../figs/', fig.width=6, par=TRUE)
 opts_chunk$set(warning=FALSE, message=FALSE, tidy=FALSE, refresh=TRUE,
   cache.path="../cache/", cache.lazy=FALSE, size="small")
@@ -67,13 +58,12 @@ References
 \clearpage
 
 % Load Fig S1 here to make sure it's the first figure.
-
+% Supplementary figures all get printed at the end because we loaded the
+% endfloat LaTeX package.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=6in]{../static-figs/didactic_method.pdf}
-\caption{Schematic illustration of the sequence of steps used to build the
-modern genus range dataset and to make intrinsic risk predictions for modern
-genera from the Neogene fossil record.}
+\caption{Schematic illustration of the sequence of steps used to build the modern genus range dataset and to make intrinsic risk predictions for modern genera from the Neogene fossil record.}
 \label{fig:didactic}
 \end{figure}
 
@@ -83,10 +73,7 @@ TODO introduce what's in this document.
 
 TODO store data somewhere and link to it here.
 
-This document is written with the \pkg{knitr} package
-\cite{xie2013a,xie2013b,xie2013c} for the \proglang{R} statistical environment
-\cite{r2013}. It can be re-created by running \fn{knitr::knit2pdf()} on the
-\texttt{.Rnw} file. A number of functions that are used in this analysis have
+This document is written with the \pkg{knitr} package \cite{xie2013a,xie2013b,xie2013c} for the \proglang{R} statistical environment \cite{r2013}. It can be re-created by running \fn{knitr::knit2pdf()} on the \texttt{.Rnw} file. A number of functions that are used in this analysis have
 been compiled into an \proglang{R} package \pkg{paleorisk}.
 
 You can install the package by downloading the \texttt{paleorisk} folder from
@@ -96,15 +83,8 @@ You can install the package by downloading the \texttt{paleorisk} folder from
 install.packages("/your/path/to/riskmaps/paleorisk/", repos = NULL, type = "source")
 @
 
-We will start by loading this package:
-
-<<load-this-package, cache=FALSE, eval=TRUE>>=
+<<load-packages, cache=FALSE>>=
 library("paleorisk")
-@
-
-Then we will load other packages that are needed for our analysis:
-
-<<load-other-packages, cache=FALSE>>=
 library("plyr")
 library("dplyr")
 library("gdata")
@@ -132,9 +112,9 @@ other_line <- grep("other attached", x)
 pkgs <- x[(other_line+1):(other_line + 5)]
 @
 
-We used \Sexpr{rversion} and package versions:
+We used \Sexpr{rversion} and the following \proglang{R} packages:
 
-Some of the code in this PDF document has been suppressed for brevity, however, the complete analysis is available by downloading the \texttt{.Rnw} file.
+Although the code in this document has been suppressed for brevity, the complete analysis is available at \url{http://github.com/seananderson/riskmaps}. \textit{Currently a private repository.}
 
 <<versions, echo=FALSE, results=TRUE, cache=FALSE>>=
 pkgs
@@ -199,9 +179,11 @@ Our equal-area grid was divided into 45 east-west cells and 14 north-south cells
 
 For the paleontological dataset, we overlaid the same equal-area grid, took the centre points of the grid cells for cells that overlapped any occurrences, and calculated the range statistics on the centre points from the grid overlay.
 
-We have suppressed and cached the following interpolation code for brevity.
-TODO clean up these files the paths are right:
-<<interporlation, eval=FALSE, echo=TRUE>>=
+<<interpolation, eval=FALSE>>=
+# Run the OBIS interpolation
+# Will take a very long time to run and requires a server with a large
+# quantity of memory.
+# TODO clean up these files the paths are right:
 source("../r/README_interpolation.R")
 @
 
@@ -213,16 +195,14 @@ TODO Paul: either "habitat" is not the right descriptor for each of these or "ri
 
 We will start by standardizing a variety of habitat-relative characteristics within each geologic stage. This is an important step to make some habitat characteristics (richness, occupancy, occurrences) comparable across periods, an in particular, between the paleontological data and the contemporary data. Given the substantially different sampling methods within the paleontological and contemporary records, the absolute values of richness, occupancy, and occurrences are not comparable. We therefore standardize them to values between 0 and 1 within each interval. The other variables (e.g.\ latitude variables and great circle distance) are still comparable between the paleontological and contemporary records --- a degree latitude is still a degree latitude and a kilometre is still a kilometre.
 
-The code in \texttt{extract-ranges.Rnw} creates the \proglang{R} data object \texttt{modern\_and\_paleo\_ranges.rds}.
+% The code in \texttt{extract-ranges.Rnw} creates the \proglang{R} data object \texttt{modern\_and\_paleo\_ranges.rds}.
 
 <<extract-ranges, child='extract-ranges.Rnw', eval=TRUE, echo=FALSE, results='hide'>>=
 @
 
 \subsection{Standardizing the predictor data}
 
-We will now standardize the predictor data. This means we will adjust the range of predictor variables to be between X and X in the case of X...
-
-We will standardize the data with the following \proglang{R} code:
+% We will standardize the predictor data with the following \proglang{R} code:
 
 <<standardize-predictors>>=
 dat <- readRDS("../data/modern_and_paleo_ranges.rds")
@@ -233,10 +213,9 @@ dat <- rename(dat, c("Interval" = "Interval_Name",
 dat <- subset(dat, !class %in% c("Foraminifera", "Testudines", "Malacostraca"))
 #mean.lats <- readRDS("../data/genus-mean-occurence-lats.rds")
 #dat <- merge(data, mean.lats)
-stcen <- ddply(dat, "Interval_Name", standardize_data)
-saveRDS(stcen, file = "../data/stand-predictors-cen-obis.rds")
+neog <- ddply(dat, "Interval_Name", standardize_data)
+saveRDS(neog, file = "../data/stand-predictors-cen-obis.rds")
 @
-
 
 \section{Modelling contemporary extinction risk with paleontological data}
 
@@ -250,13 +229,13 @@ We fit GBMs with the \pkg{gbm} package \cite{gbm2013} for the \proglang{R} stati
 
 \subsection{Model building, testing, and calibration}
 
-We will load the standardized data and subset it for the Neogene period. The contemporary data are also contained in this data frame with \texttt{stage\_top = 0}. Therefore, we will also exclude the contemporary dataset from what we call \texttt{stcen}.
+% We will load the standardized data and subset it for the Neogene period. The contemporary data are also contained in this data frame with \texttt{stage\_top = 0}. Therefore, we will also exclude the contemporary dataset from what we call \texttt{neog}.
 
 <<load-data>>=
-stcen <- readRDS("../data/stand-predictors-cen-obis.rds")
+neog <- readRDS("../data/stand-predictors-cen-obis.rds")
 # can throw out less than 22 - neogene only
-stcen <- droplevels(subset(stcen, stcen$stage_top < 22 &
-    stcen$stage_top != 0))
+neog <- droplevels(subset(neog, neog$stage_top < 22 &
+    neog$stage_top != 0))
 @
 
 We will start by building GBM models and testing their ability to predict data separate from the data they are built on. This is call out-of-sample prediction or cross validation. We are building our GBM models on the entire Neogene paleontological dataset to pool predictive power from range-characteristics. However, we are interested in unbiased predictions at the taxonomic class level. Therefore, we will examine out-of-sample prediction at the class level and use class-level cross validation to calibrate our models.
@@ -264,8 +243,9 @@ We will start by building GBM models and testing their ability to predict data s
 \fn{validate\_gbm()} in the \pkg{paleorisk} package is our main validation and calibration function. This function deals with splitting the data into training (fitting) and testing portions, builds a GBM on the training portion, and then returns predictions and classification statistics on the testing set. We will start by testing some GBM models. To start with, we will build the model 25 times, each time training the model on a random 50\% of the data and testing it on the other 50\%. Then we will record the observed mean extinction probability for each predicted bin value within each taxonomic class. For example, we can group all predicted extinction values for bivalves into bins from 0 to 1 in 0.05 increments. Then we can calculate the mean observed extinction probability for each of those bins. Because we're building and testing the model on independent datasets, this is a good test of the out-of-sample predictive ability of our modelling approach.
 
 <<test-gbm1>>=
-val_test <- rdply(25, validate_gbm(stcen, shrinkage = 0.05,
+val_test <- rdply(100, validate_gbm(neog, shrinkage = 0.05,
   interaction.depth = 1, n.trees = 300, use_weights = TRUE)$bin_validation)
+saveRDS(val_test, file = "../data/val_test.rds")
 @
 
 Next, we will compute some summary statistics for the observed extinction probability at each bin across our replicates. We will use the \fn{summarize\_val\_test()} from our \pkg{paleorisk} package. This computes means and 95\% confidence intervals (based on likelihood profiles) for each validation bin.
@@ -275,13 +255,14 @@ val_test_summarized <- ddply(val_test, c("class", "gbm_pred_binned"),
   summarize_val_test)
 @
 
-We can plot these data to test for any non-linear biases in our predictions. Translucent black dots show mean observed extinction probabilities for individual replicates. Blue dots show mean observed extinction probabilities across replicates and line segments show 95\% confidence intervals. The area of the dots corresponds to the median number of extinction/survival observations in that bin across replicates.
+We can plot these data to test for any non-linear biases in our predictions. Translucent black dots show mean observed extinction probabilities for individual replicates. Blue dots show mean observed extinction probabilities across replicates and line segments show 95\% confidence intervals. The area of the dots corresponds to the median number of extinction/survival observations in that bin across replicates. TODO EXPLAIN BLACK DOTS AND ADD FIGURE FOR ONE CV ITERATION.
 
 <<test-gbm1-bias-plot, fig.width=7.5, fig.height=7, echo=FALSE>>=
 ggplot(val_test_summarized,
   aes(gbm_pred_binned, mean_observed)) +
   geom_point(data = val_test, aes(gbm_pred_binned, obs_ext_prob),
     alpha = 0.1) +
+  geom_abline(intercept = 0, slope = 1) +
   geom_linerange(aes(ymin = l, ymax = u), colour = "#4E9DF0") +
   geom_point(aes(size = median_sample_n), colour = "#4E9DF0") +
   facet_wrap(~class) +
@@ -292,19 +273,21 @@ ggplot(val_test_summarized,
   labs(size = "Median sample #")
 @
 
+We can use these observed extinction probabilities (in \texttt{val\_test\_summarized}) as calibration for our GBM-predicted extinction probability in the contemporary dataset. To do this, we take the predicted extinction probability from our GBM model applied to the contemporary dataset, we fit that value into our binning scheme, and we match it up with the empirically-observed mean extinction probability for that bin. This removes the observed non-linear bias in our model \cite{thorson2012}. Put another way, we find our predicted value on the x-axis of the last plot and draw a vertical line up until we meet a blue dot. We then use the value of the blue dot as our calibrated extinction probability. We will come back to that shortly when we apply our model to the contemporary dataset.
+
 Next, we will examine the effect of varying some of the main arguments to the \texttt{gbm()} function. We will test the effect of the \texttt{shrinkage} (the rate of improvement between each tree iteration), \texttt{interaction.depth} (the maximum number of variable interactions), and \texttt{n.trees} (the total number of trees to build) arguments. We will vary each argument one at a time.
 
 <<alternative-gbms>>=
-val_test_base <- rdply(20, validate_gbm(stcen, shrinkage = 0.05,
+val_test_base <- rdply(20, validate_gbm(neog, shrinkage = 0.05,
     interaction.depth = 1, n.trees = 300,
     use_weights = TRUE)$bin_validation)
-val_test_shr <- rdply(20, validate_gbm(stcen, shrinkage = 0.01,
+val_test_shr <- rdply(20, validate_gbm(neog, shrinkage = 0.01,
     interaction.depth = 1, n.trees = 300,
     use_weights = TRUE)$bin_validation)
-val_test_int <- rdply(20, validate_gbm(stcen, shrinkage = 0.05,
+val_test_int <- rdply(20, validate_gbm(neog, shrinkage = 0.05,
     interaction.depth = 4, n.trees = 300,
     use_weights = TRUE)$bin_validation)
-val_test_ntrees <- rdply(20, validate_gbm(stcen, shrinkage = 0.05,
+val_test_ntrees <- rdply(20, validate_gbm(neog, shrinkage = 0.05,
     interaction.depth = 1, n.trees = 1000,
     use_weights = TRUE)$bin_validation)
 @
@@ -344,54 +327,14 @@ ggplot(val_test_alt,
   labs(size = "Median sample #")
 @
 
-%In the previous two plots, we note that Malacostraca is poorly predicted in our out-of-sample validation tests. We therefore choose here to not include Malacostraca from here on in. If we can't reliably predict Malacostraca extinctions in the paleontological data then we can't justify attempting to predict contemporary patterns of extinction.
-
-<<drop-malacostraca>>=
-stcen2 <- droplevels(stcen)
-# stcen2 <- gdata::drop.levels(subset(stcen, class != "Malacostraca"))
-@
-
-Since there is some stochasticity in GBM models (one run to the next will not give exactly the same results), we will run many more cross-validation iterations of our model to get precise estimates of non-linear bias. We will use the observed mean extinction probabilities as calibration factors.
-
-<<final-gbm-validation, eval=TRUE>>=
-val_test <- rdply(50, validate_gbm(stcen2, shrinkage = 0.05,
-  interaction.depth = 1, n.trees = 300,
-  use_weights = TRUE)$bin_validation)
-saveRDS(val_test, file = "../data/val_test.rds")
-@
-
-<<final-gbm-summarize, eval=TRUE>>=
-val_test_summarized <- ddply(val_test, c("class", "gbm_pred_binned"),
-  summarize_val_test)
-@
-
-And we will plot these validation values again:
-
-<<plot-gbm-no-mal, fig.width=8, fig.height=5, echo=FALSE>>=
-ggplot(val_test_summarized,
-  aes(gbm_pred_binned, mean_observed)) +
-  geom_point(data = val_test, aes(gbm_pred_binned, obs_ext_prob),
-    alpha = 0.1) + facet_wrap(~class) +
-  geom_abline(intercept = 0, slope = 1) +
-  geom_linerange(aes(ymin = l, ymax = u), colour = "#4E9DF0") +
-  geom_point(aes(size = median_sample_n), colour = "#4E9DF0") +
-  scale_size(trans = "log10") + coord_fixed(ratio = 1) +
-  ylim(0, 1) + xlim(0, 1) +
-  xlab("Out-of-sample GBM-predicted extinction probability") +
-  ylab("Observed extinction probability") +
-  labs(size = "Median sample #")
-@
-
-We can use these observed extinction probabilities (in \texttt{val\_test\_summarized}) as calibration for our GBM-predicted extinction probability in the contemporary dataset. To do this, we take the predicted extinction probability from our GBM model applied to the contemporary dataset, we fit that value into our binning scheme, and we match it up with the empirically-observed mean extinction probability for that bin. This removes the observed non-linear bias in our model \cite{thorson2012}. Put another way, we find our predicted value on the x-axis of the last plot and draw a vertical line up until we meet a blue dot. We then use the value of the blue dot as our calibrated extinction probability. We will come back to that shortly when we apply our model to the contemporary dataset.
-
 \subsection{Testing predictive performance across geologic stages}
 
 Another way to test the predictive power of our models is to build the model on one geologic stage and predict on another. We will not use our calibration factors in this test keep the code as simple as possible and to minimize computational time.
 
 <<cross-intervals-gbms>>=
-stage_df <- expand.grid(stage_train = unique(stcen2$stage),
-  stage_test = unique(stcen2$stage))
-cross_pred <- mdply(stage_df, fit_interval_gbm, dat = stcen2)
+stage_df <- expand.grid(stage_train = unique(neog$stage),
+  stage_test = unique(neog$stage))
+cross_pred <- mdply(stage_df, fit_interval_gbm, dat = neog)
 @
 
 We can compare the predictions made from other stages with the predictions from the same stage. This code produces Fig.~\ref{fig:plot-cross-interval-gbms}.
@@ -423,7 +366,7 @@ We will now look at the marginal effect of each predictor on extinction risk. We
 
 Because there's some stochasticity when running a GBM, we will run our models a number of times, and each time record the marginal effects. We will then take the median and interquartile range of those predictions for plotting.
 
-First, we will write a function to fit the GBM models to a given stage:
+% First, we will write a function to fit the GBM models to a given stage:
 
 <<shape-data-partial-plots, cache=FALSE>>=
 fit_stage_models <- function(dat, stage_name) {
@@ -441,16 +384,16 @@ fit_stage_models <- function(dat, stage_name) {
 }
 @
 
-We will fit the models for each stage. Within each stage we will fit the model a number of times:
+% We will fit the models for each stage. Within each stage we will fit the model a number of times:
 
 <<fit-marginal-stage-models>>=
 stage_models <- llply(c(stage_order, "all"), function(x)
-  rlply(20, fit_stage_models(stcen2, stage_name = x)))
+  rlply(20, fit_stage_models(neog, stage_name = x)))
 names(stage_models) <- c(stage_order, "all")
 saveRDS(stage_models, file = "../data/stage_models.rds")
 @
 
-And, we will go through the stage-based models and pull out the partial dependence data:
+% And, we will go through the stage-based models and pull out the partial dependence data:
 
 <<pull-out-marginal-data>>=
 vars <- c("richness", "occupancy", "occurrences", "min.lat",
@@ -469,7 +412,7 @@ partial_dat <- ldply(c(stage_order, "all"), function(stage_name) {
 })
 @
 
-We will get the median and interquartile range of the marginal effects:
+% We will get the median and interquartile range of the marginal effects:
 
 <<summarize-marginal-effects>>=
 partial_dat2 <- plyr::ddply(partial_dat,
@@ -480,39 +423,20 @@ partial_dat2 <- plyr::ddply(partial_dat,
   upper = quantile(response, probs = 0.75))
 @
 
-Because the taxonomic variables are factors (i.e.\ they are words) and the other variables are continuous and numeric, we will split these into separate data frames for plotting:
+% Because the taxonomic variables are factors (i.e.\ they are words) and the other variables are continuous and numeric, we will split these into separate data frames for plotting:
 
 <<separate-taxonomic-and-numeric-predictions>>=
 partial_groups <- partial_dat2[partial_dat2$predictor == "group", ]
 partial_continuous <- partial_dat2[partial_dat2$predictor != "group", ]
 groups_match <- data.frame(value =
-  1:length(unique(stcen2$group)),
-  group = sort(unique(stcen2$group)), stringsAsFactors = FALSE)
+  1:length(unique(neog$group)),
+  group = sort(unique(neog$group)), stringsAsFactors = FALSE)
 partial_groups <- plyr::join(partial_groups, groups_match)
 partial_groups$value <- NULL
 partial_groups <- plyr::rename(partial_groups, c("group" = "value"))
 @
 
-%And we will make some quick plots of the data.
-
-% <<plot-partial-continuous, fig.width=10, fig.height=6, echo=FALSE>>=
-% ggplot(partial_continuous, aes(value, median)) +
-%   geom_ribbon(aes(fill = stage, colour = stage, ymax = upper, ymin = lower),
-%     alpha = 0.5) +
-%   facet_wrap(~predictor, scales = "free_x") +
-%   xlab("Predictor value") +
-%   ylab("Marginal effect on probability of extinction")
-% @
-%
-% <<plot-partial-group, out.width="4in", echo=FALSE>>=
-% ggplot(subset(partial_groups, median < 0.95), aes(value, median)) +
-%   geom_pointrange(aes(colour = stage, ymin = lower, ymax = upper)) +
-%   xlab("Marginal effect on probability of extinction") +
-%   ylab("") +
-%   coord_flip()
-% @
-
-We can re-create Fig.~1 in the paper by running the code in \texttt{make-partial-dependence-plot.Rnw}. We will suppress the code here to save space. Note that in this plotting code we centre the marginal effects for each geologic stage for visual purposes (so that the mean marginal effect of each variable is 0.5). We need to do this since the base rate of extinction is different in each geologic stage.
+% We can re-create Fig.~1 in the paper by running the code in \texttt{make-partial-dependence-plot.Rnw}. We will suppress the code here to save space. Note that in this plotting code we centre the marginal effects for each geologic stage for visual purposes (so that the mean marginal effect of each variable is 0.5). We need to do this since the base rate of extinction is different in each geologic stage.
 
 <<partial-plots-base, child='make-partial-dependence-plot.Rnw', echo=FALSE, results='hide'>>=
 @
@@ -520,16 +444,16 @@ We can re-create Fig.~1 in the paper by running the code in \texttt{make-partial
 We will also identify relative contribution of taxonomy vs.\ range and occupancy characteristics. To do this, we'll look at the relative importance of each of the GBM predictors using the \texttt{relative.influence()} function in the \pkg{gbm} package, which uses the algorithm as described in Ref.~\cite{friedman2001}:
 
 <<taxonomy-range-contributions, out.width="3in", fig.height=4, fig.width=4>>=
-w <- paleorisk::get_weights(stcen2$Ex)
-weights <- ifelse(stcen2$Ex == 1, w$ex_weight, w$sur_weight)
+w <- paleorisk::get_weights(neog$Ex)
+weights <- ifelse(neog$Ex == 1, w$ex_weight, w$sur_weight)
 m_relative <- gbm(Ex ~ richness + occupancy + occurrences + min.lat +
     max.lat + lat.range + mean.lat + great.circle + group,
-  data = stcen2, n.trees = 300, interaction.depth = 1,
+  data = neog, n.trees = 300, interaction.depth = 1,
   distribution = "bernoulli", shrinkage = 0.05, weights = weights)
 ri <- rdply(50, function(x) {
   m_relative <- gbm(Ex ~ richness + occupancy + occurrences + min.lat +
     max.lat + lat.range + mean.lat + great.circle + group,
-  data = stcen2, n.trees = 300, interaction.depth = 1,
+  data = neog, n.trees = 300, interaction.depth = 1,
   distribution = "bernoulli", shrinkage = 0.05, weights = weights)
   gbm::relative.influence(m_relative, scale. = TRUE,
     sort. = FALSE, n.trees = 300)
@@ -554,19 +478,19 @@ The \texttt{group} variable refers to the taxonomic groupings (primarily order) 
 
 \subsection{Predicting contemporary extinction risk with paleontological models}
 
-We will use our GBM model built on the entire Neogene period to predict extinction risk in the contemporary dataset. Because of the slight stochasticity from run to run of a GBM, we will run our model a number of times and take the average predictions:
+We will use our GBM model built on the entire Neogene period to predict extinction risk in the contemporary dataset. Because of the slight stochasticity from run to run of a GBM, we will run our model a number of times and take the average predictions.
 
 <<build-main-paleo-model>>=
-w <- paleorisk::get_weights(stcen2$Ex)
-weights <- ifelse(stcen2$Ex == 1, w$ex_weight, w$sur_weight)
+w <- paleorisk::get_weights(neog$Ex)
+weights <- ifelse(neog$Ex == 1, w$ex_weight, w$sur_weight)
 
 m <- rlply(20, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
     max.lat + lat.range + mean.lat + great.circle + group,
-  data = stcen2, n.trees = 300, interaction.depth = 1,
+  data = neog, n.trees = 300, interaction.depth = 1,
   distribution = "bernoulli", shrinkage = 0.05, weights = weights))
 @
 
-Next, we will load the contemporary data:
+% Next, we will load the contemporary data:
 
 <<load-modern-data>>=
 temp_dat <- readRDS("../data/stand-predictors-cen-obis.rds")
@@ -589,7 +513,7 @@ p <- ggplot(modern_long, aes(value)) +
 And the distribution of predictors across the taxonomic class in the paleontological dataset:
 
 <<paleo-predictor-distributions, fig.width=13, fig.height=12>>=
-paleo_long <- reshape2::melt(stcen2, id.vars = c("class", "group", "genus"),
+paleo_long <- reshape2::melt(neog, id.vars = c("class", "group", "genus"),
   measure.vars = c("richness", "occupancy", "occurrences",
     "min.lat", "max.lat", "lat.range", "mean.lat", "great.circle"))
 p <- ggplot(paleo_long, aes(value)) +
@@ -597,7 +521,7 @@ p <- ggplot(paleo_long, aes(value)) +
   facet_grid(class~variable, scales = "free")
 @
 
-And predict the contemporary intrinsic extinction risk from the paleontological models. We will take the average prediction across our multiple runs:
+% And predict the contemporary intrinsic extinction risk from the paleontological models. We will take the average prediction across our multiple runs:
 
 <<predict-risk-modern>>=
 predictions <- laply(m, function(x)
@@ -606,7 +530,7 @@ predictions <- laply(m, function(x)
 modern$pred <- apply(predictions, 2, mean)
 @
 
-We will use our calibration factors on our predictions:
+% We will use our calibration factors on our predictions:
 
 <<calibrate-risk-modern>>=
 modern$gbm_pred_binned <- assign_bins(modern$pred)
@@ -640,7 +564,7 @@ predictions_stage_avg <- laply(stage_models, function(x) {
 modern$pred_stage_avg <- apply(predictions_stage_avg, 2, mean)
 @
 
-We will save the \texttt{modern} data frame for future use.
+% We will save the \texttt{modern} data frame for future use.
 
 <<save-modern>>=
 saveRDS(modern, file = "../data/modern-predictions.rds")
@@ -655,7 +579,7 @@ ggplot(modern, aes(pred, pred_stage_avg)) + geom_point() +
 @
 % modern$mean_observed <- modern$pred_stage_avg
 
-Next, we will merge these predictions with our contemporary spatial observations. At the same time, we will merge in the data from Ref.\ \cite{halpern2011} Ref.\ \cite{spalding2007}.
+% Next, we will merge these predictions with our contemporary spatial observations. At the same time, we will merge in the data from Ref.\ \cite{halpern2011} Ref.\ \cite{spalding2007}.
 
 <<merge-predictions-spatial, child='merge-predictions-spatial-child.Rnw', echo=FALSE>>=
 @
@@ -750,6 +674,8 @@ modern_raw <- plyr::join(modern_raw,
   modern[,c("class", "genus", "mean_observed")])
 @
 
+TODO - add proper axis labels below:
+
 <<compare-bounding-box>>=
 m2 <- modern
 m2 <- plyr::rename(m2, c("richness" = "richness_bb",
@@ -775,7 +701,7 @@ ggplot(m2, aes(great.circle_bb, great.circle)) +
   geom_point(alpha = 0.2) + facet_wrap(~class)
 @
 
-Next we'll re-create the main maps with the raw contemporary data:
+% Next we'll re-create the main maps with the raw contemporary data:
 
 <<prepare-bounding-box-comparison>>=
 d.eco.filled_raw <- readRDS("../data/obis_prov_obs_no_interp.rds")
@@ -804,7 +730,7 @@ er_dat_class_raw <- plyr::join(er_points, er@data, by = "id")
 er_dat_class_raw <- plyr::join(er_dat_class_raw, by.prov.classes.raw, by = "PROV_CODE")
 @
 
-The follow code produces Fig.~\ref{fig:plot-class-prov-ext-raw-ranges}.
+% The follow code produces Fig.~\ref{fig:plot-class-prov-ext-raw-ranges}.
 
 <<plot-class-prov-ext-raw-ranges, fig.cap="Mean predicted extinction susceptibility of genera inhabiting different ocean biogeographic provinces \\cite{spalding2007} for each of the eight major groups considered, as in Fig.~3, but \\textbf{with predictions based on raw ranges in OBIS without the within-realm minimum bounding box interpolation}. Scale bars on the right indicate the range of log extinction susceptibility values for a given group, and this scale is used to plot mean extinction susceptibility heatmaps on the left.", fig.width=6.25, fig.height=5.5, out.width="6.25in">>=
 # Make the class figure:
@@ -813,7 +739,7 @@ map_class_ext(er_dat_class_raw,
   min_prov_genera = 10, col_range = TRUE)
 @
 
-The follow code produces Fig.~\ref{fig:no-bounding-box-overall-map}.
+% The follow code produces Fig.~\ref{fig:no-bounding-box-overall-map}.
 
 <<no-bounding-box-overall-map, fig.cap="Mean predicted extinction susceptibility, \\ldots \\textbf{no bounding box}.", fig.width=6, fig.height=4, outwidth="6in">>=
 # Make the overall figure:
@@ -827,11 +753,9 @@ map_hotspots(er_dat_raw, min_prov_genera = 100, hotspots = FALSE)
 
 We can recreate the global intrinsic extinction probability map leaving out each taxonomic class in succession in a jackknife analysis. This gives us an idea if any one class is driving the pattern.
 
-<<jackknife-map>>=
+<<jackknife-map, fig.cap="Jackknife plot. TODO Fill in this caption.", fig.width=7, fig.height=9, out.width="7in">>=
 load("../data/by.prov.all.jk.rda")
 classes <- as.character(unique(modern$class))
-
-pdf("../figs/hotspots-jk.pdf", width = 7, height = 9)
 par(mfrow = c(4, 2))
 par(mar = c(0, 0, 1.5, 0), oma = c(2, 2, 2, 2))
 for(i in 1:length(classes)) {
@@ -840,24 +764,24 @@ for(i in 1:length(classes)) {
   map_hotspots(er_dat, min_prov_genera = 100, hotspots = FALSE)
   mtext(paste("Exclude", classes[i]), line = -0.5)
 }
-dev.off()
 @
 
 \subsection{The role of the tropic in risk predictions}
 
+TODO this section/figure will no longer be about the tropics.
 We can inspect the role of tropical regions. Earlier we defined ``tropical'' as less than 30$^{\circ}$ absolute latitude. This code produces Fig.~\ref{fig:test-tropical-drivers}.
 
-<<test-tropical-drivers, fig.width=18, fig.height=11.5, out.width="7in", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus various predictors for that province. Each point represents a single biogeographic province and colour indicates whether the province is tropical or extratropical (anything other than tropical). Colored lines and gray-shaded regions indicate linear regressions and 95\\% confidence intervals.", echo=TRUE>>=
-tropical_test <- reshape2::melt(by.prov.classes, id.vars =
-  c("PROV_CODE", "class", "Lat_Zone"), measure.vars =
+<<predictors-vs-risk, fig.width=18, fig.height=11.5, out.width="7in", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus various predictors for that province. Each point represents a single biogeographic province. Lines and gray-shaded regions indicate linear regressions and 95\\% confidence intervals.", echo=TRUE>>=
+by.prov.classes.long <- reshape2::melt(by.prov.classes, id.vars =
+  c("PROV_CODE", "class"), measure.vars =
   c("mean.lat.range", "mean.occupancy", "mean.gcd", "log_OBIS_records",
     "mean.richness"))
-tropical_test <- plyr::join(tropical_test, by.prov.classes[,
-  c("PROV_CODE", "class", "Lat_Zone", "mean.ext")],
-  by = c("PROV_CODE", "class", "Lat_Zone"))
+by.prov.classes.long <- plyr::join(by.prov.classes.long, by.prov.classes[,
+  c("PROV_CODE", "class", "mean.ext")],
+  by = c("PROV_CODE", "class"))
 
-ggplot(tropical_test,
-  aes(value, mean.ext, colour = Lat_Zone, shape = Lat_Zone)) +
+ggplot(by.prov.classes.long,
+  aes(value, mean.ext)) +
   geom_point(alpha = 0.7) +
   facet_wrap(variable~class, scales = "free") +
   stat_smooth(method = "lm", se = TRUE, lwd = 1.5) +
@@ -865,7 +789,9 @@ ggplot(tropical_test,
   xlab("Predictor value")
 @
 
-\subsection{Exploring contemporary sampling intensity} We will plot the number of genera per province by class:
+\subsection{Exploring contemporary sampling intensity} 
+
+We will plot the number of genera per province by class:
 
 <<plot-n-genera-prov, fig.cap="Number of OBIS occurrence records for each biogeographic province \\cite{spalding2007}. Scale bars on the right (log-distributed scale) indicate the range for a given group, and this scale is used to plot relative sampling intensity heatmaps.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
 map_class_ext(er_dat_class, plot_column = "log_OBIS_records",
@@ -915,6 +841,8 @@ map_class_ext(er_dat_class, plot_column = "log.mean.richness",
 % @
 
 We will look at the effect of the changing the cutoff for the minimum-genera-per-province-class combination. In other words, as we increase this threshold, some classes with fewer genera in a given province are removed.
+
+TODO THESE DON'T MATCH FIG 3 RIGHT NOW - WHY?
 
 <<min-gen-thresh-sensitivity, fig.height=8, fig.width=13>>=
 par(mfrow = c(2, 2))
