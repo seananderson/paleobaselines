@@ -130,7 +130,6 @@ TODO Paul will work on this section
 
 \textit{list of variety of traits here that are associated with low preservation rates (Crampton and Cooper and others NZ preservation reference in Geology; Valentine et al. 2006 PNAS paper on preservation potential in bivalves) such as (example) and (example)}. Some additional groups were also omitted due to the limited taxonomic resolution of fossil occurrences. Ray-finned fishes, for example, are diverse and abundant in modern and ancient seas, yet their fossil record consists primarily of isolated otoliths and teeth which frequently confounds attempts to identify remains to the genus or species levels (REF). Where possible we also consulted taxonomic experts to see if the biogeographic diversity patterns recorded in our raw data sources (described below) were consistent with their knowledge of global diversity patterns in their group of expertise in select instances this resulted in the exclusion of groups with generally high preservation potential (i.e.,\ foraminifera, brachiopoda, and ostracoda). With additional targeted sampling and literature compilation, these groups hold promise for inclusion in the types of analyses we present in the main text.
 
-
 \subsection{Sources of contemporary data}
 
 Modern occurrence data for major marine groups came from two primary sources. For most groups, occurrence data were downloaded from the Ocean Biogeographic Information System (OBIS, \url{http://www.iobis.org/}) \cite{obis}. OBIS is a marine biogeographical database initially developed as part of the Census of Marine Life, and currently containing around 37 million geolocated records of marine taxa. These data were downloaded on TODO date using the following selection criteria: TODO. The complete dataset consists of xx occurrences for yy taxa (supplementary figure showing data coverage --- e.g.,\ with cells color coded by occurrence frequency?).
@@ -768,7 +767,7 @@ map_hotspots(er_dat_raw, min_prov_genera = 100, hotspots = FALSE)
 
 We can recreate the global intrinsic extinction probability map leaving out each taxonomic class in succession in a jackknife analysis. This gives us an idea if any one class is driving the pattern.
 
-<<jackknife-map, fig.cap="Jackknife plot. TODO Fill in this caption.", fig.width=7, fig.height=9, out.width="7in">>=
+<<jackknife-map, fig.cap="Jackknife plot. TODO Fill in this caption.", fig.width=7, fig.height=9, out.width="6.25in">>=
 load("../data/by.prov.all.jk.rda")
 classes <- as.character(unique(modern$class))
 par(mfrow = c(4, 2))
@@ -843,17 +842,6 @@ map_class_ext(er_dat_class, plot_column = "log.mean.richness",
 
 
 \subsection{Alternative maps of contemporary extinction risk}
-
-% <<plot-class-prov-ext-raw-predictors, fig.cap="Mean predicted extinction susceptibility of genera inhabiting different ocean biogeographic provinces \\cite{spalding2007} for each of the eight major groups considered, as in Fig.~3, but \\textbf{raw rather than standardized predictors used for both fossil and modern genera}. Scale bars on the right indicate the range of log extinction susceptibility values for a given group, and this scale is used to plot mean extinction susceptibility heatmaps on the left.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
-% plot(1, 1, type = "n", xlab = "", ylab = "")
-% mtext("TODO", line = -3)
-% @
-% 
-% 
-% <<plot-preservation-completeness, fig.cap="Extinction risk scores for groups in Fig.~1 plotted against the mean preservation probability (completeness) for genera within those groups in the Cenozoic fossil record. Completeness is measured as the proportion of all of the intervals within the stratigraphic range of a genus (excluding first and last) in which it is represented by at least one occurrence record in the Paleobiology Database. Genera with high completeness are sampled in most intervals within their stratigraphic ranges, genera with low completeness have many sampling gaps. The lack of a relationship between partial risk dependence and mean completeness suggests that the noise introduced by among-group variation in preservation probability is does not cause a systematic bias in risk assessment.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
-% plot(1, 1, type = "n", xlab = "", ylab = "")
-% mtext("TODO", line = -3)
-% @
 
 We will look at the effect of the changing the cutoff for the minimum-genera-per-province-class combination. In other words, as we increase this threshold, some classes with fewer genera in a given province are removed.
 
