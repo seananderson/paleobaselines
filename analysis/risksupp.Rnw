@@ -255,6 +255,21 @@ val_test_summarized <- ddply(val_test, c("class", "gbm_pred_binned"),
   summarize_val_test)
 @
 
+An example from one replicate:
+
+<<single-cv-rep, fig.width=7.5, fig.height=7>>=
+ggplot(subset(val_test, .n == 1),
+  aes(gbm_pred_binned, obs_ext_prob)) +
+  geom_point(alpha = 0.9) +
+  geom_abline(intercept = 0, slope = 1) +
+  facet_wrap(~class) +
+  scale_size(trans = "log10") + coord_fixed(ratio = 1) +
+  ylim(0, 1) + xlim(0, 1) +
+  xlab("Out-of-sample GBM-predicted extinction probability") +
+  ylab("Observed extinction probability (one iteration)") +
+  labs(size = "Sample #")
+@
+
 We can plot these data to test for any non-linear biases in our predictions. Translucent black dots show mean observed extinction probabilities for individual replicates. Blue dots show mean observed extinction probabilities across replicates and line segments show 95\% confidence intervals. The area of the dots corresponds to the median number of extinction/survival observations in that bin across replicates. TODO EXPLAIN BLACK DOTS AND ADD FIGURE FOR ONE CV ITERATION.
 
 <<test-gbm1-bias-plot, fig.width=7.5, fig.height=7, echo=FALSE>>=
