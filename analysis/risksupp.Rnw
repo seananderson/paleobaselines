@@ -190,7 +190,7 @@ source("../r/README_interpolation.R")
 
 TODO what and why
 
-TODO Paul: either "habitat" is not the right descriptor for each of these or "richness" should go in a different section
+TODO Paul: either "habitat" is not the right descriptor for each of these or ``richness'' should go in a different section
 
 We will start by standardizing a variety of habitat-relative characteristics within each geologic stage. This is an important step to make some habitat characteristics (richness, occupancy, occurrences) comparable across periods, an in particular, between the paleontological data and the contemporary data. Given the substantially different sampling methods within the paleontological and contemporary records, the absolute values of richness, occupancy, and occurrences are not comparable. We therefore standardize them to values between 0 and 1 within each interval. The other variables (e.g.\ latitude variables and great circle distance) are still comparable between the paleontological and contemporary records --- a degree latitude is still a degree latitude and a kilometre is still a kilometre.
 
@@ -694,7 +694,8 @@ ggplot(modern_raw, aes(mean_observed, mean_observed_raw)) +
   geom_point(alpha = 0.2) + facet_wrap(~class) +
   xlab("Extinction probability (interpolated)") +
   ylab("Extinction probability (no interpolation)") +
-  geom_abline(intercept = 0, slope = 1, lty = 3)
+  geom_abline(intercept = 0, slope = 1, lty = 3) +
+  coord_fixed(ratio = 1) + xlim(0, 1) + ylim(0, 1)
 @
 
 <<compare-bounding-box-build-data>>=
@@ -709,28 +710,31 @@ modern_long <- reshape2::melt(modern, id.vars = c("class", "genus"),
 modern_long <- plyr::join(modern_long, modern_raw_long, by = c("class", "genus", "variable"))
 @
 
-<<compare-bounding-box-occupancy, fig.width=9, fig.height=6, out.width="6.25in">>=
+<<compare-bounding-box-occupancy, fig.width=9, fig.height=3>>=
 ggplot(subset(modern_long, variable %in% c("occupancy")), 
   aes(value, value_raw)) +
   geom_point(alpha = 0.2) + 
   geom_abline(intercept = 0, slope = 1, lty = 3) +
-  facet_grid(variable~class, scales = "free") +
+  facet_grid(variable~class) +
+  coord_fixed(ratio = 1) +
   xlab("Interpolated value") + ylab("Raw value")
 @
 
-<<compare-bounding-box-lat, fig.width=9, fig.height=6, out.width="6.25in">>=
+<<compare-bounding-box-lat, fig.width=9, fig.height=6>>=
 ggplot(subset(modern_long, variable %in% c("min.lat", "max.lat", "mean.lat")), 
   aes(value, value_raw)) +
-  geom_point(alpha = 0.2) + facet_grid(variable~class, scales = "free") +
+  geom_point(alpha = 0.2) + facet_grid(variable~class) +
   geom_abline(intercept = 0, slope = 1, lty = 3) +
+  coord_fixed(ratio = 1) +
   xlab("Interpolated value") + ylab("Raw value")
 @
 
-<<compare-bounding-box-gcd, fig.width=9, fig.height=3, out.width="6.25in">>=
+<<compare-bounding-box-gcd, fig.width=9, fig.height=3>>=
 ggplot(subset(modern_long, variable %in% c("great.circle")), 
   aes(value, value_raw)) +
-  geom_point(alpha = 0.2) + facet_grid(variable~class, scales = "free") +
+  geom_point(alpha = 0.2) + facet_grid(variable~class) +
   geom_abline(intercept = 0, slope = 1, lty = 3) +
+  coord_fixed(ratio = 1) +
   xlab("Interpolated value") + ylab("Raw value")
 @
 
@@ -866,7 +870,7 @@ We will look at the effect of the changing the cutoff for the minimum-genera-per
 
 TODO THESE DON'T MATCH FIG 3 RIGHT NOW - WHY?
 
-<<min-gen-thresh-sensitivity, fig.height=8, fig.width=13>>=
+<<min-gen-thresh-sensitivity, fig.height=8.5, fig.width=13>>=
 par(mfrow = c(2, 2))
 par(mar = c(0, 0, 2, 0), oma = c(2, 2, 2, 2))
 map_hotspots(er_dat, min_prov_genera = 25, hotspots = FALSE)
