@@ -249,6 +249,8 @@ saveRDS(val_test, file = "../data/val_test.rds")
 
 Next, we will compute some summary statistics for the observed extinction probability at each bin across our replicates. We will use the \fn{summarize\_val\_test()} from our \pkg{paleorisk} package. This computes means and 95\% confidence intervals (based on likelihood profiles) for each validation bin.
 
+TODO expand on this: those blue calibration dots are based on a binomial GLM of the true underlying observed 0s (not extinct) and 1s (extinct). I.e. they are the mean estimate from a binomial GLM fit to the black dots (proportions) with weights = to the sample size. So it's not really a mean of a mean, it's a true mean of all observed genera in that bin, but the black dots help illustrate what's going on.
+
 <<test-gbm1-summary>>=
 val_test_summarized <- ddply(val_test, c("class", "gbm_pred_binned"),
   summarize_val_test)
