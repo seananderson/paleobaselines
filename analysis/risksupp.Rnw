@@ -665,7 +665,7 @@ dev.off()
 
 We can create a version of the final maps without bounding-box interpolation of the OBIS records.
 
-<<predict-no-bounding-box>>=
+<<predict-no-bounding-box, fig.width=7, fig.height=4, out.width="6.25in">>=
 # Read in raw (not interpolated) contemporary data:
 temp_dat <- readRDS("../data/stand-predictors-cen-obis.rds")
 modern_raw <- subset(temp_dat, stage == "Modern_raw")
