@@ -792,9 +792,9 @@ classes <- as.character(unique(modern$class))
 par(mfrow = c(4, 2))
 par(mar = c(0, 0, 1.5, 0), oma = c(2, 2, 2, 2))
 for(i in 1:length(classes)) {
-  er_dat <- plyr::join(er_points, er@data, by = "id")
-  er_dat <- plyr::join(er_dat, by.prov.all.jk[[i]], by = "PROV_CODE")
-  map_hotspots(er_dat, min_prov_genera = 100, hotspots = FALSE)
+  er_dat_jk <- plyr::join(er_points, er@data, by = "id")
+  er_dat_jk <- plyr::join(er_dat_jk, by.prov.all.jk[[i]], by = "PROV_CODE")
+  map_hotspots(er_dat_jk, min_prov_genera = 100, hotspots = FALSE)
   mtext(paste("Exclude", classes[i]), line = -0.5)
 }
 @
