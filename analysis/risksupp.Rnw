@@ -802,7 +802,7 @@ for(i in 1:length(classes)) {
 TODO this section/figure will no longer be about the tropics.
 We can inspect the role of tropical regions. Earlier we defined ``tropical'' as less than 30$^{\circ}$ absolute latitude. This code produces Fig.~\ref{fig:test-tropical-drivers}.
 
-<<predictors-vs-risk, fig.width=18, fig.height=11.5, out.width="7in", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus various predictors for that province. Each point represents a single biogeographic province. Lines and gray-shaded regions indicate linear regressions and 95\\% confidence intervals.", echo=TRUE>>=
+<<predictors-vs-risk, fig.width=18, fig.height=11.5, out.width="7in", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus various predictors for that province. Each point represents a single biogeographic province. Lines and gray-shaded regions indicate linear regressions and 95\\% confidence intervals.">>=
 by.prov.classes.long <- reshape2::melt(by.prov.classes, id.vars =
   c("PROV_CODE", "class"), measure.vars =
   c("mean.lat.range", "mean.occupancy", "mean.gcd", "log_OBIS_records",
