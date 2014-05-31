@@ -600,6 +600,7 @@ ggplot(modern, aes(pred, pred_stage_avg)) + geom_point() +
 
 We can look at the distribution of predicted extinction probability. Note that the x-axis is log distributed:
 
+% TODO - Seth - reduce size of panel labels
 <<plot-density-risk, fig.height=4, echo=FALSE>>=
 ggplot(d.eco.filled, aes(mean_observed + 0.001)) +
   geom_histogram(binwidth = 0.3) + facet_wrap(~class) + scale_x_log10() +
@@ -819,7 +820,7 @@ ggplot(by.prov.classes.long,
   xlab("Predictor value")
 @
 
-\subsection{Exploring contemporary sampling intensity} 
+\subsection{Exploring contemporary sampling intensity}
 
 We will plot the number of OBIS records per province --- see Fig.~\ref{fig:plot-n-genera-prov}.
 
