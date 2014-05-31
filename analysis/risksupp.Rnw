@@ -93,7 +93,7 @@ You can install the package by downloading the \texttt{paleorisk} folder from
 \url{https://github.com/seananderson/riskmaps} and running:
 
 <<install-paleorisk, eval=FALSE, echo=TRUE>>=
-install.packages("/your/path/to/riskmaps/paleorisk/", repos = NULL, type = "source")
+#install.packages("/your/path/to/riskmaps/paleorisk/", repos = NULL, type = "source")
 @
 
 We will start by loading this package:
