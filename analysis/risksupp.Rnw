@@ -271,7 +271,7 @@ ggplot(subset(val_test, .n == 1),
   labs(size = "Sample #")
 @
 
-We can plot these data to test for any non-linear biases in our predictions. Translucent black dots show mean observed extinction probabilities for individual replicates. Blue dots show mean observed extinction probabilities across replicates and line segments show 95\% confidence intervals. The area of the dots corresponds to the median number of extinction/survival observations in that bin across replicates. TODO EXPLAIN BLACK DOTS AND ADD FIGURE FOR ONE CV ITERATION.
+We can plot these data to test for any non-linear biases in our predictions. Translucent black dots show mean observed extinction probabilities for individual replicates. Blue dots show mean observed extinction probabilities across replicates and line segments show 95\% confidence intervals. The area of the dots corresponds to the median number of extinction/survival observations in that bin across replicates. TODO EXPLAIN BLACK DOTS
 
 <<test-gbm1-bias-plot, fig.width=7.5, fig.height=7, echo=FALSE>>=
 ggplot(val_test_summarized,
@@ -867,8 +867,6 @@ map_class_ext(er_dat_class, plot_column = "log.mean.richness",
 \subsection{Alternative maps of contemporary extinction risk}
 
 We will look at the effect of the changing the cutoff for the minimum-genera-per-province-class combination. In other words, as we increase this threshold, some classes with fewer genera in a given province are removed.
-
-TODO THESE DON'T MATCH FIG 3 RIGHT NOW - WHY?
 
 <<min-gen-thresh-sensitivity, fig.height=8.5, fig.width=13>>=
 par(mfrow = c(2, 2))
