@@ -686,33 +686,49 @@ modern_raw <- plyr::rename(modern_raw,
 # Bring in interpolated version for comparison:
 modern_raw <- plyr::join(modern_raw,
   modern[,c("class", "genus", "mean_observed")])
-@
-
-TODO - add proper axis labels below:
-
-<<compare-bounding-box>>=
-m2 <- modern
-m2 <- plyr::rename(m2, c("richness" = "richness_bb",
-    "occupancy" = "occupancy_bb",
-    "occurrences" = "occurrences_bb",
-    "great.circle" = "great.circle_bb"))
-m2 <- plyr::join(m2, modern_raw[,c("class", "genus",
-    "richness", "occupancy", "occurrences", "great.circle")])
 
 ggplot(modern_raw, aes(mean_observed, mean_observed_raw)) +
-  geom_point(alpha = 0.2) + facet_wrap(~class)
+  geom_point(alpha = 0.2) + facet_wrap(~class) +
+  xlab("Extinction probability (interpolated)") +
+  ylab("Extinction probability (no interpolation)") +
+  geom_abline(intercept = 0, slope = 1, lty = 3)
+@
 
-ggplot(m2, aes(richness_bb, richness)) +
-  geom_point(alpha = 0.2) + facet_wrap(~class)
+<<compare-bounding-box-build-data>>=
+modern_raw_long <- reshape2::melt(modern_raw, id.vars = c("class", "genus"),
+  measure.vars = c("richness", "occupancy", "occurrences", "min.lat", "max.lat",
+    "mean.lat", "great.circle"))
+modern_raw_long <- plyr::rename(modern_raw_long,
+  c("value" = "value_raw"))
+modern_long <- reshape2::melt(modern, id.vars = c("class", "genus"),
+  measure.vars = c("richness", "occupancy", "occurrences", "min.lat", "max.lat",
+    "mean.lat", "great.circle"))
+modern_long <- plyr::join(modern_long, modern_raw_long, by = c("class", "genus", "variable"))
+@
 
-ggplot(m2, aes(occurrences_bb, occurrences)) +
-  geom_point(alpha = 0.2) + facet_wrap(~class)
+<<compare-bounding-box-occupancy, fig.width=9, fig.height=6, out.width="6.25in">>=
+ggplot(subset(modern_long, variable %in% c("richness", "occupancy", "occurrences")), 
+  aes(value, value_raw)) +
+  geom_point(alpha = 0.2) + 
+  geom_abline(intercept = 0, slope = 1, lty = 3) +
+  facet_grid(variable~class, scales = "free") +
+  xlab("Interpolated value") + ylab("Raw value")
+@
 
-ggplot(m2, aes(occupancy_bb, occupancy)) +
-  geom_point(alpha = 0.2) + facet_wrap(~class)
+<<compare-bounding-box-lat, fig.width=9, fig.height=6, out.width="6.25in">>=
+ggplot(subset(modern_long, variable %in% c("min.lat", "max.lat", "mean.lat")), 
+  aes(value, value_raw)) +
+  geom_point(alpha = 0.2) + facet_grid(variable~class, scales = "free") +
+  geom_abline(intercept = 0, slope = 1, lty = 3) +
+  xlab("Interpolated value") + ylab("Raw value")
+@
 
-ggplot(m2, aes(great.circle_bb, great.circle)) +
-  geom_point(alpha = 0.2) + facet_wrap(~class)
+<<compare-bounding-box-gcd, fig.width=9, fig.height=3, out.width="6.25in">>=
+ggplot(subset(modern_long, variable %in% c("great.circle")), 
+  aes(value, value_raw)) +
+  geom_point(alpha = 0.2) + facet_grid(variable~class, scales = "free") +
+  geom_abline(intercept = 0, slope = 1, lty = 3) +
+  xlab("Interpolated value") + ylab("Raw value")
 @
 
 % Next we'll re-create the main maps with the raw contemporary data:
