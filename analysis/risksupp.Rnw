@@ -710,7 +710,7 @@ modern_long <- plyr::join(modern_long, modern_raw_long, by = c("class", "genus",
 @
 
 <<compare-bounding-box-occupancy, fig.width=9, fig.height=6, out.width="6.25in">>=
-ggplot(subset(modern_long, variable %in% c("richness", "occupancy", "occurrences")), 
+ggplot(subset(modern_long, variable %in% c("occupancy")), 
   aes(value, value_raw)) +
   geom_point(alpha = 0.2) + 
   geom_abline(intercept = 0, slope = 1, lty = 3) +
