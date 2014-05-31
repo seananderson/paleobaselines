@@ -640,7 +640,7 @@ er_dat_class <- plyr::join(er_points, er@data, by = "id")
 er_dat_class <- plyr::join(er_dat_class, by.prov.classes, by = "PROV_CODE")
 
 # make the figure:
-pdf("../figs/class-risk-maps-mean-log-ext.pdf", width = 6.25, height = 5.5)
+pdf("../figs/class-risk-maps-mean-log-ext.pdf", width = 6.45, height = 5.4)
 map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10, 0.20),
   min_prov_genera = 10, col_range = TRUE)
 dev.off()
@@ -762,7 +762,7 @@ er_dat_class_raw <- plyr::join(er_dat_class_raw, by.prov.classes.raw, by = "PROV
 
 % The follow code produces Fig.~\ref{fig:plot-class-prov-ext-raw-ranges}.
 
-<<plot-class-prov-ext-raw-ranges, fig.cap="Mean predicted extinction susceptibility of genera inhabiting different ocean biogeographic provinces \\cite{spalding2007} for each of the eight major groups considered, as in Fig.~3, but \\textbf{with predictions based on raw ranges in OBIS without the within-realm minimum bounding box interpolation}. Scale bars on the right indicate the range of log extinction susceptibility values for a given group, and this scale is used to plot mean extinction susceptibility heatmaps on the left.", fig.width=6.25, fig.height=5.5, out.width="6.25in">>=
+<<plot-class-prov-ext-raw-ranges, fig.cap="Mean predicted extinction susceptibility of genera inhabiting different ocean biogeographic provinces \\cite{spalding2007} for each of the eight major groups considered, as in Fig.~3, but \\textbf{with predictions based on raw ranges in OBIS without the within-realm minimum bounding box interpolation}. Scale bars on the right indicate the range of log extinction susceptibility values for a given group, and this scale is used to plot mean extinction susceptibility heatmaps on the left.", fig.width=6.45, fig.height=5.4, out.width="6.25in">>=
 # Make the class figure:
 map_class_ext(er_dat_class_raw,
   yticks = c(0.005, 0.01, 0.02, 0.05, 0.10, 0.20),
