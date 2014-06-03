@@ -643,9 +643,11 @@ er_dat_class <- plyr::join(er_points, er@data, by = "id")
 er_dat_class <- plyr::join(er_dat_class, by.prov.classes, by = "PROV_CODE")
 
 # make the figure:
-pdf("../figs/class-risk-maps-mean-log-ext.pdf", width = 6.45, height = 5.4)
+pdf("../figs/class-risk-maps-mean-log-ext.pdf", width = 6.45, height = 5.1)
 map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10, 0.20),
-  min_prov_genera = 10, col_range = TRUE)
+  min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0028,
+    0.35), 
+  ylabel = "Intrinsic extinction probability (over ~20 Myr)")
 dev.off()
 @
 
@@ -654,7 +656,7 @@ load("../data/by.prov.all.rda")
 er_dat <- plyr::join(er_points, er@data, by = "id")
 er_dat <- plyr::join(er_dat, by.prov.all, by = "PROV_CODE")
 pdf("../figs/hotspots.pdf", width = 7, height = 3.5)
-par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0), 
+par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
 labs <- seq(0.008, 0.016, 0.002)
 labs_show <- rep(99, length(labs))
@@ -664,10 +666,10 @@ labs_show[5] <- labs[5]
 labs_show[labs_show == 99] <- NA
 labs_show <- sprintf("%.3f", labs_show)
 labs_show[labs_show == "NA"] <- ""
-map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE, 
+map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
   hotspots = TRUE, at = log(labs), at.labels = labs_show)
 par(xpd = NA)
-mtext("Intrinsic extinction probability", side = 4, outer = TRUE, 
+mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
   line = -1.4, las = 0, col = "grey30", cex = 0.9)
 dev.off()
 @
@@ -823,10 +825,10 @@ for(i in 1:length(classes)) {
 TODO this section/figure will no longer be about the tropics.
 We can inspect the role of tropical regions. Earlier we defined ``tropical'' as less than 30$^{\circ}$ absolute latitude. This code produces Fig.~\ref{fig:test-tropical-drivers}.
 
-<<predictors-vs-risk, fig.width=18, fig.height=11.5, out.width="7in", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus various predictors for that province. Each point represents a single biogeographic province. Lines and gray-shaded regions indicate linear regressions and 95\\% confidence intervals.">>=
+<<predictors-vs-risk, fig.width=18, fig.height=11.5, out.width="6.75in", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus various predictors for that province. Each point represents a single biogeographic province. Lines and gray-shaded regions indicate linear regressions and 95\\% confidence intervals.">>=
 by.prov.classes.long <- reshape2::melt(by.prov.classes, id.vars =
   c("PROV_CODE", "class"), measure.vars =
-  c("mean.lat.range", "mean.occupancy", "mean.gcd", "log_OBIS_records",
+  c("mean.lat.range", "mean.occupancy", "mean.gcd", "mean.occurrences",
     "mean.richness"))
 by.prov.classes.long <- plyr::join(by.prov.classes.long, by.prov.classes[,
   c("PROV_CODE", "class", "mean.ext")],
@@ -866,8 +868,8 @@ map_class_ext(er_dat_class, plot_column = "log.N.gen",
 er_dat_class$log.mean.gcd <- log(er_dat_class$mean.gcd)
 map_class_ext(er_dat_class, plot_column = "log.mean.gcd",
   min_prov_genera = 0, ylab = "Mean great circle distance",
-  yticks = c(10000, 20000),
-  col_pal = RColorBrewer::brewer.pal(9, "YlGnBu"))
+  yticks = c(12000, 16000, 20000), exact_limits = c(12000, 20000),
+  col_pal = RColorBrewer::brewer.pal(9, "YlGnBu"), limit_pad = 0.05)
 @
 
 <<plot-richness-genera-prov, fig.cap="Mean richness.", fig.width=6.25, fig.height=4.8, out.width="6in">>=

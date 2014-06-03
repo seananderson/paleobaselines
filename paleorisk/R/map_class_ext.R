@@ -23,6 +23,9 @@
 #'   help to avoid overemphasizing small differences in some panels. If set to
 #'   \code{FALSE} then each panel will have a colour scale that range from the
 #'   minimum to maximum value for a given panel.
+#' @param exact_limits Vector of length 2 giving the exact colour limits.
+#'   Ignored if \code{NULL}
+#' @param ... Anything extra to pass to \code{col_box_key}.
 #' @export
 
 map_class_ext <- function(er_dat, min_prov_genera = 20,
@@ -30,7 +33,8 @@ map_class_ext <- function(er_dat, min_prov_genera = 20,
   plot_column = "mean.ext", plot_order = c("Mammalia", "Echinoidea",
     "Gastropoda", "Anthozoa", "Elasmobranchii", "Bivalvia"),
   yticks = c(0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1),
-  ylabel = "Intrinsic extinction probability", col_range = FALSE) {
+  ylabel = "Intrinsic extinction probability", col_range = FALSE,
+  exact_limits = NULL, ...) {
 
   plot_order <- data.frame(class = plot_order, plot_order = 1:length(plot_order))
 
@@ -88,7 +92,7 @@ map_class_ext <- function(er_dat, min_prov_genera = 20,
   mw <- 88 # map width
   mg <- 1 # map gap
   kw <- 3 # key width
-  kg <- 5 # key gap
+  kg <- 8 # key gap
   nrow <- 3
   N <- nrow*2*2
 
@@ -154,10 +158,11 @@ map_class_ext <- function(er_dat, min_prov_genera = 20,
       # Label each panel:
       label <- unique(class.dat$class)
       if(label == "Malacostraca") label <- "Decapoda"
+      if(label == "Anthozoa") label <- "Scleractinia"
 
       mtext(substitute(paste(phantom("g"), bold(let), " ", lab, phantom("g")),
         list(let = LETTERS[ii], lab = as.character(label))),
-        line = -1.2, cex = 0.8, col = "grey30")
+        line = -1.5, cex = 0.8, col = "grey30")
 
       usr <- par("usr")
 
@@ -169,16 +174,21 @@ map_class_ext <- function(er_dat, min_prov_genera = 20,
       loc.limits <- with(class.dat, c(lower.col.cut, upper.col.cut))
       add_locator <- FALSE
 
-      ll <- exp(min(er.df$value.to.plot))
-      uu <- exp(max(er.df$value.to.plot))
-      yrange <- yticks[yticks >= ll & yticks <= uu]
+      if(is.null(exact_limits)) {
+        ll <- exp(min(er.df$value.to.plot))
+        uu <- exp(max(er.df$value.to.plot))
+        yrange <- yticks[yticks >= ll & yticks <= uu]
+        limits <- c(min(er.df$value.to.plot), max(er.df$value.to.plot))
+      } else {
+        yrange <- yticks
+        limits <- log(exact_limits)
+      }
 
-      col_box_key(col.pal = col_pal, limits = c(min(er.df$value.to.plot),
-        max(er.df$value.to.plot)), width = .3, col.regions =
+      col_box_key(col.pal = col_pal, limits = limits, width = .3, col.regions =
           col.regions, bg = "grey85", border.col = "grey60", at =
           log(yrange), at.labels = yrange,
         add_locator = add_locator, loc_limits =
-          loc.limits, loc_col = "black", loc_width = 2)
+          loc.limits, loc_col = "black", loc_width = 2, ...)
 
     })
   mtext(ylabel, side = 4, outer = TRUE, line = 2.0, las = 0, cex = 0.8, col = "grey30")
