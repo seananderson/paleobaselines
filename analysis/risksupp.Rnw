@@ -724,9 +724,9 @@ modern_long <- plyr::join(modern_long, modern_raw_long, by = c("class", "genus",
 @
 
 <<compare-bounding-box-occupancy, fig.width=9, fig.height=3>>=
-ggplot(subset(modern_long, variable %in% c("occupancy")), 
+ggplot(subset(modern_long, variable %in% c("occupancy")),
   aes(value, value_raw)) +
-  geom_point(alpha = 0.2) + 
+  geom_point(alpha = 0.2) +
   geom_abline(intercept = 0, slope = 1, lty = 3) +
   facet_grid(variable~class) +
   coord_fixed(ratio = 1) +
@@ -734,7 +734,7 @@ ggplot(subset(modern_long, variable %in% c("occupancy")),
 @
 
 <<compare-bounding-box-lat, fig.width=9, fig.height=6>>=
-ggplot(subset(modern_long, variable %in% c("min.lat", "max.lat", "mean.lat")), 
+ggplot(subset(modern_long, variable %in% c("min.lat", "max.lat", "mean.lat")),
   aes(value, value_raw)) +
   geom_point(alpha = 0.2) + facet_grid(variable~class) +
   geom_abline(intercept = 0, slope = 1, lty = 3) +
@@ -743,12 +743,14 @@ ggplot(subset(modern_long, variable %in% c("min.lat", "max.lat", "mean.lat")),
 @
 
 <<compare-bounding-box-gcd, fig.width=9, fig.height=3>>=
-ggplot(subset(modern_long, variable %in% c("great.circle")), 
+ggplot(subset(modern_long, variable %in% c("great.circle")),
   aes(value, value_raw)) +
   geom_point(alpha = 0.2) + facet_grid(variable~class) +
   geom_abline(intercept = 0, slope = 1, lty = 3) +
   coord_fixed(ratio = 1) +
   xlab("Interpolated value") + ylab("Raw value")
+# temp <- subset(modern_long, variable %in% "great.circle")
+# print(subset(temp, value_raw > value))
 @
 
 % Next we'll re-create the main maps with the raw contemporary data:
