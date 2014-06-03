@@ -653,9 +653,22 @@ dev.off()
 load("../data/by.prov.all.rda")
 er_dat <- plyr::join(er_points, er@data, by = "id")
 er_dat <- plyr::join(er_dat, by.prov.all, by = "PROV_CODE")
-pdf("../figs/hotspots.pdf", width = 7, height = 4)
-par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0))
-map_hotspots(er_dat, min_prov_genera = 100)
+pdf("../figs/hotspots.pdf", width = 7, height = 3.5)
+par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0), 
+  las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
+labs <- seq(0.008, 0.016, 0.002)
+labs_show <- rep(99, length(labs))
+labs_show[1] <- labs[1]
+labs_show[3] <- labs[3]
+labs_show[5] <- labs[5]
+labs_show[labs_show == 99] <- NA
+labs_show <- sprintf("%.3f", labs_show)
+labs_show[labs_show == "NA"] <- ""
+map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE, 
+  hotspots = TRUE, at = log(labs), at.labels = labs_show)
+par(xpd = NA)
+mtext("Intrinsic extinction probability", side = 4, outer = TRUE, 
+  line = -1.4, las = 0, col = "grey30", cex = 0.9)
 dev.off()
 @
 
