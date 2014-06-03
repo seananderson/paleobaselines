@@ -1,13 +1,15 @@
 # ====================================================================
 # Created by:    Sean C. Anderson
 # Created:       Feb 06, 2012
-# Last modified: Jun 02, 2014
+# Last modified: Jun 03, 2014
 # Purpose:       Overlay the equal area grid on the raw occurrence
 #                data as a sensitivity test for our interpolation
 #                method.
 # ====================================================================
 
 load("../data/composite.occ2.rda")
+composite.occ2 <- composite.occ2[!composite.occ2$group %in%
+  c("Mammalia", "Elasmobranchii"), ]
 comp.dat <- composite.occ2
 # comp.dat <- composite.occ2[sample(1:nrow(composite.occ2), 30000), ] # for testing
 rm(composite.occ2)
@@ -53,11 +55,11 @@ er <- readShapePoly("../data/MEOW2/meow_ecos.shp")
 pts <- SpatialPoints(comp.dat[,c("longitude", "latitude")])
 # save time if the file exists
 # NEED TO DELETE THE FILE IF YOU WANT TO FEED IN NEW DATA!
-if(file.exists("../data/pts.over.all.cache.rda")) {
-  load("../data/pts.over.all.cache.rda")
+if(file.exists("../data/pts.over.cache.rda")) {
+  load("../data/pts.over.cache.rda")
 }else{
   pts.over <- over(pts, er)
-  save(pts.over, file = "../data/pts.over.all.cache.rda")
+  save(pts.over, file = "../data/pts.over.cache.rda")
 }
 oc.df <- cbind(comp.dat, pts.over)
 rm(pts.over)
@@ -73,7 +75,7 @@ oc.df <- subset(oc.df, latitude > min(global_45x14$latitude) & latitude < max(gl
 oc.df$X_mid <- grid_mid_long[findInterval(oc.df$longitude, global_45x14$longitude)]
 oc.df$Y_mid <- grid_mid_lat[findInterval(oc.df$latitude, global_45x14$latitude)]
 
-oc.df <- subset(oc.df, !group %in% c("Mammalia", "Elasmobranchii"))
+#oc.df <- subset(oc.df, !group %in% c("Mammalia", "Elasmobranchii"))
 # splice in the 'interpolated' sharks and mammals
 # which aren't really interpolated
 # they came from range maps
@@ -108,6 +110,7 @@ obis_prov_obs_no_interp <- plyr::ddply(oc.df.temp, c("genus", "PROV_CODE"), func
 # now add in the equivalent sharks and mammals:
 sharks_and_mamm$n_obs <- NA # to match; from range maps
 obis_prov_obs_no_interp <- rbind(obis_prov_obs_no_interp, sharks_and_mamm)
+
 
 saveRDS(obis_prov_obs_no_interp, file = "../data/obis_prov_obs_no_interp.rds")
 
