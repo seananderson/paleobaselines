@@ -9,9 +9,18 @@ d.eco.filled <- interpolated_provs_all_taxa
 # bring in the modern predictions:
 modern <- readRDS("../data/modern-predictions.rds")
 
+# create a version where we remove genera that occur in only one province:
+d.eco.filled.no.singles <- plyr::ddply(d.eco.filled, 
+  "genus", function(x) {
+  if(nrow(x) > 1) x
+})
+
+single.genera.provs.removed <- nrow(d.eco.filled) - nrow(d.eco.filled.no.singles)
+total.genera <- nrow(d.eco.filled)
 
 # merge occurrence data with risk predictions:
 d.eco.filled <- merge(d.eco.filled, modern, by = "genus", all.x = FALSE)
+d.eco.filled.no.singles <- merge(d.eco.filled.no.singles, modern, by = "genus", all = FALSE)
 
 # merge in raw predictors:
 temp <- readRDS("../data/modern_and_paleo_ranges.rds")
@@ -37,6 +46,19 @@ by.prov.all <- dplyr::summarise(dplyr::group_by(na.omit(d.eco.filled), PROV_CODE
   mean(min.lat), mean.max.lat = mean(max.lat), mean.mean.lat =
   mean(mean.lat), mean.gcd = mean(great.circle), mean.lat.range =
   mean(lat.range), mean.richness = mean(richness))
+
+by.prov.classes.no.singles <- plyr::ddply(d.eco.filled.no.singles, 
+  c("PROV_CODE", "class"), plyr::summarize, 
+  mean.ext = mean(log(mean_observed)), 
+  N.gen = length(unique(genus)))
+
+by.prov.all.no.singles <- plyr::ddply(d.eco.filled.no.singles,
+  c("PROV_CODE"), plyr::summarize, 
+  mean.ext = mean(log(mean_observed)), 
+  N.gen = length(unique(genus)))
+# fake:
+by.prov.all.no.singles$Halpern <- 1
+by.prov.all.no.singles$Burrows <- 1
 
 # A second version that takes the mean of the class means:
 by.prov.all2 <- summarise(group_by(by.prov.classes, PROV_CODE),
@@ -69,8 +91,6 @@ by.prov.all <- dplyr::summarise(dplyr::group_by(na.omit(d.eco.filled), PROV_CODE
   mean(min.lat), mean.max.lat = mean(max.lat), mean.mean.lat =
   mean(mean.lat), mean.gcd = mean(great.circle), mean.lat.range =
   mean(lat.range), mean.richness = mean(richness))
-
-
 
 # read in province area measurements and OBIS sampling data:
 Prov.Areas <- read.csv("../data/spalding-province-areas.csv",
@@ -106,4 +126,6 @@ by.prov.all$Lat_Zone <- as.factor(ifelse(by.prov.all$Zone == "Tropical",
 save(by.prov.classes, file = "../data/by.prov.classes.rda")
 save(by.prov.all, file = "../data/by.prov.all.rda")
 save(by.prov.all.jk, file = "../data/by.prov.all.jk.rda")
+save(by.prov.classes.no.singles, file = "../data/by.prov.classes.no.singles.rda")
+save(by.prov.all.no.singles, file = "../data/by.prov.all.no.singles.rda")
 @
