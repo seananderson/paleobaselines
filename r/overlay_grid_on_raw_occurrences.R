@@ -12,6 +12,13 @@ comp.dat <- composite.occ2
 # comp.dat <- composite.occ2[sample(1:nrow(composite.occ2), 30000), ] # for testing
 rm(composite.occ2)
 
+# Fix a single point (genus = Herrita) that sits right on the border of a grid
+# cell and realm. It gets placed in Province 5 in the polygons but sits in the
+# grid cell below in the raw data. Here I'm moving the raw data point up
+# slightly to match the interpolation version (and polygon matched version)
+# which is where it will get plotted.
+comp.dat[comp.dat$genus == "Herrita", "latitude"] <- comp.dat[comp.dat$genus == "Herrita", "latitude"] + 0.1
+
 # replace sharks and mammals with the original raw data:
 sharks <- read.csv("../data/SharkProvinceJoin2pt5DegreeBuffer_20121009.csv",
   stringsAsFactors = FALSE)[,c("PROV_CODE", "species")]
