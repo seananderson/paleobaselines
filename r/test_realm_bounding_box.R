@@ -10,6 +10,7 @@ require(sp)
 require(rgeos) # for overlays with 2 sets of polygons
 require(ggplot2)
 require(maptools)
+require(RColorBrewer)
 gpclibPermit()
 gc()
 load("../data/interpolated_provs.rda")
