@@ -159,6 +159,7 @@ map_class_ext <- function(er_dat, min_prov_genera = 20,
       label <- unique(class.dat$class)
       if(label == "Malacostraca") label <- "Decapoda"
       if(label == "Anthozoa") label <- "Scleractinia"
+      if(label == "Elasmobranchii") label <- "Sharks"
 
       mtext(substitute(paste(phantom("g"), bold(let), " ", lab, phantom("g")),
         list(let = LETTERS[ii], lab = as.character(label))),
