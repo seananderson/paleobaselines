@@ -175,7 +175,7 @@ map_class_ext <- function(er_dat, min_prov_genera = 20,
 
       col_box_key(col.pal = col_pal, limits = c(min(er.df$value.to.plot),
         max(er.df$value.to.plot)), width = .3, col.regions =
-          col.regions, N = 10, bg = "grey85", border.col = "grey60", at =
+          col.regions, bg = "grey85", border.col = "grey60", at =
           log(yrange), at.labels = yrange,
         add_locator = add_locator, loc_limits =
           loc.limits, loc_col = "black", loc_width = 2)
