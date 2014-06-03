@@ -5,7 +5,7 @@
 g <- partial_groups
 o <- partial_continuous
 g <- subset(g, !is.na(value))
-g <- subset(g, median < 0.999)
+g <- subset(g, median < 1)
 
 o <- plyr::ddply(o, c("stage", "predictor"), plyr::mutate, adj = -
   mean(median, na.rm = TRUE) + 0.5, median = median + adj, lower = lower
@@ -25,9 +25,9 @@ col.axis.labels <- "grey45"
 col.left.axis.label <- "grey20"
 g.ylim.l <- 0
 g.ylim.u <- 1
-o.ylim.l <- 0.25
+o.ylim.l <- 0
 o.ylim.u <- 1
-o.y.axis.at <- c(0.5, 1)
+o.y.axis.at <- c(0, 0.5, 1)
 g.y.axis.at <- c(0, 0.5, 1)
 rect.cols <- rep(c("grey93", NA), 99)
 
@@ -145,7 +145,7 @@ plyr::d_ply(o, "predictor", function(x) {
     legend_stages <- col_df$stage
     legend_stages <- sub("all", "Entire Neogene", legend_stages)
 
-    legend(-2.11, par("usr")[4] * 1.18, legend = legend_stages, bty = "n",
+    legend(-2.11, par("usr")[4] * 1.25, legend = legend_stages, bty = "n",
       cex = 0.8, text.col = "grey40", fill = pal, border = pal, horiz =
       TRUE)
     par(xpd = FALSE)

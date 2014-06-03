@@ -15,10 +15,20 @@
 #' @param col_pal The colour palette to plot with. Should be approximately a
 #'   vector of length 9.
 #' @param hotspots Show the contemporary hotspots?
+#' @param add_legend Add a colour legend? You may need to increase the right
+#' margin in \code{par} to see this.
+#' @param at Locations for ticks on the legend.
+#' @param at.labels Labels for colour legend ticks.
 #' @export
 
 map_hotspots <- function(er_dat, min_prov_genera = 50, hotspot_thresh = 0.8,
-  col_pal = RColorBrewer::brewer.pal(9, "YlOrRd"), hotspots = TRUE) {
+  col_pal = RColorBrewer::brewer.pal(9, "YlOrRd"), hotspots = TRUE,
+  add_legend = FALSE, at = c(-1, 1), at.labels = c(-1, 1)) {
+
+  if(add_legend) {
+    lo <- t(matrix(c(rep(1, 45), 3, 2, 4, 4, 4, 4, 4)))
+    layout(lo)
+  }
 
   er.df.all <- er_dat
   # Create a box/oval to outline the map:
@@ -71,6 +81,8 @@ map_hotspots <- function(er_dat, min_prov_genera = 50, hotspot_thresh = 0.8,
       lwd = .8))
   })
 
+  browser()
+
   if(hotspots) {
     # Plot province borders only; Halpern et al.
     plyr::d_ply(er.df.m, "PROV_CODE", function(x) {
@@ -109,6 +121,18 @@ map_hotspots <- function(er_dat, min_prov_genera = 50, hotspot_thresh = 0.8,
     legend(1.2, -.75, fill = c(col_pal[6],NA, "grey50"), col = c(col_pal[6],
       "black", "black"), legend = c("Intrinsic risk", "Human impact",
         "Climate velocity"), bty = "n", density = c(NA, NA, 25),
-      angle = c(NA, NA, 45), border = c(NA, "black", NA), cex = 0.9)
+      angle = c(NA, NA, 45), border = c(NA, "black", NA), cex = 1.3)
   }
+
+ if(add_legend) {
+   #at <- range(er.df$ext.plot)
+   limits <- range(er.df$ext.plot)
+
+   col.regions <- with(er.df, seq(min(ext.plot),
+       max(ext.plot), length.out = length(col_pal)+1))
+
+   col_box_key(col.pal = col_pal, limits = limits, xpos = 0.1,
+     width = 0.01, col.regions = col.regions, bg = "grey85", border.col =
+     "grey60", at = at, at.labels = at.labels, add = FALSE, limit_pad = 0.55)
+ }
 }

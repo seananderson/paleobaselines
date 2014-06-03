@@ -1,7 +1,7 @@
 # ====================================================================
 # Created by:    Sean Anderson, sean@seananderson.ca
 # Created:       Sep 21, 2012
-# Last modified: Feb 20, 2014
+# Last modified: Jun 02, 2014
 # Purpose:       Implement the by-realm bounding box.
 # ====================================================================
 
@@ -28,11 +28,11 @@ er <- readShapePoly("../data/MEOW2/meow_ecos.shp")
 pts <- SpatialPoints(composite.occ2[,c("longitude", "latitude")])
 # save time if the file exists
 # NEED TO DELETE THE FILE IF YOU WANT TO FEED IN NEW DATA!
-if(file.exists("pts.over.cache.rda")) {
-  load("pts.over.cache.rda")
+if(file.exists("../data/pts.over.cache.rda")) {
+  load("../data/pts.over.cache.rda")
 } else {
   pts.over <- over(pts, er)
-  save(pts.over, file = "pts.over.cache.rda")
+  save(pts.over, file = "../data/pts.over.cache.rda")
 }
 oc.df <- cbind(composite.occ2, pts.over)
 # remove rows without an ecoregion, we aren't dealing with them:
@@ -43,8 +43,8 @@ oc.df <- oc.df[!duplicated(oc.df), ]
 # --------
 # now re-arrange the spalding data into a dataframe:
 er@data$id = rownames(er@data)
-er.points = fortify(er, region = "id")
-er.df <- join(er.points, er@data, by = "id")
+er.points = ggplot2::fortify(er, region = "id")
+er.df <- plyr::join(er.points, er@data, by = "id")
 er@data$ID <- 1:nrow(er@data)
 
 rm(composite.occ2, pts.over)
@@ -72,7 +72,7 @@ realms_SpatialPolygons <- dlply(er@data, "RLM_CODE", function(x) {
     IDs = rep(1, length(realm_with_many_regions)))
   realm_union_regions
 })
-save(realms_SpatialPolygons, file = "realms_SpatialPolygons.rda")
+save(realms_SpatialPolygons, file = "../data/realms_SpatialPolygons.rda")
 
 # Then, create a list object ordered by province order as ordered in
 # er@data: (unique(er@data$PROV_CODE))
@@ -90,14 +90,14 @@ prov_SpatialPolygons <- dlply(er@data, "PROV_CODE", function(x) {
     IDs = rep(1, length(prov_with_many_regions)))
   prov_union_regions
 })
-save(prov_SpatialPolygons, file = "prov_SpatialPolygons.rda")
+save(prov_SpatialPolygons, file = "../data/prov_SpatialPolygons.rda")
 
 # Now create a handy lookup table to make this all possible.
 # ddply automatically orders things, so we can do this:
 er_lookup <- ddply(er@data, "PROV_CODE", function(x) {
   data.frame(PROV_CODE = unique(x$PROV_CODE), RLM_CODE = unique(x$RLM_CODE))
 })
-save(er_lookup, file = "er_lookup.rda")
+save(er_lookup, file = "../data/er_lookup.rda")
 
 # -------------------------------------------------
 # Now let's go through each realm of occurrence data and see which
@@ -126,6 +126,16 @@ if(sphere_issue) { # crosses the 180 border, so you'll need 2 boxes
 # the latitude is shared:
     min_lat <- min(y$latitude)
     max_lat <- max(y$latitude)
+
+if(min_lat == max_lat) {
+  max_lat <- max_lat + 0.001
+}
+if(min_long_east == max_long_east) {
+  min_long_east <- min_long_east - 0.001
+}
+if(min_long_west == max_long_west) {
+  min_long_west <- min_long_west - 0.001
+}
 
 # and create the two bounding boxes:
 # Now create an sp polygon object with the bounding box coordinates:
@@ -156,6 +166,13 @@ min_lat <- min(y$latitude)
 max_lat <- max(y$latitude)
 min_long <- min(y$longitude)
 max_long <- max(y$longitude)
+
+if(min_lat == max_lat) {
+  max_lat <- max_lat + 0.001
+}
+if(min_long == max_long) {
+  max_long <- max_long + 0.001
+}
 
 # Now create an sp polygon object with the bounding box coordinates:
 poly <- matrix(nrow = 5, ncol = 2)
@@ -259,3 +276,16 @@ interpolated_provs_alt <-
 
 save(interpolated_provs, file = "../data/interpolated_provs.rda")
 save(interpolated_provs_alt, file = "../data/interpolated_provs_alt.rda")
+
+# which were affected by zero width or height boxes?
+# check <- plyr::ddply(oc.df, c("genus", "REALM"), function(x) {
+#   out <- "all good"
+#   if((max(x$longitude) - min(x$longitude) == 0) & max(x$latitude) - min(x$latitude) == 0) out <- "same location"
+#   if((max(x$longitude) - min(x$longitude) == 0) & max(x$latitude) - min(x$latitude) > 0) out <- "same longitude"
+#   if((max(x$longitude) - min(x$longitude) > 0) & max(x$latitude) - min(x$latitude) == 0) out <- "same latitude"
+#   return(out)
+#   }
+#   )
+
+
+

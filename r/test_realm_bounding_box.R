@@ -1,7 +1,7 @@
 # ====================================================================
 # Created by:    Sean Anderson, sean@seananderson.ca
 # Created:       Sep 24, 2012
-# Last modified: Mar 15, 2014
+# Last modified: Jun 02, 2014
 # Purpose:       test the realm_bouning_box.R output
 # ====================================================================
 
@@ -10,6 +10,7 @@ require(sp)
 require(rgeos) # for overlays with 2 sets of polygons
 require(ggplot2)
 require(maptools)
+require(RColorBrewer)
 gpclibPermit()
 gc()
 load("../data/interpolated_provs.rda")
@@ -23,10 +24,10 @@ d <- interpolated_provs
 er <- readShapePoly("../data/MEOW2/meow_ecos.shp")
 er@data$id = rownames(er@data)
 er.points = fortify(er, region = "id")
-er.df <- join(er.points, er@data, by = "id")
+er.df <- plyr::join(er.points, er@data, by = "id")
 
 # now add the original data to provinces:
-load("pts.over.cache.rda")
+load("../data/pts.over.cache.rda")
 oc.df <- cbind(composite.occ2, pts.over)
 # remove rows without an ecoregion, we aren't dealing with them:
 oc.df <- oc.df[!is.na(oc.df$RLM_CODE), ]
@@ -64,14 +65,14 @@ for(current_genus in genuses_sample) {
       border = NA))
   box(col = "grey50")
 
-  temp1 <- join(er.df, inter_occur.df)
+  temp1 <- plyr::join(er.df, inter_occur.df)
   # interpolated
-  d_ply(temp1, "group", transform, polygon(long, lat,
+  plyr::d_ply(temp1, "group", transform, polygon(long, lat,
       col = ifelse(occurs, "NA", NA), border =ifelse(occurs, "grey10", NA)))
 
-  temp2 <- join(er.df, raw_occur.df)
+  temp2 <- plyr::join(er.df, raw_occur.df)
   # raw
-  d_ply(temp2, "group", transform, polygon(long, lat,
+  plyr::d_ply(temp2, "group", transform, polygon(long, lat,
       col = ifelse(occurs, "#00000050", NA), border =NA))
 
   # raw points

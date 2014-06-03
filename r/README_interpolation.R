@@ -1,10 +1,14 @@
 # ====================================================================
 # Created by:    Sean Anderson, sean@seananderson.ca
 # Created:       Sep 29, 2012
-# Last modified: Feb 20, 2014
+# Last modified: Jun 02, 2014
 # Purpose:       Steps to do interpolation of modern occurrence data
 #                and overlay grid etc.
 # ====================================================================
+
+# temp for Bugaboo:
+
+setwd("/home/anderson/riskmaps/r")
 
 # What comes first to generate "composite.occ2.rda"?
 
