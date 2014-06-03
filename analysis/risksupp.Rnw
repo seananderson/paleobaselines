@@ -14,7 +14,7 @@
 \let\pkg=\textbf
 \let\fn=\texttt
 
-\usepackage[nofiglist,notablist,nomarkers,figuresfirst]{endfloat}
+\usepackage[nofiglist,notablist,nomarkers,tablesfirst]{endfloat}
 \renewcommand{\theposttable}{S\arabic{posttbl}}
 \renewcommand{\thepostfigure}{S\arabic{postfig}}
 \renewcommand{\thetable}{S\arabic{table}}
@@ -98,6 +98,7 @@ library("maptools")
 library("RColorBrewer")
 library("PBSmapping")
 library("fields")
+library("xtable")
 @
 
 <<gpclibPermit, cache=FALSE, echo=FALSE, results='hide'>>=
@@ -138,20 +139,28 @@ All of the fossil occurrence data used for this study were downloaded from the P
 
 We downloaded occurrences from the Paleobiology Database on 6 April 2014. We downloaded only occurrences associated with collections from marine environments.  We subsetted these data to included only occurrences of the following higher taxa: Echinoidea, Bivalvia, Gastropoda, Anthozoa, Elasmobranchii (Selachii), and Mammalia (Cetacea and Pinnipedia).  We then manually checked the data to remove nonmarine taxa, such as freshwater mollusks and land snails, that occasionally occur in marine sediments. We used the following protocol to exclude occurrences which do not meet a minimum level of taxonomic resolution: First, multiple occurrences of a genus within a collection were lumped. Second, only genus names are used, we did not treat subgenera as genera. Third, we excluded generically indeterminate occurrences but kept specifically indeterminate occurrences if they have a genus name. Forth, we excluded genus names that where informal and qualified by \texttt{aff.}, \texttt{?}, \texttt{cf.}, or quotation marks. We assigned occurrences to one of four Neogene time intervals: the Early Miocene, Middle Miocene, Upper Miocene, and the Plio-Pleistocene based on the ``FR2\_bin'' collections field. Following these culls, the Neogene dataset included 111,765 occurrences of 5,593 genera (Table S1). The PPBD members who contributed most to this dataset were Austin Hendy (27.5\%), Mark Uhen (26.8\%), Wolfgang Kiessling (25.6\%), Arnold Miller (4.4\%), and John Alroy (4.0\%), with additional substantial contributions from Martin Aberhan, Brian Beatty, Anna Behrensmeyer, Nicole Bonuso, Matt Carrano, Matthew Clapham, Will Clyde, Emmanuel Fara, Jason Head, John Hunter, Linda Ivany, Carlos Jaramillo, Matt Kosnik, Elizabeth Kowalski, Juergen Kriwet, Philip Mannion, Johannes Mueller, Shanan Peters, Jack Sepkoski, Jocelyn Sessa, Hallie Sims, Bruce Tiffney, Alan Turner, Loic Villier, Pete Wagner, Oliver Will, and Lars van den Hoek Ostende.
 
-TODO: Sean, let's talk about how to turn the table generated below into a PDF that can be inserted here.
-<<Table S1>>=
+<<genera-occurrences-table, results = "asis">>=
 dat <- readRDS(data, file = "../data/modern_and_paleo_ranges.rds")
 Genera <- function(df) length(unique(df$genus))
 Occurrences <- function(df) sum(df$occurrences)
-Table.S1 <- ddply(dat,.(Interval,class),each(Genera ,Occurrences))
-Table.S1 <- Table.S1[(Table.S1$Interval != "Modern_merged" & Table.S1$class != "Malacostraca" & Table.S1$class != "Foraminifera" & Table.S1$class != "Testudines"),]
-Table.S1$Interval <- revalue(Table.S1$Interval, c("Modern_raw" = "Modern"))
-Table.S1$Interval <- factor(Table.S1$Interval, levels=c("Lower Miocene","Middle Miocene","Upper Miocene","Plio-Pleistocene","Modern"))
-Table.S1 <- Table.S1[order(Table.S1$Interval, Table.S1$class),]
-write.csv(Table.S1,"../figs/table.S1.data.csv")
+Table.S1 <- plyr::ddply(dat, plyr::.(Interval,class), 
+  plyr::each(Genera, Occurrences))
+Table.S1 <- Table.S1[(Table.S1$Interval != "Modern_merged" & 
+  Table.S1$class != "Malacostraca" & 
+  Table.S1$class != "Foraminifera" & 
+  Table.S1$class != "Testudines"), ]
+Table.S1$Interval <- plyr::revalue(Table.S1$Interval, c("Modern_raw" = "Modern"))
+Table.S1$Interval <- factor(Table.S1$Interval, 
+  levels = c("Lower Miocene", "Middle Miocene",
+    "Upper Miocene","Plio-Pleistocene", "Modern"))
+Table.S1 <- Table.S1[order(Table.S1$Interval, Table.S1$class), ]
+Table.S1 <- plyr::rename(Table.S1, c("class" = "Class"))
+xtable::print.xtable(xtable::xtable(Table.S1, digits = c(0, 0, 0, 0, 0),
+    caption = "TODO Table caption here."), include.rownames = FALSE, 
+  caption.placement = "top")
 @
 
-\includegraphics[width=\textwidth]{../figs/Table.S1.pdf}
+%\includegraphics[width=\textwidth]{../figs/Table.S1.pdf}
 
 \subsection{Choice of predictor variables}
 
@@ -944,7 +953,5 @@ mtext("Min. genera = 200", cex = 2)
 \end{center}
 
 \newpage
-
-\section{Supplementary Figures}
 
 \end{document}
