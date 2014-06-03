@@ -27,9 +27,9 @@
 
 map_class_ext <- function(er_dat, min_prov_genera = 20,
   col_pal = RColorBrewer::brewer.pal(9, "YlOrRd"),
-  plot_column = "mean.ext", plot_order = c("Mammalia", "Elasmobranchii",
-    "Anthozoa", "Gastropoda", "Malacostraca", "Echinoidea", "Bivalvia"),
-  yticks = c(0.002, 0.01, 0.05, 0.1, 0.2, 0.5, 1),
+  plot_column = "mean.ext", plot_order = c("Mammalia", "Echinoidea",
+    "Gastropoda", "Anthozoa", "Elasmobranchii", "Bivalvia"),
+  yticks = c(0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1),
   ylabel = "Intrinsic extinction probability", col_range = FALSE) {
 
   plot_order <- data.frame(class = plot_order, plot_order = 1:length(plot_order))
