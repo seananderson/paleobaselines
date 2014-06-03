@@ -20,7 +20,7 @@ d.eco.filled <- plyr::join(d.eco.filled, temp[,c("genus", "raw_occurrences", "ra
 
 # and calculate mean values by class-province or for the provinces overall:
 by.prov.classes <- dplyr::summarise(dplyr::group_by(na.omit(d.eco.filled), class,
-    PROV_CODE), mean.ext = mean(log(mean_observed + 0.001)), median.ext
+    PROV_CODE), mean.ext = mean(log(mean_observed)), median.ext
   = median(mean_observed), N.gen = length(unique(genus)), mean.occupancy
   = mean(occupancy), mean.occurrences = mean(occurrences), mean.min.lat
   = mean(min.lat), mean.max.lat = mean(max.lat), mean.mean.lat =
@@ -31,7 +31,7 @@ by.prov.classes <- dplyr::summarise(dplyr::group_by(na.omit(d.eco.filled), class
   mean.raw.richness = mean(raw_richness))
 
 by.prov.all <- dplyr::summarise(dplyr::group_by(na.omit(d.eco.filled), PROV_CODE),
-  mean.ext = mean(log(mean_observed + 0.001)), median.ext =
+  mean.ext = mean(log(mean_observed)), median.ext =
   median(mean_observed), N.gen = length(unique(genus)), mean.occupancy =
   mean(occupancy), mean.occurrences = mean(occurrences), mean.min.lat =
   mean(min.lat), mean.max.lat = mean(max.lat), mean.mean.lat =
