@@ -116,10 +116,11 @@ map_hotspots <- function(er_dat, min_prov_genera = 50, hotspot_thresh = 0.8,
 
   if(hotspots) {
     par(xpd = NA)
-    legend(1.2, -.75, fill = c(col_pal[6],NA, "grey50"), col = c(col_pal[6],
-      "black", "black"), legend = c("Intrinsic risk", "Human impact",
-        "Climate velocity"), bty = "n", density = c(NA, NA, 25),
-      angle = c(NA, NA, 45), border = c(NA, "black", NA), cex = 1.3)
+    legend(1.7, -.75, fill = c("white", "grey50"), col = c(
+      "black", "black"), legend = c("Human impact",
+        "Climate velocity"), bty = "n", density = c(NA, 25),
+      angle = c(NA, 45), border = c("black", NA), cex = 1.4,
+      text.col = "grey30")
   }
 
  if(add_legend) {
