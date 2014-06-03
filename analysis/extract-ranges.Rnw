@@ -24,7 +24,7 @@ extract_ranges <- function() {
   OBIS.genera <- genus_grid_merged2
   genus.Matches <- read.csv("../data/modern-genera-matchtaxa.csv", header = TRUE)
   OBIS.for.plot <- merge(OBIS.genera,genus.Matches,by.x = "genus",all.x = FALSE)
-  save(OBIS.for.plot,file = "../data/OBIS.for.plot_rare_removed.rda")
+  # save(OBIS.for.plot,file = "../data/OBIS.for.plot_rare_removed.rda")
  
   # Now extract range parameters from the OBIS data
 
