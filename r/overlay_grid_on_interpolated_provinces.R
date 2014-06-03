@@ -1,7 +1,7 @@
 # ====================================================================
 # Created by:    Sean Anderson, sean@seananderson.ca
 # Created:       Sep 24, 2012
-# Last modified: May 27, 2014
+# Last modified: Jun 03, 2014
 # Purpose:       Take the interpolated provinces (by bounding box
 # within realms) and overlay a grid.
 # ====================================================================
@@ -91,22 +91,30 @@ get_num_grid_cells <- function(SpatialPolygon_object, test_plot = FALSE) {
 # example:
 # shp_file <- combine_province_shapefiles(c(1, 2, 3))
 # get_num_grid_cells(shp_file)
+
+rm(interpolated_provs_alt_all_taxa)
 gc()
 
+tl <- length(unique(interpolated_provs_all_taxa$genus))
+print(tl)
+
+ii <<- 0
 genus_cells <- ddply(interpolated_provs_all_taxa, "genus", function(x) {
+  ii <<- ii + 1
+  print(paste("Done", ii, "of", tl))
   shp_file <- combine_province_shapefiles(x$PROV_CODE)
   get_num_grid_cells(shp_file)
 })
 
 gc()
 
-genus_cells_alt <- ddply(interpolated_provs_alt_all_taxa, "genus", function(x) {
-  shp_file <- combine_province_shapefiles(x$PROV_CODE)
-  get_num_grid_cells(shp_file)
-})
+# genus_cells_alt <- ddply(interpolated_provs_alt_all_taxa, "genus", function(x) {
+#   shp_file <- combine_province_shapefiles(x$PROV_CODE)
+#   get_num_grid_cells(shp_file)
+# })
 
 save(genus_cells, file = "../data/genus_cells.rda")
-save(genus_cells_alt, file = "../data/genus_cells_alt.rda")
+# save(genus_cells_alt, file = "../data/genus_cells_alt.rda")
 
 # ---------
 # get 6 genuses to sample:
