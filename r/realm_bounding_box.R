@@ -28,7 +28,7 @@ er <- readShapePoly("../data/MEOW2/meow_ecos.shp")
 pts <- SpatialPoints(composite.occ2[,c("longitude", "latitude")])
 # save time if the file exists
 # NEED TO DELETE THE FILE IF YOU WANT TO FEED IN NEW DATA!
-if(file.exists("pts.over.cache.rda")) {
+if(file.exists("../data/pts.over.cache.rda")) {
   load("../data/pts.over.cache.rda")
 } else {
   pts.over <- over(pts, er)
