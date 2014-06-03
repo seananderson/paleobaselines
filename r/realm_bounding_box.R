@@ -127,6 +127,16 @@ if(sphere_issue) { # crosses the 180 border, so you'll need 2 boxes
     min_lat <- min(y$latitude)
     max_lat <- max(y$latitude)
 
+if(min_lat == max_lat) {
+  max_lat <- max_lat + 0.001
+}
+if(min_long_east == max_long_east) {
+  min_long_east <- min_long_east - 0.001
+}
+if(min_long_west == max_long_west) {
+  min_long_west <- min_long_west - 0.001
+}
+
 # and create the two bounding boxes:
 # Now create an sp polygon object with the bounding box coordinates:
 poly_west <- matrix(nrow = 5, ncol = 2)
@@ -156,6 +166,13 @@ min_lat <- min(y$latitude)
 max_lat <- max(y$latitude)
 min_long <- min(y$longitude)
 max_long <- max(y$longitude)
+
+if(min_lat == max_lat) {
+  max_lat <- max_lat + 0.001
+}
+if(min_long == max_long) {
+  max_long <- max_long + 0.001
+}
 
 # Now create an sp polygon object with the bounding box coordinates:
 poly <- matrix(nrow = 5, ncol = 2)
@@ -259,3 +276,16 @@ interpolated_provs_alt <-
 
 save(interpolated_provs, file = "../data/interpolated_provs.rda")
 save(interpolated_provs_alt, file = "../data/interpolated_provs_alt.rda")
+
+# which were affected by zero width or height boxes?
+# check <- plyr::ddply(oc.df, c("genus", "REALM"), function(x) {
+#   out <- "all good"
+#   if((max(x$longitude) - min(x$longitude) == 0) & max(x$latitude) - min(x$latitude) == 0) out <- "same location"
+#   if((max(x$longitude) - min(x$longitude) == 0) & max(x$latitude) - min(x$latitude) > 0) out <- "same longitude"
+#   if((max(x$longitude) - min(x$longitude) > 0) & max(x$latitude) - min(x$latitude) == 0) out <- "same latitude"
+#   return(out)
+#   }
+#   )
+
+
+
