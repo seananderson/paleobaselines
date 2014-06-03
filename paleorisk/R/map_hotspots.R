@@ -81,8 +81,6 @@ map_hotspots <- function(er_dat, min_prov_genera = 50, hotspot_thresh = 0.8,
       lwd = .8))
   })
 
-  browser()
-
   if(hotspots) {
     # Plot province borders only; Halpern et al.
     plyr::d_ply(er.df.m, "PROV_CODE", function(x) {
