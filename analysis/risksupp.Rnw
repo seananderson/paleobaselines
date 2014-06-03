@@ -388,6 +388,13 @@ cross_pred$stage_test <- factor(cross_pred$stage_test,
 cross_pred$stage_train <- factor(cross_pred$stage_train,
   levels = stage_order)
 
+# extract R^2 values for all correlations except within-interval comparisons
+
+Rsq <- function(df) {
+  md <- lm(pred ~ pred_self)
+  
+}
+
 ggplot(cross_pred, aes(pred_self, pred, colour = class)) +
   geom_point(alpha = 0.3) +
   facet_grid(stage_train ~ stage_test) +
