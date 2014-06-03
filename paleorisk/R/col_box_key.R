@@ -35,7 +35,7 @@ col_box_key <- function(col.pal = RColorBrewer::brewer.pal(9, "YlOrRd"),
   N <- length(col.regions)
   par(xpd = NA)
   if(!add) {
-  plot(1, 1, type = "p", xlim = c(xpos, xpos + width), ylim =
+  plot(1, 1, type = "n", xlim = c(xpos, xpos + width), ylim =
       c(limits[1]-limit_pad, limits[2] + limit_pad), axes = FALSE, xlab
     = "", ylab = "", xaxs = "i", yaxs = "i", ...)
   }
