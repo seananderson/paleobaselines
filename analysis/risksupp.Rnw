@@ -868,7 +868,7 @@ ggplot(by.prov.classes.long,
 @
 
 
-<<relationship between mean risk and sampling intensity, fig.width=18, fig.height=5, out.width="7in", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus number of OBIS records (of the indicated class) from that pronvince.  Each point represents a single biogeographic province. Lines and gray-shaded regions indicate linear regressions and 95\\% confidence intervals.">>=
+<<relationship between mean risk and sampling intensity, fig.width=18, fig.height=9, out.width="7in", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus number of OBIS records (of the indicated class) from that pronvince.  Each point represents a single biogeographic province. Lines and gray-shaded regions indicate linear regressions and 95\\% confidence intervals, colors indicate latitudinal zone of province.">>=
 by.prov.classes2 <- by.prov.classes[(by.prov.classes$class != "Decapoda"),]
 by.prov.classes2$log_OBIS_records <- log10(by.prov.classes2$OBIS_genera)
 p <- ggplot(by.prov.classes2, aes(log_OBIS_records, mean.ext)) + facet_wrap(~class,scales="free",ncol=3) + stat_smooth(method = "lm", se = TRUE, size = .5,colour="black") + ylab("log(Mean intrinsic extinction risk)") + xlab("log10(Number of OBIS records)") + geom_point(data=by.prov.classes2,aes(log_OBIS_records, mean.ext,colour=Zone),alpha = 0.6) + scale_colour_manual(values=c("blue","green3","red"))
