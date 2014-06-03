@@ -841,7 +841,7 @@ We can recreate the global intrinsic extinction probability map leaving out each
 <<jackknife-map, fig.cap="Jackknife plot. TODO Fill in this caption.", fig.width=7, fig.height=9, out.width="6.25in">>=
 load("../data/by.prov.all.jk.rda")
 classes <- as.character(unique(modern$class))
-par(mfrow = c(4, 2))
+par(mfrow = c(3, 2))
 par(mar = c(0, 0, 1.5, 0), oma = c(2, 2, 2, 2))
 for(i in 1:length(classes)) {
   er_dat_jk <- plyr::join(er_points, er@data, by = "id")
