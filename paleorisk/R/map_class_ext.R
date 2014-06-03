@@ -25,6 +25,8 @@
 #'   minimum to maximum value for a given panel.
 #' @param exact_limits Vector of length 2 giving the exact colour limits.
 #'   Ignored if \code{NULL}
+#' @param log_yticks Should the log tick values be log transformed when placing
+#' them?
 #' @param ... Anything extra to pass to \code{col_box_key}.
 #' @export
 
@@ -34,7 +36,7 @@ map_class_ext <- function(er_dat, min_prov_genera = 20,
     "Gastropoda", "Anthozoa", "Elasmobranchii", "Bivalvia"),
   yticks = c(0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1),
   ylabel = "Intrinsic extinction probability", col_range = FALSE,
-  exact_limits = NULL, ...) {
+  exact_limits = NULL, log_yticks = FALSE, ...) {
 
   plot_order <- data.frame(class = plot_order, plot_order = 1:length(plot_order))
 
@@ -185,9 +187,12 @@ map_class_ext <- function(er_dat, min_prov_genera = 20,
         limits <- log(exact_limits)
       }
 
+      if(log_yticks) yrange_show <- log(yrange)
+      if(!log_yticks) yrange_show <- yrange
+
       col_box_key(col.pal = col_pal, limits = limits, width = .3, col.regions =
           col.regions, bg = "grey85", border.col = "grey60", at =
-          log(yrange), at.labels = yrange,
+          log(yrange), at.labels = yrange_show,
         add_locator = add_locator, loc_limits =
           loc.limits, loc_col = "black", loc_width = 2, ...)
 
