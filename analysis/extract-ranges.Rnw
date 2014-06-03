@@ -25,7 +25,7 @@ extract_ranges <- function() {
   genus.Matches <- read.csv("../data/modern-genera-matchtaxa.csv", header = TRUE)
   OBIS.for.plot <- merge(OBIS.genera,genus.Matches,by.x = "genus",all.x = FALSE)
   save(OBIS.for.plot,file = "../data/OBIS.for.plot_rare_removed.rda")
-
+ 
   # Now extract range parameters from the OBIS data
 
   # Load required packages:
@@ -61,7 +61,7 @@ extract_ranges <- function() {
   # To be safe, remove occurrences that fall off of the equal-area grid:
   OBIS.grid.2 <- OBIS.grid.2[(OBIS.grid.2$latitude < 82) &
     (OBIS.grid.2$latitude > -75) ,]
-
+  
   # Make the function to extract ranges:
   ranges <- function(df){
     if(length(na.omit(df$latitude))>1){
@@ -215,7 +215,6 @@ pbdb <- merge(pbdb,pbdb.fams,by.x="family_name",by.y="family",all.x=TRUE)
 
   ### to be safe, remove occurrences that fall off of the equal-area grid
   pbdb <- pbdb[(pbdb$paleolatdec  < 82) & (pbdb$paleolatdec  > -75) ,]
-
 
   # Okay, now, define a new function, slightly different, for extracting
   # geographic range parameters.  Different because the column names are different
