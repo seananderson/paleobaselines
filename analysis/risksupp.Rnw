@@ -481,9 +481,9 @@ partial_groups <- plyr::rename(partial_groups, c("group" = "value"))
 <<partial-plots-base, child='make-partial-dependence-plot.Rnw', echo=FALSE, results='hide'>>=
 @
 
-We will also identify relative contribution of taxonomy vs.\ range and occupancy characteristics. To do this, we'll look at the relative importance of each of the GBM predictors using the \texttt{relative.influence()} function in the \pkg{gbm} package, which uses the algorithm as described in Ref.~\cite{friedman2001}:
+We will also identify relative contribution of taxonomy vs.\ range and occupancy characteristics. To do this, we'll look at the relative importance of each of the GBM predictors using the \texttt{relative.influence()} function in the \pkg{gbm} package, which uses the algorithm as described in Ref.~\cite{friedman2001}.
 
-<<taxonomy-range-contributions, out.width="3in", fig.height=4, fig.width=4>>=
+<<taxonomy-range-contributions, out.width="3in", fig.height=4, fig.width=4, fig.cap="TODO add to caption --- partial dependence plot">>=
 w <- paleorisk::get_weights(neog$Ex)
 weights <- ifelse(neog$Ex == 1, w$ex_weight, w$sur_weight)
 m_relative <- gbm(Ex ~ richness + occupancy + occurrences + min.lat +
