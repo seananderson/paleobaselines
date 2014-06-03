@@ -72,7 +72,7 @@ realms_SpatialPolygons <- dlply(er@data, "RLM_CODE", function(x) {
     IDs = rep(1, length(realm_with_many_regions)))
   realm_union_regions
 })
-save(realms_SpatialPolygons, file = "realms_SpatialPolygons.rda")
+save(realms_SpatialPolygons, file = "../data/realms_SpatialPolygons.rda")
 
 # Then, create a list object ordered by province order as ordered in
 # er@data: (unique(er@data$PROV_CODE))
@@ -90,7 +90,7 @@ prov_SpatialPolygons <- dlply(er@data, "PROV_CODE", function(x) {
     IDs = rep(1, length(prov_with_many_regions)))
   prov_union_regions
 })
-save(prov_SpatialPolygons, file = "prov_SpatialPolygons.rda")
+save(prov_SpatialPolygons, file = "../data/prov_SpatialPolygons.rda")
 
 # Now create a handy lookup table to make this all possible.
 # ddply automatically orders things, so we can do this:
