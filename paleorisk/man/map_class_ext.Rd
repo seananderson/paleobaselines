@@ -8,7 +8,7 @@ map_class_ext(er_dat, min_prov_genera = 20,
   plot_order = c("Mammalia", "Echinoidea", "Gastropoda", "Anthozoa",
   "Elasmobranchii", "Bivalvia"), yticks = c(0.005, 0.01, 0.02, 0.05, 0.1, 0.2,
   0.5, 1), ylabel = "Intrinsic extinction probability", col_range = FALSE,
-  exact_limits = NULL, ...)
+  exact_limits = NULL, log_yticks = FALSE, ...)
 }
 \arguments{
   \item{er_dat}{A data frame with the data to plot. Should
@@ -45,6 +45,9 @@ map_class_ext(er_dat, min_prov_genera = 20,
 
   \item{exact_limits}{Vector of length 2 giving the exact
   colour limits. Ignored if \code{NULL}}
+
+  \item{log_yticks}{Should the log tick values be log
+  transformed when placing them?}
 
   \item{...}{Anything extra to pass to \code{col_box_key}.}
 }
