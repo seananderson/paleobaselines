@@ -9,6 +9,7 @@ Description: This package contains functions for conducting the analysis in the
     paper "Paleontological baselines for evaluating extinction risk in the
     coastal oceans"
 License: GPL-3
+Roxygen: list(wrap = TRUE)
 Imports:
     plyr (>= 1.8),
     reshape2 (>= 1.2.2),
