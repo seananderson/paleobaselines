@@ -1,7 +1,7 @@
 # ====================================================================
 # Created by:    Sean Anderson, sean@seananderson.ca
 # Created:       Sep 21, 2012
-# Last modified: May 27, 2014
+# Last modified: Jun 02, 2014
 # Purpose:       Implement the by-realm bounding box.
 # ====================================================================
 
@@ -29,10 +29,10 @@ pts <- SpatialPoints(composite.occ2[,c("longitude", "latitude")])
 # save time if the file exists
 # NEED TO DELETE THE FILE IF YOU WANT TO FEED IN NEW DATA!
 if(file.exists("pts.over.cache.rda")) {
-  load("pts.over.cache.rda")
+  load("../data/pts.over.cache.rda")
 } else {
   pts.over <- over(pts, er)
-  save(pts.over, file = "pts.over.cache.rda")
+  save(pts.over, file = "../data/pts.over.cache.rda")
 }
 oc.df <- cbind(composite.occ2, pts.over)
 # remove rows without an ecoregion, we aren't dealing with them:
@@ -43,8 +43,8 @@ oc.df <- oc.df[!duplicated(oc.df), ]
 # --------
 # now re-arrange the spalding data into a dataframe:
 er@data$id = rownames(er@data)
-er.points = fortify(er, region = "id")
-er.df <- join(er.points, er@data, by = "id")
+er.points = ggplot2::fortify(er, region = "id")
+er.df <- plyr::join(er.points, er@data, by = "id")
 er@data$ID <- 1:nrow(er@data)
 
 rm(composite.occ2, pts.over)
