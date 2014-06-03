@@ -31,3 +31,5 @@ clean:
 	#mkdir ../figs/
 	mkdir ../cache/
 
+deleteranges:
+	rm data/modern_and_paleo_ranges.rds
