@@ -7,7 +7,8 @@ col_box_key(col.pal = RColorBrewer::brewer.pal(9, "YlOrRd"), limits = c(-1,
   1), xpos = 0, width = 1, col.regions = seq(-1, 1, length.out = 10),
   bg = "grey60", border.col = "grey30", at = c(-1, 1),
   add_locator = FALSE, loc_limits = c(-999, 999), loc_col = "grey60",
-  loc_width = 1.5, limit_pad = 0.55, at.labels = c(-1, 1), ...)
+  loc_width = 1.5, limit_pad = 0.55, at.labels = c(-1, 1), add = FALSE,
+  ...)
 }
 \arguments{
   \item{col.pal}{Vector of colours to use in legend}
@@ -42,6 +43,8 @@ col_box_key(col.pal = RColorBrewer::brewer.pal(9, "YlOrRd"), limits = c(-1,
   \code{limits}}
 
   \item{at.labels}{Labels to appyl at \code{at} vector.}
+
+  \item{add}{Add to existing plot?}
 }
 \description{
 Create a colour box-plot like colour key

@@ -5,7 +5,7 @@
 \usage{
 map_hotspots(er_dat, min_prov_genera = 50, hotspot_thresh = 0.8,
   col_pal = RColorBrewer::brewer.pal(9, "YlOrRd"), hotspots = TRUE,
-  add_legend = FALSE, at = c(-1, 1))
+  add_legend = FALSE, at = c(-1, 1), at.labels = c(-1, 1))
 }
 \arguments{
   \item{er_dat}{A data frame with the data to plot. Should
@@ -31,6 +31,8 @@ map_hotspots(er_dat, min_prov_genera = 50, hotspot_thresh = 0.8,
   increase the right margin in \code{par} to see this.}
 
   \item{at}{Locations for ticks on the legend.}
+
+  \item{at.labels}{Labels for colour legend ticks.}
 }
 \description{
 This function plots overall intrinsic extinction
