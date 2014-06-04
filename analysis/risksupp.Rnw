@@ -760,17 +760,17 @@ ggplot(modern, aes(pred, pred_stage_avg)) + geom_point() +
 <<merge-predictions-spatial, child='merge-predictions-spatial-child.Rnw', echo=FALSE>>=
 @
 
-We can look at the distribution of predicted extinction probability. Note that the x-axis is log distributed:
+%We can look at the distribution of predicted extinction probability. Note that the x-axis is log distributed:
 
-% TODO - Seth - reduce size of panel labels
-<<plot-density-risk, fig.height=4, echo=FALSE>>=
-ggplot(d.eco.filled, aes(mean_observed + 0.001)) +
-  geom_histogram(binwidth = 0.3) + facet_wrap(~class) + scale_x_log10() +
-  ylab("Density") + xlab("Predicted extinction probabilty")
-@
+% <<plot-density-risk, fig.height=4, echo=FALSE>>=
+% ggplot(d.eco.filled, aes(mean_observed + 0.001)) +
+%   geom_histogram(binwidth = 0.3) + facet_wrap(~class) + scale_x_log10() +
+%   ylab("Density") + xlab("Predicted extinction probabilty")
+% @
 
 We can also look at the distribution of our predictions by biogeographic province \cite{spalding2007} and class (Fig.~\ref{fig:plot-density-risk-by-province}).
 
+% TODO - Seth - reduce size of panel labels
 <<plot-density-risk-by-province, fig.width=17, fig.height=13, out.width="7in", fig.cap="The distribution of intrinsic extinction risk by biogeographic province \\cite{spalding2007} (panels) and taxonomic class (colours). Note the log transformed x-axis.", echo=FALSE>>=
 # merge in province names:
 er <- readShapePoly("../data/MEOW2/meow_ecos.shp")
