@@ -239,6 +239,44 @@ neog <- ddply(dat, "Interval_Name", standardize_data)
 saveRDS(neog, file = "../data/stand-predictors-cen-obis.rds")
 @
 
+<<plot comparison of modern and plio-pleistocene ranges>>=
+Plio.Modern <- neog[(neog$Interval_Name == "Modern_raw" | neog$Interval_Name == "Plio-Pleistocene"),]
+Plio.Modern <- Plio.Modern[ -c(15:16) ]
+Plio.Modern <- melt(Plio.Modern,id=c("Interval_Name","stage","stage_top","class","group","genus"))
+Modern <- Plio.Modern[(Plio.Modern$Interval_Name == "Modern_raw"),] 
+Modern <- Modern[-c(1:3)]
+Plio <- Plio.Modern[(Plio.Modern$Interval_Name == "Plio-Pleistocene"),] 
+Plio <- Plio[-c(1:3)]
+Plio.Modern2 <- merge(Modern,Plio,by=c("class","group","genus","variable"),all.x=FALSE,all.y=FALSE)
+
+RMA.lines <- function(df){
+mod <- lmodel2(value.y ~ value.x, data=df,"interval", "interval", 99)
+reg <- mod$regression.results
+reg <- reg[(reg$Method=="RMA"),]
+names(reg) <- c("method", "intercept", "slope", "angle", "p-value")
+return(reg)
+}
+RMA <- ddply(Plio.Modern2,.(variable),each(RMA.lines))
+
+# make plot
+pdf("../figs/compare-modern-and-Plio-Pleistocene-ranges.pdf", width = 9, height = 4.5)
+p <- ggplot(Plio.Modern2,aes(value.x,value.y)) +
+geom_point(alpha=0.1) +
+facet_wrap(~variable,scale="free",ncol=4) +
+geom_abline(data = RMA, aes(intercept = intercept, slope = slope, colour = "blue")) +
+geom_abline() +
+xlab("Modern") +
+ylab("Plio-Pleistocene") +
+coord_equal()
+
+print(p)
+dev.off()
+# Comparison of ranges for the 1104 genera that are sampled in both the modern dataset and in the Plio-Pleistocene subset of the paleontological dataset.  Richness, occupancy, and occurrences are standardized by dividing by the maximum observed value within each interval. Points are overplotted and hence relative tranparancy of a given point indicates the number of genera. Black lines are lines of unity and red lines are reduced major axis regression lines 
+@
+
+
+
+
 \section{Modelling contemporary extinction risk with paleontological data}
 
 \subsection{Choice of modelling framework}
@@ -414,7 +452,7 @@ p <- p + geom_point(data=cross_pred,
   ylab("Extinction probability (stage that model was tested on)") +
   guides(colour = guide_legend(override.aes = list(alpha = 1))) +
   geom_text(data=Rsqs,aes(.001,.70,label=Rsq),size=3.5)
-  geom_text(data=Rsqs,aes(X,Y,label=sprintf("%.2f", Rsq)),size=3.5)
+  geom_text(data=Rsqs,aes(.001,.70,label=sprintf("%.2f", Rsq)),size=3.5)
 print(p)
 dev.off()
 # Cross-interval comparison of genus risk estimates from generalized boosting models. The x-axis shows the probability of extinction as predicted by a model built on data from the same stage. The y-axis shows the probability of extinction as predicted by a model built on data from a different stage. The colours show different taxonomic classes. Note the log-distributed x- and y-axes. Since there is some stochasticity involved in the generalized boosting machine fitting routine, there is some variability in predictions within the same stage (the diagonal panels). In general, there is substantial similarity in extinction regimes between succeeding intervals with respect to the evaluated taxonomic and geographic range predictor variables.
