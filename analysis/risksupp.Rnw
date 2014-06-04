@@ -382,7 +382,6 @@ We can compare the predictions made from other stages with the predictions from 
 
 <<plot-cross-interval-gbms, fig.cap="Cross-interval comparison of genus risk estimates from generalized boosting models. The x-axis shows the probability of extinction as predicted by a model built on data from the same stage. The y-axis shows the probability of extinction as predicted by a model built on data from a different stage. The colours show different taxonomic classes. Note the log-distributed x- and y-axes. Since there is some stochasticity involved in the generalized boosting machine fitting routine, there is some variability in predictions within the same stage (the diagonal panels). In general, there is substantial similarity in extinction regimes between succeeding intervals with respect to the evaluated taxonomic and geographic range predictor variables.", fig.width=9, fig.height=7, cache=TRUE, echo=TRUE>>=
 # Re-order stage names:
-cross_pred <- cross_pred[(cross_pred$stage_train != "Modern_raw" & cross_pred$stage_test != "Modern_raw" & cross_pred$stage_train != "Modern_merged" & cross_pred$stage_train != "Modern_merged"),]
 cross_pred <- na.omit(cross_pred)
 stage_order <- c("Lower Miocene", "Middle Miocene", "Upper Miocene",
   "Plio-Pleistocene")
@@ -391,30 +390,30 @@ cross_pred$stage_test <- factor(cross_pred$stage_test,
 cross_pred$stage_train <- factor(cross_pred$stage_train,
   levels = stage_order)
 
-# extract R^2 values for all correlations except within-interval comparisons
-
+# Extract R^2 values for all correlations except within-interval
+# comparisons:
 Rsq <- function(df) {
   md <- lm(df$pred ~ df$pred_self)
   Rsq <- summary(md)$r.squared
   return(Rsq)
 }
 
-Rsqs <- ddply(cross_pred,.(stage_train,stage_test),each(Rsq))
+Rsqs <- ddply(cross_pred, plyr::.(stage_train,stage_test), plyr::each(Rsq))
 Rsqs <- na.omit(Rsqs[(Rsqs$stage_train != Rsqs$stage_test),])
 Rsqs$X <- rep(.001,length(Rsqs[,1]))
 Rsqs$Y <- rep(.70,length(Rsqs[,1]))
 Rsqs$Rsq <- round(Rsqs$Rsq,2)
-# make plot
-quartz()
 p <- ggplot()
-p + geom_point(data=cross_pred,aes(pred_self, pred, colour = class),alpha=0.3)  +
+p <- p + geom_point(data=cross_pred,
+    aes(pred_self, pred, colour = class), alpha=0.3)  +
   facet_grid(stage_train ~ stage_test) +
   scale_y_log10() + scale_x_log10() +
   scale_colour_brewer(palette = "Set2") +
   xlab("Probability of extinction predicted within the same stage") +
   ylab("Probability of extinction predicted from a different stage") +
   guides(colour = guide_legend(override.aes = list(alpha = 1))) +
-  geom_text(data=Rsqs,aes(X,Y,label=Rsq),size=3.5)
+  geom_text(data=Rsqs,aes(X,Y,label=sprintf("%.2f", Rsq)),size=3.5)
+print(p)
 @
 
 We see that in general there is substantial similarity in extinction regimes between succeeding geologic stages with respect to the evaluated taxonomic and geographic range predictor variables.
