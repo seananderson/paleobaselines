@@ -369,6 +369,56 @@ ggplot(val_test_summarized,
   labs(size = "Median sample #")
 @
 
+<<get-oos-rsquared, fig.width=7.5, fig.height=7, echo=TRUE>>=
+
+# Linear regression R^2 by class:
+oos_rsq_lm <- plyr::ddply(val_test, "class", function(x) {
+  m <- lm(x$obs_ext_prob ~ x$gbm_pred_binned)
+  summary(m)$r.squared
+  })
+print(oos_rsq_lm)
+
+# Additive model deviance explained (or nearly equivalently adjusted
+# R^2): (this allows for non-linear trend)
+par(mfrow = c(2, 3))
+oos_rsq_am <- plyr::ddply(val_test, "class", function(x) {
+  require(mgcv)
+  m <- mgcv::gam(obs_ext_prob ~ s(gbm_pred_binned), data = x)
+  plot(m)
+  mtext(unique(x$class))
+  summary(m)$dev.expl
+  })
+print(oos_rsq_am)
+
+# Or don't worry at all about the trend, just asked how 'off'
+# predictions can be compared to the mean prediction at a given bin
+# this might be what we actually care about but it's a bit more obscure
+# it's basically how well those blue dots capture the variation in the
+# black dots
+# I used gam() here as a hack, but would switch to glm() which doesn't
+# give such stats as easily
+oos_rsq_factors <- plyr::ddply(val_test, "class", function(x) {
+  require(mgcv)
+  m <- mgcv::gam(obs_ext_prob ~ as.factor(gbm_pred_binned), data = x, weights = sample_n)
+  summary(m)$dev.expl
+  })
+print(oos_rsq_factors)
+
+# ggplot(val_test_summarized,
+#   aes(gbm_pred_binned, mean_observed)) +
+#   geom_point(data = val_test, aes(gbm_pred_binned, obs_ext_prob),
+#     alpha = 0.1) +
+#   geom_abline(intercept = 0, slope = 1) +
+#   geom_linerange(aes(ymin = l, ymax = u), colour = "#4E9DF0") +
+#   geom_point(aes(size = median_sample_n), colour = "#4E9DF0") +
+#   facet_wrap(~class) +
+#   scale_size(trans = "log10") + coord_fixed(ratio = 1) +
+#   ylim(0, 1) + xlim(0, 1) +
+#   xlab("Out-of-sample GBM-predicted extinction probability") +
+#   ylab("Observed extinction probability") +
+#   labs(size = "Median sample #")
+@
+
 We can use these observed extinction probabilities (in \texttt{val\_test\_summarized}) as calibration for our GBM-predicted extinction probability in the contemporary dataset. To do this, we take the predicted extinction probability from our GBM model applied to the contemporary dataset, we fit that value into our binning scheme, and we match it up with the empirically-observed mean extinction probability for that bin. This removes the observed non-linear bias in our model \cite{thorson2012}. Put another way, we find our predicted value on the x-axis of the last plot and draw a vertical line up until we meet a blue dot. We then use the value of the blue dot as our calibrated extinction probability. We will come back to that shortly when we apply our model to the contemporary dataset.
 
 Next, we will examine the effect of varying some of the main arguments to the \texttt{gbm()} function. We will test the effect of the \texttt{shrinkage} (the rate of improvement between each tree iteration), \texttt{interaction.depth} (the maximum number of variable interactions), and \texttt{n.trees} (the total number of trees to build) arguments. We will vary each argument one at a time.
