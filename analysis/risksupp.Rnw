@@ -315,7 +315,7 @@ We modelled intrinsic contemporary extinction probability from paleontological d
 
 Boosting models work, in general, by building a sequence of models, each fit to the residuals of the previous model with larger residuals being given stronger weights. This means that each subsequent model focuses more heavily on data which were poorly fit by previous models. In theory, this ensemble of weak models can be combined to produce one strong overall predictive model with reduced bias compared to other machine learning methods, such as random forests \cite{elith2008}. Boosted tree methods have been shown to outperform other machine learning methods in many cases \cite{caruana2006} and are commonly used in applied prediction problems (e.g. by Yahoo for website rankings; \cite{cossock2008}).
 
-TODO: Add comment about collinearity
+% TODO: Add comment about collinearity
 
 We fit GBMs with the \pkg{gbm} package \cite{gbm2013} for the \proglang{R} statistical language and environment \cite{r2013}. The \pkg{gbm} package implements GBMs based on Ref.\ \cite{friedman2001} with some minor modifications \cite{gbm2013}. Further, the \pkg{gbm} package implements the stochastic method proposed in Ref.\ \cite{friedman2001} in which a random subsample of the data is chosen at each model iteration. This random subsample is used to fit the model before computing residuals for that step thereby reducing chances of overfitting the data. Specifically, we chose to leave out 50\% of the data as a random subset on each iteration --- the default in the \texttt{gbm()} function.
 
@@ -430,7 +430,7 @@ print(oos_rsq_factors)
 #   labs(size = "Median sample #")
 @
 
-TODO contemporary vs\. modern --- pick
+%TODO contemporary vs.\ modern --- pick
 
 We can use these observed extinction probabilities as calibration for our GBM-predicted extinction probability in the contemporary dataset. To do this, we take the predicted extinction probability from our GBM model applied to the contemporary dataset, we fit that value into our binning scheme, and we match it up with the empirically-observed mean extinction probability for that bin. This removes the observed non-linear bias in our model \cite{thorson2012}. Put another way, we find our predicted value on the x-axis of the last plot and draw a vertical line up until we meet a blue dot. We then use the value of the blue dot as our calibrated extinction probability.
 
