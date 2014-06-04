@@ -71,17 +71,36 @@ References
 
 This document contains supplementary information about the sources of data used in our analyses, culls and transformations applied to those data, our analytical methodology, and potential sources of error.
 
-TODO store data somewhere and link to it here.
+TODO store the PBDB data somewhere and link to it here.
 
-This document is written with the \pkg{knitr} package \cite{xie2013a,xie2013b,xie2013c} for the \proglang{R} statistical environment \cite{r2013}. It can be re-created by running \fn{knitr::knit2pdf()} on the \texttt{.Rnw} file. A number of functions that are used in this analysis have
-been compiled into an \proglang{R} package \pkg{paleorisk}.
+This document is written with the \pkg{knitr} package \cite{xie2013a,xie2013b,xie2013c} for the \proglang{R} statistical environment \cite{r2013}. The entire analysis can be recreated by running the function \texttt{knit()} on the underlying source code. A number of functions that are used in this analysis have been compiled into an \proglang{R} package \pkg{paleorisk}.
 
-You can install the package by downloading the \texttt{paleorisk} folder from
-\url{https://github.com/seananderson/riskmaps} and running:
+The \proglang{R} package, analysis files, and most data files can be accessed in the Git repository: \url{https://github.com/seananderson/riskmaps/}. \textit{Currently private}
 
-<<install-paleorisk, eval=TRUE, echo=TRUE, cache=FALSE>>=
+% To obtain the files, clone the Git repository:
+%
+% \begin{verbatim}
+% git clone https://github.com/seananderson/riskmaps.git
+% \end{verbatim}
+%
+% Or download the \texttt{.zip} version from \url{https://github.com/seananderson/riskmaps/archive/master.zip} and uncompress it.
+
+You can recreate the entire analysis by opening the root \texttt{riskmaps} folder on the command line and running:
+
+\begin{verbatim}
+cd analysis
+make
+\end{verbatim}
+
+%The \proglang{R} package itself can be installed (from the \texttt{analysis} folder) by running:
+
+<<install-paleorisk, eval=TRUE, echo=FALSE, cache=FALSE>>=
 devtools::install("../paleorisk/")
 @
+
+% <<package-help, echo=TRUE, eval=FALSE>>=
+% help(package = "paleorisk")
+% @
 
 <<load-packages, cache=FALSE>>=
 library("paleorisk")
@@ -114,9 +133,7 @@ other_line <- grep("other attached", x)
 pkgs <- x[(other_line+1):(other_line + 5)]
 @
 
-We used \Sexpr{rversion} and the following \proglang{R} packages:
-
-Although the code in this document has been suppressed for brevity, the complete analysis is available at \url{http://github.com/seananderson/riskmaps}. \textit{Currently a private repository.}
+We used \Sexpr{rversion} and the following packages:
 
 <<versions, echo=FALSE, results=TRUE, cache=FALSE>>=
 pkgs
