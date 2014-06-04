@@ -15,8 +15,8 @@ d.eco.filled.no.singles <- plyr::ddply(d.eco.filled,
   if(nrow(x) > 1) x
 })
 
-single.genera.provs.removed <- nrow(d.eco.filled) - nrow(d.eco.filled.no.singles)
-total.genera <- nrow(d.eco.filled)
+single.genera.provs.removed <- length(unique(d.eco.filled$genus)) - length(unique(d.eco.filled.no.singles$genus))
+total.genera <- length(unique(d.eco.filled$genus))
 
 # merge occurrence data with risk predictions:
 d.eco.filled <- merge(d.eco.filled, modern, by = "genus", all.x = FALSE)
