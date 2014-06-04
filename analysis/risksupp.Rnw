@@ -63,7 +63,7 @@ References
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=6in]{../static-figs/didactic_method.pdf}
-\caption{Schematic illustration of the sequence of steps used to build the modern genus range dataset and to make intrinsic risk predictions for modern genera from the Neogene fossil record.}
+\caption{Schematic illustration of the sequence of steps used to build the modern genus range dataset and to make intrinsic risk predictions for modern genera from the Neogene fossil record. \textit{TODO Note that the grid that is currently shown is the 2x2 degree grid, not the equal area grid. This will be clarified or changed.}}
 \label{fig:didactic}
 \end{figure}
 
