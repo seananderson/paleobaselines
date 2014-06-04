@@ -838,7 +838,7 @@ map_hotspots(er_dat_raw, min_prov_genera = 100, hotspots = FALSE)
 
 We can recreate the global intrinsic extinction probability map leaving out each taxonomic class in succession in a jackknife analysis. This gives us an idea if any one class is driving the pattern.
 
-<<jackknife-map, fig.cap="Jackknife plot. TODO Fill in this caption.", fig.width=7, fig.height=9, out.width="6.25in">>=
+<<jackknife-map, fig.cap="Jackknife plot. TODO Fill in this caption.", fig.width=7, fig.height=7, out.width="6.25in">>=
 load("../data/by.prov.all.jk.rda")
 classes <- as.character(unique(modern$class))
 par(mfrow = c(3, 2))
