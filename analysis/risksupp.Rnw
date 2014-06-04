@@ -380,7 +380,7 @@ cross_pred <- mdply(stage_df, fit_interval_gbm, dat = neog)
 
 We can compare the predictions made from other stages with the predictions from the same stage. This code produces Fig.~\ref{fig:plot-cross-interval-gbms}.
 
-<<plot-cross-interval-gbms, fig.cap="Cross-interval comparison of genus risk estimates from generalized boosting models. The x-axis shows the probability of extinction as predicted by a model built on data from the same stage. The y-axis shows the probability of extinction as predicted by a model built on data from a different stage. The colours show different taxonomic classes. Note the log-distributed x- and y-axes. Since there is some stochasticity involved in the generalized boosting machine fitting routine, there is some variability in predictions within the same stage (the diagonal panels). In general, there is substantial similarity in extinction regimes between succeeding intervals with respect to the evaluated taxonomic and geographic range predictor variables.", fig.width=9, fig.height=7, cache=TRUE, echo=TRUE>>=
+<<plot-cross-interval-gbms, results='hide'>>=
 # Re-order stage names:
 cross_pred <- na.omit(cross_pred)
 stage_order <- c("Lower Miocene", "Middle Miocene", "Upper Miocene",
@@ -403,17 +403,20 @@ Rsqs <- na.omit(Rsqs[(Rsqs$stage_train != Rsqs$stage_test),])
 Rsqs$X <- rep(.001,length(Rsqs[,1]))
 Rsqs$Y <- rep(.70,length(Rsqs[,1]))
 Rsqs$Rsq <- round(Rsqs$Rsq,2)
+pdf("../figs/plot-cross-interval-gbms.pdf", width = 9, height = 7)
 p <- ggplot()
 p <- p + geom_point(data=cross_pred,
     aes(pred_self, pred, colour = class), alpha=0.3)  +
   facet_grid(stage_train ~ stage_test) +
   scale_y_log10() + scale_x_log10() +
   scale_colour_brewer(palette = "Set2") +
-  xlab("Probability of extinction predicted within the same stage") +
-  ylab("Probability of extinction predicted from a different stage") +
+  xlab("Extinction probability (model built on same stage)") +
+  ylab("Extinction probability (model built on different stage)") +
   guides(colour = guide_legend(override.aes = list(alpha = 1))) +
   geom_text(data=Rsqs,aes(X,Y,label=sprintf("%.2f", Rsq)),size=3.5)
 print(p)
+dev.off()
+# Cross-interval comparison of genus risk estimates from generalized boosting models. The x-axis shows the probability of extinction as predicted by a model built on data from the same stage. The y-axis shows the probability of extinction as predicted by a model built on data from a different stage. The colours show different taxonomic classes. Note the log-distributed x- and y-axes. Since there is some stochasticity involved in the generalized boosting machine fitting routine, there is some variability in predictions within the same stage (the diagonal panels). In general, there is substantial similarity in extinction regimes between succeeding intervals with respect to the evaluated taxonomic and geographic range predictor variables.
 @
 
 We see that in general there is substantial similarity in extinction regimes between succeeding geologic stages with respect to the evaluated taxonomic and geographic range predictor variables.
@@ -1038,12 +1041,17 @@ mtext("Min. genera = 200", cex = 2)
   Figure 1
 \end{center}
 
+\begin{center}
+  \includegraphics[width=4.86in]{../figs/plot-cross-interval-gbms.pdf}\\
+  \smallskip
+  Figure 2
+\end{center}
 \clearpage
 
 \begin{center}
   \includegraphics[width=4.86in]{../figs/class-risk-maps-mean-log-ext.pdf}\\
   \smallskip
-  Figure 2
+  Figure 3
 \end{center}
 
 \clearpage
@@ -1051,8 +1059,11 @@ mtext("Min. genera = 200", cex = 2)
 \begin{center}
   \includegraphics[width=4.86in]{../figs/hotspots.pdf}\\
   \smallskip
-  Figure 3
+  Figure 4
 \end{center}
+
+% TODO fix figure number references (main text ones) in the SOM
+% throughout
 
 \newpage
 
