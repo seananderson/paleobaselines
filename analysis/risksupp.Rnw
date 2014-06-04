@@ -895,7 +895,8 @@ We will plot the number of OBIS records per province --- see Fig.~\ref{fig:plot-
 map_class_ext(er_dat_class, plot_column = "log_OBIS_records",
   min_prov_genera = 0, ylab = "Number of OBIS records",
   yticks = c(2, 20, 200, 2000, 20000),
-  col_pal = RColorBrewer::brewer.pal(9, "YlGnBu"))
+  col_pal = RColorBrewer::brewer.pal(9, "YlGnBu"),
+  fixed_range = TRUE)
 @
 
 We can also look at the class-province maps after taking out the relationship between OBIS sampling and predicted extinction probability. We'll plot the residuals.

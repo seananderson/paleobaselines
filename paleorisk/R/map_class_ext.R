@@ -27,6 +27,7 @@
 #'   Ignored if \code{NULL}
 #' @param log_yticks Should the log tick values be log transformed when placing
 #' them?
+#' @param fixed_range Should the colour range be fixed through all panels?
 #' @param ... Anything extra to pass to \code{col_box_key}.
 #' @export
 
@@ -36,7 +37,7 @@ map_class_ext <- function(er_dat, min_prov_genera = 20,
     "Gastropoda", "Anthozoa", "Elasmobranchii", "Bivalvia"),
   yticks = c(0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1),
   ylabel = "Intrinsic extinction probability", col_range = FALSE,
-  exact_limits = NULL, log_yticks = FALSE, ...) {
+  exact_limits = NULL, log_yticks = FALSE, fixed_range = FALSE, ...) {
 
   plot_order <- data.frame(class = plot_order, plot_order = 1:length(plot_order))
 
@@ -68,6 +69,14 @@ map_class_ext <- function(er_dat, min_prov_genera = 20,
       mean.value.to.plot = mean(value.to.plot))
     er.df$lower.col.cut <- er.df$mean.value.to.plot - max_range / 2
     er.df$upper.col.cut <- er.df$mean.value.to.plot + max_range / 2
+  }
+
+  if(fixed_range) {
+    # transform values to a 0 to 1 range for cutting into colours:
+    er.df <- transform(er.df, value.to.plot.01 = range01(value.to.plot))
+    # get lower and upper values to place colour ramp on axis later:
+    er.df <- transform(er.df, lower.col.cut = min(value.to.plot),
+      upper.col.cut = max(value.to.plot))
   }
 
   # get colours to plot:
