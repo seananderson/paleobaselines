@@ -689,7 +689,7 @@ er_dat_class <- plyr::join(er_dat_class, by.prov.classes, by = "PROV_CODE")
 pdf("../figs/class-risk-maps-mean-log-ext.pdf", width = 6.45, height = 5.1)
 map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10, 0.20),
   min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0028,
-    0.35), 
+    0.33),
   ylabel = "Intrinsic extinction probability (over ~20 Myr)")
 dev.off()
 @
@@ -701,14 +701,15 @@ er_dat <- plyr::join(er_dat, by.prov.all, by = "PROV_CODE")
 pdf("../figs/hotspots.pdf", width = 7, height = 3.5)
 par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
-labs <- seq(0.008, 0.016, 0.002)
-labs_show <- rep(99, length(labs))
-labs_show[1] <- labs[1]
-labs_show[3] <- labs[3]
-labs_show[5] <- labs[5]
-labs_show[labs_show == 99] <- NA
-labs_show <- sprintf("%.3f", labs_show)
-labs_show[labs_show == "NA"] <- ""
+labs <- c(0.008, 0.010, 0.012)
+# labs_show <- rep(99, length(labs))
+# labs_show[1] <- labs[1]
+# labs_show[3] <- labs[3]
+# labs_show[5] <- labs[5]
+# labs_show[labs_show == 99] <- NA
+ labs_show <- sprintf("%.3f", labs)
+# labs_show[labs_show == "NA"] <- ""
+#labs_show <- labs
 map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
   hotspots = TRUE, at = log(labs), at.labels = labs_show)
 par(xpd = NA)
@@ -833,17 +834,21 @@ er_dat_class_raw <- plyr::join(er_dat_class_raw, by.prov.classes.raw, by = "PROV
 # Make the class figure:
 map_class_ext(er_dat_class_raw,
   yticks = c(0.005, 0.01, 0.02, 0.05, 0.10, 0.20),
-  min_prov_genera = 10, col_range = TRUE)
+  min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0028, 0.33))
 @
 
 % The follow code produces Fig.~\ref{fig:no-bounding-box-overall-map}.
 
 <<no-bounding-box-overall-map, fig.cap="Mean predicted extinction susceptibility, \\ldots \\textbf{no bounding box}.", fig.width=6, fig.height=4, outwidth="6in">>=
-# Make the overall figure:
 er_dat_raw <- plyr::join(er_points, er@data, by = "id")
 er_dat_raw <- plyr::join(er_dat_raw, by.prov.all.raw, by = "PROV_CODE")
-par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0))
-map_hotspots(er_dat_raw, min_prov_genera = 100, hotspots = FALSE)
+par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
+  las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
+labs.nbb <- seq(0.012, 0.024, 0.004)
+map_hotspots(er_dat_raw, min_prov_genera = 100, hotspots = FALSE,
+  add_legend = TRUE, at = log(labs.nbb), at.labels = labs.nbb)
+mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
+  line = -1.2, las = 0, col = "grey30", cex = 0.9)
 @
 
 \subsection{Jackknife analysis}
@@ -908,6 +913,7 @@ map_class_ext(er_dat_class, plot_column = "log_OBIS_records",
   yticks = c(2, 20, 200, 2000, 20000),
   col_pal = RColorBrewer::brewer.pal(9, "YlGnBu"),
   fixed_range = TRUE)
+
 @
 
 We can also look at the class-province maps after taking out the relationship between OBIS sampling and predicted extinction probability. We'll plot the residuals.
@@ -934,7 +940,10 @@ er_dat_class3  <- merge(er_dat_class2, resids,
   by = c("class","PROVINCE"))
 er_dat_class3$mean.ext <- er_dat_class3$residual.ext
 map_class_ext(er_dat_class3, yticks = exp(c(-0.5, 0, 0.5)),
-  exact_limits = exp(c(-1, 1)), min_prov_genera = 10, col_range = TRUE, log_yticks = TRUE)
+  exact_limits = exp(c(-1.0, 1.1)), min_prov_genera = 10, col_range = TRUE,
+  log_yticks = TRUE, fixed_range = TRUE)
+
+
 @
 
 As another test, we will try removing genera that are only reported in one province. This removes \Sexpr{single.genera.provs.removed} from a total of \Sexpr{total.genera} genera (Fig.~\ref{fig:remove-single-province-genera-class-map} and Fig.~\ref{fig:remove-single-province-genera-overall-map}).
@@ -955,19 +964,20 @@ er_dat_no_single <- plyr::join(er_points, er@data, by = "id")
 er_dat_no_single <- plyr::join(er_dat_no_single, by.prov.all.no.singles, by = "PROV_CODE")
 par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
-labs <- seq(0.008, 0.016, 0.002)
-labs_show <- rep(99, length(labs))
-labs_show[1] <- labs[1]
-labs_show[3] <- labs[3]
-labs_show[5] <- labs[5]
-labs_show[labs_show == 99] <- NA
-labs_show <- sprintf("%.3f", labs_show)
-labs_show[labs_show == "NA"] <- ""
+# labs <- seq(0.008, 0.016, 0.002)
+# labs_show <- rep(99, length(labs))
+# labs_show[1] <- labs[1]
+# labs_show[3] <- labs[3]
+# labs_show[5] <- labs[5]
+# labs_show[labs_show == 99] <- NA
+# labs_show <- sprintf("%.3f", labs_show)
+# labs_show[labs_show == "NA"] <- ""
+labs.ns <- c(0.006, 0.008, 0.012)
 map_hotspots(er_dat_no_single, min_prov_genera = 100, add_legend = TRUE,
-  hotspots = FALSE, at = log(labs), at.labels = labs_show)
+  hotspots = FALSE, at = log(labs.ns), at.labels = labs.ns)
 par(xpd = NA)
 mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
-  line = -1.4, las = 0, col = "grey30", cex = 0.9)
+  line = -1.2, las = 0, col = "grey30", cex = 0.9)
 @
 
 \subsection{Exploring the distribution of the predictors}
@@ -984,8 +994,9 @@ map_class_ext(er_dat_class, plot_column = "log.N.gen",
 er_dat_class$log.mean.gcd <- log(er_dat_class$mean.gcd)
 map_class_ext(er_dat_class, plot_column = "log.mean.gcd",
   min_prov_genera = 0, ylab = "Mean great circle distance",
-  yticks = c(12000, 16000, 20000), exact_limits = c(12000, 20000),
-  col_pal = RColorBrewer::brewer.pal(9, "YlGnBu"), limit_pad = 0.05)
+  yticks = c(14000, 17000, 20000), exact_limits = c(14000, 20000),
+  col_pal = RColorBrewer::brewer.pal(9, "YlGnBu"), limit_pad = 0.05,
+  fixed_range = TRUE)
 @
 
 <<plot-richness-genera-prov, fig.cap="Mean richness.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
