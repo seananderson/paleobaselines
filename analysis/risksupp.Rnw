@@ -99,6 +99,7 @@ library("RColorBrewer")
 library("PBSmapping")
 library("fields")
 library("xtable")
+library("lmodel2")
 @
 
 <<gpclibPermit, cache=FALSE, echo=FALSE, results='hide'>>=
