@@ -732,7 +732,7 @@ pdf("../figs/class-risk-maps-mean-log-ext.pdf", width = 6.45, height = 5.1)
 map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10, 0.20),
   min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0028,
     0.33),
-  ylabel = "Intrinsic extinction probability (over ~20 Myr)")
+  ylabel = "Intrinsic extinction probability (over ~23 Myr)")
 dev.off()
 @
 
@@ -998,7 +998,7 @@ er_dat_class_no_single <- plyr::join(er_dat_class_no_single, by.prov.classes.no.
 map_class_ext(er_dat_class_no_single, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10, 0.20),
   min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0028,
     0.35),
-  ylabel = "Intrinsic extinction probability (over ~20 Myr)")
+  ylabel = "Intrinsic extinction probability (over ~23 Myr)")
 @
 
 <<remove-single-province-genera-overall-map, fig.width=6, fig.height=4, out.width="6in", fig.cap="TODO add caption --- single province-genera removed.">>=
