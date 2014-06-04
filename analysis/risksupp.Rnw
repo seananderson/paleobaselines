@@ -250,43 +250,45 @@ neog <- ddply(dat, "Interval_Name", standardize_data)
 saveRDS(neog, file = "../data/stand-predictors-cen-obis.rds")
 @
 
-<<plot comparison of modern and plio-pleistocene ranges>>=
-Plio.Modern <- neog[(neog$Interval_Name == "Modern_raw" | neog$Interval_Name == "Plio-Pleistocene"),]
-Plio.Modern <- Plio.Modern[ -c(15:16) ]
-Plio.Modern <- melt(Plio.Modern,id=c("Interval_Name","stage","stage_top","class","group","genus"))
+<<plot-comparison-modern-plio-pleistocene-ranges, out.width="\\textwidth", fig.height=5, fig.width=8, fig.cap="Comparison of ranges for the 1104 genera that are sampled in both the modern dataset and in the Plio-Pleistocene subset of the paleontological dataset. Richness, occupancy, and occurrences are standardized by dividing by the maximum observed value within each interval. Points are overplotted and hence relative tranparancy of a given point indicates the number of genera. Black lines are lines of unity and red lines are reduced major axis regression lines.">>=
+Plio.Modern <- readRDS("../data/stand-predictors-cen-obis.rds")
+Plio.Modern <- Plio.Modern[Plio.Modern$Interval_Name %in% 
+  c("Modern_raw", "Plio-Pleistocene"), ]
+Plio.Modern$tropical_only <- NULL
+Plio.Modern$Ex <- NULL
+Plio.Modern <- reshape2::melt(Plio.Modern, 
+  id = c("Interval_Name","stage","stage_top","class","group","genus"))
 Modern <- Plio.Modern[(Plio.Modern$Interval_Name == "Modern_raw"),] 
-Modern <- Modern[-c(1:3)]
+Modern$Interval_Name <- NULL
+Modern$stage <- NULL
+Modern$stage_top <- NULL
 Plio <- Plio.Modern[(Plio.Modern$Interval_Name == "Plio-Pleistocene"),] 
-Plio <- Plio[-c(1:3)]
-Plio.Modern2 <- merge(Modern,Plio,by=c("class","group","genus","variable"),all.x=FALSE,all.y=FALSE)
+Plio$Interval_Name <- NULL
+Plio$stage <- NULL
+Plio$stage_top <- NULL
+Plio.Modern2 <- merge(Modern,Plio, 
+  by = c("class","group","genus","variable"),all.x=FALSE,all.y=FALSE)
 
 RMA.lines <- function(df){
-mod <- lmodel2(value.y ~ value.x, data=df,"interval", "interval", 99)
-reg <- mod$regression.results
-reg <- reg[(reg$Method=="RMA"),]
-names(reg) <- c("method", "intercept", "slope", "angle", "p-value")
-return(reg)
+  mod <- lmodel2::lmodel2(value.y ~ value.x, data=df,"interval", "interval", 99)
+  reg <- mod$regression.results
+  reg <- reg[(reg$Method=="RMA"),]
+  names(reg) <- c("method", "intercept", "slope", "angle", "p-value")
+  reg
 }
-RMA <- ddply(Plio.Modern2,.(variable),each(RMA.lines))
+RMA <- ddply(Plio.Modern2, "variable", plyr::each(RMA.lines))
 
-# make plot
-pdf("../figs/compare-modern-and-Plio-Pleistocene-ranges.pdf", width = 9, height = 4.5)
 p <- ggplot(Plio.Modern2,aes(value.x,value.y)) +
-geom_point(alpha=0.1) +
-facet_wrap(~variable,scale="free",ncol=4) +
-geom_abline(data = RMA, aes(intercept = intercept, slope = slope, colour = "blue")) +
-geom_abline() +
-xlab("Modern") +
-ylab("Plio-Pleistocene") +
-coord_equal()
-
+  geom_point(alpha=0.1) +
+  facet_wrap(~variable,scale="free", ncol=4) +
+  geom_abline(data = RMA, 
+    aes(intercept = intercept, slope = slope, colour = "blue")) +
+  geom_abline() +
+  xlab("Modern") +
+  ylab("Plio-Pleistocene") +
+  coord_equal()
 print(p)
-dev.off()
-# Comparison of ranges for the 1104 genera that are sampled in both the modern dataset and in the Plio-Pleistocene subset of the paleontological dataset.  Richness, occupancy, and occurrences are standardized by dividing by the maximum observed value within each interval. Points are overplotted and hence relative tranparancy of a given point indicates the number of genera. Black lines are lines of unity and red lines are reduced major axis regression lines 
 @
-
-
-
 
 \section{Modelling contemporary extinction risk with paleontological data}
 
