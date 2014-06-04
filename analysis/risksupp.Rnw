@@ -950,7 +950,7 @@ As another test, we will try removing genera that are only reported in one provi
 <<remove-single-province-genera-class-map, fig.width=6.45, fig.height=5.4, out.width="6.25in", fig.cap="TODO add caption --- single province-genera removed.">>=
 load("../data/by.prov.classes.no.singles.rda")
 er_dat_class_no_single <- plyr::join(er_points, er@data, by = "id")
-er_dat_class_no_single <- plyr::join(er_dat_class_nosingle, by.prov.classes.no.singles, by = "PROV_CODE")
+er_dat_class_no_single <- plyr::join(er_dat_class_no_single, by.prov.classes.no.singles, by = "PROV_CODE")
 map_class_ext(er_dat_class_no_single, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10, 0.20),
   min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0028,
     0.35),
