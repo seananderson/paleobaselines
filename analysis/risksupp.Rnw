@@ -401,9 +401,8 @@ Rsq <- function(df) {
 
 Rsqs <- ddply(cross_pred,.(stage_train,stage_test),each(Rsq))
 Rsqs <- na.omit(Rsqs[(Rsqs$stage_train != Rsqs$stage_test),])
-Rsqs$X <- rep(.001,length(Rsqs[,1]))
-Rsqs$Y <- rep(.70,length(Rsqs[,1]))
 Rsqs$Rsq <- round(Rsqs$Rsq,2)
+
 # make plot
 quartz()
 p <- ggplot()
@@ -414,7 +413,7 @@ p + geom_point(data=cross_pred,aes(pred_self, pred, colour = class),alpha=0.3)  
   xlab("Probability of extinction predicted within the same stage") +
   ylab("Probability of extinction predicted from a different stage") +
   guides(colour = guide_legend(override.aes = list(alpha = 1))) +
-  geom_text(data=Rsqs,aes(X,Y,label=Rsq),size=3.5)
+  geom_text(data=Rsqs,aes(.001,.70,label=Rsq),size=3.5)
 @
 
 We see that in general there is substantial similarity in extinction regimes between succeeding geologic stages with respect to the evaluated taxonomic and geographic range predictor variables.
