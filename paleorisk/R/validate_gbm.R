@@ -119,19 +119,6 @@ get_weights <- function(x) {
   list(ex_weight = ExWeight, sur_weight = SurWeight)
 }
 
-# #' SMOTE our data
-# #' @rdname smote
-#
-# smote <- function(x, perc.over = 800, perc.under = 100) {
-#   x$Ex <- as.factor(x$Ex)
-#   x <- DMwR::SMOTE(Ex ~ ., data = x[,c("group",
-#     "great.circle", "mean.lat", "lat.range", "max.lat", "min.lat",
-#     "occurrences", "occupancy", "richness", "Ex")],
-#     perc.over = perc.over, perc.under = perc.under)
-#   x$Ex <- as.numeric(as.character(x$Ex))
-#   x
-# }
-
 #' Summarize a validation test
 #'
 #' @param x A data frame that has a column named \code{obs_ext_prob}. This
@@ -165,3 +152,17 @@ summarize_val_test <- function(x, type = c("glm", "quantile")) {
   data.frame(mean_observed = int, l = cis[[1]], u = cis[[2]],
     median_sample_n = median_sample_n)
 }
+
+# #' SMOTE our data
+# #' @rdname smote
+#
+# smote <- function(x, perc.over = 800, perc.under = 100) {
+#   x$Ex <- as.factor(x$Ex)
+#   x <- DMwR::SMOTE(Ex ~ ., data = x[,c("group",
+#     "great.circle", "mean.lat", "lat.range", "max.lat", "min.lat",
+#     "occurrences", "occupancy", "richness", "Ex")],
+#     perc.over = perc.over, perc.under = perc.under)
+#   x$Ex <- as.numeric(as.character(x$Ex))
+#   x
+# }
+
