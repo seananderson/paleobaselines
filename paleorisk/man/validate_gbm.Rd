@@ -30,7 +30,8 @@ validate_gbm(dat, test_fraction = 0.5, threshold = 0.5, shrinkage = 0.1,
 
   \item{smote}{A logical argument: should the function
   implement SMOTE algorithm for unbalanced classification?
-  Implemented via the \code{\link[DMwR]{SMOTE}} function.}
+  Implemented via the \code{\link[DMwR]{SMOTE}} function.
+  (Currently disabled)}
 
   \item{use_weights}{A logical argument: should the GBM be
   fit with weights assigned based on extinction frequency.
