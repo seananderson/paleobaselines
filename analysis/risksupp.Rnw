@@ -412,7 +412,7 @@ print(oos_rsq_am)
 # give such stats as easily
 oos_rsq_factors <- plyr::ddply(val_test, "class", function(x) {
   require(mgcv)
-  m <- mgcv::gam(obs_ext_prob ~ as.factor(gbm_pred_binned), data = x, weights = sample_n)
+  m <- mgcv::gam(obs_ext_prob ~ as.factor(gbm_pred_binned), data = x, weights = sample_n, family = binomial)
   summary(m)$dev.expl
   })
 print(oos_rsq_factors)
