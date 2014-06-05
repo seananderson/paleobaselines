@@ -5,6 +5,7 @@
 \documentclass[11pt]{article}
 \usepackage{geometry}
 \usepackage{graphicx}
+\usepackage{booktabs}
 \usepackage{url}
 \usepackage[nottoc,numbib]{tocbibind} % to add bibliography to TOC
 \textheight 20.5cm
@@ -246,8 +247,8 @@ Table.S1$Interval <- factor(Table.S1$Interval,
 Table.S1 <- Table.S1[order(Table.S1$Interval, Table.S1$class), ]
 Table.S1 <- plyr::rename(Table.S1, c("class" = "Class"))
 xtable::print.xtable(xtable::xtable(Table.S1, digits = c(0, 0, 0, 0, 0),
-    caption = "TODO Table caption here."), include.rownames = FALSE,
-  caption.placement = "top")
+    caption = "Total number of unique genera and occurrences of those genera in the Paleobiology Database for phylogenetic classes and geologic intervals used in our analysis."), 
+  include.rownames = FALSE, caption.placement = "top", booktabs = TRUE)
 @
 
 \subsection{Standardizing the predictor data}
