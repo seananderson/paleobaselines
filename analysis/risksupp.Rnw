@@ -34,6 +34,7 @@ opts_chunk$set(warning=FALSE, message=FALSE, tidy=FALSE, refresh=TRUE,
 opts_chunk$set(dev = 'pdf')
 opts_knit$set(out.format = "latex")
 thm <- knit_theme$get("solarized-light.css")
+opts_knit$set(eval.after = 'fig.cap') # evaluate fig.cap after the chunk
 knit_theme$set(thm)
 @
 
@@ -268,7 +269,7 @@ neog <- ddply(dat, "Interval_Name", standardize_data)
 saveRDS(neog, file = "../data/stand-predictors-cen-obis.rds")
 @
 
-<<plot-comparison-modern-plio-pleistocene-ranges, out.width="\\textwidth", fig.height=5, fig.width=8, fig.cap="Comparison of ranges for the 1104 genera that are sampled in both the modern dataset and in the Plio-Pleistocene subset of the paleontological dataset. Richness, occupancy, and occurrences are standardized by dividing by the maximum observed value within each interval. Points are overplotted and hence relative tranparancy of a given point indicates the number of genera. Black lines are lines of unity and red lines are reduced major axis regression lines.">>=
+<<plot-comparison-modern-plio-pleistocene-ranges, out.width="\\textwidth", fig.height=5, fig.width=8, fig.cap=paste("Comparison of ranges for the", length(unique(Plio.Modern2$genus)), "genera that are sampled in both the modern dataset and in the Plio-Pleistocene subset of the paleontological dataset. Richness, occupancy, and occurrences are standardized by dividing by the maximum observed value within each interval. Points are overplotted and hence relative tranparancy of a given point indicates the number of genera. Black lines are lines of unity and red lines are reduced major axis regression lines.")>>=
 Plio.Modern <- readRDS("../data/stand-predictors-cen-obis.rds")
 Plio.Modern <- Plio.Modern[Plio.Modern$Interval_Name %in% 
   c("Modern_raw", "Plio-Pleistocene"), ]
@@ -620,7 +621,7 @@ partial_groups <- plyr::rename(partial_groups, c("group" = "value"))
 
 We will also identify the relative contribution of taxonomy vs.\ range and occupancy characteristics. To do this, we'll look at the relative importance of each of the GBM predictors using the \texttt{relative.influence()} function in the \pkg{gbm} package, which uses the algorithm as described in Ref.~\cite{friedman2001}.
 
-<<taxonomy-range-contributions, out.width="3in", fig.height=4, fig.width=4, fig.cap="TODO add to caption --- partial dependence plot">>=
+<<taxonomy-range-contributions, out.width="3in", fig.height=4, fig.width=4, fig.cap="Relative influence of the predictor variables in the Neogene GBM model. The values are scaled so that the variable with the maximum influence has a relative importance of 1. Shown are the median (dots) and interquartile range (line segments) across 50 model runs.">>=
 w <- paleorisk::get_weights(neog$Ex)
 weights <- ifelse(neog$Ex == 1, w$ex_weight, w$sur_weight)
 m_relative <- gbm(Ex ~ richness + occupancy + occurrences + min.lat +
@@ -973,7 +974,7 @@ mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
 
 We can recreate the global intrinsic extinction probability map leaving out each taxonomic class in succession in a jackknife analysis. This gives us an idea if any one class is driving the pattern.
 
-<<jackknife-map, fig.cap="Jackknife plot. TODO Fill in this caption.", fig.width=7, fig.height=7, out.width="6.25in">>=
+<<jackknife-map, fig.cap="Global distribution of mean predicted intrinsic extinction probability (as in Fig.~3) \\textbf{with one phylogenetic class removed, or jackknifed, in each panel}. The colour scale is adjusted in each panel to display the full range of predictions.", fig.width=7, fig.height=7, out.width="6.25in">>=
 load("../data/by.prov.all.jk.rda")
 classes <- as.character(unique(modern$class))
 par(mfrow = c(3, 2))
@@ -1067,7 +1068,7 @@ map_class_ext(er_dat_class3, yticks = exp(c(-0.5, 0, 0.5)),
 
 As another test, we will try removing genera that are only reported in one province. This removes \Sexpr{single.genera.provs.removed} from a total of \Sexpr{total.genera} genera (Fig.~\ref{fig:remove-single-province-genera-class-map} and Fig.~\ref{fig:remove-single-province-genera-overall-map}).
 
-<<remove-single-province-genera-class-map, fig.width=6.45, fig.height=5.4, out.width="6.25in", fig.cap="TODO add caption --- single province-genera removed.">>=
+<<remove-single-province-genera-class-map, fig.width=6.45, fig.height=5.4, out.width="6.25in", fig.cap="Same as Fig.~3, but with \\textbf{genera occurring in single biogeographic provinces removed}.">>=
 load("../data/by.prov.classes.no.singles.rda")
 er_dat_class_no_single <- plyr::join(er_points, er@data, by = "id")
 er_dat_class_no_single <- plyr::join(er_dat_class_no_single, by.prov.classes.no.singles, by = "PROV_CODE")
@@ -1077,7 +1078,7 @@ map_class_ext(er_dat_class_no_single, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10, 
   ylabel = "Intrinsic extinction probability (over ~23 Myr)")
 @
 
-<<remove-single-province-genera-overall-map, fig.width=6, fig.height=4, out.width="6in", fig.cap="TODO add caption --- single province-genera removed.">>=
+<<remove-single-province-genera-overall-map, fig.width=6, fig.height=4, out.width="6in", fig.cap="Same as Fig.~4, but with \\textbf{genera occurring in single biogeographic provinces removed}.">>=
 load("../data/by.prov.all.no.singles.rda")
 er_dat_no_single <- plyr::join(er_points, er@data, by = "id")
 er_dat_no_single <- plyr::join(er_dat_no_single, by.prov.all.no.singles, by = "PROV_CODE")
@@ -1101,7 +1102,7 @@ mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
 
 \subsection{Exploring the distribution of the predictors}
 
-<<plot-n-gen-genera-prov, fig.cap="Number of genera.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
+<<plot-n-gen-genera-prov, fig.cap="Spatial distribution of the \\textbf{mean number of genera} in the contemporary dataset.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
 er_dat_class$log.N.gen <- log(er_dat_class$N.gen)
 map_class_ext(er_dat_class, plot_column = "log.N.gen",
   min_prov_genera = 0, ylab = "Number of genera",
@@ -1109,7 +1110,7 @@ map_class_ext(er_dat_class, plot_column = "log.N.gen",
   col_pal = RColorBrewer::brewer.pal(9, "YlGnBu"))
 @
 
-<<plot-gcd-genera-prov, fig.cap="Mean GCD.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
+<<plot-gcd-genera-prov, fig.cap="Spatial distribution of the \\textbf{mean great circle distance of range size} in the contemporary dataset.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
 er_dat_class$log.mean.gcd <- log(er_dat_class$mean.gcd)
 map_class_ext(er_dat_class, plot_column = "log.mean.gcd",
   min_prov_genera = 0, ylab = "Mean great circle distance",
@@ -1118,7 +1119,7 @@ map_class_ext(er_dat_class, plot_column = "log.mean.gcd",
   fixed_range = TRUE)
 @
 
-<<plot-richness-genera-prov, fig.cap="Mean richness.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
+<<plot-richness-genera-prov, fig.cap="Spatial distribution of the \\textbf{mean species richness} in the contemporary dataset.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
 er_dat_class$log.mean.richness <- log(er_dat_class$mean.richness)
 map_class_ext(er_dat_class, plot_column = "log.mean.richness",
   min_prov_genera = 0, ylab = "Mean standardized richness (0-1)",
