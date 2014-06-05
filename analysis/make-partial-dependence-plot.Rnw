@@ -118,7 +118,7 @@ l <- rbind(c(1,2,3,4),
   c(5,6,7,8),
   c(9,9,9,9))
 
-pdf("../figs/partial-plot-base2.pdf", width = 5.9, height = 5.0)
+pdf("../figs/partial-plot-base.pdf", width = 5.9, height = 5.0)
 layout(l)
 
 ## the upper half:
