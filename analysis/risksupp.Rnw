@@ -1110,7 +1110,7 @@ map_class_ext(er_dat_class, plot_column = "log.N.gen",
   col_pal = RColorBrewer::brewer.pal(9, "YlGnBu"))
 @
 
-<<plot-gcd-genera-prov, fig.cap="Spatial distribution of the \\textbf{mean great circle distance of range size} in the contemporary dataset.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
+<<plot-gcd-genera-prov, fig.cap="Spatial distribution of \\textbf{mean great circle distance of range size} in the contemporary dataset.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
 er_dat_class$log.mean.gcd <- log(er_dat_class$mean.gcd)
 map_class_ext(er_dat_class, plot_column = "log.mean.gcd",
   min_prov_genera = 0, ylab = "Mean great circle distance",
@@ -1119,7 +1119,7 @@ map_class_ext(er_dat_class, plot_column = "log.mean.gcd",
   fixed_range = TRUE)
 @
 
-<<plot-richness-genera-prov, fig.cap="Spatial distribution of the \\textbf{mean species richness} in the contemporary dataset.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
+<<plot-richness-genera-prov, fig.cap="Spatial distribution of \\textbf{mean species richness} in the contemporary dataset.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
 er_dat_class$log.mean.richness <- log(er_dat_class$mean.richness)
 map_class_ext(er_dat_class, plot_column = "log.mean.richness",
   min_prov_genera = 0, ylab = "Mean standardized richness (0-1)",
