@@ -219,13 +219,9 @@ TODO expand this.
 source("../r/README_interpolation.R")
 @
 
-\subsection{Calculating the predictor variables}
+\subsection{Standarizing predictor variables}
 
-TODO what and why
-
-TODO Paul: either "habitat" is not the right descriptor for each of these or ``richness'' should go in a different section
-
-We will start by standardizing a variety of habitat-relative characteristics within each geologic stage. This is an important step to make some habitat characteristics (richness, occupancy, occurrences) comparable across periods, an in particular, between the paleontological data and the contemporary data. Given the substantially different sampling methods within the paleontological and contemporary records, the absolute values of richness, occupancy, and occurrences are not comparable. We therefore standardize them to values between 0 and 1 within each interval. The other variables (e.g.\ latitude variables and great circle distance) are still comparable between the paleontological and contemporary records --- a degree latitude is still a degree latitude and a kilometre is still a kilometre.
+We will start by standardizing a variety of habitat-relative characteristics within each geologic stage. All of the geographic range, specied richness, and occurrence frequency predictors are potentially influenced by sampling intensity, and the modern dataset is much larger in terms of total number of occurrences than the paleontological datasets (Table S1).  Metrics that are geographically explicit (max.lat, min.lat, mean.lat, lat.range, great.circle) cannot easily be standardized without distorting underlying patterns, but those that are not (richness, occurrences, occupancy) were divided by the maximum value observed in each interval. Hence, the scale on these standardized predictors goes from 0 to 1 (Figure 1). The other variables (e.g.\ latitude variables and great circle distance) are still comparable between the paleontological and contemporary records --- a degree latitude is still a degree latitude and a kilometre is still a kilometre.
 
 % The code in \texttt{extract-ranges.Rnw} creates the \proglang{R} data object \texttt{modern\_and\_paleo\_ranges.rds}.
 
@@ -252,8 +248,6 @@ xtable::print.xtable(xtable::xtable(Table.S1, digits = c(0, 0, 0, 0, 0),
     caption = "Total number of unique genera and occurrences of those genera in the Paleobiology Database for phylogenetic classes and geologic intervals used in our analysis."), 
   include.rownames = FALSE, caption.placement = "top", booktabs = TRUE)
 @
-
-\subsection{Standardizing the predictor data}
 
 % We will standardize the predictor data with the following \proglang{R} code:
 
