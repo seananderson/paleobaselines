@@ -17,7 +17,7 @@
 #' @export
 
 fit_interval_gbm <- function(dat, stage_train, stage_test, interaction.depth = 1,
-  n.trees = 300, shrinkage = 0.1, use_weights = FALSE, ...) {
+  n.trees = 2000, shrinkage = 0.05, use_weights = FALSE, ...) {
   message(paste("Predicting", stage_test, "from", stage_train))
   dat_train <- dat[dat$stage == stage_train, ]
   dat_test  <- dat[dat$stage == stage_test,  ]
