@@ -175,6 +175,7 @@ Many different ecological, physiological, and life-history traits also potential
 First, standardization of taxonomy and removal of erroneous names or taxa (e.g.\ pulmonate gastropods) that do not belong.  Next, genus names from OBIS matched to higher taxonomic groups using the WORMS database.  Higher taxonomy of WORMS and of PDBD standardized to the greatest degree possible.
 
 
+\subsection{Standardizing the predictors}
 
 TODO ADD HERE
 
