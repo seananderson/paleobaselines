@@ -958,7 +958,7 @@ map_class_ext(er_dat_class_raw,
 
 % The follow code produces Fig.~\ref{fig:no-bounding-box-overall-map}.
 
-<<no-bounding-box-overall-map, fig.cap="Mean predicted extinction susceptibility, \\ldots \\textbf{no bounding box}.", fig.width=6, fig.height=4, outwidth="6in">>=
+<<no-bounding-box-overall-map, fig.cap="Mean predicted intrinsic extinction probability, as in Fig.~4, but \\textbf{without the bounding box interpolaion}.", fig.width=6, fig.height=4, outwidth="6in">>=
 er_dat_raw <- plyr::join(er_points, er@data, by = "id")
 er_dat_raw <- plyr::join(er_dat_raw, by.prov.all.raw, by = "PROV_CODE")
 par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
