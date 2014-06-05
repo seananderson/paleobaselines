@@ -8,8 +8,10 @@ g <- subset(g, !is.na(value))
 g <- subset(g, median < 1)
 
 o <- plyr::ddply(o, c("stage", "predictor"), plyr::mutate, adj = -
-  mean(median, na.rm = TRUE) + 0.5, median = median + adj, lower = lower
+  mean(median, na.rm = TRUE), median = median + adj, lower = lower
   + adj, upper = upper + adj)
+g.adj <- mean(g$median)
+g <- transform(g, median = median - g.adj, lower = lower - g.adj, upper = upper - g.adj)
 
 lwd.u <- c(rep(2.0, 4), 3.9)
 pal <- rev(colorspace::rainbow_hcl(4, c = 90, l = 65))
@@ -23,13 +25,15 @@ cols.plot <- 3:7
 col.main.labels <- "grey15"
 col.axis.labels <- "grey45"
 col.left.axis.label <- "grey20"
-g.ylim.l <- 0
-g.ylim.u <- 1
-o.ylim.l <- 0
-o.ylim.u <- 1
-o.y.axis.at <- c(0, 0.5, 1)
-g.y.axis.at <- c(0, 0.5, 1)
+g.ylim.l <- -0.5
+g.ylim.u <- 0.6
+o.ylim.l <- -0.5
+o.ylim.u <- 0.6
+o.y.axis.at <- c(-0.5, 0, 0.6)
+g.y.axis.at <- c(-0.5, 0, 0.6)
 rect.cols <- rep(c("grey93", NA), 99)
+o.y.axis.labs <- c("-", "0", "+")
+g.y.axis.labs <- c("-", "0", "+")
 
 # Reshape data:
 junk <- do.call("rbind", strsplit(as.character(g$value), "_"))
@@ -114,7 +118,7 @@ l <- rbind(c(1,2,3,4),
   c(5,6,7,8),
   c(9,9,9,9))
 
-pdf("../figs/partial-plot-base.pdf", width = 5.9, height = 5.0)
+pdf("../figs/partial-plot-base2.pdf", width = 5.9, height = 5.0)
 layout(l)
 
 ## the upper half:
@@ -136,7 +140,7 @@ plyr::d_ply(o, "predictor", function(x) {
   box(col = col.axis)
   axis(1, las = 1, col = col.axis, col.axis = col.axis, cex.axis =
     cex.axis, padj = -0.5, at = eval(parse(text = unique(x$axis.1))))
-  if(ii %in% c(1, 5)) axis(2, at = o.y.axis.at, las = 1, col = col.axis,
+  if(ii %in% c(1, 5)) axis(2, at = o.y.axis.at, labels = o.y.axis.labs, las = 1, col = col.axis,
     col.axis = col.axis, cex.axis = cex.axis)
 
   if(ii == 3) {
@@ -145,7 +149,7 @@ plyr::d_ply(o, "predictor", function(x) {
     legend_stages <- col_df$stage
     legend_stages <- sub("all", "Entire Neogene", legend_stages)
 
-    legend(-2.11, par("usr")[4] * 1.25, legend = legend_stages, bty = "n",
+    legend(-2.11, par("usr")[4] * 1.45, legend = legend_stages, bty = "n",
       cex = 0.8, text.col = "grey40", fill = pal, border = pal, horiz =
       TRUE)
     par(xpd = FALSE)
@@ -164,7 +168,7 @@ plyr::d_ply(o, "predictor", function(x) {
 
 ## lower half:
 # make blank plot:
-plot(1, 1, xlim = c(0.3, max(g$x.pos)+0.5), ylim = c(0, 1), yaxs = "i",
+plot(1, 1, xlim = c(0.3, max(g$x.pos)+0.5), ylim = c(g.ylim.l, g.ylim.u), yaxs = "i",
   axes = FALSE, ann = FALSE, type = "n", xaxs = "i", log = "")
 
 # shading:
@@ -173,8 +177,8 @@ rects <- subset(g, diffs == 1)
 rects <- rbind(rects, rects[nrow(rects), ])
 rects[nrow(rects), "x.pos"] <- 99
 for(i in 1:(nrow(rects)-1)) {
-  rect(rects[i, "x.pos"]-x.gap + x.gap.lab, 0, rects[i+1, "x.pos"] -
-    x.gap + x.gap.lab, 1, border = NA, col = rect.cols[i])
+  rect(rects[i, "x.pos"]-x.gap + x.gap.lab, g.ylim.l, rects[i+1, "x.pos"] -
+    x.gap + x.gap.lab, g.ylim.u, border = NA, col = rect.cols[i])
 }
 
 # vertical lines:
@@ -208,25 +212,25 @@ for(i in 1:5) {
 }
 
 # axes and labels:
-axis(2, at = c(0, 0.5, 1), las = 1, col = col.axis, col.axis = col.axis,
+axis(2, at = g.y.axis.at, labels = g.y.axis.labs, las = 1, col = col.axis, col.axis = col.axis,
   cex.axis = cex.axis)
 par(xpd = NA)
 
 labs <- plyr::ddply(g, ".class", plyr::summarize, x.mid = min(x.pos) +
   diff(range(x.pos))/2, l = min(x.pos), u = max(x.pos))
 
-with(labs, text(x = x.mid, y = -1.18, label = .class, srt = 0, col =
+with(labs, text(x = x.mid, y = g.ylim.l - 1.28, label = .class, srt = 0, col =
     col.main.labels, cex = 0.9, adj = c(0.5, 0)))
 
 u.s <- with(labs, u+x.gap-x.gap.lab-0.12)
 l.s <- with(labs, l-x.gap+x.gap.lab+0.12)
-h.s <- with(labs, rep(-0.95, length(l.s)))
+h.s <- with(labs, rep(-1.53, length(l.s)))
 
 with(labs, segments(l.s, h.s, l.s, h.s-0.1, col = col.axis))
 with(labs, segments(u.s, h.s, u.s, h.s-0.1, col = col.axis))
 with(labs, segments(l.s, h.s-0.1, u.s, h.s-0.1, col = col.axis))
 
-with(g, text(x = x.pos, y = -0.05, label = .order, srt = 90, pos = 2,
+with(g, text(x = x.pos, y = g.ylim.l -0.05, label = .order, srt = 90, pos = 2,
     col = col.axis.labels, offset = 0, cex = 0.85))
 par(xpd = FALSE)
 
@@ -237,7 +241,7 @@ text(x = 0.60, y = u[3] + (u[4]-u[3])*.035, substitute(paste(bold(let),
       " ", lab, phantom("g")), list(let = LETTERS[ii+1], lab =
       "Taxonomy")), cex = 0.8, adj = c(0, 0), col = col.main.labels)
 
-mtext("Scaled marginal effect on probability of extinction", side = 2,
+mtext("Marginal effect on probability of extinction", side = 2,
   outer = FALSE, col = col.left.axis.label, line = 1.7, cex = 0.75, adj
   = -0.1)
 
