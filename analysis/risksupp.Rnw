@@ -538,7 +538,7 @@ p <- p + geom_point(data=cross_pred,
   xlab("Scaled extinction probability (stage that model was built on)") +
   ylab("Scaled extinction probability (stage that model was tested on)") +
   guides(colour = guide_legend(override.aes = list(alpha = 1))) +
-  geom_text(data=Rsqs,aes(.004,.70,label=sprintf("%.2f", Rsq)),size=3.5)
+  geom_text(data=Rsqs,aes(.005,.70,label=sprintf("%.2f", Rsq)),size=3.5)
 print(p)
 dev.off()
 # Cross-interval comparison of genus risk estimates from generalized boosting models. The x-axis shows the probability of extinction as predicted by a model built on data from the same stage. The y-axis shows the probability of extinction as predicted by a model built on data from a different stage. The colours show different taxonomic classes. Note the log-distributed x- and y-axes. Since there is some stochasticity involved in the generalized boosting machine fitting routine, there is some variability in predictions within the same stage (the diagonal panels). In general, there is substantial similarity in extinction regimes between succeeding intervals with respect to the evaluated taxonomic and geographic range predictor variables.
@@ -826,7 +826,7 @@ er_dat <- plyr::join(er_dat, by.prov.all, by = "PROV_CODE")
 pdf("../figs/hotspots.pdf", width = 7, height = 3.5)
 par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
-labs <- c(0.010, 0.012, 0.014)
+labs <- c(0.012, 0.014, 0.016, 0.018)
 # labs_show <- rep(99, length(labs))
 # labs_show[1] <- labs[1]
 # labs_show[3] <- labs[3]
