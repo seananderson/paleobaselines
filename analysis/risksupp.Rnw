@@ -387,54 +387,39 @@ ggplot(val_test_summarized,
   labs(size = "Median sample #")
 @
 
-<<get-oos-rsquared, fig.width=7.5, fig.height=7, echo=TRUE>>=
-
-# Linear regression R^2 by class:
-oos_rsq_lm <- plyr::ddply(val_test, "class", function(x) {
-  m <- lm(x$obs_ext_prob ~ x$gbm_pred_binned)
-  summary(m)$r.squared
-  })
-print(oos_rsq_lm)
-
-# Additive model deviance explained (or nearly equivalently adjusted
-# R^2): (this allows for non-linear trend)
-par(mfrow = c(2, 3))
-oos_rsq_am <- plyr::ddply(val_test, "class", function(x) {
+<<get-oos-rsquared, fig.width=7.5, fig.height=7, echo=FALSE>>=
+oos_rsq_glm <- plyr::ddply(val_test, "class", function(x) {
   require(mgcv)
-  m <- mgcv::gam(obs_ext_prob ~ s(gbm_pred_binned), data = x)
-  plot(m)
-  mtext(unique(x$class))
-  summary(m)$dev.expl
-  })
-print(oos_rsq_am)
+   m <- mgcv::gam(obs_ext_prob ~ gbm_pred_binned, data = x, 
+     weights = sample_n, family = binomial)
+   summary(m)$dev.expl
+   })
+ print(oos_rsq_glm)
+ print(range(oos_rsq_glm$V1))
+ print(median(oos_rsq_glm$V1))
 
-# Or don't worry at all about the trend, just asked how 'off'
-# predictions can be compared to the mean prediction at a given bin
-# this might be what we actually care about but it's a bit more obscure
-# it's basically how well those blue dots capture the variation in the
-# black dots
-# I used gam() here as a hack, but would switch to glm() which doesn't
-# give such stats as easily
-oos_rsq_factors <- plyr::ddply(val_test, "class", function(x) {
-  require(mgcv)
-  m <- mgcv::gam(obs_ext_prob ~ as.factor(gbm_pred_binned), data = x, weights = sample_n, family = binomial)
-  summary(m)$dev.expl
-  })
-print(oos_rsq_factors)
+glm_pred <- plyr::ddply(val_test, "class", function(x) {
+   m <- glm(obs_ext_prob ~ gbm_pred_binned, data = x, 
+     weights = sample_n, family = binomial)
+   newdat <- data.frame(gbm_pred_binned = seq(min(x$gbm_pred_binned),
+       max(x$gbm_pred_binned), length.out = 100))
+   data.frame(gbm_pred_binned = newdat$gbm_pred_binned, 
+     pred = predict(m, type = "response", newdata = newdat))
+   })
+@
 
-# ggplot(val_test_summarized,
-#   aes(gbm_pred_binned, mean_observed)) +
-#   geom_point(data = val_test, aes(gbm_pred_binned, obs_ext_prob),
-#     alpha = 0.1) +
-#   geom_abline(intercept = 0, slope = 1) +
-#   geom_linerange(aes(ymin = l, ymax = u), colour = "#4E9DF0") +
-#   geom_point(aes(size = median_sample_n), colour = "#4E9DF0") +
-#   facet_wrap(~class) +
-#   scale_size(trans = "log10") + coord_fixed(ratio = 1) +
-#   ylim(0, 1) + xlim(0, 1) +
-#   xlab("Out-of-sample GBM-predicted extinction probability") +
-#   ylab("Observed extinction probability") +
-#   labs(size = "Median sample #")
+<<plot-dev-explained, fig.width=7.5, fig.height=7, fig.cap="TODO fix caption. This is for percent deviance explained in 2-fold cross-validation. Add those values to panels? Shown is a GLM (logistic regression) fit.">>=
+ggplot(val_test_summarized,
+  aes(gbm_pred_binned, mean_observed)) +
+  geom_point(data = val_test, aes(gbm_pred_binned, obs_ext_prob),
+    alpha = 0.1) +
+  facet_wrap(~class) +
+  scale_size(trans = "log10") + coord_fixed(ratio = 1) +
+  ylim(0, 1) + xlim(0, 1) +
+  xlab("Out-of-sample GBM-predicted extinction probability") +
+  ylab("Observed extinction probability") +
+  labs(size = "Median sample #") +
+  geom_line(data = glm_pred, aes(gbm_pred_binned, pred), col = "red", lwd = 1)
 @
 
 %TODO contemporary vs.\ modern --- pick
