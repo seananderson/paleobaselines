@@ -18,7 +18,6 @@ Imports:
     maptools (>= 0.8-27),
     colorspace (>= 1.2-4),
     gbm (>= 2.1),
-    DMwR (>= 0.4.1),
     boot (>= 1.3-9),
     mapproj (>= 1.2-2),
     ggplot2 (>= 0.9.3.1),

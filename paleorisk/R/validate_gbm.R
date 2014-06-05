@@ -15,7 +15,7 @@
 #'   calibration.
 #' @param smote A logical argument: should the function implement SMOTE
 #'   algorithm for unbalanced classification? Implemented via the
-#'   \code{\link[DMwR]{SMOTE}} function.
+#'   \code{\link[DMwR]{SMOTE}} function. (Currently disabled)
 #' @param use_weights A logical argument: should the GBM be fit with weights
 #'   assigned based on extinction frequency. Use only \code{SMOTE = TRUE} or
 #'   \code{use_weights = TRUE}.
@@ -53,9 +53,9 @@ validate_gbm <- function(dat, test_fraction = 0.5, threshold = 0.5,
     dat_test <- dat_train
   }
 
-  if(smote) {
-    dat_train <- smote(dat_train)
-  }
+#  if(smote) {
+#    dat_train <- smote(dat_train)
+#  }
   # just in case these already exist:
   dat_test$gbm_pred <- NULL
 
@@ -115,21 +115,22 @@ get_weights <- function(x) {
   MaxFreq <- max(ExFreq,SurFreq)
   ExWeight <- (1/(ExFreq/MaxFreq))
   SurWeight <- (1/(SurFreq/MaxFreq))
+  #list(ex_weight = mean(x), sur_weight = 1 - mean(x))
   list(ex_weight = ExWeight, sur_weight = SurWeight)
 }
 
-#' SMOTE our data
-#' @rdname smote
-
-smote <- function(x, perc.over = 800, perc.under = 100) {
-  x$Ex <- as.factor(x$Ex)
-  x <- DMwR::SMOTE(Ex ~ ., data = x[,c("group",
-    "great.circle", "mean.lat", "lat.range", "max.lat", "min.lat",
-    "occurrences", "occupancy", "richness", "Ex")],
-    perc.over = perc.over, perc.under = perc.under)
-  x$Ex <- as.numeric(as.character(x$Ex))
-  x
-}
+# #' SMOTE our data
+# #' @rdname smote
+#
+# smote <- function(x, perc.over = 800, perc.under = 100) {
+#   x$Ex <- as.factor(x$Ex)
+#   x <- DMwR::SMOTE(Ex ~ ., data = x[,c("group",
+#     "great.circle", "mean.lat", "lat.range", "max.lat", "min.lat",
+#     "occurrences", "occupancy", "richness", "Ex")],
+#     perc.over = perc.over, perc.under = perc.under)
+#   x$Ex <- as.numeric(as.character(x$Ex))
+#   x
+# }
 
 #' Summarize a validation test
 #'
