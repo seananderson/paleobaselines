@@ -243,7 +243,7 @@ text(x = 0.60, y = u[3] + (u[4]-u[3])*.035, substitute(paste(bold(let),
 
 mtext("Marginal effect on probability of extinction", side = 2,
   outer = FALSE, col = col.left.axis.label, line = 1.7, cex = 0.75, adj
-  = -0.1)
+  = -0.43)
 
 dev.off()
 @
