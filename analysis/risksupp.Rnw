@@ -339,9 +339,17 @@ We began by building GBM models and testing their ability to predict data separa
 To test the predictive performance of our model, we will group the predicted probabilities for each class into bins from 0 to 1 in 0.05 increments. For example, we can group predicted probabilities of 0.12, 0.11, and 0.14 for 3 different out of sample genera into a bin of 0.10--0.15. Then we can calculate the mean observed extinction probability for each of those bins. For example, say those 3 genera have observed extinction probabilities of 0.21, 0.09, and 0.10. In that case, the observed out-of-sample extinction probability was 0.133. We can then compare the mean of our prediction bin (0.125) with the mean observed value (0.133). In this example, our model is biased slightly low. Because we're building and testing the model on independent datasets, this is a good test of how our model might perform on a new but equivalent dataset.
 
 <<test-gbm1>>=
-val_test <- rdply(500, validate_gbm(neog, shrinkage = 0.05,
-  interaction.depth = 1, n.trees = 300, use_weights = TRUE)$bin_validation)
-saveRDS(val_test, file = "../data/val_test.rds")
+if(!file.exists("../data/val_test.rds")) {
+  val_test <- rdply(300, validate_gbm(neog, shrinkage = 0.05,
+    interaction.depth = 1, n.trees = 2000, 
+    use_weights = TRUE)$bin_validation, 
+    .progress = "text")
+  saveRDS(val_test, file = "../data/val_test.rds")
+} else {
+  message(paste("Loading previous GBM cross-validations.", 
+      "Delete ../data/val_test.rds to rerun these."))
+  val_test <- readRDS("../data/val_test.rds")
+}
 @
 
 For example, here are the predicted and observed extinction probabilities for one run of our cross-validation. The model was built on half the data and then used to predict the other half of the data. The diagonal black lines show the one-to-one line. Dots that fall directly on the one-to-one line are unbiased.
@@ -439,17 +447,17 @@ We can use these observed extinction probabilities as calibration for our GBM-pr
 We will examine the effect of varying some of the main arguments to the \texttt{gbm()} function. We will test the effect of the \texttt{shrinkage} (the rate of improvement between each tree iteration), \texttt{interaction.depth} (the maximum number of variable interactions), and \texttt{n.trees} (the total number of trees to build) arguments. We will vary each argument one at a time. We do this to check that predictive performance doesn't look substantially better by adjusting any of these arguments.
 
 <<alternative-gbms>>=
-val_test_base <- rdply(20, validate_gbm(neog, shrinkage = 0.05,
-    interaction.depth = 1, n.trees = 300,
+val_test_base <- rdply(15, validate_gbm(neog, shrinkage = 0.05,
+    interaction.depth = 1, n.trees = 2000,
     use_weights = TRUE)$bin_validation)
-val_test_shr <- rdply(20, validate_gbm(neog, shrinkage = 0.01,
-    interaction.depth = 1, n.trees = 300,
+val_test_shr <- rdply(15, validate_gbm(neog, shrinkage = 0.01,
+    interaction.depth = 1, n.trees = 2000,
     use_weights = TRUE)$bin_validation)
-val_test_int <- rdply(20, validate_gbm(neog, shrinkage = 0.05,
-    interaction.depth = 4, n.trees = 300,
+val_test_int <- rdply(15, validate_gbm(neog, shrinkage = 0.05,
+    interaction.depth = 4, n.trees = 2000,
     use_weights = TRUE)$bin_validation)
-val_test_ntrees <- rdply(20, validate_gbm(neog, shrinkage = 0.05,
-    interaction.depth = 1, n.trees = 1000,
+val_test_ntrees <- rdply(15, validate_gbm(neog, shrinkage = 0.05,
+    interaction.depth = 1, n.trees = 10000,
     use_weights = TRUE)$bin_validation)
 @
 
@@ -557,7 +565,7 @@ fit_stage_models <- function(dat, stage_name) {
   weights <- ifelse(d$Ex == 1, w$ex_weight, w$sur_weight)
   gbm::gbm(Ex ~ richness + occupancy + occurrences + min.lat + max.lat +
     lat.range + mean.lat + great.circle + group, data =
-    d, n.trees = 300, interaction.depth = 1,
+    d, n.trees = 2000, interaction.depth = 1,
     distribution = "bernoulli", shrinkage = 0.05, weights = weights)
 }
 @
@@ -626,15 +634,15 @@ w <- paleorisk::get_weights(neog$Ex)
 weights <- ifelse(neog$Ex == 1, w$ex_weight, w$sur_weight)
 m_relative <- gbm(Ex ~ richness + occupancy + occurrences + min.lat +
     max.lat + lat.range + mean.lat + great.circle + group,
-  data = neog, n.trees = 300, interaction.depth = 1,
+  data = neog, n.trees = 2000, interaction.depth = 1,
   distribution = "bernoulli", shrinkage = 0.05, weights = weights)
-ri <- rdply(50, function(x) {
+ri <- rdply(20, function(x) {
   m_relative <- gbm(Ex ~ richness + occupancy + occurrences + min.lat +
     max.lat + lat.range + mean.lat + great.circle + group,
-  data = neog, n.trees = 300, interaction.depth = 1,
+  data = neog, n.trees = 2000, interaction.depth = 1,
   distribution = "bernoulli", shrinkage = 0.05, weights = weights)
   gbm::relative.influence(m_relative, scale. = TRUE,
-    sort. = FALSE, n.trees = 300)
+    sort. = FALSE, n.trees = 2000)
   })
 ri_median <- apply(ri[,-1], 2, median)
 ri_lq <- apply(ri[,-1], 2, function(x) quantile(x, probs = 0.25))
@@ -664,7 +672,7 @@ weights <- ifelse(neog$Ex == 1, w$ex_weight, w$sur_weight)
 
 m <- rlply(50, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
     max.lat + lat.range + mean.lat + great.circle + group,
-  data = neog, n.trees = 300, interaction.depth = 1,
+  data = neog, n.trees = 2000, interaction.depth = 1,
   distribution = "bernoulli", shrinkage = 0.05, weights = weights))
 @
 
@@ -704,7 +712,7 @@ p <- ggplot(paleo_long, aes(value)) +
 <<predict-risk-modern>>=
 predictions <- laply(m, function(x)
   gbm::predict.gbm(x, newdata = modern, type = "response",
-    n.trees = 300))
+    n.trees = 2000))
 modern$pred <- apply(predictions, 2, mean)
 @
 
@@ -735,7 +743,7 @@ We will also save a version of our predictions where we build the predictions ba
 <<predict-risk-modern-average-version>>=
 predictions_stage_avg <- laply(stage_models, function(x) {
     p1 <- laply(x, function(y) gbm::predict.gbm(y, newdata = modern,
-  type = "response", n.trees = 300))
+  type = "response", n.trees = 2000))
   p2 <- apply(p1, 2, mean)
   p2
 })
@@ -853,7 +861,7 @@ rm(temp_dat)
 # Predict from the models we previously ran:
 predictions_raw <- laply(m, function(x)
   gbm::predict.gbm(x, newdata = modern_raw, type = "response",
-    n.trees = 300))
+    n.trees = 2000))
 modern_raw$pred_raw <- apply(predictions_raw, 2, mean)
 
 # Calibrate:
