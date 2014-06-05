@@ -365,7 +365,7 @@ ggplot(subset(val_test, .n == 1),
   labs(size = "Sample #")
 @
 
-By running the cross validation 500 times, we were able to calculate a mean bias at the class level for each prediction bin. We used the function \fn{summarize\_val\_test()} from our \pkg{paleorisk} package to calculate means and 95\% confidence intervals (based on likelihood profiles) for each validation bin. We illustrate this in the following figure. The blue dots represent the mean estimate from a binomial generalized linear model (GLM) fit to the black dots (observed mean extinction proportions based on individual cross-validation runs) with weights equal to the sample size in that bin across runs. The vertical lines represent 95\% confidence intervals. The area of the dots corresponds to the median number of extinction/survival observations in that bin across replicates.
+By running the cross validation 200 times, we were able to calculate a mean bias at the class level for each prediction bin. We used the function \fn{summarize\_val\_test()} from our \pkg{paleorisk} package to calculate means and 95\% confidence intervals (based on likelihood profiles) for each validation bin. We illustrate this in the following figure. The blue dots represent the mean estimate from a binomial generalized linear model (GLM) fit to the black dots (observed mean extinction proportions based on individual cross-validation runs) with weights equal to the sample size in that bin across runs. The vertical lines represent 95\% confidence intervals. The area of the dots corresponds to the median number of extinction/survival observations in that bin across replicates.
 
 <<test-gbm1-summary>>=
 val_test_summarized <- ddply(val_test, c("class", "gbm_pred_binned"),
