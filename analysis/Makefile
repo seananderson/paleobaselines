@@ -32,4 +32,7 @@ clean:
 	mkdir ../cache/
 
 deleteranges:
-	rm data/modern_and_paleo_ranges.rds
+	rm ../data/modern_and_paleo_ranges.rds
+
+deletecv:
+	rm ../data/val_test.rds
