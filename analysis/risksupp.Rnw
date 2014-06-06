@@ -477,7 +477,7 @@ ggplot(val_test_alt,
   labs(size = "Median sample #")
 @
 
-<<check-within-interval-performance>>=
+<<check-within-interval-performance, results='hide'>>=
 stage_order <- c("Lower Miocene", "Middle Miocene", "Upper Miocene",
   "Plio-Pleistocene")
 out <- list()
