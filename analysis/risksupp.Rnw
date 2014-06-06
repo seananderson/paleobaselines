@@ -463,7 +463,7 @@ val_test_alt <- rbind(val_test_base_summ, val_test_shr_summ,
   val_test_int_summ, val_test_ntrees_summ)
 @
 
-We will plot out the observed vs.\ predicted extinction probabilities for these 4 versions of the model. We fail to find substantially improved model performance with any of these alternatives, despite considerably increased computational requirements. We therefore continue from here on with the model as we used in our calibration above.
+%We will plot out the observed vs.\ predicted extinction probabilities for these 4 versions of the model. We fail to find substantially improved model performance with any of these alternatives, despite considerably increased computational requirements. We therefore continue from here on with the model as we used in our calibration above.
 
 <<plot-alt-gbms, fig.height=8, fig.width=13, out.width="7in", echo=FALSE, eval=FALSE>>=
 ggplot(val_test_alt,
