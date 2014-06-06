@@ -476,7 +476,7 @@ glm_pred <- plyr::ddply(within_stage, "stage", function(x) {
    })
 @
 
-<<plot-within-stage-tests, fig.width=8.5, fig.height=7, out.width="6.25in", fig.cap="TODO fix caption. Within interval 2-fold cross-validation prediction. Fit shown is a logistic regression. (probability with weights for numbers of samples).">>=
+<<plot-within-stage-tests, fig.width=8.5, fig.height=7, out.width="6.25in", fig.cap="TODO fix caption. Within interval TODO-fold cross-validation prediction. Fit shown is a logistic regression. (probability with weights for numbers of samples).">>=
 ggplot(data = within_stage) +
   geom_point(aes(x = gbm_pred_binned, 
       y = obs_ext_prob, size = sample_n, colour = class), alpha = 0.2) +
