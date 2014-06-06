@@ -494,6 +494,8 @@ ggplot(data = within_stage) +
       label = sprintf("%.2f", V1)), size=3.5)
 @
 
+%TODO re-write this: Proportion of null deviance explained from a GLM fitted to the binned predictions against observed extinctions. Fitted to probabilities with weights for number of samples. Using \pkg{mgcv} but without smooth terms. 
+
 \subsection{Testing predictive performance across geologic stages}
 
 Another way to test the predictive power of our models is to build the model on one geologic stage and predict on another. We will not use our calibration factors in this test to keep the code as simple as possible and to minimize computational time. We can compare the predictions made from other stages with the predictions from the same stage (Fig.~2). We see that in general there is substantial similarity in extinction regimes between succeeding geologic stages with respect to the evaluated taxonomic and geographic range predictor variables. TODO: flesh this out a bit more
