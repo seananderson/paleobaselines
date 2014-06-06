@@ -959,7 +959,7 @@ er_dat_class_raw <- plyr::join(er_dat_class_raw, by.prov.classes.raw, by = "PROV
 
 % The follow code produces Fig.~\ref{fig:plot-class-prov-ext-raw-ranges}.
 
-<<plot-class-prov-ext-raw-ranges">>=
+<<plot-class-prov-ext-raw-ranges", results='hide'>>=
  # fig.cap="Mean predicted extinction susceptibility of genera inhabiting different ocean biogeographic provinces \\cite{spalding2007} for each of the eight major groups considered, as in Fig.~3, but \\textbf{with predictions based on raw ranges in OBIS without the within-realm minimum bounding box interpolation}. Scale bars on the right indicate the range of log extinction susceptibility values for a given group, and this scale is used to plot mean extinction susceptibility heatmaps on the left."
 # Make the class figure:
 pdf("../figs/plot-class-prov-ext-raw-ranges.pdf", width = 6.45, height = 5.1)
@@ -971,7 +971,7 @@ dev.off()
 
 % The follow code produces Fig.~\ref{fig:no-bounding-box-overall-map}.
 
-<<no-bounding-box-overall-map>>=
+<<no-bounding-box-overall-map, results='hide'>>=
 er_dat_raw <- plyr::join(er_points, er@data, by = "id")
 er_dat_raw <- plyr::join(er_dat_raw, by.prov.all.raw, by = "PROV_CODE")
 pdf("../figs/no-bounding-box-overall-map.pdf", width = 7, height = 3.5)
@@ -1091,7 +1091,7 @@ map_class_ext(er_dat_class3, yticks = exp(c(-0.5, 0, 0.5)),
 
 As another test, we will try removing genera that are only reported in one province. This removes \Sexpr{single.genera.provs.removed} from a total of \Sexpr{total.genera} genera (Fig.~\ref{fig:remove-single-province-genera-class-map} and Fig.~\ref{fig:remove-single-province-genera-overall-map}).
 
-<<remove-single-province-genera-class-map>>=
+<<remove-single-province-genera-class-map, result='hide'>>=
 load("../data/by.prov.classes.no.singles.rda")
 er_dat_class_no_single <- plyr::join(er_points, er@data, by = "id")
 er_dat_class_no_single <- plyr::join(er_dat_class_no_single, by.prov.classes.no.singles, by = "PROV_CODE")
@@ -1103,7 +1103,7 @@ map_class_ext(er_dat_class_no_single, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10, 
 dev.off()
 @
 
-<<remove-single-province-genera-overall-map>>=
+<<remove-single-province-genera-overall-map, results='hide'>>=
 load("../data/by.prov.all.no.singles.rda")
 er_dat_no_single <- plyr::join(er_points, er@data, by = "id")
 er_dat_no_single <- plyr::join(er_dat_no_single, by.prov.all.no.singles, by = "PROV_CODE")
