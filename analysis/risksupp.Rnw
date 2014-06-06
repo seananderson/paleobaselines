@@ -449,10 +449,11 @@ stage_order <- c("Lower Miocene", "Middle Miocene", "Upper Miocene",
 out <- list()
 for(i in 1:length(stage_order)) {
   message(stage_order[[i]])
-  out[[i]] <- rdply(50, validate_gbm(
+  out[[i]] <- rdply(75, validate_gbm(
       subset(neog, Interval_Name == stage_order[i]), 
       shrinkage = SHRINKAGE, interaction.depth = INT.DEPTH, 
-      n.trees = NTREES, use_weights = TRUE)$bin_validation,
+      n.trees = NTREES, use_weights = TRUE, 
+      test_fraction = 0.3333)$bin_validation,
       .progress = "text")
   out[[i]]$stage <- stage_order[[i]]
 }
