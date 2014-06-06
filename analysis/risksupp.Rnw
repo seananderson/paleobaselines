@@ -478,6 +478,53 @@ ggplot(val_test_alt,
   labs(size = "Median sample #")
 @
 
+<<check-within-interval-performance>>=
+stage_order <- c("Lower Miocene", "Middle Miocene", "Upper Miocene",
+  "Plio-Pleistocene")
+out <- list()
+for(i in 1:length(stage_order)) {
+  message(stage_order[[i]])
+  out[[i]] <- rdply(50, validate_gbm(
+      subset(neog, Interval_Name == stage_order[i]), 
+      shrinkage = SHRINKAGE, interaction.depth = INT.DEPTH, 
+      n.trees = NTREES, use_weights = TRUE)$bin_validation,
+      .progress = "text")
+  out[[i]]$stage <- stage_order[[i]]
+}
+within_stage <- do.call("rbind", out)
+
+oos_rsq_glm <- plyr::ddply(within_stage, "stage", function(x) {
+  require(mgcv)
+  m <- mgcv::gam(obs_ext_prob ~ gbm_pred_binned, data = x, 
+    weights = sample_n, family = binomial)
+  summary(m)$dev.expl
+  })
+
+glm_pred <- plyr::ddply(within_stage, "stage", function(x) {
+   m <- glm(obs_ext_prob ~ gbm_pred_binned, data = x, 
+     weights = sample_n, family = binomial)
+   newdat <- data.frame(gbm_pred_binned = seq(min(x$gbm_pred_binned),
+       max(x$gbm_pred_binned), length.out = 100))
+   data.frame(gbm_pred_binned = newdat$gbm_pred_binned, 
+     pred = predict(m, type = "response", newdata = newdat))
+   })
+@
+
+<<plot-within-stage-tests, fig.width=8.5, fig.height=7, out.width="6.25in", fig.cap="TODO fix caption. Within interval 2-fold cross-validation prediction. Fit shown is a logistic regression. (probability with weights for numbers of samples).">>=
+ggplot(data = within_stage, 
+  aes(x = gbm_pred_binned, y = obs_ext_prob, size = sample_n, colour = class)) +
+  geom_point(alpha = 0.2) +
+  facet_wrap(~stage) +
+  scale_size(trans = "log10") + coord_fixed(ratio = 1) +
+  ylim(0, 1) + xlim(0, 1) +
+  xlab("Out-of-sample GBM-predicted extinction probability") +
+  ylab("Observed extinction probability") +
+  scale_colour_brewer(palette = "Set2") +
+  labs(size = "Sample #") + theme_bw() +
+  guides(colour = guide_legend(override.aes = list(alpha = 1))) +
+  geom_line(data = glm_pred, aes(gbm_pred_binned, pred), col = "darkgrey", lwd = 1)
+@
+
 \subsection{Testing predictive performance across geologic stages}
 
 Another way to test the predictive power of our models is to build the model on one geologic stage and predict on another. We will not use our calibration factors in this test to keep the code as simple as possible and to minimize computational time. We can compare the predictions made from other stages with the predictions from the same stage (Fig.~2). We see that in general there is substantial similarity in extinction regimes between succeeding geologic stages with respect to the evaluated taxonomic and geographic range predictor variables. TODO: flesh this out a bit more
