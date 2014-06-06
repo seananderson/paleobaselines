@@ -503,8 +503,7 @@ cross_pred$stage_train <- factor(cross_pred$stage_train,
 # Extract R^2 values for all correlations except within-interval
 # comparisons:
 Rsq <- function(df) {
-  md <- lm(df$pred ~ df$pred_self)
-  Rsq <- summary(md)$r.squared
+  Rsq <- cor(df$pred,df$pred_self,method="spearman")^2
   return(Rsq)
 }
 
