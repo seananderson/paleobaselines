@@ -939,18 +939,22 @@ er_dat_class_raw <- plyr::join(er_dat_class_raw, by.prov.classes.raw, by = "PROV
 
 % The follow code produces Fig.~\ref{fig:plot-class-prov-ext-raw-ranges}.
 
-<<plot-class-prov-ext-raw-ranges, fig.cap="Mean predicted extinction susceptibility of genera inhabiting different ocean biogeographic provinces \\cite{spalding2007} for each of the eight major groups considered, as in Fig.~3, but \\textbf{with predictions based on raw ranges in OBIS without the within-realm minimum bounding box interpolation}. Scale bars on the right indicate the range of log extinction susceptibility values for a given group, and this scale is used to plot mean extinction susceptibility heatmaps on the left.", fig.width=6.45, fig.height=5.4, out.width="6.25in">>=
+<<plot-class-prov-ext-raw-ranges">>=
+ # fig.cap="Mean predicted extinction susceptibility of genera inhabiting different ocean biogeographic provinces \\cite{spalding2007} for each of the eight major groups considered, as in Fig.~3, but \\textbf{with predictions based on raw ranges in OBIS without the within-realm minimum bounding box interpolation}. Scale bars on the right indicate the range of log extinction susceptibility values for a given group, and this scale is used to plot mean extinction susceptibility heatmaps on the left."
 # Make the class figure:
+pdf("../figs/plot-class-prov-ext-raw-ranges.pdf", width = 6.45, height = 5.1)
 map_class_ext(er_dat_class_raw,
   yticks = c(0.005, 0.01, 0.02, 0.05, 0.10, 0.20),
   min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0028, 0.33))
+dev.off()
 @
 
 % The follow code produces Fig.~\ref{fig:no-bounding-box-overall-map}.
 
-<<no-bounding-box-overall-map, fig.cap="Mean predicted intrinsic extinction probability, as in Fig.~4, but \\textbf{without the bounding box interpolaion}.", fig.width=6, fig.height=4, outwidth="6in">>=
+<<no-bounding-box-overall-map>>=
 er_dat_raw <- plyr::join(er_points, er@data, by = "id")
 er_dat_raw <- plyr::join(er_dat_raw, by.prov.all.raw, by = "PROV_CODE")
+pdf("../figs/no-bounding-box-overall-map.pdf", width = 7, height = 3.5)
 par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
 labs.nbb <- seq(0.016, 0.028, 0.004)
@@ -958,7 +962,16 @@ map_hotspots(er_dat_raw, min_prov_genera = 100, hotspots = FALSE,
   add_legend = TRUE, at = log(labs.nbb), at.labels = labs.nbb)
 mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
   line = -1.2, las = 0, col = "grey30", cex = 0.9)
+dev.off()
 @
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{../figs/plot-class-prov-ext-raw-ranges.pdf}
+  \includegraphics[width=3.75in]{../figs/no-bounding-box-overall-map.pdf}
+  \caption{Mean predicted extinction susceptibility of genera inhabiting different ocean biogeographic provinces \cite{spalding2007} for each of the 6 major groups considered (upper 6 panels) and across all genera (lower centred panel), as in Fig.~3 and 4, but \textbf{with predictions based on raw ranges in OBIS without the within-realm minimum bounding box interpolation}. Scale bars on the right indicate the range of intrinsic extinction probability values for a given group, and this scale is used to plot mean extinction susceptibility heatmaps on the left.}
+  \label{fig:no-bounding-box}
+\end{figure}
 
 \subsection{Jackknife analysis}
 
@@ -1058,20 +1071,23 @@ map_class_ext(er_dat_class3, yticks = exp(c(-0.5, 0, 0.5)),
 
 As another test, we will try removing genera that are only reported in one province. This removes \Sexpr{single.genera.provs.removed} from a total of \Sexpr{total.genera} genera (Fig.~\ref{fig:remove-single-province-genera-class-map} and Fig.~\ref{fig:remove-single-province-genera-overall-map}).
 
-<<remove-single-province-genera-class-map, fig.width=6.45, fig.height=5.4, out.width="6.25in", fig.cap="Same as Fig.~3, but with \\textbf{genera occurring in single biogeographic provinces removed}.">>=
+<<remove-single-province-genera-class-map>>=
 load("../data/by.prov.classes.no.singles.rda")
 er_dat_class_no_single <- plyr::join(er_points, er@data, by = "id")
 er_dat_class_no_single <- plyr::join(er_dat_class_no_single, by.prov.classes.no.singles, by = "PROV_CODE")
+pdf("../figs/remove-single-province-genera-class-map.pdf", width = 6.45, height = 5.1)
 map_class_ext(er_dat_class_no_single, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10, 0.20),
   min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0028,
     0.35),
   ylabel = "Intrinsic extinction probability (over ~23 Myr)")
+dev.off()
 @
 
-<<remove-single-province-genera-overall-map, fig.width=6, fig.height=4, out.width="6in", fig.cap="Same as Fig.~4, but with \\textbf{genera occurring in single biogeographic provinces removed}.">>=
+<<remove-single-province-genera-overall-map>>=
 load("../data/by.prov.all.no.singles.rda")
 er_dat_no_single <- plyr::join(er_points, er@data, by = "id")
 er_dat_no_single <- plyr::join(er_dat_no_single, by.prov.all.no.singles, by = "PROV_CODE")
+pdf("../figs/remove-single-province-genera-overall-map.pdf", width = 7, height = 3.5)
 par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
 # labs <- seq(0.008, 0.016, 0.002)
@@ -1083,13 +1099,22 @@ par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
 # labs_show <- sprintf("%.3f", labs_show)
 # labs_show[labs_show == "NA"] <- ""
 #labs.ns <- c(0.006, 0.008, 0.012)
-labs.ns <- c(0.010, 0.012, 0.014, 0.016)
+labs.ns <- seq(0.012, 0.022, 0.002)
 map_hotspots(er_dat_no_single, min_prov_genera = 100, add_legend = TRUE,
   hotspots = FALSE, at = log(labs.ns), at.labels = labs.ns)
 par(xpd = NA)
 mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
   line = -1.2, las = 0, col = "grey30", cex = 0.9)
+dev.off()
 @
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{../figs/remove-single-province-genera-class-map.pdf}
+  \includegraphics[width=3.75in]{../figs/remove-single-province-genera-overall-map.pdf}
+  \caption{Mean predicted extinction susceptibility of genera inhabiting different ocean biogeographic provinces \cite{spalding2007} for each of the 6 major groups considered (upper 6 panels) and across all genera (lower centred panel), as in Fig.~3 and 4, but \textbf{with genera occurring in single biogeographic provinces removed}. Scale bars on the right indicate the range of intrinsic extinction probability values for a given group, and this scale is used to plot mean extinction susceptibility heatmaps on the left.}
+  \label{fig:remove-single-province-genera}
+\end{figure}
 
 \subsection{Exploring the distribution of the predictors}
 
