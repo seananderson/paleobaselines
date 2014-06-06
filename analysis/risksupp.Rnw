@@ -528,6 +528,8 @@ dev.off()
 # Cross-interval comparison of genus risk estimates from generalized boosting models. The x-axis shows the probability of extinction as predicted by a model built on data from the same stage. The y-axis shows the probability of extinction as predicted by a model built on data from a different stage. The colours show different taxonomic classes. Note the log-distributed x- and y-axes. Since there is some stochasticity involved in the generalized boosting machine fitting routine, there is some variability in predictions within the same stage (the diagonal panels). In general, there is substantial similarity in extinction regimes between succeeding intervals with respect to the evaluated taxonomic and geographic range predictor variables.
 @
 
+The median Spearman's rank correlation for the cross-interval predictions is \Sexpr{median(Rsq$Rsq)} and the rank correlations range from \Sexpr{min(Rsq$Rsq)} to \Sexpr{max(Rsq$Rsq)}.
+
 \subsection{Evaluating the marginal effects of predictor variables}
 
 We will now look at the marginal effect of each predictor on extinction risk. We can do this through partial dependence plots, as shown in Fig.~1. This procedure finds the marginal effect of each predictor by integrating across all other predictor values using the method described in Ref.~\cite{friedman2001}.
