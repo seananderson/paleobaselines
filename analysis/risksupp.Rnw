@@ -477,9 +477,9 @@ glm_pred <- plyr::ddply(within_stage, "stage", function(x) {
 @
 
 <<plot-within-stage-tests, fig.width=8.5, fig.height=7, out.width="6.25in", fig.cap="TODO fix caption. Within interval 2-fold cross-validation prediction. Fit shown is a logistic regression. (probability with weights for numbers of samples).">>=
-ggplot(data = within_stage, 
-  aes(x = gbm_pred_binned, y = obs_ext_prob, size = sample_n, colour = class)) +
-  geom_point(alpha = 0.2) +
+ggplot(data = within_stage) +
+  geom_point(aes(x = gbm_pred_binned, 
+      y = obs_ext_prob, size = sample_n, colour = class), alpha = 0.2) +
   facet_wrap(~stage) +
   scale_size(trans = "log10") + coord_fixed(ratio = 1) +
   ylim(0, 1) + xlim(0, 1) +
@@ -488,7 +488,10 @@ ggplot(data = within_stage,
   scale_colour_brewer(palette = "Set2") +
   labs(size = "Sample #") + theme_bw() +
   guides(colour = guide_legend(override.aes = list(alpha = 1))) +
-  geom_line(data = glm_pred, aes(gbm_pred_binned, pred), col = "darkgrey", lwd = 1)
+  geom_line(data = glm_pred, aes(gbm_pred_binned, pred), 
+    col = "darkgrey", lwd = 1) +
+  geom_text(data = oos_rsq_glm, aes(.05,.90, 
+      label = sprintf("%.2f", V1)), size=3.5)
 @
 
 \subsection{Testing predictive performance across geologic stages}
