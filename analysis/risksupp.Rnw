@@ -360,8 +360,7 @@ ggplot(subset(val_test, .n == 1),
   facet_wrap(~class) +
   scale_size(trans = "log10") + coord_fixed(ratio = 1) +
   ylim(0, 1) + xlim(0, 1) +
-  xlab("Out-of-sample GBM-predicted extinction probability") +
-  ylab("Observed extinction probability (one iteration)") +
+  xlab("Out-of-sample GBM-predicted scaled extinction probability") +
   labs(size = "Sample #")
 @
 
@@ -382,8 +381,8 @@ ggplot(val_test_summarized,
   facet_wrap(~class) +
   scale_size(trans = "log10") + coord_fixed(ratio = 1) +
   ylim(0, 1) + xlim(0, 1) +
-  xlab("Out-of-sample GBM-predicted extinction probability") +
-  ylab("Observed extinction probability") +
+  xlab("Out-of-sample GBM-predicted scaled extinction probability") +
+  ylab("Observed scaled extinction probability") +
   labs(size = "Median sample #")
 @
 
@@ -473,8 +472,8 @@ ggplot(val_test_alt,
   facet_grid(version~class) +
   scale_size(trans = "log10") + coord_fixed(ratio = 1) +
   ylim(0, 1) + xlim(0, 1) +
-  xlab("Out-of-sample GBM-predicted extinction probability") +
-  ylab("Observed extinction probability") +
+  xlab("Out-of-sample GBM-predicted scaled extinction probability") +
+  ylab("Observed scaled extinction probability") +
   labs(size = "Median sample #")
 @
 
@@ -517,8 +516,8 @@ ggplot(data = within_stage,
   facet_wrap(~stage) +
   scale_size(trans = "log10") + coord_fixed(ratio = 1) +
   ylim(0, 1) + xlim(0, 1) +
-  xlab("Out-of-sample GBM-predicted extinction probability") +
-  ylab("Observed extinction probability") +
+  xlab("Out-of-sample GBM-predicted scaled extinction probability") +
+  ylab("Observed scaled extinction probability") +
   scale_colour_brewer(palette = "Set2") +
   labs(size = "Sample #") + theme_bw() +
   guides(colour = guide_legend(override.aes = list(alpha = 1))) +
