@@ -361,6 +361,7 @@ ggplot(subset(val_test, .n == 1),
   scale_size(trans = "log10") + coord_fixed(ratio = 1) +
   ylim(0, 1) + xlim(0, 1) +
   xlab("Out-of-sample GBM-predicted scaled extinction probability") +
+  ylab("Observed scaled extinction probability (one iteration)") +
   labs(size = "Sample #")
 @
 
