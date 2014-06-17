@@ -541,8 +541,8 @@ p <- p + geom_point(data=cross_pred2,
     aes(pred_self, pred, colour = class2), alpha=0.25, pch=16)  +
   facet_grid(stage_train ~ stage_test) +
   scale_y_log10() + scale_x_log10() +
-  #scale_colour_brewer(palette = "Set2",breaks=c("Bivalvia","Echinoidea","Gastropoda","Mammalia","Scleractinia","Sharks")) +
-  scale_colour_manual(values = c("blue","yellow2","skyblue2","red","limegreen","chocolate2"),breaks=c("Scleractinia","Bivalvia","Gastropoda","Echinoidea","Sharks","Mammalia")) +
+  scale_colour_brewer(palette = "Set2",breaks=c("Scleractinia","Bivalvia","Gastropoda","Echinoidea","Sharks","Mammalia")) +
+  #scale_colour_manual(values = c("blue","yellow2","skyblue2","red","limegreen","chocolate2"),breaks=c("Scleractinia","Bivalvia","Gastropoda","Echinoidea","Sharks","Mammalia")) +
   xlab("Scaled extinction probability (stage that model was built on)") +
   ylab("Scaled extinction probability (stage that model was tested on)") +
   guides(colour = guide_legend(override.aes = list(alpha = 1))) +
