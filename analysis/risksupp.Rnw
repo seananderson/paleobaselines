@@ -517,6 +517,11 @@ cross_pred$stage_test <- factor(cross_pred$stage_test,
   levels = stage_order)
 cross_pred$stage_train <- factor(cross_pred$stage_train,
   levels = stage_order)
+cross_pred$class <- factor(cross_pred$class, levels =c("Gastropoda","Bivalvia","Anthozoa","Echinoidea","Elasmobranchii","Mammalia"))
+
+newclass <- data.frame(c("Gastropoda","Bivalvia","Anthozoa","Echinoidea","Elasmobranchii","Mammalia"),c("Gastropoda","Bivalvia","Scleractinia","Echinoidea","Sharks","Mammalia"))
+colnames(newclass) <- c("class","class2")
+cross_pred2 <- merge(cross_pred,newclass,by="class")
 
 # Extract R^2 values for all correlations except within-interval
 # comparisons:
@@ -525,22 +530,26 @@ Rsq <- function(df) {
   return(Rsq)
 }
 
-Rsqs <- ddply(cross_pred, plyr::.(stage_train,stage_test), plyr::each(Rsq))
+Rsqs <- ddply(cross_pred2, plyr::.(stage_train,stage_test), plyr::each(Rsq))
 Rsqs <- na.omit(Rsqs[(Rsqs$stage_train != Rsqs$stage_test),])
 Rsqs$Rsq <- round(Rsqs$Rsq,2)
 
 # make plot
 pdf("../figs/plot-cross-interval-gbms.pdf", width = 9, height = 7)
 p <- ggplot()
-p <- p + geom_point(data=cross_pred,
-    aes(pred_self, pred, colour = class), alpha=0.3)  +
+p <- p + geom_point(data=cross_pred2,
+    aes(pred_self, pred, colour = class2), alpha=0.25, pch=16)  +
   facet_grid(stage_train ~ stage_test) +
   scale_y_log10() + scale_x_log10() +
-  scale_colour_brewer(palette = "Set2") +
+  #scale_colour_brewer(palette = "Set2",breaks=c("Bivalvia","Echinoidea","Gastropoda","Mammalia","Scleractinia","Sharks")) +
+  scale_colour_manual(values = c("blue","yellow2","skyblue2","red","limegreen","chocolate2"),breaks=c("Scleractinia","Bivalvia","Gastropoda","Echinoidea","Sharks","Mammalia")) +
   xlab("Scaled extinction probability (stage that model was built on)") +
   ylab("Scaled extinction probability (stage that model was tested on)") +
   guides(colour = guide_legend(override.aes = list(alpha = 1))) +
-  geom_text(data=Rsqs,aes(.005,.70,label=sprintf("%.2f", Rsq)),size=3.5)
+  geom_text(data=Rsqs,aes(.005,.70,label=sprintf("%.2f", Rsq)),size=3.5) +
+  theme(panel.grid.major = element_blank()) + 
+  theme(panel.grid.minor = element_blank()) +
+  theme(legend.title=element_blank()) 
 print(p)
 dev.off()
 # Cross-interval comparison of genus risk estimates from generalized boosting models. The x-axis shows the probability of extinction as predicted by a model built on data from the same stage. The y-axis shows the probability of extinction as predicted by a model built on data from a different stage. The colours show different taxonomic classes. Note the log-distributed x- and y-axes. Since there is some stochasticity involved in the generalized boosting machine fitting routine, there is some variability in predictions within the same stage (the diagonal panels). In general, there is substantial similarity in extinction regimes between succeeding intervals with respect to the evaluated taxonomic and geographic range predictor variables.
