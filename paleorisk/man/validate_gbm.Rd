@@ -3,12 +3,17 @@
 \alias{validate_gbm}
 \title{Validate and calibrate models}
 \usage{
-validate_gbm(dat, test_fraction = 0.5, threshold = 0.5, shrinkage = 0.1,
+validate_gbm(dat, formula = Ex ~ richness + occupancy + occurrences + min.lat
+  + max.lat + lat.range + mean.lat + great.circle + group,
+  test_fraction = 0.5, threshold = 0.5, shrinkage = 0.1,
   interaction.depth = 1, n.trees = 300, bin = 0.05, smote = FALSE,
   use_weights = FALSE, classification_stats = FALSE, ...)
 }
 \arguments{
   \item{dat}{The input data.}
+
+  \item{formula}{Formula to pass to
+  \code{\link[gbm]{gbm}}.}
 
   \item{test_fraction}{The fraction of the data to reserve
   for testing.}

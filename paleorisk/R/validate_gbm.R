@@ -4,6 +4,8 @@
 #' observation statistics within bins for use with validation and calibration.
 #'
 #' @param dat The input data.
+#' @param formula Formula to pass to \code{\link[gbm]{gbm}}. Warning: this
+#' should be passed a quoted character object.
 #' @param test_fraction The fraction of the data to reserve for testing.
 #' @param threshold The cutoff to use in binary classification statistics.
 #' @param shrinkage The \code{shrinkage} argument to pass to
@@ -34,10 +36,15 @@
 #' prediction and bin validation data frames.
 #' @rdname validate_gbm
 
-validate_gbm <- function(dat, test_fraction = 0.5, threshold = 0.5,
+validate_gbm <- function(dat,
+  model = "Ex ~ richness + occupancy + occurrences + min.lat + max.lat +
+    lat.range + mean.lat + great.circle + group",
+  test_fraction = 0.5, threshold = 0.5,
   shrinkage = 0.1, interaction.depth = 1, n.trees = 300, bin = 0.05,
   smote = FALSE, use_weights = FALSE, classification_stats = FALSE, ...) {
 
+  if(class(model) != "character") stop("model must be a character object")
+  if(smote) stop("Smote algorithm not currently enabled to reduce dependencies.")
   if(smote & use_weights) stop("Use only one of smote and use_weights.")
 
   N <- nrow(dat)
@@ -67,9 +74,8 @@ validate_gbm <- function(dat, test_fraction = 0.5, threshold = 0.5,
   }
 
   # model fitting:
-  m <- gbm::gbm(Ex ~ richness + occupancy + occurrences + min.lat + max.lat +
-      lat.range + mean.lat + great.circle + group, data =
-      dat_train, n.trees = n.trees, interaction.depth = interaction.depth,
+  m <- gbm::gbm(as.formula(model), data = dat_train, n.trees = n.trees,
+    interaction.depth = interaction.depth,
     distribution = "bernoulli", shrinkage = shrinkage, weights = weights, ...)
 
   dat_train$gbm_pred <- gbm::predict.gbm(m, n.trees = n.trees, type = "response")
