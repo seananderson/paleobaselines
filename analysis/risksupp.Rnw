@@ -33,9 +33,7 @@ opts_chunk$set(warning=FALSE, message=FALSE, tidy=FALSE, refresh=TRUE,
   cache.path="../cache/", cache.lazy=FALSE, size="small")
 opts_chunk$set(dev = 'pdf')
 opts_knit$set(out.format = "latex")
-thm <- knit_theme$get("solarized-light.css")
 opts_knit$set(eval.after = 'fig.cap') # evaluate fig.cap after the chunk
-knit_theme$set(thm)
 @
 
 \title{Supplementary Materials for Paleontological Baselines for Evaluating
@@ -332,7 +330,7 @@ We began by building GBM models and testing their ability to predict data separa
 
 To test the predictive performance of our model, we will group the predicted probabilities for each class into bins from 0 to 1 in 0.05 increments. For example, we can group predicted probabilities of 0.12, 0.11, and 0.14 for 3 different out of sample genera into a bin of 0.10--0.15. Then we can calculate the mean observed extinction probability for each of those bins. For example, say those 3 genera have observed extinction probabilities of 0.21, 0.09, and 0.10. In that case, the observed out-of-sample extinction probability was 0.133. We can then compare the mean of our prediction bin (0.125) with the mean observed value (0.133). In this example, our model is biased slightly low. Because we're building and testing the model on independent datasets, this is a good test of how our model might perform on a new but equivalent dataset.
 
-<<test-gbm1>>=
+<<test-gbm1, results='hide'>>=
 INT.DEPTH <- 5
 NTREES <- 1000
 SHRINKAGE <- 0.01
@@ -462,7 +460,7 @@ ggplot(data = within_stage) +
 
 Another way to test the predictive power of our models is to build the model on one geologic stage and predict on another. We will not use our calibration factors in this test to keep the code as simple as possible and to minimize computational time. We can compare the predictions made from other stages with the predictions from the same stage (Fig.~2). We see that in general there is substantial similarity in extinction regimes between succeeding geologic stages with respect to the evaluated taxonomic and geographic range predictor variables. TODO: flesh this out a bit more
 
-<<cross-intervals-gbms>>=
+<<cross-intervals-gbms, results='hide'>>=
 stage_df <- expand.grid(stage_train = unique(neog$stage),
   stage_test = unique(neog$stage))
 cross_pred <- mdply(stage_df, fit_interval_gbm, dat = neog,
@@ -1010,7 +1008,7 @@ dev.off()
 
 \subsection{Alternative model with only taxonomic predictors}
 
-<<alternative-gbm-taxonomy-only-prep, fig.width=7, fig.height=4, out.width="6.25in">>=
+<<alternative-gbm-taxonomy-only-prep, fig.width=7, fig.height=4, out.width="6.25in", results='hide'>>=
 # build calibration models:
 val_tax <- rdply(40, validate_gbm(neog,
   model = "Ex ~ group", shrinkage = SHRINKAGE,
@@ -1069,7 +1067,7 @@ er_dat_tax <- plyr::join(er_dat_tax, by.prov.all.tax, by = "PROV_CODE")
 @
 
 
-<<alternative-gbms-plots>>=
+<<alternative-gbms-plots, results='hide'>>=
 pdf("../figs/class-risk-maps-mean-log-ext-taxonomy-only.pdf", width = 6.45, height = 5.1)
 map_class_ext(er_dat_tax_class, plot_column = "mean.ext",
   min_prov_genera = 10, ylab = "Intrinsic extinction probability (over ~23 Myr)",
@@ -1189,7 +1187,7 @@ map_class_ext(er_dat_class3, yticks = exp(c(-0.5, 0, 0.5)),
 
 As another test, we will try removing genera that are only reported in one province. This removes \Sexpr{single.genera.provs.removed} from a total of \Sexpr{total.genera} genera (Fig.~\ref{fig:remove-single-province-genera-class-map} and Fig.~\ref{fig:remove-single-province-genera-overall-map}).
 
-<<remove-single-province-genera-class-map, result='hide'>>=
+<<remove-single-province-genera-class-map, results='hide'>>=
 load("../data/by.prov.classes.no.singles.rda")
 er_dat_class_no_single <- plyr::join(er_points, er@data, by = "id")
 er_dat_class_no_single <- plyr::join(er_dat_class_no_single, by.prov.classes.no.singles, by = "PROV_CODE")
