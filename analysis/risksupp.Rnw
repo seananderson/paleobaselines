@@ -624,7 +624,7 @@ partial_dat2 <- plyr::ddply(partial_dat,
   upper = quantile(response, probs = 0.75))
 @
 
-% Because the taxonomic variables are factors (i.e.\ they are words) and the other variables are continuous and numeric, we will split these into separate data frames for plotting:
+% Because the taxonomic variables are categorical and the other variables are continuous and numeric, we will split these into separate data frames for plotting:
 
 <<separate-taxonomic-and-numeric-predictions>>=
 partial_groups <- partial_dat2[partial_dat2$predictor == "group", ]
