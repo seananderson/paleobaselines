@@ -458,7 +458,7 @@ ggplot(data = within_stage) +
 
 \subsection{Testing predictive performance across geologic stages}
 
-Another way to test the predictive power of our models is to build the model on one geologic stage and predict on another. We will not use our calibration factors in this test to keep the code as simple as possible and to minimize computational time. We can compare the predictions made from other stages with the predictions from the same stage (Fig.~2). We see that in general there is substantial similarity in extinction regimes between succeeding geologic stages with respect to the evaluated taxonomic and geographic range predictor variables. TODO: flesh this out a bit more
+Another way to evaluate the similarity in extinction regimes between different time intervals is to predict extinction risk for each genus in a given interval from the model trained on that interval with predicted extinction risk for that genus from a model trained on a different interval.  If the relationship between predictors and extinction risk is similar in both intervals, genus risk predictions from the two models will be strongly positively correlated.  If the relationship between predictors and extinction risk differs strongly between the two stages, genus risk estimates will be only weakly correlated. We see that in general there is substantial similarity in per-genus extinction risk predictions across all four stages, with Spearman rank-order correlation coefficients for cross-interval predictions ranging from \Sexpr{min(Rsqs$Rsq)} to \Sexpr{max(Rsqs$Rsq)} with a median of \Sexpr{median(Rsqs$Rsq)}.
 
 <<cross-intervals-gbms, results='hide'>>=
 stage_df <- expand.grid(stage_train = unique(neog$stage),
@@ -559,7 +559,6 @@ dev.off()
 
 @
 
-The median Spearman's rank correlation for the cross-interval predictions is \Sexpr{median(Rsqs$Rsq)} and the rank correlations range from \Sexpr{min(Rsqs$Rsq)} to \Sexpr{max(Rsqs$Rsq)}.
 
 \subsection{Evaluating the marginal effects of predictor variables}
 
