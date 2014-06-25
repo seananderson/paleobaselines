@@ -26,3 +26,7 @@ paleorisk/paleorisk.Rproj
 *.Rhistory
 
 *.ttt
+
+analysis/max_col_range_class_maps.txt
+
+analysis/diff_in_range_of_probabilities_within_vs_between_provs.txt
