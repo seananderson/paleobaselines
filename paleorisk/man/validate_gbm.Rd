@@ -3,8 +3,8 @@
 \alias{validate_gbm}
 \title{Validate and calibrate models}
 \usage{
-validate_gbm(dat, formula = Ex ~ richness + occupancy + occurrences + min.lat
-  + max.lat + lat.range + mean.lat + great.circle + group,
+validate_gbm(dat,
+  model = "Ex ~ richness + occupancy + occurrences + min.lat + max.lat +\\n    lat.range + mean.lat + great.circle + group",
   test_fraction = 0.5, threshold = 0.5, shrinkage = 0.1,
   interaction.depth = 1, n.trees = 300, bin = 0.05, smote = FALSE,
   use_weights = FALSE, classification_stats = FALSE, ...)
@@ -12,8 +12,9 @@ validate_gbm(dat, formula = Ex ~ richness + occupancy + occurrences + min.lat
 \arguments{
   \item{dat}{The input data.}
 
-  \item{formula}{Formula to pass to
-  \code{\link[gbm]{gbm}}.}
+  \item{formula}{Formula to pass to \code{\link[gbm]{gbm}}.
+  Warning: this should be passed a quoted character
+  object.}
 
   \item{test_fraction}{The fraction of the data to reserve
   for testing.}

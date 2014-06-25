@@ -6,7 +6,7 @@
 standardize_data(dat, min_lat_bin = 10, max_lat_bin = 10,
   lat_range_bin = 10, mean_lat_bin = 10, tropical_only_bin = 1,
   great_circle_bin = 2000, num_bins = 10, num_risk_quantiles = 10,
-  input_ranges = "Interpolated", min_occurrences = 1,
+  input_ranges = "Interpolated", min_occurrences = 2,
   minimum_duration = 1)
 }
 \arguments{
