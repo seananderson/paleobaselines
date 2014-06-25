@@ -26,20 +26,33 @@
 #' @param exact_limits Vector of length 2 giving the exact colour limits.
 #'   Ignored if \code{NULL}
 #' @param log_yticks Should the log tick values be log transformed when placing
-#' them?
+#'   them?
 #' @param fixed_range Should the colour range be fixed through all panels?
+#' @param picture_files A vector of file paths containing silhouettes to be
+#'   added to the panels. Should be in a format for \code{readPicture} in the
+#'   \pkg{grImport} package.
+#' @param silhouette_coords A list of numeric vectors of length 4 giving the
+#' coordinates to pass to \code{readPicture} in the \pkg{grImport} package. x1,
+#' y1, x2, y2. One list element per panel.
 #' @param ... Anything extra to pass to \code{col_box_key}.
 #' @export
 
 map_class_ext <- function(er_dat, min_prov_genera = 20,
   col_pal = RColorBrewer::brewer.pal(9, "YlOrRd"),
-  plot_column = "mean.ext", plot_order = c("Mammalia", "Echinoidea",
-    "Gastropoda", "Anthozoa", "Elasmobranchii", "Bivalvia"),
+  plot_column = "mean.ext", plot_order = c("Mammalia", "Elasmobranchii",
+    "Echinoidea", "Gastropoda", "Anthozoa", "Bivalvia"),
   yticks = c(0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1),
   ylabel = "Intrinsic extinction probability", col_range = FALSE,
-  exact_limits = NULL, log_yticks = FALSE, fixed_range = FALSE, ...) {
+  exact_limits = NULL, log_yticks = FALSE, fixed_range = FALSE,
+  picture_files = NULL, silhouette_coords = list(c(-2.2, -0.75, -1.9, -0,86)),
+  ...) {
 
   plot_order <- data.frame(class = plot_order, plot_order = 1:length(plot_order))
+
+  if(length(silhouette_coords) == 1)
+    for(i in 1:nrow(plot_order)) {
+      silhouette_coords[[i]] <- silhouette_coords[[1]]
+    }
 
   er.df <- er_dat
   plot_col_n <- (1:ncol(er_dat))[names(er_dat) %in% plot_column]
@@ -205,8 +218,16 @@ map_class_ext <- function(er_dat, min_prov_genera = 20,
         add_locator = add_locator, loc_limits =
           loc.limits, loc_col = "black", loc_width = 2, ...)
 
+      #points(-2.2, -0.78, cex = 2) # testing
+      if(!is.null(picture_files)) {
+        p <- grImport::readPicture(picture_files[ii])
+        grImport::picture(p, silhouette_coords[[ii]][1], silhouette_coords[[ii]][2],
+          silhouette_coords[[ii]][3], silhouette_coords[[ii]][4])
+      }
     })
   mtext(ylabel, side = 4, outer = TRUE, line = 2.0, las = 0, cex = 0.8, col = "grey30")
+
+  invisible(max_range)
 }
 
 
