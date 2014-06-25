@@ -402,7 +402,7 @@ ggplot(val_test_summarized,
 We can use these observed extinction probabilities as calibration for our GBM-predicted extinction probability in the contemporary dataset. To do this, we take the predicted extinction probability from our GBM model applied to the contemporary dataset, we fit that value into our binning scheme, and we match it with the empirically-observed mean extinction probability for that bin. This removes the observed non-linear bias in our model \cite{thorson2012}. Put another way, we find our predicted value on the x-axis of the last plot and draw a vertical line up until we meet a blue dot. We then use the y-axis value of the blue dot as our calibrated extinction probability.
 
 We will examine the effect of varying some of the main arguments to the \texttt{gbm()} function. We will test the effect of the \texttt{shrinkage} (the rate of improvement between each tree iteration), \texttt{interaction.depth} (the maximum number of variable interactions), and \texttt{n.trees} (the total number of trees to build) arguments. We will vary each argument one at a time. We do this to check that predictive performance doesn't look substantially better by adjusting any of these arguments.
-
+%TODO this doesn't seem to work any more...
 <<plot-alt-gbms, fig.height=8, fig.width=13, out.width="7in", echo=FALSE, eval=FALSE>>=
 ggplot(val_test_alt,
   aes(gbm_pred_binned, mean_observed)) +
