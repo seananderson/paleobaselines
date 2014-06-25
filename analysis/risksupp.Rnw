@@ -233,6 +233,8 @@ We will start by standardizing a variety of habitat-relative characteristics wit
 
 <<standardize-predictors>>=
 dat <- readRDS("../data/modern_and_paleo_ranges.rds")
+#drop singletons if desired
+dat <- dat[(dat$Singleton == 0),]
 dat <- rename(dat, c("Interval" = "Interval_Name",
     "MaxAbsLat" = "MaxLat", "MinAbsLat" = "MinLat",
     "group" = "MatchTaxon", "top" = "stage_top",
@@ -326,7 +328,7 @@ We fit GBMs with the \pkg{gbm} package \cite{gbm2013} for the \proglang{R} stati
 <<load-data>>=
 neog <- readRDS("../data/stand-predictors-cen-obis.rds")
 # can throw out less than 23 - neogene only
-neog2 <- droplevels(subset(neog2, stage_top < 23 &
+neog2 <- droplevels(subset(neog, stage_top < 23 &
     stage_top != 0))
 @
 
