@@ -28,36 +28,36 @@ standardize_data <- function(dat, min_lat_bin = 10, max_lat_bin = 10,
   lat_range_bin = 10, mean_lat_bin = 10,
   tropical_only_bin = 1, great_circle_bin = 2000, num_bins = 10,
   num_risk_quantiles = 10, input_ranges = "Interpolated",
-  min_occurrences = 1, minimum_duration = 1) {
+  min_occurrences = 2, minimum_duration = 1) {
 
   data1  <- gdata::drop.levels(subset(dat, dat$occurrences >= min_occurrences))
 
   stage_name <- data1$Interval_Name[1]
   stage_top <- data1$stage_top[1]
 
-  ### create factors to analyze from prediction interval, round if desired
+  ### create factors to analyze from prediction interval
   genus <- data1$genus
   class <- data1$class
   group <- data1$MatchTaxon
 
-  max.rich <- max(round(log(data1$richness), 0))
-  richness <- round(log(data1$richness), 0)/max.rich
+  max.rich <- max(log(data1$richness))
+  richness <- log(data1$richness)/max.rich
 
-  max.occupancy <- max(round(log(data1$eac), 0))
-  occupancy <- round(log(data1$eac), 0)/max.occupancy
+  max.occupancy <- max(log(data1$eac))
+  occupancy <- log(data1$eac)/max.occupancy
 
-  max.occurrences <- max(round(log(data1$occurrences), 0))
-  occurrences <- round(log(data1$occurrences), 0)/max.occurrences
+  max.occurrences <- max(log(data1$occurrences))
+  occurrences <- log(data1$occurrences)/max.occurrences
 
   gcd <- data1$gcd
-  great.circle <- ceiling(gcd/great_circle_bin)*great_circle_bin
+  great.circle <- (gcd/great_circle_bin)*great_circle_bin
   lats <- data.frame(abs(data1$MinLat), abs(data1$MaxLat))
 
-  #paleolats & longs rounded
-  min.lat <- ceiling(apply(lats, 1, min)/min_lat_bin)*min_lat_bin
-  max.lat <- ceiling(apply(lats, 1, max)/max_lat_bin)*max_lat_bin
+  #paleolats & longs
+  min.lat <- (apply(lats, 1, min)/min_lat_bin)*min_lat_bin
+  max.lat <- (apply(lats, 1, max)/max_lat_bin)*max_lat_bin
   lat.range <- max.lat-min.lat
-  mean.lat <- round(abs(data1$mean_lat)/mean_lat_bin)*mean_lat_bin
+  mean.lat <- (abs(data1$mean_lat)/mean_lat_bin)*mean_lat_bin
   tropical_only <- ifelse(max.lat > 30, 0, 1)
 
   Ex <- data1$Extinct.in.stage
