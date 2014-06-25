@@ -250,6 +250,7 @@ neog <- ddply(dat, "Interval_Name", standardize_data)
 saveRDS(neog, file = "../data/stand-predictors-cen-obis.rds")
 @
 
+%TODO: update this table so that it isn't operating on standardized occurrences
 <<genera-occurrences-table, results = "asis">>=
 dat <- readRDS("../data/stand-predictors-cen-obis.rds")
 Genera <- function(df) length(unique(df$genus))
