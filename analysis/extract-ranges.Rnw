@@ -278,7 +278,7 @@ pbdb <- merge(pbdb,pbdb.fams,by.x="family_name",by.y="family",all.x=TRUE)
   data$class <- ifelse(data$class == "Decapoda","Malacostraca",data$class)
   data <- data[(data$group != "Bivalvia_Trigonioida"),]
   ### now finally, before saving, drop the pre-Neogene stages
-  dropstages <- c("Chattian","Bartonian")
+  dropstages <- c("Chattian","Rupelian")
   data <- data[!(data$Interval %in% dropstages),]
   saveRDS(data, file = "../data/modern_and_paleo_ranges.rds")
   # write.table(data,"~/Dropbox/nescent_extinction_map/data/Modern.and.Paleo.Ranges.csv",sep=",")
