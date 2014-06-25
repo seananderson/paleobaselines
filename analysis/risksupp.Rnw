@@ -243,10 +243,10 @@ dat <- rename(dat, c("Interval" = "Interval_Name",
     "MaxAbsLat" = "MaxLat", "MinAbsLat" = "MinLat",
     "group" = "MatchTaxon", "top" = "stage_top",
     "MeanAbsLat" = "mean_lat", "Ex" = "Extinct.in.stage"))
-dat <- subset(dat, !class %in% c("Foraminifera", "Testudines", "Malacostraca"))
-#mean.lats <- readRDS("../data/genus-mean-occurence-lats.rds")
-#dat <- merge(data, mean.lats)
-neog <- ddply(dat, "Interval_Name", standardize_data, min_occurrences = 1)
+# set occurrence cutoffs for modern and paleo data
+min_modern_occurrences <- 2
+min_pbdb_occurrences <- 1
+neog <- ddply(dat, "Interval_Name", standardize_data)
 saveRDS(neog, file = "../data/stand-predictors-cen-obis.rds")
 @
 
