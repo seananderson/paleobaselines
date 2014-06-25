@@ -103,6 +103,8 @@ extract_ranges <- function() {
     colnames(byGenus.OBIS) <- c("Interval","top","class","group","genus",
       "occurrences","eac","gcd","richness","MaxAbsLat","MinAbsLat",
       "MeanAbsLat","Ex")
+    ### add in a dummy "Singleton" column so can be merged with PBDB
+    byGenus.OBIS$Singleton <- rep(0,length(byGenus.OBIS[,1]))
     write.table(byGenus.OBIS, "../data/OBIS.ranges.processed.csv", sep = ",")
 
   # byGenus.OBIS.list <- summarise(group_by(tbl_df(OBIS.grid.2[1:6000,]),
@@ -121,16 +123,16 @@ extract_ranges <- function() {
   #pbdb <- read.csv('~/Dropbox/nescent_extinction_map/data/PaleoDB downloads/4.6.2014/4.6.2014.occs.csv')
   #save(pbdb,file='~/Dropbox/nescent_extinction_map/data/PaleoDB downloads/4.6.2014/4.6.2014.occs.rda')
 
-  load('~/Dropbox/nescent_extinction_map/data/PaleoDB downloads/4.6.2014/4.6.2014.occs.rda')
+  pbdb <- readRDS('~/Dropbox/nescent_extinction_map/data/PaleoDB downloads/6.25.2014/6.25.2014.occs.rds')
 
   ### redefine Plio-Pleistocene FR_2 Bin
   pbdb$FR2_bin <- ifelse(pbdb$interval_base <= 5.333 & pbdb$interval_top >= .0117,"Plio-Pleistocene",as.character(pbdb$FR2_bin))
 
   #define the stages we want to use, for reference
-  FR2_bin <- c("Pleistocene","Pliocene","Plio-Pleistocene","Upper Miocene","Middle Miocene","Lower Miocene")
-  stage.name <- c("Plio-Pleistocene","Plio-Pleistocene","Plio-Pleistocene","Upper Miocene","Middle Miocene","Lower Miocene")
-  top <- c(.0117,.0117,.0117,5.333,11.608,15.97)
-  bottom <- c(5.333,5.333,5.333,11.608,15.97,23.03)
+  FR2_bin <- c("Pleistocene","Pliocene","Plio-Pleistocene","Upper Miocene","Middle Miocene","Lower Miocene","Chattian","Rupelian")
+  stage.name <- c("Plio-Pleistocene","Plio-Pleistocene","Plio-Pleistocene","Upper Miocene","Middle Miocene","Lower Miocene","Chattian","Rupelian")
+  top <- c(.0117,.0117,.0117,5.333,11.608,15.97,23.03,28.1)
+  bottom <- c(5.333,5.333,5.333,11.608,15.97,23.03,28.1,33.9)
   stage.dates <- data.frame(FR2_bin,stage.name,bottom,top)
 
   pbdb <- merge(pbdb,stage.dates,by="FR2_bin")
@@ -143,14 +145,16 @@ extract_ranges <- function() {
   ### make column of class-genus to avoid mixing up different groups
   pbdb$clgen <- paste(pbdb$class_name,pbdb$occurrence.genus_name)
 
-  ### extract apparent extinction dates of genera
+  ### extract apparent origination and extinction dates of genera
   gen.LA <- function(df) min(df$top)
-  gen.LAs <- ddply(pbdb,.(clgen),each(gen.LA),.progress="text")
+  gen.FA <- function(df) max(df$top)
+  gen.LAs <- ddply(pbdb,.(clgen),each(gen.LA,gen.FA),.progress="text")
 
   ### merge back in and add row to indicate extinction in LA bin if the genus is not listed as extant
   pbdb <- merge(pbdb,gen.LAs,by="clgen",all.x=TRUE)
 
   pbdb$Extinct.in.bin <- ifelse(pbdb$top == pbdb$gen.LA & pbdb$genus_extant != "yes",1,0)
+  pbdb$Singleton <- ifelse(pbdb$gen.LA == pbdb$gen.FA & pbdb$genus_extant != "yes",1,0)
 
   # Okay, this next step is a bit of a kludge.  Automating all of the
   # taxonomic processing that went into the first file is going to take some time.
@@ -239,6 +243,7 @@ pbdb <- merge(pbdb,pbdb.fams,by.x="family_name",by.y="family",all.x=TRUE)
     MeanAbsLat <- mean(abs(df$paleolatdec))
     occurrences <- length(df$paleolatdec)
     Ex <- min(df$Extinct.in.bin)
+    Singletons <- max(df$Singleton)
     }
     else {
       eac = 1
@@ -251,9 +256,10 @@ pbdb <- merge(pbdb,pbdb.fams,by.x="family_name",by.y="family",all.x=TRUE)
       MeanAbsLat <- mean(abs(df$paleolatdec))
       occurrences <- length(df$paleolatdec)
       Ex <- min(df$Extinct.in.bin)
+      Singletons <- max(df$Singleton)
     }
     return(data.frame(occurrences, eac, gcd, richness, MaxAbsLat,
-        MinAbsLat, MeanAbsLat, Ex))
+        MinAbsLat, MeanAbsLat, Ex, Singletons))
   }
 
   #####  now apply it to the PBDB data
@@ -262,7 +268,7 @@ pbdb <- merge(pbdb,pbdb.fams,by.x="family_name",by.y="family",all.x=TRUE)
     .progress="text")
   colnames(byGenus.PBDB) <- c("Interval","top","class",
     "group","genus","occurrences","eac","gcd",
-    "richness","MaxAbsLat","MinAbsLat","MeanAbsLat","Ex")
+    "richness","MaxAbsLat","MinAbsLat","MeanAbsLat","Ex","Singleton")
   write.table(byGenus.PBDB,"../data/PBDB.ranges.processed.csv", sep = ",")
 
   ####### now merge modern and paleo data#######
@@ -271,6 +277,9 @@ pbdb <- merge(pbdb,pbdb.fams,by.x="family_name",by.y="family",all.x=TRUE)
   data$AbsLatRange <- data$MaxAbsLat - data$MinAbsLat
   data$class <- ifelse(data$class == "Decapoda","Malacostraca",data$class)
   data <- data[(data$group != "Bivalvia_Trigonioida"),]
+  ### now finally, before saving, drop the pre-Neogene stages
+  dropstages <- c("Chattian","Bartonian")
+  data <- data[!(data$Interval %in% dropstages),]
   saveRDS(data, file = "../data/modern_and_paleo_ranges.rds")
   # write.table(data,"~/Dropbox/nescent_extinction_map/data/Modern.and.Paleo.Ranges.csv",sep=",")
   #table(pbdb$family_name,pbdb$class)
