@@ -233,8 +233,12 @@ We will start by standardizing a variety of habitat-relative characteristics wit
 
 <<standardize-predictors>>=
 dat <- readRDS("../data/modern_and_paleo_ranges.rds")
-#drop singletons if desired
-dat <- dat[(dat$Singleton == 0),]
+#drop unused classes
+dat <- subset(dat, !class %in% c("Foraminifera", "Testudines", "Malacostraca"))
+#drop genera that occur only once in the entire database if desired
+dat <- dat[(dat$singleton.single.occ == 0),]
+#now remove the extraneous columns that were created only for culling
+dat <- dat[ , -which(names(dat) %in% c("Singleton","singleton.single.occ"))]
 dat <- rename(dat, c("Interval" = "Interval_Name",
     "MaxAbsLat" = "MaxLat", "MinAbsLat" = "MinLat",
     "group" = "MatchTaxon", "top" = "stage_top",
