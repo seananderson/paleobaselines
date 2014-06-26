@@ -245,14 +245,8 @@ dat <- rename(dat, c("Interval" = "Interval_Name",
     "MaxAbsLat" = "MaxLat", "MinAbsLat" = "MinLat",
     "group" = "MatchTaxon", "top" = "stage_top",
     "MeanAbsLat" = "mean_lat", "Ex" = "Extinct.in.stage"))
-# set occurrence cutoffs for modern and paleo data
-out <- list()
-for(i in 1:length(unique(dat$Interval_Name))) {
-  out[[i]] <- standardize_data(dat, interval = unique(dat$Interval_Name)[i])
-}
-out <- do.call("rbind", out)
-out$Interval_Name <- out$stage
-saveRDS(out, file = "../data/stand-predictors-cen-obis.rds")
+stcen <- ddply(dat, "Interval_Name", standardize_data)
+saveRDS(stcen, file = "../data/stand-predictors-cen-obis.rds")
 @
 
 %TODO: update this table so that it isn't operating on standardized occurrences
