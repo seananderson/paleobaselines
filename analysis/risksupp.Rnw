@@ -828,32 +828,9 @@ ggplot(modern, aes(pred, mean_observed)) + geom_point() +
   xlab("Predicted") + ylab("Calibrated prediction")
 @
 
-We will also save a version of our predictions where we build the predictions based on the average predictions across geologic stage models. We've already built these models. We will take the average predictions across replicated fits and geologic stages.
-
-<<predict-risk-modern-average-version>>=
-predictions_stage_avg <- laply(stage_models, function(x) {
-    p1 <- laply(x, function(y) gbm::predict.gbm(y, newdata = modern,
-  type = "response", n.trees = NTREES))
-  p2 <- apply(p1, 2, mean)
-  p2
-})
-modern$pred_stage_avg <- apply(predictions_stage_avg, 2, mean)
-@
-
-% We will save the \texttt{modern} data frame for future use.
-
 <<save-modern>>=
 saveRDS(modern, file = "../data/modern-predictions.rds")
 @
-
-We can compare the predictions from the averaged stage models with the predictions from the GBMs based on all Neogene data pooled together. Note that we're not comparing the calibrated predictions here:
-
-<<compare-neogene-gbm-to-stage-models, fig.height=4.5>>=
-ggplot(modern, aes(pred, pred_stage_avg)) + geom_point() +
-  facet_wrap(~class) + geom_abline(intercept = 0, slope = 1) +
-  xlab("Neogene GBM") + ylab("Stage-level GBMs averaged")
-@
-% modern$mean_observed <- modern$pred_stage_avg
 
 % Next, we will merge these predictions with our contemporary spatial observations. At the same time, we will merge in the data from Ref.\ \cite{halpern2011} Ref.\ \cite{spalding2007}.
 
