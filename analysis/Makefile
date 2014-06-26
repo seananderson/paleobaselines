@@ -1,34 +1,24 @@
-all: pdf
-
-pdf:
-	Rscript -e "knitr::knit('risksupp.Rnw')"
-	pdflatex risksupp
-	cp risksupp.pdf ~/Dropbox/Public/
+all: knit pdf
 
 knit:
 	Rscript -e "knitr::knit('risksupp.Rnw')"
 
-tex:
-	pdflatex risksupp
-	cp risksupp.pdf ~/Dropbox/Public/
-
-bib:
+pdf:
 	pdflatex risksupp
 	bibtex risksupp
+	pdflatex risksupp
 	pdflatex risksupp
 	pdflatex risksupp
 	cp risksupp.pdf ~/Dropbox/Public/
 
 clean:
 	rm -rf ../cache/
-	#rm -rf ../figs/
 	rm *.aux
 	rm *.log
 	rm *.bbl
 	rm *.blg
 	rm *.toc
 	rm risksupp.tex
-	#mkdir ../figs/
 	mkdir ../cache/
 
 deleteranges:
@@ -36,3 +26,17 @@ deleteranges:
 
 deletecv:
 	rm ../data/val_test.rds
+
+deleteroc:
+	rm ../data/roc_vals.rds
+	rm ../data/pred_oob.rds
+
+deletecross:
+	rm ../data/cross_pred.rds
+
+deletestagemodels:
+	rm ../data/stage_models.rds
+
+cleanall: clean deleteranges deletecv deleteroc deletecross deletestagemodels
+
+
