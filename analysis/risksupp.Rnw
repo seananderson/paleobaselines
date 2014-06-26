@@ -349,7 +349,7 @@ INT.DEPTH <- 5
 NTREES <- 1000
 SHRINKAGE <- 0.01
 if(!file.exists("../data/val_test.rds")) {
-  val_test <- rdply(40, validate_gbm(neog, shrinkage = SHRINKAGE,
+  val_test <- rdply(60, validate_gbm(neog, shrinkage = SHRINKAGE,
     interaction.depth = INT.DEPTH, n.trees = NTREES,
     use_weights = TRUE)$bin_validation, 
     .progress = "text")
@@ -676,7 +676,7 @@ m_relative <- gbm(Ex ~ richness + occupancy + occurrences + min.lat +
     max.lat + lat.range + mean.lat + great.circle + group,
   data = neog, n.trees = NTREES, interaction.depth = INT.DEPTH,
   distribution = "bernoulli", shrinkage = SHRINKAGE, weights = weights)
-ri <- rdply(10, function(x) {
+ri <- rdply(5, function(x) {
   m_relative <- gbm(Ex ~ richness + occupancy + occurrences + min.lat +
     max.lat + lat.range + mean.lat + great.circle + group,
   data = neog, n.trees = NTREES, interaction.depth = INT.DEPTH,
@@ -710,7 +710,7 @@ We will use our GBM model built on the entire Neogene period to predict extincti
 w <- paleorisk::get_weights(neog$Ex)
 weights <- ifelse(neog$Ex == 1, w$ex_weight, w$sur_weight)
 
-m <- rlply(10, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
+m <- rlply(5, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
     max.lat + lat.range + mean.lat + great.circle + group,
   data = neog, n.trees = NTREES, interaction.depth = INT.DEPTH,
   distribution = "bernoulli", shrinkage = SHRINKAGE, weights = weights))
