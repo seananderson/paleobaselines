@@ -20,12 +20,20 @@
 #' @export
 
 standardize_data <- function(dat, interval, great_circle_bin = 2000,
-  num_bins = 10, min_modern_occurrences = 2, min_pbdb_occurrences = 1) {
+  num_bins = 10, min_modern_occurrences = 2, min_pbdb_occurrences = 1,
+  modern_no_cull_classes = c("Mammalia", "Elasmobranchii")) {
 
   mod.dat <- dat[(dat$stage_top == 0),]
   fossil.dat <- dat[(dat$stage_top > 0),]
-  mod.dat <- mod.dat[(mod.dat$occurrences >= min_modern_occurrences),]
+
+  mod.dat.cull <- mod.dat[!mod.dat$class %in% modern_no_cull_classes, ]
+  mod.dat.no.cull <- mod.dat[mod.dat$class %in% modern_no_cull_classes, ]
+
+  mod.dat.cull <- mod.dat.cull[(mod.dat.cull$occurrences >= min_modern_occurrences), ]
+  mod.dat <- rbind(mod.dat.cull, mod.dat.no.cull)
+
   fossil.dat <- fossil.dat[(fossil.dat$occurrences >= min_pbdb_occurrences),]
+
   data1 <- rbind(mod.dat,fossil.dat)
 
   data1 <- subset(data1, Interval_Name == interval)
