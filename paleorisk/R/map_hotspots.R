@@ -115,16 +115,10 @@ map_hotspots <- function(er_dat, min_prov_genera = 50, hotspot_thresh = 0.8,
         lwd = 1.5, density = c(NA, 23)[bur.hot+1], angle = 45))})
   }
 
-  maps::map("world", proj = "", mar = c(0, 0, 0, 0), col = "grey64", fill =
-      TRUE, lwd = .95, myborder = c(0, 0), border = "grey64", wrap =
-      FALSE, resolution = 0, xlim = c(-178, 178), plot = TRUE, add = TRUE)
+  #maps::map("world", proj = "", mar = c(0, 0, 0, 0), col = "grey64", fill =
+      #TRUE, lwd = .95, myborder = c(0, 0), border = "grey64", wrap =
+      #FALSE, resolution = 0, xlim = c(-178, 178), plot = TRUE, add = TRUE)
 
-  # patches, from the package data:
-  with(ant_patch, polygon(x, y, col = "grey64", border = FALSE))
-  with(russia_patch, polygon(x, y, col = "white", border = FALSE))
-
-  # outer oval:
-  lines(oval, col = "grey64", lwd = 2.8)
 
   if(hotspots) {
     par(xpd = NA)
@@ -134,6 +128,17 @@ map_hotspots <- function(er_dat, min_prov_genera = 50, hotspot_thresh = 0.8,
       angle = c(NA, 45), border = c("black", NA), cex = 1.4,
       text.col = "grey30")
   }
+
+  # again to make it clean:
+  maps::map("world", proj = "", mar = c(0, 0, 0, 0), col = "grey64", fill =
+      TRUE, lwd = .95, myborder = c(0, 0), border = "grey64", wrap =
+      FALSE, resolution = 0, xlim = c(-178, 178), plot = TRUE, add = TRUE)
+  # patches, from the package data:
+  with(ant_patch, polygon(x, y, col = "grey64", border = FALSE))
+  with(russia_patch, polygon(x, y, col = "white", border = FALSE))
+
+  # outer oval:
+  lines(oval, col = "grey64", lwd = 2.8)
 
  if(add_legend) {
    #at <- range(er.df$ext.plot)
