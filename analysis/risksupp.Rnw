@@ -1268,7 +1268,7 @@ print(p)
 
 \subsection{Exploring contemporary sampling intensity}
 
-We will plot the number of OBIS records per province --- see Fig.~\ref{fig:plot-n-genera-prov}.
+Because the distribution apparent geographic ranges may be influenced by sampling intensity, it is important to quantidy variability in sampling intensity among provicences.  The number of OBIS records from a given province can serve as a rough index of sampling intensity (Fig.~\ref{fig:plot-n-genera-prov}). 
 
 <<plot-n-genera-prov, fig.cap="Number of OBIS occurrence records for each biogeographic province \\cite{spalding2007}. Scale bars on the right (log-distributed scale) indicate the range for a given group, and this scale is used to plot relative sampling intensity heatmaps.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
 map_class_ext(er_dat_class, plot_column = "log_OBIS_records",
