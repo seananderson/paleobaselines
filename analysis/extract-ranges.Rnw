@@ -123,7 +123,7 @@ extract_ranges <- function() {
   #pbdb <- read.csv('~/Dropbox/nescent_extinction_map/data/PaleoDB downloads/4.6.2014/4.6.2014.occs.csv')
   #save(pbdb,file='~/Dropbox/nescent_extinction_map/data/PaleoDB downloads/4.6.2014/4.6.2014.occs.rda')
 
-  pbdb2 <- readRDS('~/Dropbox/nescent_extinction_map/data/PaleoDB downloads/6.25.2014/6.25.2014.occs.rds')
+  #pbdb2 <- readRDS('~/Dropbox/nescent_extinction_map/data/PaleoDB downloads/6.25.2014/6.25.2014.occs.rds')
   load('~/Dropbox/nescent_extinction_map/data/PaleoDB downloads/4.6.2014/4.6.2014.occs.rda')
 
   ### redefine Plio-Pleistocene FR_2 Bin
