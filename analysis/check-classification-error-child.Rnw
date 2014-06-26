@@ -1,0 +1,66 @@
+<<check-classfication-error-child.Rnw>>=
+if(!file.exists("../data/pred_oob.rds")) {
+  # get predictions for overall model:
+  neog_pred_oob <- rdply(75, validate_gbm(neog, 
+      interaction.depth = INT.DEPTH, n.trees = NTREES,
+      use_weights = TRUE, test_fraction = 0.333)$pred, .progress = "text")
+
+  # now get predictions for stage models:
+  out_roc <- list()
+  # basic idea:
+  # split the data: build on 66% and test on 33%
+  # each time, record the OOB predictions and truth
+  # do this a bunch of times and then stitch together those predictions
+
+  for(i in 1:length(stage_order)) {
+    this_dat <- subset(neog, stage == stage_order[i])
+    pred_oob <- rdply(75, validate_gbm(this_dat, 
+        interaction.depth = INT.DEPTH, n.trees = NTREES,
+        use_weights = TRUE, test_fraction = 0.333)$pred, .progress = "text")
+    out_roc[[i]] <- pred_oob
+  }
+  stage_model_predictions <- do.call("rbind", out_roc)
+
+  # set up whole Neogene version:
+  neog_pred_oob$stage <- NULL
+  neog_pred_oob$stage <- as.factor("Entire Neogene")
+
+  # now bring in dataset for all classes together (Neogene and stage specific):
+  pred_oob_all_classes <- rbind(neog_pred_oob, stage_model_predictions)
+  pred_oob_all_classes$class <- NULL
+  pred_oob_all_classes$class <- as.factor("All")
+
+  # now bind the whole Neogene, all classes, and class-stage specific datasets:
+  pred_oob <- rbind(pred_oob_all_classes, neog_pred_oob, stage_model_predictions)
+
+  saveRDS(pred_oob, file = "../data/pred_oob.rds")
+} else {
+  pred_oob <- readRDS("../data/pred_oob.rds")
+}
+
+get_roc <- function(resp, pred) {
+  y <- pROC::roc(response = resp, predictor = pred)
+  data.frame(sens = y$sensitivities, spec = y$specificities,
+    auc = as.numeric(y$auc))
+}
+
+if(!file.exists("../data/roc_vals.rds")) {
+  roc_vals <- ddply(pred_oob, c("stage", "class"), function(x) {
+    if(sum(x$Ex) > 0) get_roc(x$Ex, x$gbm_pred)
+      })
+  saveRDS(roc_vals, file = "../data/roc_vals.rds")
+} else {
+  roc_vals <- readRDS("../data/roc_vals.rds")
+}
+auc_vals <- ddply(roc_vals, c("stage", "class"), summarize, auc = round(unique(auc), 4))
+write.csv(auc_vals, file = "../data/auc_vals.csv")
+
+ggplot(roc_vals, aes(spec, sens)) +
+  geom_line(aes(colour = class, size = class)) +
+  xlim(1, 0) + 
+  scale_colour_manual(values = c(RColorBrewer::brewer.pal(6, "Set2"), "#000000")) +
+  scale_size_manual(values = c(rep(0.8, 6), 2)) +
+  geom_abline(intercept = 1, slope = 1, lty = 2, col = "darkgrey") +
+  xlab("Specificity") + ylab("Sensitivity") +
+  coord_equal() + facet_wrap(~stage, nrow = 2)
+@
