@@ -33,7 +33,7 @@ opts_chunk$set(warning=FALSE, message=FALSE, tidy=FALSE, refresh=TRUE,
   cache.path="../cache/", cache.lazy=FALSE, size="small")
 opts_chunk$set(dev = 'pdf')
 opts_knit$set(out.format = "latex")
-opts_knit$set(eval.after = 'fig.cap') # evaluate fig.cap after the chunk
+# opts_knit$set(eval.after = 'fig.cap') # evaluate fig.cap after the chunk
 @
 
 \title{Supplementary Materials for Paleontological Baselines for Evaluating
@@ -98,14 +98,9 @@ make
 devtools::install("../paleorisk/")
 @
 
-% <<package-help, echo=TRUE, eval=FALSE>>=
-% help(package = "paleorisk")
-% @
-
 <<load-packages, cache=FALSE>>=
 library("paleorisk")
 library("plyr")
-library("dplyr")
 library("gdata")
 library("reshape2")
 library("ggplot2")
@@ -216,7 +211,8 @@ TODO expand this.
 # Run the OBIS interpolation
 # Will take a very long time to run and requires a server with a large
 # quantity of memory.
-# TODO clean up these files the paths are right:
+# TODO clean up these files the paths are right, also copy over a couple missing data files
+# see bugaboo server
 source("../r/README_interpolation.R")
 @
 
@@ -250,9 +246,16 @@ saveRDS(stcen, file = "../data/stand-predictors-cen-obis.rds")
 @
 
 %TODO: update this table so that it isn't operating on standardized occurrences
-<<genera-occurrences-table, results = "asis", eval=FALSE>>=
-dat <- readRDS("../data/stand-predictors-cen-obis.rds")
-#dat <- readRDS("../data/modern_and_paleo_ranges.rds") 
+<<genera-occurrences-table, results = "asis">>=
+#dat <- readRDS("../data/stand-predictors-cen-obis.rds")
+
+dat <- readRDS("../data/modern_and_paleo_ranges.rds") 
+dat$Interval <- factor(dat$Interval)
+#drop unused classes
+dat <- subset(dat, !class %in% c("Foraminifera", "Testudines", "Malacostraca"))
+dat <- droplevels(dat)
+dat <- plyr::rename(dat, c("Interval" = "Interval_Name"))
+
 Genera <- function(df) length(unique(df$genus))
 Occurrences <- function(df) sum(df$occurrences)
 Table.S1 <- plyr::ddply(dat, plyr::.(Interval_Name,class),
@@ -275,45 +278,51 @@ xtable::print.xtable(xtable::xtable(Table.S1, digits = c(0, 0, 0, 0, 0),
 
 
 % TODO - this plot needs to have culling done first or use real data
-<<plot-comparison-modern-plio-pleistocene-ranges, out.width="\\textwidth", fig.height=5, fig.width=8, fig.cap=paste("Comparison of ranges for the", length(unique(Plio.Modern2$genus)), "genera that are sampled in both the modern dataset and in the Plio-Pleistocene subset of the paleontological dataset. Richness, occupancy, and occurrences are standardized by dividing by the maximum observed value within each interval. Points are overplotted and hence relative tranparancy of a given point indicates the number of genera. Black lines are lines of unity and red lines are reduced major axis regression lines."), eval=FALSE>>=
-Plio.Modern <- readRDS("../data/stand-predictors-cen-obis.rds")
-Plio.Modern <- Plio.Modern[Plio.Modern$Interval_Name %in% 
-  c("Modern_raw", "Plio-Pleistocene"), ]
-Plio.Modern$tropical_only <- NULL
-Plio.Modern$Ex <- NULL
-Plio.Modern <- reshape2::melt(Plio.Modern, 
-  id = c("Interval_Name","stage","stage_top","class","group","genus"))
-Modern <- Plio.Modern[(Plio.Modern$Interval_Name == "Modern_raw"),] 
-Modern$Interval_Name <- NULL
-Modern$stage <- NULL
-Modern$stage_top <- NULL
-Plio <- Plio.Modern[(Plio.Modern$Interval_Name == "Plio-Pleistocene"),] 
-Plio$Interval_Name <- NULL
-Plio$stage <- NULL
-Plio$stage_top <- NULL
-Plio.Modern2 <- merge(Modern,Plio, 
-  by = c("class","group","genus","variable"),all.x=FALSE,all.y=FALSE)
-
-RMA.lines <- function(df){
-  mod <- lmodel2::lmodel2(value.y ~ value.x, data=df,"interval", "interval", 99)
-  reg <- mod$regression.results
-  reg <- reg[(reg$Method=="RMA"),]
-  names(reg) <- c("method", "intercept", "slope", "angle", "p-value")
-  reg
-}
-RMA <- ddply(Plio.Modern2, "variable", plyr::each(RMA.lines))
-
-p <- ggplot(Plio.Modern2,aes(value.x,value.y)) +
-  geom_point(alpha=0.1) +
-  facet_wrap(~variable,scale="free", ncol=4) +
-  geom_abline(data = RMA, 
-    aes(intercept = intercept, slope = slope, colour = "blue")) +
-  geom_abline() +
-  xlab("Modern") +
-  ylab("Plio-Pleistocene") +
-  coord_equal()
-print(p)
+<<plot-comparison-modern-plio-pleistocene-ranges, out.width="\\textwidth", fig.height=5, fig.width=8, fig.cap="Comparison of ranges for the TODO genera that are sampled in both the modern dataset and in the Plio-Pleistocene subset of the paleontological dataset. Richness, occupancy, and occurrences are standardized by dividing by the maximum observed value within each interval. Points are overplotted and hence relative tranparancy of a given point indicates the number of genera. Black lines are lines of unity and red lines are reduced major axis regression lines.">>=
+plot(1, 1)
+mtext("TODO FIX ME")
 @
+
+% Plio.Modern <- readRDS("../data/stand-predictors-cen-obis.rds")
+% 
+% Plio.Modern$Interval <- factor(Plio.Modern$Interval)
+% Plio.Modern <- Plio.Modern[Plio.Modern$Interval_Name %in% 
+%   c("Modern_raw", "Plio-Pleistocene"), ]
+% Plio.Modern$tropical_only <- NULL
+% Plio.Modern$Ex <- NULL
+% Plio.Modern <- reshape2::melt(Plio.Modern, 
+%   id = c("Interval_Name","stage","stage_top","class","group","genus"))
+% Modern <- Plio.Modern[(Plio.Modern$Interval_Name == "Modern_raw"),] 
+% Modern$Interval_Name <- NULL
+% Modern$stage <- NULL
+% Modern$stage_top <- NULL
+% Plio <- Plio.Modern[(Plio.Modern$Interval_Name == "Plio-Pleistocene"),] 
+% Plio$Interval_Name <- NULL
+% Plio$stage <- NULL
+% Plio$stage_top <- NULL
+% Plio.Modern2 <- merge(Modern,Plio, 
+%   by = c("class","group","genus","variable"),all.x=FALSE,all.y=FALSE)
+% 
+% RMA.lines <- function(df){
+%   mod <- lmodel2::lmodel2(value.y ~ value.x, data=df,"interval", "interval", 99)
+%   reg <- mod$regression.results
+%   reg <- reg[(reg$Method=="RMA"),]
+%   names(reg) <- c("method", "intercept", "slope", "angle", "p-value")
+%   reg
+% }
+% RMA <- ddply(Plio.Modern2, "variable", plyr::each(RMA.lines))
+% 
+% p <- ggplot(Plio.Modern2,aes(value.x,value.y)) +
+%   geom_point(alpha=0.1) +
+%   facet_wrap(~variable,scale="free", ncol=4) +
+%   geom_abline(data = RMA, 
+%     aes(intercept = intercept, slope = slope, colour = "blue")) +
+%   geom_abline() +
+%   xlab("Modern") +
+%   ylab("Plio-Pleistocene") +
+%   coord_equal()
+% print(p)
+% @
 
 \section{Modelling contemporary extinction risk with paleontological data}
 
@@ -363,7 +372,7 @@ if(!file.exists("../data/val_test.rds")) {
 
 For example, here are the predicted and observed extinction probabilities for one run of our cross-validation. The model was built on half the data and then used to predict the other half of the data. The diagonal black lines show the one-to-one line. Dots that fall directly on the one-to-one line are unbiased.
 
-<<single-cv-rep, fig.width=7.5, fig.height=7>>=
+<<single-cv-rep, fig.width=7.5, fig.height=7, fig.width="4in">>=
 ggplot(subset(val_test, .n == 1),
   aes(gbm_pred_binned, obs_ext_prob)) +
   geom_point(alpha = 0.9) +
@@ -403,81 +412,20 @@ ggplot(val_test_summarized,
 We can use these observed extinction probabilities as calibration for our GBM-predicted extinction probability in the contemporary dataset. To do this, we take the predicted extinction probability from our GBM model applied to the contemporary dataset, we fit that value into our binning scheme, and we match it with the empirically-observed mean extinction probability for that bin. This removes the observed non-linear bias in our model \cite{thorson2012}. Put another way, we find our predicted value on the x-axis of the last plot and draw a vertical line up until we meet a blue dot. We then use the y-axis value of the blue dot as our calibrated extinction probability.
 
 We will examine the effect of varying some of the main arguments to the \texttt{gbm()} function. We will test the effect of the \texttt{shrinkage} (the rate of improvement between each tree iteration), \texttt{interaction.depth} (the maximum number of variable interactions), and \texttt{n.trees} (the total number of trees to build) arguments. We will vary each argument one at a time. We do this to check that predictive performance doesn't look substantially better by adjusting any of these arguments.
-%TODO this doesn't seem to work any more...
-<<plot-alt-gbms, fig.height=8, fig.width=13, out.width="7in", echo=FALSE, eval=FALSE>>=
-ggplot(val_test_alt,
-  aes(gbm_pred_binned, mean_observed)) +
-  geom_point(aes(size = median_sample_n)) +
-  geom_linerange(aes(ymin = l, ymax = u)) +
-  facet_grid(version~class) +
-  scale_size(trans = "log10") + coord_fixed(ratio = 1) +
-  ylim(0, 1) + xlim(0, 1) +
-  xlab("Out-of-sample GBM-predicted scaled extinction probability") +
-  ylab("Observed scaled extinction probability") +
-  labs(size = "Median sample #")
-@
-
-<<check-within-interval-performance, results='hide', eval=FALSE>>=
-stage_order <- c("Lower Miocene", "Middle Miocene", "Upper Miocene",
-  "Plio-Pleistocene")
-out <- list()
-for(i in 1:length(stage_order)) {
-  message(stage_order[[i]])
-  out[[i]] <- rdply(75, validate_gbm(
-      subset(neog, Interval_Name == stage_order[i]), 
-      shrinkage = SHRINKAGE, interaction.depth = INT.DEPTH, 
-      n.trees = NTREES, use_weights = TRUE, 
-      test_fraction = 0.3333)$bin_validation,
-      .progress = "text")
-  out[[i]]$stage <- stage_order[[i]]
-}
-within_stage <- do.call("rbind", out)
-
-oos_rsq_glm <- plyr::ddply(within_stage, "stage", function(x) {
-  require(mgcv)
-  m <- mgcv::gam(obs_ext_prob ~ gbm_pred_binned, data = x, 
-    weights = sample_n, family = binomial)
-  summary(m)$dev.expl
-  })
-
-glm_pred <- plyr::ddply(within_stage, "stage", function(x) {
-   m <- glm(obs_ext_prob ~ gbm_pred_binned, data = x, 
-     weights = sample_n, family = binomial)
-   newdat <- data.frame(gbm_pred_binned = seq(min(x$gbm_pred_binned),
-       max(x$gbm_pred_binned), length.out = 100))
-   data.frame(gbm_pred_binned = newdat$gbm_pred_binned, 
-     pred = predict(m, type = "response", newdata = newdat))
-   })
-@
-
-<<plot-within-stage-tests, fig.width=8.5, fig.height=7, out.width="6.25in", fig.cap="TODO fix caption. Within interval TODO-fold cross-validation prediction. Fit shown is a logistic regression. (probability with weights for numbers of samples).", eval=FALSE>>=
-ggplot(data = within_stage) +
-  geom_point(aes(x = gbm_pred_binned, 
-      y = obs_ext_prob, size = sample_n, colour = class), alpha = 0.2) +
-  facet_wrap(~stage) +
-  scale_size(trans = "log10") + coord_fixed(ratio = 1) +
-  ylim(0, 1) + xlim(0, 1) +
-  xlab("Out-of-sample GBM-predicted scaled extinction probability") +
-  ylab("Observed scaled extinction probability") +
-  scale_colour_brewer(palette = "Set2") +
-  labs(size = "Sample #") + theme_bw() +
-  guides(colour = guide_legend(override.aes = list(alpha = 1))) +
-  geom_line(data = glm_pred, aes(gbm_pred_binned, pred), 
-    col = "darkgrey", lwd = 1) +
-  geom_text(data = oos_rsq_glm, aes(.05,.90, 
-      label = sprintf("%.2f", V1)), size=3.5)
-@
-
-%TODO re-write this: Proportion of null deviance explained from a GLM fitted to the binned predictions against observed extinctions. Fitted to probabilities with weights for number of samples. Using \pkg{mgcv} but without smooth terms. 
 
 \subsection{Testing predictive performance across geologic stages}
 
 <<cross-intervals-gbms, results='hide'>>=
 stage_df <- expand.grid(stage_train = unique(neog$stage),
   stage_test = unique(neog$stage))
-cross_pred <- mdply(stage_df, fit_interval_gbm, dat = neog,
-  n.trees = NTREES, shrinkage = SHRINKAGE, interaction.depth = INT.DEPTH,
-  use_weights = TRUE)
+if(!file.exists("../data/cross_pred.rds")) {
+  cross_pred <- mdply(stage_df, fit_interval_gbm, dat = neog,
+    n.trees = NTREES, shrinkage = SHRINKAGE, interaction.depth = INT.DEPTH,
+    use_weights = TRUE)
+  saveRDS(cross_pred, file = "../data/cross_pred.rds")
+} else {
+  cross_pred <- readRDS("../data/cross_pred.rds")
+}
 @
 
 <<plot-cross-interval-gbms, results='hide'>>=
@@ -491,7 +439,10 @@ cross_pred$stage_train <- factor(cross_pred$stage_train,
   levels = stage_order)
 cross_pred$class <- factor(cross_pred$class, levels =c("Gastropoda","Bivalvia","Anthozoa","Echinoidea","Elasmobranchii","Mammalia"))
 
-newclass <- data.frame(c("Gastropoda","Bivalvia","Anthozoa","Echinoidea","Elasmobranchii","Mammalia"),c("Gastropoda","Bivalvia","Scleractinia","Echinoidea","Sharks","Mammalia"))
+newclass <- data.frame(c("Gastropoda","Bivalvia","Anthozoa","Echinoidea",
+    "Elasmobranchii","Mammalia"),
+  c("Gastropoda","Bivalvia","Scleractinia", 
+    "Echinoidea", "Sharks", "Mammalia"))
 colnames(newclass) <- c("class","class2")
 cross_pred2 <- merge(cross_pred,newclass,by="class")
 
@@ -510,27 +461,24 @@ Rsqs <- na.omit(Rsqs[(Rsqs$stage_train != Rsqs$stage_test),])
 Rsqs$Rsq <- round(Rsqs$Rsq,2)
 
 # make plot
-pdf("../figs/plot-cross-interval-gbms.pdf", width = 9, height = 7)
-p <- ggplot()
-p <- p + geom_point(data=cross_pred2,
-    aes(pred_self, pred, colour = class2), alpha=0.25, pch=16)  +
-  facet_grid(stage_train ~ stage_test) +
-  scale_y_log10() + scale_x_log10() +
-  scale_colour_brewer(palette = "Set2",breaks=c("Scleractinia","Bivalvia","Gastropoda","Echinoidea","Sharks","Mammalia")) +
-  #scale_colour_manual(values = c("blue","yellow2","skyblue2","red","limegreen","chocolate2"),breaks=c("Scleractinia","Bivalvia","Gastropoda","Echinoidea","Sharks","Mammalia")) +
-  xlab("Scaled extinction probability (stage that model was built on)") +
-  ylab("Scaled extinction probability (stage that model was tested on)") +
-  guides(colour = guide_legend(override.aes = list(alpha = 1))) +
-  geom_text(data=Rsqs,aes(.005,.70,label=sprintf("%.2f", Rsq)),size=3.5) +
-  theme(panel.grid.major = element_blank()) + 
-  theme(panel.grid.minor = element_blank()) +
-  theme(legend.title=element_blank()) 
-print(p)
-dev.off()
-# Cross-interval comparison of genus risk estimates from generalized boosting models. The x-axis shows the probability of extinction as predicted by a model built on data from the same stage. The y-axis shows the probability of extinction as predicted by a model built on data from a different stage. The colours show different taxonomic classes. Note the log-distributed x- and y-axes. Since there is some stochasticity involved in the generalized boosting machine fitting routine, there is some variability in predictions within the same stage (the diagonal panels). In general, there is substantial similarity in extinction regimes between succeeding intervals with respect to the evaluated taxonomic and geographic range predictor variables.
-@
+# pdf("../figs/plot-cross-interval-gbms.pdf", width = 9, height = 7)
+# p <- ggplot()
+# p <- p + geom_point(data=cross_pred2,
+#     aes(pred_self, pred, colour = class2), alpha=0.25, pch=16)  +
+#   facet_grid(stage_train ~ stage_test) +
+#   scale_y_log10() + scale_x_log10() +
+#   scale_colour_brewer(palette = "Set2",breaks=c("Scleractinia","Bivalvia","Gastropoda","Echinoidea","Sharks","Mammalia")) +
+#   #scale_colour_manual(values = c("blue","yellow2","skyblue2","red","limegreen","chocolate2"),breaks=c("Scleractinia","Bivalvia","Gastropoda","Echinoidea","Sharks","Mammalia")) +
+#   xlab("Scaled extinction probability (stage that model was built on)") +
+#   ylab("Scaled extinction probability (stage that model was tested on)") +
+#   guides(colour = guide_legend(override.aes = list(alpha = 1))) +
+#   geom_text(data=Rsqs,aes(.005,.70,label=sprintf("%.2f", Rsq)),size=3.5) +
+#   theme(panel.grid.major = element_blank()) + 
+#   theme(panel.grid.minor = element_blank()) +
+#   theme(legend.title=element_blank()) 
+# print(p)
+# dev.off()
 
-<<make-cross-pred-plot-baseplot, results='hide'>>=
 Rsqs$Rsq_sp <- sprintf("%.2f", Rsqs$Rsq)
 cross_pred2 <- plyr::join(cross_pred, Rsqs)
 cols <- RColorBrewer::brewer.pal(6, "Set2")[c(2,1,3,4,5,6)]
@@ -613,10 +561,14 @@ fit_stage_models <- function(dat, stage_name) {
 % We will fit the models for each stage. Within each stage we will fit the model a number of times:
 
 <<fit-marginal-stage-models>>=
-stage_models <- llply(c(stage_order, "all"), function(x)
-  rlply(5, fit_stage_models(neog, stage_name = x)))
-names(stage_models) <- c(stage_order, "all")
-saveRDS(stage_models, file = "../data/stage_models.rds")
+if(!file.exists("../data/stage_models.rds")) {
+  stage_models <- llply(c(stage_order, "all"), function(x)
+    rlply(10, fit_stage_models(neog, stage_name = x)))
+  names(stage_models) <- c(stage_order, "all")
+  saveRDS(stage_models, file = "../data/stage_models.rds")
+} else {
+  stage_models <- readRDS("../data/stage_models.rds")
+}
 @
 
 % And, we will go through the stage-based models and pull out the partial dependence data:
@@ -710,62 +662,13 @@ We will use our GBM model built on the entire Neogene period to predict extincti
 w <- paleorisk::get_weights(neog$Ex)
 weights <- ifelse(neog$Ex == 1, w$ex_weight, w$sur_weight)
 
-m <- rlply(5, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
+m <- rlply(4, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
     max.lat + lat.range + mean.lat + great.circle + group,
   data = neog, n.trees = NTREES, interaction.depth = INT.DEPTH,
   distribution = "bernoulli", shrinkage = SHRINKAGE, weights = weights))
 @
 
-<<check-classification-error, results='hide', fig.height=7, fig.width=14, fig.cap='TODO ROC curves'>>=
-# get predictions for overall model:
-predictions_self <- laply(m, function(x)
-  gbm::predict.gbm(x, type = "response", n.trees = NTREES))
-neog2 <- neog
-neog2$pred <- apply(predictions_self, 2, mean)
-
-# now get predictions for stage models:
-stage_order <- c("Lower Miocene", "Middle Miocene", "Upper Miocene",
-  "Plio-Pleistocene")
-out <- list()
-for(i in 1:length(stage_order)) {
-  this_dat <- subset(neog, stage == stage_order[i])
-  w <- paleorisk::get_weights(this_dat$Ex)
-  weights <- ifelse(this_dat$Ex == 1, w$ex_weight, w$sur_weight)
-  m <- rlply(5, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
-      max.lat + lat.range + mean.lat + great.circle + group,
-    data = this_dat, n.trees = NTREES,
-    interaction.depth = INT.DEPTH, distribution = "bernoulli",
-    shrinkage = SHRINKAGE, weights = weights))
-  predictions_self <- laply(m, function(x)
-    gbm::predict.gbm(x, type = "response", n.trees = NTREES))
-  this_dat$pred <- apply(predictions_self, 2, mean)
-  out[[i]] <- this_dat
-}
-stage_model_predictions <- do.call("rbind", out)
-neog2$stage <- NULL
-neog2$stage <- as.factor("Entire Neogene")
-neog2 <- rbind(neog2, stage_model_predictions)
-neog3 <- neog2
-neog3$class <- NULL
-neog3$class <- as.factor("All")
-neog2 <- rbind(neog2, neog3)
-get_roc <- function(resp, pred) {
-  y <- pROC::roc(response = resp, predictor = pred)
-  data.frame(sens = y$sensitivities, spec = y$specificities,
-    auc = as.numeric(y$auc))
-}
-roc_vals <- ddply(neog2, c("stage", "class"), function(x) {
-  if(sum(x$Ex) > 0) get_roc(x$Ex, x$pred)
-  })
-auc_vals <- ddply(roc_vals, c("stage", "class"), summarize, auc = round(unique(auc), 4))
-write.csv(auc_vals, file = "../data/auc_vals.csv")
-ggplot(roc_vals, aes(spec, sens)) +
-  geom_line(aes(colour = class, size = class)) +
-  xlim(1, 0) + scale_colour_manual(values = c(RColorBrewer::brewer.pal(6, "Set2"), "#000000")) +
-  scale_size_manual(values = c(rep(0.8, 6), 2)) +
-  geom_abline(intercept = 1, slope = 1, lty = 2, col = "darkgrey") +
-  xlab("Specificity") + ylab("Sensitivity") +
-  coord_equal() + facet_wrap(~stage, nrow = 2)
+<<check-classification-error, child='check-classification-error-child.Rnw', results='hide', fig.height=7, fig.width=14, fig.cap='TODO ROC curves'>>=
 @
 
 <<load-modern-data>>=
@@ -813,19 +716,6 @@ modern$gbm_pred_binned <- assign_bins(modern$pred)
 modern <- plyr::join(modern,
   val_test_summarized[,c("class", "gbm_pred_binned", "mean_observed")],
   by = c("class", "gbm_pred_binned"))
-# modern <- modern[!is.na(modern$mean_observed), ]
-# or skip calibration:
-#modern$mean_observed <- modern$pred
-@
-
-To see the effect of using our calibration factors, we will compare contemporary risk predictions from the calibrated model (y-axis) with the uncalibrated model (the x-axis). In other words, in the following graph, our averaged GBM model predicts the value shown on the x-axis, and our calibration factor adjusts that prediction to the value shown on the y-axis.
-
-<<plot-calibrations, fig.height=4, echo=FALSE>>=
-ggplot(modern, aes(pred, mean_observed)) + geom_point() +
-  facet_wrap(~class) + coord_fixed(ratio = 1) +
-  xlim(0, 0.9) + ylim(0, 0.9) +
-  geom_abline(intercept = 0, slope = 1, lty = 3) +
-  xlab("Predicted") + ylab("Calibrated prediction")
 @
 
 <<save-modern>>=
@@ -859,7 +749,7 @@ ggplot(temp, aes(mean_observed + 0.001)) +
 
 <<determine-range-of-extinction-predictions, results='hide'>>=
 range_between <- diff(range(exp(by.prov.all$mean.ext)))
-folds <- ddply(temp, c("PROV_CODE", "PROVINCE"), summarize,
+folds <- ddply(temp, c("PROV_CODE", "PROVINCE"), plyr::summarize,
   fold = max(mean_observed) / min(mean_observed),
   lq = quantile(mean_observed, probs = 0.25),
   uq = quantile(mean_observed, probs = 0.75),
@@ -975,57 +865,13 @@ modern_raw <- plyr::rename(modern_raw,
 modern_raw <- plyr::join(modern_raw,
   modern[,c("class", "genus", "mean_observed")])
 
-ggplot(modern_raw, aes(mean_observed, mean_observed_raw)) +
-  geom_point(alpha = 0.2) + facet_wrap(~class) +
-  xlab("Extinction probability (interpolated)") +
-  ylab("Extinction probability (no interpolation)") +
-  geom_abline(intercept = 0, slope = 1, lty = 3) +
-  coord_fixed(ratio = 1) + xlim(0, 1) + ylim(0, 1)
+# ggplot(modern_raw, aes(mean_observed, mean_observed_raw)) +
+#   geom_point(alpha = 0.2) + facet_wrap(~class) +
+#   xlab("Extinction probability (interpolated)") +
+#   ylab("Extinction probability (no interpolation)") +
+#   geom_abline(intercept = 0, slope = 1, lty = 3) +
+#   coord_fixed(ratio = 1) + xlim(0, 1) + ylim(0, 1)
 @
-
-<<compare-bounding-box-build-data>>=
-modern_raw_long <- reshape2::melt(modern_raw, id.vars = c("class", "genus"),
-  measure.vars = c("richness", "occupancy", "occurrences", "min.lat", "max.lat",
-    "mean.lat", "great.circle"))
-modern_raw_long <- plyr::rename(modern_raw_long,
-  c("value" = "value_raw"))
-modern_long <- reshape2::melt(modern, id.vars = c("class", "genus"),
-  measure.vars = c("richness", "occupancy", "occurrences", "min.lat", "max.lat",
-    "mean.lat", "great.circle"))
-modern_long <- plyr::join(modern_long, modern_raw_long, by = c("class", "genus", "variable"))
-@
-
-<<compare-bounding-box-occupancy, fig.width=9, fig.height=3>>=
-ggplot(subset(modern_long, variable %in% c("occupancy")),
-  aes(value, value_raw)) +
-  geom_point(alpha = 0.2) +
-  geom_abline(intercept = 0, slope = 1, lty = 3) +
-  facet_grid(variable~class) +
-  coord_fixed(ratio = 1) +
-  xlab("Interpolated value") + ylab("Raw value")
-@
-
-<<compare-bounding-box-lat, fig.width=9, fig.height=6>>=
-ggplot(subset(modern_long, variable %in% c("min.lat", "max.lat", "mean.lat")),
-  aes(value, value_raw)) +
-  geom_point(alpha = 0.2) + facet_grid(variable~class) +
-  geom_abline(intercept = 0, slope = 1, lty = 3) +
-  coord_fixed(ratio = 1) +
-  xlab("Interpolated value") + ylab("Raw value")
-@
-
-<<compare-bounding-box-gcd, fig.width=9, fig.height=3>>=
-ggplot(subset(modern_long, variable %in% c("great.circle")),
-  aes(value, value_raw)) +
-  geom_point(alpha = 0.2) + facet_grid(variable~class) +
-  geom_abline(intercept = 0, slope = 1, lty = 3) +
-  coord_fixed(ratio = 1) +
-  xlab("Interpolated value") + ylab("Raw value")
-# temp <- subset(modern_long, variable %in% "great.circle")
-# print(subset(temp, value_raw > value))
-@
-
-% Next we'll re-create the main maps with the raw contemporary data:
 
 <<prepare-bounding-box-comparison>>=
 d.eco.filled_raw <- readRDS("../data/obis_prov_obs_no_interp.rds")
@@ -1035,13 +881,12 @@ d.eco.filled_raw$n_obs <- NULL
 d.eco.filled_raw <- merge(d.eco.filled_raw, modern_raw, by = "genus", all.x = FALSE)
 
 # And calculate mean values by class-province or for the provinces overall:
-by.prov.classes.raw <- dplyr::summarise(dplyr::group_by(na.omit(d.eco.filled_raw),
-    class, PROV_CODE),
+by.prov.classes.raw <- ddply(na.omit(d.eco.filled_raw), 
+  c("class", "PROV_CODE"), plyr::summarize,
   mean.ext = mean(log(mean_observed_raw + 0.001)),
   N.gen = length(unique(genus)))
 
-by.prov.all.raw <- dplyr::summarise(dplyr::group_by(na.omit(d.eco.filled_raw),
-    PROV_CODE),
+by.prov.all.raw <- ddply(na.omit(d.eco.filled_raw), "PROV_CODE", plyr::summarize,
   mean.ext = mean(log(mean_observed_raw + 0.001)),
   N.gen = length(unique(genus)))
 
@@ -1094,89 +939,6 @@ dev.off()
 
 \subsection{Alternative model with only taxonomic predictors}
 
-<<alternative-gbm-taxonomy-only-prep, fig.width=7, fig.height=4, out.width="6.25in", results='hide', eval=FALSE>>=
-# build calibration models:
-val_tax <- rdply(40, validate_gbm(neog,
-  model = "Ex ~ group", shrinkage = SHRINKAGE,
-  interaction.depth = INT.DEPTH, n.trees = NTREES,
-  use_weights = TRUE)$bin_validation,
-  .progress = "text")
-saveRDS(val_tax, file = "../data/val_tax.rds")
-val_tax_summarized <- ddply(val_tax, c("class", "gbm_pred_binned"),
-  summarize_val_test)
-
-# build models:
-w <- paleorisk::get_weights(neog$Ex)
-weights <- ifelse(neog$Ex == 1, w$ex_weight, w$sur_weight)
-m_tax <- rlply(5, gbm(Ex ~ group,
-  data = neog, n.trees = NTREES, interaction.depth = INT.DEPTH,
-  distribution = "bernoulli", shrinkage = SHRINKAGE, weights = weights))
-
-# predict from the models:
-predictions_tax <- laply(m_tax, function(x)
-  gbm::predict.gbm(x, newdata = modern, type = "response",
-    n.trees = NTREES))
-modern_tax <- modern
-modern_tax$pred_tax <- apply(predictions_tax, 2, mean)
-
-# calibrate:
-modern_tax$gbm_pred_binned <- assign_bins(modern_tax$pred_tax)
-modern_tax <- plyr::join(modern_tax,
-  val_tax_summarized[,c("class", "gbm_pred_binned", "mean_observed")],
-  by = c("class", "gbm_pred_binned"))
-
-# merge in spalding map data:
-load("../data/interpolated_provs_all_taxa.rda")
-d.eco.filled.tax <- interpolated_provs_all_taxa
-
-# merge occurrence data with risk predictions:
-d.eco.filled.tax <- merge(d.eco.filled.tax, modern_tax, by = "genus", all.x = FALSE)
-
-# calculate province means:
-by.prov.classes.tax <- dplyr::summarise(dplyr::group_by(na.omit(d.eco.filled.tax), class,
-    PROV_CODE), mean.ext = mean(log(mean_observed)), N.gen = length(unique(genus)))
-by.prov.all.tax <- dplyr::summarise(dplyr::group_by(na.omit(d.eco.filled.tax), PROV_CODE),
-  mean.ext = mean(log(mean_observed)), N.gen = length(unique(genus)))
-
-# fake columns:
-by.prov.all.tax$Halpern <- 1
-by.prov.all.tax$Burrows <- 1
-
-# prepare data for plotting:
-er <- maptools::readShapePoly("../data/MEOW2/meow_ecos.shp")
-er@data$id <- rownames(er@data)
-er_points <- ggplot2::fortify(er, region = "id")
-er_dat_tax_class <- plyr::join(er_points, er@data, by = "id")
-er_dat_tax_class <- plyr::join(er_dat_tax_class, by.prov.classes.tax, by = "PROV_CODE")
-er_dat_tax <- plyr::join(er_points, er@data, by = "id")
-er_dat_tax <- plyr::join(er_dat_tax, by.prov.all.tax, by = "PROV_CODE")
-@
-
-
-<<alternative-gbms-plots, results='hide', eval=FALSE>>=
-pdf("../figs/class-risk-maps-mean-log-ext-taxonomy-only.pdf", width = 6.45, height = 5.1)
-map_class_ext(er_dat_tax_class, plot_column = "mean.ext",
-  min_prov_genera = 10, ylab = "Intrinsic extinction probability (over ~23 Myr)",
-  picture_files = picture_files,
-  silhouette_coords = silhouette_coords,
-  yticks = c(0.005, 0.01, 0.02, 0.05, 0.10, 0.20),
-  col_range = TRUE, exact_limits = c(0.002, 0.6))
-dev.off()
-
-pdf("../figs/hotspots-taxonomy-only.pdf", width = 7, height = 3.5)
-par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
-  las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
-labs <- c(0.012, 0.014, 0.016, 0.018)
-labs_show <- sprintf("%.3f", labs)
-map_hotspots(er_dat_tax, min_prov_genera = 120, add_legend = TRUE,
-  hotspots = FALSE, at = log(labs), at.labels = labs_show)
-par(xpd = NA)
-mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
-  line = -1.4, las = 0, col = "grey30", cex = 0.9)
-dev.off()
-@
-
-
 \subsection{Jackknife analysis}
 
 We can recreate the global intrinsic extinction probability map leaving out each taxonomic class in succession in a jackknife analysis. This gives us an idea if any one class is driving the pattern.
@@ -1193,11 +955,6 @@ for(i in 1:length(classes)) {
   mtext(paste("Exclude", classes[i]), line = -0.5)
 }
 @
-
-\subsection{The role of the tropic in risk predictions}
-
-TODO this section/figure will no longer be about the tropics.
-We can inspect the role of tropical regions. Earlier we defined ``tropical'' as less than 30$^{\circ}$ absolute latitude. This code produces Fig.~\ref{fig:test-tropical-drivers}.
 
 <<predictors-vs-risk, fig.width=18, fig.height=11.5, out.width="6.75in", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus various predictors for that province. Each point represents a single biogeographic province. Lines and gray-shaded regions indicate linear regressions and 95\\% confidence intervals.">>=
 by.prov.classes.long <- reshape2::melt(by.prov.classes, id.vars =
@@ -1273,7 +1030,7 @@ map_class_ext(er_dat_class3, yticks = exp(c(-0.5, 0, 0.5)),
 dev.off()
 
 # now for the overall version:
-resids_overall <- ddply(resids, "PROVINCE", summarize, mean(residual.ext))
+resids_overall <- ddply(resids, "PROVINCE", plyr::summarize, mean(residual.ext))
 
 
 load("../data/by.prov.all.rda")
@@ -1383,7 +1140,7 @@ map_class_ext(er_dat_class, plot_column = "log.mean.richness",
 
 We will look at the effect of the changing the cutoff for the minimum-genera-per-province-class combination. In other words, as we increase this threshold, some classes with fewer genera in a given province are removed.
 
-<<min-gen-thresh-sensitivity, fig.height=8.5, fig.width=13>>=
+<<min-gen-thresh-sensitivity, fig.height=8.5, fig.width=13, fig.cap='TODO Cutoff effect.'>>=
 par(mfrow = c(2, 2))
 par(mar = c(0, 0, 2, 0), oma = c(2, 2, 2, 2))
 map_hotspots(er_dat, min_prov_genera = 25, hotspots = FALSE)
