@@ -236,6 +236,7 @@ dat <- readRDS("../data/modern_and_paleo_ranges.rds")
 dat$Interval <- factor(dat$Interval)
 #drop unused classes
 dat <- subset(dat, !class %in% c("Foraminifera", "Testudines", "Malacostraca"))
+dat <- droplevels(dat)
 #drop genera that occur only once in the entire database if desired
 #dat <- dat[(dat$singleton.single.occ == 0),]
 #now remove the extraneous columns that were created only for culling
