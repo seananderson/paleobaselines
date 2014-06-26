@@ -249,12 +249,14 @@ for(i in 1:length(unique(dat$Interval_Name))) {
   out[[i]] <- standardize_data(dat, interval = unique(dat$Interval_Name)[i])
 }
 out <- do.call("rbind", out)
+out$Interval_Name <- out$stage
 saveRDS(out, file = "../data/stand-predictors-cen-obis.rds")
 @
 
 %TODO: update this table so that it isn't operating on standardized occurrences
-<<genera-occurrences-table, results = "asis">>=
+<<genera-occurrences-table, results = "asis", eval=FALSE>>=
 dat <- readRDS("../data/stand-predictors-cen-obis.rds")
+#dat <- readRDS("../data/modern_and_paleo_ranges.rds") 
 Genera <- function(df) length(unique(df$genus))
 Occurrences <- function(df) sum(df$occurrences)
 Table.S1 <- plyr::ddply(dat, plyr::.(Interval_Name,class),
@@ -276,7 +278,8 @@ xtable::print.xtable(xtable::xtable(Table.S1, digits = c(0, 0, 0, 0, 0),
 @
 
 
-<<plot-comparison-modern-plio-pleistocene-ranges, out.width="\\textwidth", fig.height=5, fig.width=8, fig.cap=paste("Comparison of ranges for the", length(unique(Plio.Modern2$genus)), "genera that are sampled in both the modern dataset and in the Plio-Pleistocene subset of the paleontological dataset. Richness, occupancy, and occurrences are standardized by dividing by the maximum observed value within each interval. Points are overplotted and hence relative tranparancy of a given point indicates the number of genera. Black lines are lines of unity and red lines are reduced major axis regression lines.")>>=
+% TODO - this plot needs to have culling done first or use real data
+<<plot-comparison-modern-plio-pleistocene-ranges, out.width="\\textwidth", fig.height=5, fig.width=8, fig.cap=paste("Comparison of ranges for the", length(unique(Plio.Modern2$genus)), "genera that are sampled in both the modern dataset and in the Plio-Pleistocene subset of the paleontological dataset. Richness, occupancy, and occurrences are standardized by dividing by the maximum observed value within each interval. Points are overplotted and hence relative tranparancy of a given point indicates the number of genera. Black lines are lines of unity and red lines are reduced major axis regression lines."), eval=FALSE>>=
 Plio.Modern <- readRDS("../data/stand-predictors-cen-obis.rds")
 Plio.Modern <- Plio.Modern[Plio.Modern$Interval_Name %in% 
   c("Modern_raw", "Plio-Pleistocene"), ]
@@ -350,7 +353,7 @@ INT.DEPTH <- 5
 NTREES <- 1000
 SHRINKAGE <- 0.01
 if(!file.exists("../data/val_test.rds")) {
-  val_test <- rdply(150, validate_gbm(neog, shrinkage = SHRINKAGE,
+  val_test <- rdply(110, validate_gbm(neog, shrinkage = SHRINKAGE,
     interaction.depth = INT.DEPTH, n.trees = NTREES,
     use_weights = TRUE)$bin_validation, 
     .progress = "text")
@@ -473,8 +476,6 @@ ggplot(data = within_stage) +
 
 \subsection{Testing predictive performance across geologic stages}
 
-Another way to evaluate the similarity in extinction regimes between different time intervals is to predict extinction risk for each genus in a given interval from the model trained on that interval with predicted extinction risk for that genus from a model trained on a different interval.  If the relationship between predictors and extinction risk is similar in both intervals, genus risk predictions from the two models will be strongly positively correlated.  If the relationship between predictors and extinction risk differs strongly between the two stages, genus risk estimates will be only weakly correlated. We see that in general there is substantial similarity in per-genus extinction risk predictions across all four stages, with Spearman rank-order correlation coefficients for cross-interval predictions ranging from \Sexpr{min(Rsqs$Rsq)} to \Sexpr{max(Rsqs$Rsq)} with a median of \Sexpr{median(Rsqs$Rsq)}.
-
 <<cross-intervals-gbms, results='hide'>>=
 stage_df <- expand.grid(stage_train = unique(neog$stage),
   stage_test = unique(neog$stage))
@@ -576,6 +577,9 @@ par(xpd = NA)
 dev.off()
 
 @
+
+Another way to evaluate the similarity in extinction regimes between different time intervals is to predict extinction risk for each genus in a given interval from the model trained on that interval with predicted extinction risk for that genus from a model trained on a different interval.  If the relationship between predictors and extinction risk is similar in both intervals, genus risk predictions from the two models will be strongly positively correlated.  If the relationship between predictors and extinction risk differs strongly between the two stages, genus risk estimates will be only weakly correlated. We see that in general there is substantial similarity in per-genus extinction risk predictions across all four stages, with Spearman rank-order correlation coefficients for cross-interval predictions ranging from \Sexpr{min(Rsqs$Rsq)} to \Sexpr{max(Rsqs$Rsq)} with a median of \Sexpr{median(Rsqs$Rsq)}.
+
 
 \begin{figure}[htbp]
  \centering
