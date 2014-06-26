@@ -18,7 +18,7 @@ extract_ranges <- function() {
   occ.freq <- occs$total_occurrences
   occ.merge <- data.frame(genus,occ.freq)
   genus_grid_merged2 <- merge(genus_grid_merged, occ.merge, by="genus")
-  save(genus_grid_merged2, file="../data/genus_grid_merged.rda")
+  # save(genus_grid_merged2, file="../data/genus_grid_merged.rda")
 
   # Now merge in higher taxonomy
   OBIS.genera <- genus_grid_merged2
