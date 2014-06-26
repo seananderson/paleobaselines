@@ -58,7 +58,7 @@ write.csv(auc_vals, file = "../data/auc_vals.csv")
 ggplot(roc_vals, aes(spec, sens)) +
   geom_line(aes(colour = class, size = class)) +
   xlim(1, 0) + 
-  scale_colour_manual(values = c(RColorBrewer::brewer.pal(6, "Set2"), "#000000")) +
+  scale_colour_manual(values = c("#00000080", paste0(RColorBrewer::brewer.pal(6, "Set2"), "80"))) +
   scale_size_manual(values = c(rep(0.8, 6), 2)) +
   geom_abline(intercept = 1, slope = 1, lty = 2, col = "darkgrey") +
   xlab("Specificity") + ylab("Sensitivity") +
