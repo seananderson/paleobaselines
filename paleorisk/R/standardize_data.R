@@ -19,12 +19,16 @@
 #'
 #' @export
 
-standardize_data <- function(dat,great_circle_bin = 2000, num_bins = 10) {
+standardize_data <- function(dat, interval, great_circle_bin = 2000,
+  num_bins = 10, min_modern_occurrences = 2, min_pbdb_occurrences = 1) {
+
   mod.dat <- dat[(dat$stage_top == 0),]
   fossil.dat <- dat[(dat$stage_top > 0),]
   mod.dat <- mod.dat[(mod.dat$occurrences >= min_modern_occurrences),]
   fossil.dat <- fossil.dat[(fossil.dat$occurrences >= min_pbdb_occurrences),]
   data1 <- rbind(mod.dat,fossil.dat)
+
+  data1 <- subset(data1, Interval_Name == interval)
 
   stage_name <- data1$Interval_Name[1]
   stage_top <- data1$stage_top[1]
@@ -52,12 +56,12 @@ standardize_data <- function(dat,great_circle_bin = 2000, num_bins = 10) {
   max.lat <- apply(lats, 1, max)
   lat.range <- max.lat-min.lat
   mean.lat <- abs(data1$mean_lat)
-  
+
   min.lat <- floor(min.lat / num_bins)*num_bins
   max.lat <- ceiling(max.lat / num_bins)*num_bins
   lat.range <- round(lat.range/num_bins)*num_bins
   mean.lat <- round(mean.lat/num_bins)*num_bins
-  
+
   Ex <- data1$Extinct.in.stage
 
   stage <- rep(stage_name, length(Ex))
@@ -66,6 +70,6 @@ standardize_data <- function(dat,great_circle_bin = 2000, num_bins = 10) {
   stand_dat <- gdata::drop.levels(na.omit(data.frame(stage, stage_top, class, group,
         genus, richness, occupancy, occurrences, min.lat, max.lat, lat.range,
         mean.lat, great.circle, Ex)))
-  
+
   return(stand_dat)
 }
