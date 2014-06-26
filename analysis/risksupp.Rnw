@@ -915,8 +915,15 @@ sink()
 
 <<plot-hotspots, results='hide'>>=
 load("../data/by.prov.all.rda")
+
+by.prov.all[by.prov.all$PROV_CODE == 7, "mean.ext"] <- mean(by.prov.all$mean.ext)
+
+bpa_order <- by.prov.all
+bpa_order <- bpa_order[order(bpa_order$mean.ext), ]
+bpa_order$rank.mean.ext <- 1:nrow(bpa_order)
+
 er_dat <- plyr::join(er_points, er@data, by = "id")
-er_dat <- plyr::join(er_dat, by.prov.all, by = "PROV_CODE")
+er_dat <- plyr::join(er_dat, bpa_order, by = "PROV_CODE")
 pdf("../figs/hotspots.pdf", width = 7, height = 3.5)
 par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
