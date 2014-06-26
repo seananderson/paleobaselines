@@ -220,7 +220,7 @@ TODO expand this.
 source("../r/README_interpolation.R")
 @
 
-\subsection{Standarizing predictor variables}
+\subsection{Standardizing predictor variables}
 
 We will start by standardizing a variety of habitat-relative characteristics within each geologic stage. All of the geographic range, specied richness, and occurrence frequency predictors are potentially influenced by sampling intensity, and the modern dataset is much larger in terms of total number of occurrences than the paleontological datasets (Table S1).  Metrics that are geographically explicit (max.lat, min.lat, mean.lat, lat.range, great.circle) cannot easily be standardized without distorting underlying patterns, but those that are not (richness, occurrences, occupancy) were divided by the maximum value observed in each interval. Hence, the scale on these standardized predictors goes from 0 to 1 (Figure 1). The other variables (e.g.\ latitude variables and great circle distance) are still comparable between the paleontological and contemporary records --- a degree latitude is still a degree latitude and a kilometre is still a kilometre.
 
@@ -233,10 +233,11 @@ We will start by standardizing a variety of habitat-relative characteristics wit
 
 <<standardize-predictors>>=
 dat <- readRDS("../data/modern_and_paleo_ranges.rds")
+dat$Interval <- factor(dat$Interval)
 #drop unused classes
 dat <- subset(dat, !class %in% c("Foraminifera", "Testudines", "Malacostraca"))
 #drop genera that occur only once in the entire database if desired
-dat <- dat[(dat$singleton.single.occ == 0),]
+#dat <- dat[(dat$singleton.single.occ == 0),]
 #now remove the extraneous columns that were created only for culling
 dat <- dat[ , -which(names(dat) %in% c("Singleton","singleton.single.occ"))]
 dat <- rename(dat, c("Interval" = "Interval_Name",
@@ -338,7 +339,7 @@ We fit GBMs with the \pkg{gbm} package \cite{gbm2013} for the \proglang{R} stati
 <<load-data>>=
 neog <- readRDS("../data/stand-predictors-cen-obis.rds")
 # can throw out less than 23 - neogene only
-neog2 <- droplevels(subset(neog, stage_top < 23 &
+neog <- droplevels(subset(neog, stage_top < 23 &
     stage_top != 0))
 @
 
@@ -353,7 +354,7 @@ INT.DEPTH <- 5
 NTREES <- 1000
 SHRINKAGE <- 0.01
 if(!file.exists("../data/val_test.rds")) {
-  val_test <- rdply(110, validate_gbm(neog, shrinkage = SHRINKAGE,
+  val_test <- rdply(40, validate_gbm(neog, shrinkage = SHRINKAGE,
     interaction.depth = INT.DEPTH, n.trees = NTREES,
     use_weights = TRUE)$bin_validation, 
     .progress = "text")
@@ -1130,7 +1131,7 @@ dev.off()
 
 \subsection{Alternative model with only taxonomic predictors}
 
-<<alternative-gbm-taxonomy-only-prep, fig.width=7, fig.height=4, out.width="6.25in", results='hide'>>=
+<<alternative-gbm-taxonomy-only-prep, fig.width=7, fig.height=4, out.width="6.25in", results='hide', eval=FALSE>>=
 # build calibration models:
 val_tax <- rdply(40, validate_gbm(neog,
   model = "Ex ~ group", shrinkage = SHRINKAGE,
@@ -1189,7 +1190,7 @@ er_dat_tax <- plyr::join(er_dat_tax, by.prov.all.tax, by = "PROV_CODE")
 @
 
 
-<<alternative-gbms-plots, results='hide'>>=
+<<alternative-gbms-plots, results='hide', eval=FALSE>>=
 pdf("../figs/class-risk-maps-mean-log-ext-taxonomy-only.pdf", width = 6.45, height = 5.1)
 map_class_ext(er_dat_tax_class, plot_column = "mean.ext",
   min_prov_genera = 10, ylab = "Intrinsic extinction probability (over ~23 Myr)",
