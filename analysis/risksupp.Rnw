@@ -53,8 +53,8 @@ opts_knit$set(out.format = "latex", out.width="\\textwidth")
 # opts_knit$set(eval.after = 'fig.cap') # evaluate fig.cap after the chunk
 @
 
-\title{Supplementary Materials for Paleontological Baselines for Evaluating
-Contemporary Extinction Risk in Coastal Oceans}
+\title{Supporting Online Material for\\Paleontological Baselines for Evaluating
+Contemporary Extinction Risk in Modern Oceans}
 \author{Seth Finnegan\textsuperscript{$\ast$} \and Sean C. Anderson \and Paul
 G. Harnik \and Carl Simpson \and Derek P. Tittensor \and Jarrett E. Byrnes \and
 Zoe V. Finkel \and David R. Lindberg \and Lee Hsiang Liow \and Rowan Lockwood
@@ -66,13 +66,15 @@ Aaron O'Dea \and John M. Pandolfi}
 \textsuperscript{$\ast$}Corresponding author. E-mail sethf@berkeley.edu
 
 This PDF file includes:\\
-Figs.\ S1 to SXX\\
+Figs.\ S1 to S-TODO\\
+Tables S1 to S-TODO\\
 References
 
 \clearpage
-
+\setlength\parskip{0in}
 \tableofcontents
 \clearpage
+\setlength\parskip{0.11in}
 
 % Load Fig S1 here to make sure it's the first figure.
 % Supplementary figures all get printed at the end because we loaded the
