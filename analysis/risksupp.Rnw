@@ -233,8 +233,7 @@ dat$Interval <- factor(dat$Interval)
 dat <- subset(dat, !class %in% c("Foraminifera", "Testudines", "Malacostraca"))
 dat <- droplevels(dat)
 dat <- plyr::rename(dat, c("Interval" = "Interval_Name"))
-cull.taxa <- c("Bivalvia","Gastropoda")
-dat$cull.val <- ifelse(dat$top == 0 & dat$class %in% cull.taxa, 2,1)
+dat$cull.val <- ifelse(dat$top == 0, 2,1)
 dat <- dat[(dat$occurrences >= dat$cull.val),]
 
 Genera <- function(df) length(unique(df$genus))
