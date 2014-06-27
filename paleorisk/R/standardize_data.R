@@ -30,7 +30,10 @@ standardize_data <- function(dat, min_lat_bin = 10, max_lat_bin = 10,
   min_modern_occurrences = 2) {
 
   if(unique(dat$Interval_Name[1]) %in% c("Modern_merged", "Modern_raw")) {
-    data1  <- drop.levels(subset(dat, dat$occurrences >= min_modern_occurrences))
+    cull.taxa <- c("Bivalvia", "Gastropoda")
+    dat$cull.val <- ifelse(dat$class %in% cull.taxa, min_modern_occurrences, 1)
+    dat <- dat[(dat$occurrences >= dat$cull.val), ]
+    data1  <- drop.levels(dat)
   } else {
     data1  <- droplevels(dat)
   }
