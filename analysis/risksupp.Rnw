@@ -281,6 +281,7 @@ xtable::print.xtable(xtable::xtable(Table.S1, digits = c(0, 0, 0, 0, 0),
 <<plot-comparison-modern-plio-pleistocene-ranges, out.width="\\textwidth", fig.height=5, fig.width=8, fig.cap="Comparison of ranges for the TODO genera that are sampled in both the modern dataset and in the Plio-Pleistocene subset of the paleontological dataset. Richness, occupancy, and occurrences are standardized by dividing by the maximum observed value within each interval. Points are overplotted and hence relative tranparancy of a given point indicates the number of genera. Black lines are lines of unity and red lines are reduced major axis regression lines.", echo=FALSE>>=
 
 Plio.Modern <- readRDS("../data/stand-predictors-cen-obis.rds") 
+Plio.Modern$tropical_only <- NULL # not plotting
 Plio.Modern <- Plio.Modern[Plio.Modern$Interval_Name %in% c("Modern_raw", "Plio-Pleistocene"), ]
 Plio.Modern$Ex <- NULL
 Plio.Modern <- reshape2::melt(Plio.Modern, id = c("Interval_Name","stage","stage_top","class","group","genus"))
