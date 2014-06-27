@@ -558,7 +558,7 @@ m <- rlply(5, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
   distribution = "bernoulli", shrinkage = SHRINKAGE, weights = weights))
 @
 
-<<check-classification-error, child='check-classification-frror-child.Rnw', results='hide', fig.height=7, fig.width=14, fig.cap='TODO ROC curves'>>=
+<<check-classification-error, child='check-classification-error-child.Rnw', results='hide', fig.height=7, fig.width=14, fig.cap='TODO ROC curves'>>=
 @
 
 <<load-modern-data>>=
