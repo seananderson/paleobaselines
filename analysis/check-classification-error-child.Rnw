@@ -56,7 +56,7 @@ auc_vals <- ddply(roc_vals, c("stage", "class"), summarize, auc = round(unique(a
 write.csv(auc_vals, file = "../data/auc_vals.csv")
 
 # downsample to make figure smaller file size:
-roc_vals <- roc_vals[round(seq(1, nrow(roc_vals), length.out = 20000)), ]
+roc_vals <- roc_vals[round(seq(1, nrow(roc_vals), length.out = 25000)), ]
 
 ggplot(roc_vals, aes(spec, sens)) +
   geom_line(aes(colour = class, size = class)) +
