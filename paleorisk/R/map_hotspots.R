@@ -56,20 +56,20 @@ map_hotspots <- function(er_dat, min_prov_genera = 50, hotspot_thresh = 0.8,
       FALSE, "grey85", NA))
 
   # drop black sea - very low outlier that distorts colour
-  black_sea_remove <- FALSE
-  if(nrow(subset(er.df, er.df$PROV_CODE == 7))) {
-    black_sea_remove <- TRUE
-    black_sea <- subset(er.df, er.df$PROV_CODE == 7)
-    black_sea$col.pal.ext.plot <- "grey64"
-  }
+  #black_sea_remove <- FALSE
+  #if(nrow(subset(er.df, er.df$PROV_CODE == 7))) {
+    #black_sea_remove <- TRUE
+    #black_sea <- subset(er.df, er.df$PROV_CODE == 7)
+    #black_sea$col.pal.ext.plot <- "grey64"
+  #}
   er.df <- subset(er.df,er.df$PROV_CODE != 7)
 
   er.df$col.pal.ext.plot <- col_pal[findInterval(er.df$ext.plot,
     seq(min(er.df$ext.plot)-0.00001, max(er.df$ext.plot) + 0.00001,
       length.out = 10))]
-  if(black_sea_remove) {
-    er.df <- rbind(er.df, black_sea)
-  }
+  #if(black_sea_remove) {
+    #er.df <- rbind(er.df, black_sea)
+  #}
   er.df.mol <- mapproj::mapproject(list(x = er.df$long, y = er.df$lat))
   er.df.m <- er.df
   er.df.m$x <- er.df.mol$x
