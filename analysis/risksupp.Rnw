@@ -28,9 +28,9 @@
 <<set-knitr-options, cache=FALSE, echo=FALSE>>=
 library("knitr")
 opts_chunk$set(fig.align='center', fig.pos="htpb", cache=TRUE, echo=FALSE,
-message=FALSE, autodep=TRUE, fig.path='../figs/', fig.width=6, par=TRUE)
+message=FALSE, autodep=FALSE, fig.path='../figs/', fig.width=6, par=TRUE)
 opts_chunk$set(warning=FALSE, message=FALSE, tidy=FALSE, refresh=TRUE,
-  cache.path="../cache/", cache.lazy=FALSE, size="small")
+  cache.path="../cache/", cache.lazy=FALSE, size="small", cache.comments=FALSE)
 opts_chunk$set(dev = 'pdf')
 opts_knit$set(out.format = "latex")
 # opts_knit$set(eval.after = 'fig.cap') # evaluate fig.cap after the chunk
@@ -112,11 +112,12 @@ library("fields")
 library("xtable")
 library("lmodel2")
 library("pROC")
+library("rgeos")
 @
 
-<<gpclibPermit, cache=FALSE, echo=FALSE, results='hide'>>=
-gpclibPermit()
-@
+% <<gpclibPermit, cache=FALSE, echo=FALSE, results='hide'>>=
+% gpclibPermit()
+% @
 
 <<preamble-work, cache=FALSE, echo=FALSE, results=FALSE>>=
 theme_set(theme_bw())
