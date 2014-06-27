@@ -339,16 +339,16 @@ neog <- droplevels(subset(neog, stage_top < 23 & stage_top != 0))
 
 We began by building GBM models and testing their ability to predict data separate from the data they were built on. This is called out-of-sample prediction or cross validation. We build models on one part of the data (the in-sample data) and then test on the rest of the data (the out-of-sample data). We are building our GBM models on the entire Neogene paleontological dataset to pool predictive power from range-characteristics. However, we are interested in unbiased predictions at the phylogenetic class level. Therefore, we will examine out-of-sample prediction at the class level.
 
-\fn{validate\_gbm()} in the \pkg{paleorisk} package is our main validation function. This function deals with splitting the data into training (in-sample) and testing (out-of-sample) portions, builds a GBM on the training portion, and then returns predictions and classification statistics on the testing portion. We will start by testing some GBM models. We will build the model 500 times, each time training the model on a random 50\% of the data and testing it on the other 50\%. 
+\fn{validate\_gbm()} in the \pkg{paleorisk} package is our main validation function. This function deals with splitting the data into training (in-sample) and testing (out-of-sample) portions, builds a GBM on the training portion, and then returns predictions and classification statistics on the testing portion. We will start by testing some GBM models. We will build the model 1000 times, each time training the model on a random 50\% of the data and testing it on the other 50\%. 
 
 To test the predictive performance of our model, we will group the predicted probabilities for each class into bins from 0 to 1 in 0.05 increments. For example, we can group predicted probabilities of 0.12, 0.11, and 0.14 for 3 different out of sample genera into a bin of 0.10--0.15. Then we can calculate the mean observed extinction probability for each of those bins. For example, say those 3 genera have observed extinction probabilities of 0.21, 0.09, and 0.10. In that case, the observed out-of-sample extinction probability was 0.133. We can then compare the mean of our prediction bin (0.125) with the mean observed value (0.133). In this example, our model is biased slightly low. Because we're building and testing the model on independent datasets, this is a good test of how our model might perform on a new but equivalent dataset.
 
 <<test-gbm1, results='hide'>>=
 INT.DEPTH <- 5
-NTREES <- 1000
+NTREES <- 2000
 SHRINKAGE <- 0.01
 if(!file.exists("../data/val_test.rds")) {
-  val_test <- rdply(60, validate_gbm(neog, shrinkage = SHRINKAGE,
+  val_test <- rdply(1000, validate_gbm(neog, shrinkage = SHRINKAGE,
     interaction.depth = INT.DEPTH, n.trees = NTREES,
     use_weights = TRUE)$bin_validation, 
     .progress = "text")
@@ -375,7 +375,7 @@ ggplot(subset(val_test, .n == 1),
   labs(size = "Sample #")
 @
 
-By running the cross validation 200 times, we calculated a mean bias at the class level for each prediction bin. We used the function \fn{summarize\_val\_test()} from our \pkg{paleorisk} package to calculate means and 95\% confidence intervals (based on likelihood profiles) for each validation bin. We illustrate this in the following figure. The blue dots represent the mean estimate from a binomial generalized linear model (GLM) fit to the black dots (observed mean extinction proportions based on individual cross-validation runs) with weights equal to the sample size in that bin across runs. The vertical lines represent 95\% confidence intervals. The area of the dots corresponds to the median number of extinction/survival observations in that bin across replicates.
+By running the cross validation 1000 times, we calculated a mean bias at the class level for each prediction bin. We used the function \fn{summarize\_val\_test()} from our \pkg{paleorisk} package to calculate means and 95\% confidence intervals (based on likelihood profiles) for each validation bin. We illustrate this in the following figure. The blue dots represent the mean estimate from a binomial generalized linear model (GLM) fit to the black dots (observed mean extinction proportions based on individual cross-validation runs) with weights equal to the sample size in that bin across runs. The vertical lines represent 95\% confidence intervals. The area of the dots corresponds to the median number of extinction/survival observations in that bin across replicates.
 
 <<test-gbm1-summary>>=
 val_test_summarized <- ddply(val_test, c("class", "gbm_pred_binned"),
@@ -461,7 +461,7 @@ fit_stage_models <- function(dat, stage_name) {
 <<fit-marginal-stage-models>>=
 if(!file.exists("../data/stage_models.rds")) {
   stage_models <- llply(c(stage_order, "all"), function(x)
-    rlply(10, fit_stage_models(neog, stage_name = x)))
+    rlply(20, fit_stage_models(neog, stage_name = x)))
   names(stage_models) <- c(stage_order, "all")
   saveRDS(stage_models, file = "../data/stage_models.rds")
 } else {
@@ -515,14 +515,14 @@ partial_groups <- plyr::rename(partial_groups, c("group" = "value"))
 
 We will also identify the relative contribution of taxonomy vs.\ range and occupancy characteristics. To do this, we'll look at the relative importance of each of the GBM predictors using the \texttt{relative.influence()} function in the \pkg{gbm} package, which uses the algorithm as described in Ref.~\cite{friedman2001}.
 
-<<taxonomy-range-contributions, out.width="3in", fig.height=4, fig.width=4, fig.cap="Relative influence of the predictor variables in the Neogene GBM model. The values are scaled so that the variable with the maximum influence has a relative importance of 1. Shown are the median (dots) and interquartile range (line segments) across 50 model runs.">>=
+<<taxonomy-range-contributions, out.width="3in", fig.height=4, fig.width=4, fig.cap="Relative influence of the predictor variables in the Neogene GBM model. The values are scaled so that the variable with the maximum influence has a relative importance of 1. Shown are the median (dots) and interquartile range (line segments) across 25 model runs.">>=
 w <- paleorisk::get_weights(neog$Ex)
 weights <- ifelse(neog$Ex == 1, w$ex_weight, w$sur_weight)
 m_relative <- gbm(Ex ~ richness + occupancy + occurrences + min.lat +
     max.lat + lat.range + mean.lat + great.circle + group,
   data = neog, n.trees = NTREES, interaction.depth = INT.DEPTH,
   distribution = "bernoulli", shrinkage = SHRINKAGE, weights = weights)
-ri <- rdply(5, function(x) {
+ri <- rdply(25, function(x) {
   m_relative <- gbm(Ex ~ richness + occupancy + occurrences + min.lat +
     max.lat + lat.range + mean.lat + great.circle + group,
   data = neog, n.trees = NTREES, interaction.depth = INT.DEPTH,
@@ -556,7 +556,7 @@ We will use our GBM model built on the entire Neogene period to predict extincti
 w <- paleorisk::get_weights(neog$Ex)
 weights <- ifelse(neog$Ex == 1, w$ex_weight, w$sur_weight)
 
-m <- rlply(5, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
+m <- rlply(10, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
     max.lat + lat.range + mean.lat + great.circle + group,
   data = neog, n.trees = NTREES, interaction.depth = INT.DEPTH,
   distribution = "bernoulli", shrinkage = SHRINKAGE, weights = weights))
