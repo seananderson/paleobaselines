@@ -1,7 +1,8 @@
 <<check-classfication-error-child.Rnw>>=
+gc() # clean memory
 if(!file.exists("../data/pred_oob.rds")) {
   # get predictions for overall model:
-  neog_pred_oob <- rdply(200, validate_gbm(neog, 
+  neog_pred_oob <- rdply(150, validate_gbm(neog, 
       interaction.depth = INT.DEPTH, n.trees = NTREES,
       use_weights = TRUE, test_fraction = 0.333)$pred, .progress = "text")
 
@@ -14,7 +15,7 @@ if(!file.exists("../data/pred_oob.rds")) {
 
   for(i in 1:length(stage_order)) {
     this_dat <- subset(neog, stage == stage_order[i])
-    pred_oob <- rdply(200, validate_gbm(this_dat, 
+    pred_oob <- rdply(150, validate_gbm(this_dat, 
         interaction.depth = INT.DEPTH, n.trees = NTREES,
         use_weights = TRUE, test_fraction = 0.333)$pred, .progress = "text")
     out_roc[[i]] <- pred_oob
