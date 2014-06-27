@@ -1,4 +1,4 @@
-all: knit pdf
+all: knit
 
 knit:
 	Rscript -e "knitr::knit('risksupp.Rnw')"
@@ -9,17 +9,22 @@ pdf:
 	pdflatex risksupp
 	pdflatex risksupp
 	pdflatex risksupp
+
+dropbox:
 	cp risksupp.pdf ~/Dropbox/Public/
 
+sundia:
+	cp risksupp.pdf ~/Dropbox/sundia/
+
 clean:
-	rm -rf ../cache/
+	rm -r ../cache/*
 	rm *.aux
 	rm *.log
 	rm *.bbl
 	rm *.blg
 	rm *.toc
 	rm risksupp.tex
-	mkdir ../cache/
+	#mkdir ../cache/
 
 deleteranges:
 	rm ../data/modern_and_paleo_ranges.rds
