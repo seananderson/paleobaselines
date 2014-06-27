@@ -243,7 +243,9 @@ dat$Interval <- factor(dat$Interval)
 dat <- subset(dat, !class %in% c("Foraminifera", "Testudines", "Malacostraca"))
 dat <- droplevels(dat)
 dat <- plyr::rename(dat, c("Interval" = "Interval_Name"))
-
+cull.taxa <- c("Bivalvia","Gastropoda")
+dat$cull.val <- ifelse(dat$top == 0 & dat$class %in% cull.taxa, 2,1)
+dat <- dat[(dat$occurrences >= dat$cull.val),]
 
 Genera <- function(df) length(unique(df$genus))
 Occurrences <- function(df) sum(df$occurrences)
@@ -264,6 +266,7 @@ xtable::print.xtable(xtable::xtable(Table.S1, digits = c(0, 0, 0, 0, 0),
     caption = "Total number of unique genera and occurrences of those genera in the Paleobiology Database for phylogenetic classes and geologic intervals used in our analysis."), 
   include.rownames = FALSE, caption.placement = "top", booktabs = TRUE)
 @
+
 
 
 % TODO - this plot needs to have culling done first or use real data
@@ -720,7 +723,7 @@ dev.off()
 
 \subsection{The effect of interpolation of OBIS records}
 
-In order to evaluate the effects of the within-realm bounding box interpolation, we begin by creating a version of figures 1 and 2 that omits this step.  This figure shows the same broad patterns apparent in figures 1 and 2, but with more unevenness.  This reflects a combinations of actual differences in intrinsic risk among provinces and apparent differences caused by differences in sampling intensity.  
+In order to evaluate the effects of the within-realm bounding box interpolation, we begin by creating a version of figures 1 and 2 that omits this step.  This figure shows the same broad patterns apparent in figures 1 and 2, but with more unevenness.  This reflects a combinations of actual differences in intrinsic risk among provinces and apparent differences caused by differences in sampling intensity. Comparing this figure to  
 
 <<predict-no-bounding-box, fig.width=7, fig.height=4, out.width="6.25in">>=
 # Read in raw (not interpolated) contemporary data:
