@@ -168,11 +168,6 @@ In order to ensure (1) that the fossil and modern datasets included only truly m
 
 First, standardization of taxonomy and removal of erroneous names or taxa (e.g.\ pulmonate gastropods) that do not belong.  Next, genus names from OBIS matched to higher taxonomic groups using the WORMS database.  Higher taxonomy of WORMS and of PDBD standardized to the greatest degree possible.
 
-
-\subsection{Standardizing the predictors}
-
-TODO ADD HERE
-
 \subsection{Interpolation of OBIS occurrence data}
 
 Sampling of species' distributions in the contemporary OBIS data set is incomplete. Therefore, we used an interpolation algorithm to infer the contemporary distribution of genera. We assumed that if a genus was identified within a biogeographic realm \cite{spalding2007}, it was likely to be found throughout that realm. We used a minimum-bounding-box method to interpolate within biogeographic realms across biogeographic provinces. We are assuming that the interpolated contemporary biogeographic provinces cover the ``true'' range. A similar minimum-bounding-box approach has been used in the literature before to account for variable sampling, for example Ref.~\cite{belanger2012}. We did not interpolate the marine mammals or elasmobranch datasets since these were based on range maps.
