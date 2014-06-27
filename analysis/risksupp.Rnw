@@ -970,10 +970,8 @@ map_hotspots(er_dat, min_prov_genera = 200, hotspots = FALSE)
 mtext("Min. genera = 200", cex = 2)
 @
 
-\clearpage
 \bibliographystyle{science}
 \bibliography{jshort,risksupp}
-
 \clearpage
 
 \section{Main Figures}
