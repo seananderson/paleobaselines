@@ -914,6 +914,14 @@ We can also look at the class-province maps after taking out the relationship be
 <<obis-residuals-maps, results='hide', child='obis-residuals-maps-child.Rnw'>>=
 @
 
+\begin{figure}[htbp]
+\centering
+  \includegraphics[width=\textwidth]{../figs/obis-residuals-maps-class.pdf}
+  \includegraphics[width=3.75in]{../figs/obis-residuals-maps-overall.pdf}
+\caption{TODO OBIS residuals}
+\label{fig:obis-residuals-maps}
+\end{figure}
+
 As another test, we will try removing genera that are only reported in one province. This removes \Sexpr{single.genera.provs.removed} from a total of \Sexpr{total.genera} genera (Fig.~\ref{fig:remove-single-province-genera-class-map} and Fig.~\ref{fig:remove-single-province-genera-overall-map}).
 
 <<remove-single-province-genera-class-map, results='hide'>>=
