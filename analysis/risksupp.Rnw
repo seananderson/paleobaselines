@@ -856,6 +856,11 @@ map_class_ext(er_dat_class, plot_column = "log_OBIS_records",
 
 @
 
+TODO: discuss the plot of number of occurrences per province above, the crossplot of number of occurrences vs. mean risk, and the use of the latter relatinships to detrend and produce the residuals map
+
+Although the correspondance
+
+
 We can also look at the class-province maps after taking out the relationship between OBIS sampling and predicted extinction probability. We'll plot the residuals.
 
 <<obis-residuals-maps, results='hide', child='obis-residuals-maps-child.Rnw'>>=
