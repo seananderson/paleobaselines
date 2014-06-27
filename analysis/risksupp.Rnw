@@ -1001,62 +1001,7 @@ map_class_ext(er_dat_class, plot_column = "log_OBIS_records",
 
 We can also look at the class-province maps after taking out the relationship between OBIS sampling and predicted extinction probability. We'll plot the residuals.
 
-<<obis-residuals-maps, results='hide'>>=
-er_dat_class2 <- er_dat_class
-mean.ext2 <- function(df) mean(df$mean.ext) # already logged
-total.occs <- function(df) log(max(df$OBIS_records))
-prov.means <- plyr::ddply(er_dat_class2, plyr::.(PROVINCE, class),
-  plyr::each(mean.ext2, total.occs))
-
-residual.exrisk <- function(df) {
-  mod <- lm(mean.ext2 ~ total.occs, data = df)
-  PROVINCE <- df$PROVINCE
-  residual.ext <- residuals(mod)
-  outs <- data.frame(PROVINCE,residual.ext)
-}
-
-resids <- plyr::ddply(prov.means,
-  plyr::.(class), plyr::each(residual.exrisk))
-
-er_dat_class2$Lat_Zone <- NULL # avoid warning below
-er_dat_class3  <- plyr::join(er_dat_class2, resids,
-  by = c("class","PROVINCE"))
-er_dat_class3$mean.ext <- er_dat_class3$residual.ext
-pdf("../figs/obis-residuals-maps-class.pdf", width = 6.45, height = 5.1)
-map_class_ext(er_dat_class3, yticks = exp(c(-0.5, 0, 0.5)),
-  exact_limits = exp(c(-1.0, 1.1)), min_prov_genera = 10, col_range = TRUE,
-  log_yticks = TRUE, fixed_range = TRUE,
-  ylab = "Residual after removing effect of OBIS record number")
-dev.off()
-
-# now for the overall version:
-resids_overall <- ddply(resids, "PROVINCE", plyr::summarize, mean(residual.ext))
-
-
-load("../data/by.prov.all.rda")
-er_dat <- plyr::join(er_points, er@data, by = "id")
-er_dat <- plyr::join(er_dat, by.prov.all, by = "PROV_CODE")
-er_dat2 <- er_dat
-mean.ext2 <- function(df) mean(df$mean.ext) # already logged
-total.occs <- function(df) log(max(df$OBIS_records))
-prov.means <- plyr::ddply(er_dat_class2, plyr::.(PROVINCE),
-  plyr::each(mean.ext2, total.occs))
-
-resids <- residual.exrisk(prov.means)
-
-er_dat2$Lat_Zone <- NULL # avoid warning below
-er_dat3  <- plyr::join(er_dat2, resids,
-  by = c("PROVINCE"))
-er_dat3$mean.ext <- er_dat3$residual.ext
-pdf("../figs/obis-residuals-maps-overall.pdf", width = 7, height = 3.5)
-par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
-  las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
-labs.nbb <- seq(0.016, 0.028, 0.004)
-map_hotspots(er_dat3, hotspots = FALSE,
-  add_legend = TRUE, at = log(labs.nbb), at.labels = labs.nbb)
-mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
-  line = -1.2, las = 0, col = "grey30", cex = 0.9)
-dev.off()
+<<obis-residuals-maps, results='hide', child='obis-residuals-maps-child.Rnw'>>=
 @
 
 As another test, we will try removing genera that are only reported in one province. This removes \Sexpr{single.genera.provs.removed} from a total of \Sexpr{total.genera} genera (Fig.~\ref{fig:remove-single-province-genera-class-map} and Fig.~\ref{fig:remove-single-province-genera-overall-map}).
