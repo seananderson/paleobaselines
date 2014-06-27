@@ -1,4 +1,4 @@
-all: knit
+all: knit pdf dropbox
 
 knit:
 	Rscript -e "knitr::knit('risksupp.Rnw')"
