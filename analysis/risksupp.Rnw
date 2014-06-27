@@ -937,7 +937,8 @@ map_class_ext(er_dat_class, plot_column = "log.mean.gcd",
 
 We will look at the effect of the changing the cutoff for the minimum-genera-per-province-class combination. In other words, as we increase this threshold, some classes with fewer genera in a given province are removed.
 
-<<min-gen-thresh-sensitivity, fig.height=8.5, fig.width=13, fig.cap='TODO Cutoff effect.'>>=
+<<min-gen-thresh-sensitivity, fig.height=8.5, fig.width=13, fig.cap='Effect of raising the minimum genus richness cutoff  provinces on the global distribution of mean intrinsic risk (a cutoff of 100 genera is used in Figure 3).  At low cutoff values, island provinces with low sampled diversity tend to dominate the relative risk pattern.  This is primarily attributable to differential sampling effects: even poorly-sampled provinces have a complete inventory of mammal and shark genera because the distributions of genera are based on published range maps not OBIS occurrences.  Since mammals have very high intrinsic risk relative to most other groups, the high ratio of mammal genera to other genera gives leads to exceptionally high mean intrinsic risk estimates in poorly sampled provinces.  Removing provinces that are clearly badly undersampled ameliorates this effect'>>=
+
 par(mfrow = c(2, 2))
 par(mar = c(0, 0, 2, 0), oma = c(2, 2, 2, 2))
 map_hotspots(er_dat, min_prov_genera = 25, hotspots = FALSE)
