@@ -23,6 +23,23 @@
 \renewcommand{\figurename}{Figure}
 \renewcommand{\tablename}{Table}
 
+\usepackage[dvipsnames,svgnames,x11names,hyperref]{xcolor}
+\usepackage{hyperref}
+\hypersetup{colorlinks,breaklinks,allcolors=MidnightBlue}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[LE,RO]{\sffamily\thepage}
+\fancyfoot[LO,RE]{\sffamily Paleontological Baselines for Evaluating
+Contemporary Extinction Risk in Modern Oceans}
+\fancyhead[RE]{\sffamily\nouppercase{\rightmark}}
+\fancyhead[LO]{\sffamily\nouppercase{\leftmark}}
+%\fancyhead[RE]{\nouppercase{\rightmark}}
+%\fancyhead[LO]{\nouppercase{\leftmark}}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.5pt}
+
 \begin{document}
 
 <<set-knitr-options, cache=FALSE, echo=FALSE>>=
