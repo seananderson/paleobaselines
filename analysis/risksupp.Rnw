@@ -92,8 +92,6 @@ cd analysis
 make
 \end{verbatim}
 
-%The \proglang{R} package itself can be installed (from the \texttt{analysis} folder) by running:
-
 <<install-paleorisk, eval=TRUE, echo=FALSE, cache=FALSE>>=
 devtools::install("../paleorisk/")
 @
@@ -195,11 +193,8 @@ For the contemporary dataset, we took the interpolated provinces, overlaid an eq
 
 <<get-grid-values, echo=FALSE>>=
 load("../data/global_45x14.rda")
-# global_45x14$longitude
-# global_45x14$latitude
 grid_lat <- sprintf("%.2f", round(global_45x14$latitude, 2))
 grid_mid_lat <- sprintf("%.2f", round(read.csv("../data/grid_mid_lat.csv")$x, 2))
-# grid_mid_long <- read.csv("../data/grid_mid_long.csv")$x
 @
 
 Our equal-area grid was divided into 45 east-west cells and 14 north-south cells. The longitudes started at $-180\,^{\circ}$ and increased by $8\,^{\circ}$ to $180\,^{\circ}$. The latitude values of the grid line (in degrees) were: \Sexpr{grid_lat}. We recorded the centre coordinates for all grid cells that overlapped with a province with observations or interpolated observations. The longitude midpoints were the arithmetic midpoint between the grid longitudes listed above. The latitude midpoints were chosen to maintain an equal area in the upper and lower halves. These values, in degrees, were \Sexpr{grid_mid_lat}.
@@ -220,23 +215,16 @@ source("../r/README_interpolation.R")
 
 We will start by standardizing a variety of habitat-relative characteristics within each geologic stage. All of the geographic range, specied richness, and occurrence frequency predictors are potentially influenced by sampling intensity, and the modern dataset is much larger in terms of total number of occurrences than the paleontological datasets (Table S1).  Metrics that are geographically explicit (max.lat, min.lat, mean.lat, lat.range, great.circle) cannot easily be standardized without distorting underlying patterns, but those that are not (richness, occurrences, occupancy) were divided by the maximum value observed in each interval. Hence, the scale on these standardized predictors goes from 0 to 1 (Figure 1). The other variables (e.g.\ latitude variables and great circle distance) are still comparable between the paleontological and contemporary records --- a degree latitude is still a degree latitude and a kilometre is still a kilometre.
 
-% The code in \texttt{extract-ranges.Rnw} creates the \proglang{R} data object \texttt{modern\_and\_paleo\_ranges.rds}.
-
+% creates modern_and_paleo_ranges.rds:
 <<extract-ranges, child='extract-ranges.Rnw', eval=TRUE, echo=FALSE, results='hide'>>=
 @
-
-% We will standardize the predictor data with the following \proglang{R} code:
 
 <<standardize-predictors>>=
 dat <- readRDS("../data/modern_and_paleo_ranges.rds")
 dat$Interval <- factor(dat$Interval)
-#drop unused classes
+# drop unused classes
 dat <- subset(dat, !class %in% c("Foraminifera", "Testudines", "Malacostraca"))
 dat <- droplevels(dat)
-#drop genera that occur only once in the entire database if desired
-#dat <- dat[(dat$singleton.single.occ == 0),]
-#now remove the extraneous columns that were created only for culling
-dat <- dat[ , -which(names(dat) %in% c("Singleton","singleton.single.occ"))]
 dat <- rename(dat, c("Interval" = "Interval_Name",
     "MaxAbsLat" = "MaxLat", "MinAbsLat" = "MinLat",
     "group" = "MatchTaxon", "top" = "stage_top",
@@ -342,9 +330,7 @@ We fit GBMs with the \pkg{gbm} package \cite{gbm2013} for the \proglang{R} stati
 
 <<load-data>>=
 neog <- readRDS("../data/stand-predictors-cen-obis.rds")
-# can throw out less than 23 - neogene only
-neog <- droplevels(subset(neog, stage_top < 23 &
-    stage_top != 0))
+neog <- droplevels(subset(neog, stage_top < 23 & stage_top != 0))
 @
 
 We began by building GBM models and testing their ability to predict data separate from the data they were built on. This is called out-of-sample prediction or cross validation. We build models on one part of the data (the in-sample data) and then test on the rest of the data (the out-of-sample data). We are building our GBM models on the entire Neogene paleontological dataset to pool predictive power from range-characteristics. However, we are interested in unbiased predictions at the phylogenetic class level. Therefore, we will examine out-of-sample prediction at the class level.
@@ -450,8 +436,7 @@ We will now look at the marginal effect of each predictor on extinction risk. We
 
 Because there's some stochasticity when running a GBM, we will run our models a number of times, and each time record the marginal effects. We will then take the median and interquartile range of those predictions for plotting.
 
-% First, we will write a function to fit the GBM models to a given stage:
-
+% first, we will write a function to fit the GBM models to a given stage:
 <<shape-data-partial-plots, cache=FALSE>>=
 fit_stage_models <- function(dat, stage_name) {
   if(stage_name == "all") {
@@ -469,7 +454,6 @@ fit_stage_models <- function(dat, stage_name) {
 @
 
 % We will fit the models for each stage. Within each stage we will fit the model a number of times:
-
 <<fit-marginal-stage-models>>=
 if(!file.exists("../data/stage_models.rds")) {
   stage_models <- llply(c(stage_order, "all"), function(x)
@@ -482,7 +466,6 @@ if(!file.exists("../data/stage_models.rds")) {
 @
 
 % And, we will go through the stage-based models and pull out the partial dependence data:
-
 <<pull-out-marginal-data>>=
 vars <- c("richness", "occupancy", "occurrences", "min.lat",
   "max.lat", "lat.range", "mean.lat", "great.circle", "group")
@@ -501,7 +484,6 @@ partial_dat <- ldply(c(stage_order, "all"), function(stage_name) {
 @
 
 % We will get the median and interquartile range of the marginal effects:
-
 <<summarize-marginal-effects>>=
 partial_dat2 <- plyr::ddply(partial_dat,
   c("stage", "predictor", "value"),
@@ -512,7 +494,6 @@ partial_dat2 <- plyr::ddply(partial_dat,
 @
 
 % Because the taxonomic variables are categorical and the other variables are continuous and numeric, we will split these into separate data frames for plotting:
-
 <<separate-taxonomic-and-numeric-predictions>>=
 partial_groups <- partial_dat2[partial_dat2$predictor == "group", ]
 partial_continuous <- partial_dat2[partial_dat2$predictor != "group", ]
@@ -525,7 +506,6 @@ partial_groups <- plyr::rename(partial_groups, c("group" = "value"))
 @
 
 % We can re-create Fig.~1 in the paper by running the code in \texttt{make-partial-dependence-plot.Rnw}. We will suppress the code here to save space. Note that in this plotting code we centre the marginal effects for each geologic stage for visual purposes (so that the mean marginal effect of each variable is 0.5). We need to do this since the base rate of extinction is different in each geologic stage.
-
 <<partial-plots-base, child='make-partial-dependence-plot.Rnw', echo=FALSE, results='hide'>>=
 @
 
@@ -572,13 +552,13 @@ We will use our GBM model built on the entire Neogene period to predict extincti
 w <- paleorisk::get_weights(neog$Ex)
 weights <- ifelse(neog$Ex == 1, w$ex_weight, w$sur_weight)
 
-m <- rlply(4, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
+m <- rlply(5, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
     max.lat + lat.range + mean.lat + great.circle + group,
   data = neog, n.trees = NTREES, interaction.depth = INT.DEPTH,
   distribution = "bernoulli", shrinkage = SHRINKAGE, weights = weights))
 @
 
-<<check-classification-error, child='check-classification-error-child.Rnw', results='hide', fig.height=7, fig.width=14, fig.cap='TODO ROC curves'>>=
+<<check-classification-error, child='check-classification-frror-child.Rnw', results='hide', fig.height=7, fig.width=14, fig.cap='TODO ROC curves'>>=
 @
 
 <<load-modern-data>>=
@@ -610,8 +590,7 @@ p <- ggplot(paleo_long, aes(value)) +
   facet_grid(class~variable, scales = "free")
 @
 
-% And predict the contemporary intrinsic extinction risk from the paleontological models. We will take the average prediction across our multiple runs:
-
+% Predict contemporary intrinsic extinction risk from the paleontological models:
 <<predict-risk-modern>>=
 predictions <- laply(m, function(x)
   gbm::predict.gbm(x, newdata = modern, type = "response",
@@ -619,8 +598,7 @@ predictions <- laply(m, function(x)
 modern$pred <- apply(predictions, 2, mean)
 @
 
-% We will use our calibration factors on our predictions:
-
+% Use our calibration factors on our predictions:
 <<calibrate-risk-modern>>=
 modern$gbm_pred_binned <- assign_bins(modern$pred)
 modern <- plyr::join(modern,
@@ -632,8 +610,8 @@ modern <- plyr::join(modern,
 saveRDS(modern, file = "../data/modern-predictions.rds")
 @
 
-% Next, we will merge these predictions with our contemporary spatial observations. At the same time, we will merge in the data from Ref.\ \cite{halpern2011} Ref.\ \cite{spalding2007}.
-
+% Merge predictions with contemporary spatial observations
+% and climate/impact hotspots:
 <<merge-predictions-spatial, child='merge-predictions-spatial-child.Rnw', echo=FALSE>>=
 @
 
@@ -728,14 +706,7 @@ pdf("../figs/hotspots.pdf", width = 7, height = 3.5)
 par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
 labs <- c(0.010, 0.012, 0.014, 0.016)
-# labs_show <- rep(99, length(labs))
-# labs_show[1] <- labs[1]
-# labs_show[3] <- labs[3]
-# labs_show[5] <- labs[5]
-# labs_show[labs_show == 99] <- NA
  labs_show <- sprintf("%.3f", labs)
-# labs_show[labs_show == "NA"] <- ""
-#labs_show <- labs
 map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
   hotspots = TRUE, at = log(labs), at.labels = labs_show)
 par(xpd = NA)
@@ -774,13 +745,6 @@ modern_raw <- plyr::rename(modern_raw,
 # Bring in interpolated version for comparison:
 modern_raw <- plyr::join(modern_raw,
   modern[,c("class", "genus", "mean_observed")])
-
-# ggplot(modern_raw, aes(mean_observed, mean_observed_raw)) +
-#   geom_point(alpha = 0.2) + facet_wrap(~class) +
-#   xlab("Extinction probability (interpolated)") +
-#   ylab("Extinction probability (no interpolation)") +
-#   geom_abline(intercept = 0, slope = 1, lty = 3) +
-#   coord_fixed(ratio = 1) + xlim(0, 1) + ylim(0, 1)
 @
 
 <<prepare-bounding-box-comparison>>=
@@ -945,15 +909,6 @@ er_dat_no_single <- plyr::join(er_dat_no_single, by.prov.all.no.singles, by = "P
 pdf("../figs/remove-single-province-genera-overall-map.pdf", width = 7, height = 3.5)
 par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
-# labs <- seq(0.008, 0.016, 0.002)
-# labs_show <- rep(99, length(labs))
-# labs_show[1] <- labs[1]
-# labs_show[3] <- labs[3]
-# labs_show[5] <- labs[5]
-# labs_show[labs_show == 99] <- NA
-# labs_show <- sprintf("%.3f", labs_show)
-# labs_show[labs_show == "NA"] <- ""
-#labs.ns <- c(0.006, 0.008, 0.012)
 labs.ns <- seq(0.012, 0.022, 0.002)
 map_hotspots(er_dat_no_single, min_prov_genera = 100, add_legend = TRUE,
   hotspots = FALSE, at = log(labs.ns), at.labels = labs.ns)
@@ -1043,9 +998,6 @@ mtext("Min. genera = 200", cex = 2)
   \smallskip
   Figure 3
 \end{center}
-
-% TODO fix figure number references (main text ones) in the SOM
-% throughout
 
 \newpage
 
