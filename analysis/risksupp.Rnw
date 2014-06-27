@@ -933,15 +933,6 @@ map_class_ext(er_dat_class, plot_column = "log.mean.gcd",
   fixed_range = TRUE)
 @
 
-<<plot-richness-genera-prov, fig.cap="Spatial distribution of \\textbf{mean species richness} in the contemporary dataset.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
-er_dat_class$log.mean.richness <- log(er_dat_class$mean.richness)
-map_class_ext(er_dat_class, plot_column = "log.mean.richness",
-  min_prov_genera = 0, ylab = "Mean standardized richness (0-1)",
-  yticks = c(0.1, 0.2, 0.5, 1),
-  col_pal = RColorBrewer::brewer.pal(9, "YlGnBu"))
-@
-
-
 \subsection{Alternative maps of contemporary extinction risk}
 
 We will look at the effect of the changing the cutoff for the minimum-genera-per-province-class combination. In other words, as we increase this threshold, some classes with fewer genera in a given province are removed.
