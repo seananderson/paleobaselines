@@ -49,7 +49,7 @@ message=FALSE, autodep=FALSE, fig.path='../figs/', fig.width=6, par=TRUE)
 opts_chunk$set(warning=FALSE, message=FALSE, tidy=FALSE, refresh=TRUE,
   cache.path="../cache/", cache.lazy=TRUE, size="small", cache.comments=FALSE)
 opts_chunk$set(dev = 'pdf')
-opts_knit$set(out.format = "latex")
+opts_knit$set(out.format = "latex", out.width="\\textwidth")
 # opts_knit$set(eval.after = 'fig.cap') # evaluate fig.cap after the chunk
 @
 
