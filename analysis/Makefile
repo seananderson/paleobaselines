@@ -1,4 +1,4 @@
-all: knit pdf dropbox
+all: knit pdf
 
 knit:
 	Rscript -e "knitr::knit('risksupp.Rnw')"
@@ -8,7 +8,7 @@ pdf:
 	bibtex risksupp
 	pdflatex risksupp
 	pdflatex risksupp
-	pdflatex risksupp
+	#pdflatex risksupp
 
 dropbox:
 	cp risksupp.pdf ~/Dropbox/Public/
