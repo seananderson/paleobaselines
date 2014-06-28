@@ -515,19 +515,21 @@ partial_groups <- plyr::rename(partial_groups, c("group" = "value"))
 
 We will also identify the relative contribution of taxonomy vs.\ range and occupancy characteristics. To do this, we'll look at the relative importance of each of the GBM predictors using the \texttt{relative.influence()} function in the \pkg{gbm} package, which uses the algorithm as described in Ref.~\cite{friedman2001}.
 
-<<taxonomy-range-contributions, out.width="3in", fig.height=4, fig.width=4, fig.cap="Relative influence of the predictor variables in the Neogene GBM model. The values are scaled so that the variable with the maximum influence has a relative importance of 1. Shown are the median (dots) and interquartile range (line segments) across 25 model runs.">>=
-w <- paleorisk::get_weights(neog$Ex)
-weights <- ifelse(neog$Ex == 1, w$ex_weight, w$sur_weight)
-m_relative <- gbm(Ex ~ richness + occupancy + occurrences + min.lat +
-    max.lat + lat.range + mean.lat + great.circle + group,
-  data = neog, n.trees = NTREES, interaction.depth = INT.DEPTH,
-  distribution = "bernoulli", shrinkage = SHRINKAGE, weights = weights)
-ri <- rdply(25, function(x) {
-  m_relative <- gbm(Ex ~ richness + occupancy + occurrences + min.lat +
-    max.lat + lat.range + mean.lat + great.circle + group,
-  data = neog, n.trees = NTREES, interaction.depth = INT.DEPTH,
-  distribution = "bernoulli", shrinkage = SHRINKAGE, weights = weights)
-  gbm::relative.influence(m_relative, scale. = TRUE,
+<<get-relative-importance>>=
+if(!file.exists("../data/main_model.rds")) {
+  w <- paleorisk::get_weights(neog$Ex)
+  weights <- ifelse(neog$Ex == 1, w$ex_weight, w$sur_weight)
+  m <- rlply(20, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
+      max.lat + lat.range + mean.lat + great.circle + group,
+      data = neog, n.trees = NTREES, interaction.depth = INT.DEPTH,
+      distribution = "bernoulli", shrinkage = SHRINKAGE, weights = weights))
+  save(m, file = "../data/main_model.rds")
+} else {
+  m <- readRDS("../data/main_model.rds")
+}
+
+ri <- ldply(m, function(x) {
+  gbm::relative.influence(x, scale. = TRUE,
     sort. = FALSE, n.trees = NTREES)
   })
 ri_median <- apply(ri[,-1], 2, median)
@@ -538,7 +540,9 @@ ri_order <- order(ri_median)
 ri_median <- ri_median[ri_order]
 ri_lq <- ri_lq[ri_order]
 ri_uq <- ri_uq[ri_order]
+@
 
+<<plot-relative-importance, out.width="3in", fig.height=4, fig.width=4, fig.cap="Relative influence of the predictor variables in the Neogene GBM model. The values are scaled so that the variable with the maximum influence has a relative importance of 1. Shown are the median (dots) and interquartile range (line segments) across 25 model runs.">>=
 par(xpd = NA, mar = c(4, 8, 1, 1), cex = 0.8)
 plot(ri_median, 1:length(ri_median), xlab = "Relative influence", ylab = "",
   xlim = c(0, 1), xaxs = "i", pch = 19, yaxt = "n")
@@ -551,16 +555,6 @@ The \texttt{group} variable refers to the taxonomic groupings (primarily order) 
 \subsection{Predicting contemporary extinction risk with paleontological models}
 
 We will use our GBM model built on the entire Neogene period to predict extinction risk in the contemporary dataset. Because of the slight stochasticity from run to run of a GBM, we will run our model a number of times and take the average predictions.
-
-<<build-main-paleo-model>>=
-w <- paleorisk::get_weights(neog$Ex)
-weights <- ifelse(neog$Ex == 1, w$ex_weight, w$sur_weight)
-
-m <- rlply(10, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
-    max.lat + lat.range + mean.lat + great.circle + group,
-  data = neog, n.trees = NTREES, interaction.depth = INT.DEPTH,
-  distribution = "bernoulli", shrinkage = SHRINKAGE, weights = weights))
-@
 
 <<check-classification-error, child='check-classification-error-child.Rnw', results='hide', fig.height=7, fig.width=14, fig.cap='TODO ROC curves'>>=
 @

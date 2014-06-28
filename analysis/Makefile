@@ -42,6 +42,9 @@ deletecross:
 deletestagemodels:
 	rm ../data/stage_models.rds
 
-cleanall: clean deleteranges deletecv deleteroc deletecross deletestagemodels
+deletemainmodel:
+	rm ../data/main_model.rds
+
+cleanall: clean deleteranges deletecv deleteroc deletecross deletestagemodels deletemainmodel
 
 
