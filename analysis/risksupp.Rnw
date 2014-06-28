@@ -702,7 +702,7 @@ er_dat <- plyr::join(er_dat, bpa_order, by = "PROV_CODE")
 pdf("../figs/hotspots.pdf", width = 7, height = 3.5)
 par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
-labs <- c(0.010, 0.012, 0.014, 0.016)
+labs <- c(0.012, 0.016, 0.02)
  labs_show <- sprintf("%.3f", labs)
 map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
   hotspots = TRUE, at = log(labs), at.labels = labs_show)
