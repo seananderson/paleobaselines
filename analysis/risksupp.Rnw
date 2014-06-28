@@ -27,8 +27,7 @@
 \pagestyle{fancy}
 \fancyhf{}
 \fancyfoot[LE,RO]{\sffamily\thepage}
-\fancyfoot[LO,RE]{\sffamily Paleontological Baselines for Evaluating
-Contemporary Extinction Risk in Modern Oceans}
+\fancyfoot[LO,RE]{\sffamily Paleontological Baselines for Evaluating Extinction Risk in the Modern Oceans}
 \fancyhead[RE]{\sffamily\nouppercase{\rightmark}}
 \fancyhead[LO]{\sffamily\nouppercase{\leftmark}}
 \renewcommand{\headrulewidth}{0.5pt}
