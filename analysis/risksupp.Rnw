@@ -591,9 +591,7 @@ folds <- ddply(temp, c("PROV_CODE", "PROVINCE"), plyr::summarize,
   range = diff(range(mean_observed))
   )
 diff_in_range <- round(range(folds$range) / range_between, 0)
-#sink("diff_in_range_of_probabilities_within_vs_between_provs.txt")
-#print(diff_in_range)
-#sink()
+write.table(diff_in_range, file = "diff_in_range.txt", row.names = FALSE)
 @
 
 \subsection{Mapping risk predictions using contemporary species distributions}
@@ -632,9 +630,8 @@ max_range <- map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.05, 0.1
   silhouette_coords = silhouette_coords,
   ylabel = "Intrinsic extinction probability (over ~23 Myr)")
 dev.off()
-#sink("max_col_range_class_maps.txt")
-#print(round(exp(max_range), 3))
-#sink()
+write.table(round(exp(max_range), 3), file = "max_col_range_class_maps.txt", 
+  row.names = FALSE)
 @
 
 <<plot-hotspots, results='hide'>>=
