@@ -523,7 +523,7 @@ if(!file.exists("../data/main_model.rds")) {
       max.lat + lat.range + mean.lat + great.circle + group,
       data = neog, n.trees = NTREES, interaction.depth = INT.DEPTH,
       distribution = "bernoulli", shrinkage = SHRINKAGE, weights = weights))
-  save(m, file = "../data/main_model.rds")
+  saveRDS(m, file = "../data/main_model.rds")
 } else {
   m <- readRDS("../data/main_model.rds")
 }
