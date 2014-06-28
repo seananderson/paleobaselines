@@ -584,10 +584,9 @@ ggplot(temp, aes(mean_observed + 0.001)) +
 <<determine-range-of-extinction-predictions, results='hide'>>=
 range_between <- diff(range(exp(by.prov.all$mean.ext)))
 folds <- ddply(temp, c("PROV_CODE", "PROVINCE"), plyr::summarize,
-  fold = max(mean_observed) / min(mean_observed),
-  lq = quantile(mean_observed, probs = 0.25),
-  uq = quantile(mean_observed, probs = 0.75),
-  iqr = uq - lq,
+#  lq = quantile(mean_observed, probs = 0.25),
+#  uq = quantile(mean_observed, probs = 0.75),
+#  iqr = uq - lq,
   range = diff(range(mean_observed))
   )
 diff_in_range <- round(range(folds$range) / range_between, 0)
@@ -717,9 +716,7 @@ er_dat_class_raw <- plyr::join(er_dat_class_raw, by.prov.classes.raw, by = "PROV
 @
 
 % The follow code produces Fig.~\ref{fig:plot-class-prov-ext-raw-ranges}.
-
 <<plot-class-prov-ext-raw-ranges", results='hide'>>=
- # fig.cap="Mean predicted extinction susceptibility of genera inhabiting different ocean biogeographic provinces \\cite{spalding2007} for each of the eight major groups considered, as in Fig.~3, but \\textbf{with predictions based on raw ranges in OBIS without the within-realm minimum bounding box interpolation}. Scale bars on the right indicate the range of log extinction susceptibility values for a given group, and this scale is used to plot mean extinction susceptibility heatmaps on the left."
 # Make the class figure:
 pdf("../figs/plot-class-prov-ext-raw-ranges.pdf", width = 6.45, height = 5.1)
 map_class_ext(er_dat_class_raw,
@@ -731,7 +728,6 @@ dev.off()
 @
 
 % The follow code produces Fig.~\ref{fig:no-bounding-box-overall-map}.
-
 <<no-bounding-box-overall-map, results='hide'>>=
 er_dat_raw <- plyr::join(er_points, er@data, by = "id")
 er_dat_raw <- plyr::join(er_dat_raw, by.prov.all.raw, by = "PROV_CODE")
