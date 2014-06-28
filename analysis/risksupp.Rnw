@@ -360,13 +360,12 @@ if(!file.exists("../data/val_test.rds")) {
 }
 @
 
-For example, here are the predicted and observed extinction probabilities for one run of our cross-validation. The model was built on half the data and then used to predict the other half of the data. The diagonal black lines show the one-to-one line. Dots that fall directly on the one-to-one line are unbiased.
+For example, here are the predicted and observed extinction probabilities for one run of our cross-validation. The model was built on half the data and then used to predict the other half of the data.
 
-<<single-cv-rep, fig.width=7.5, fig.height=7, fig.width="4in">>=
+<<single-cv-rep, fig.width=8.25, fig.height=5, out.width="4.8in">>=
 ggplot(subset(val_test, .n == 1),
   aes(gbm_pred_binned, obs_ext_prob)) +
   geom_point(alpha = 0.9) +
-  geom_abline(intercept = 0, slope = 1) +
   facet_wrap(~class) +
   scale_size(trans = "log10") + coord_fixed(ratio = 1) +
   ylim(0, 1) + xlim(0, 1) +
@@ -382,11 +381,11 @@ val_test_summarized <- ddply(val_test, c("class", "gbm_pred_binned"),
   summarize_val_test)
 @
 
-<<test-gbm1-bias-plot, fig.width=7.5, fig.height=7, echo=FALSE>>=
+<<test-gbm1-bias-plot, fig.width=9, fig.height=5, echo=FALSE>>=
 ggplot(val_test_summarized,
   aes(gbm_pred_binned, mean_observed)) +
   geom_point(data = val_test, aes(gbm_pred_binned, obs_ext_prob),
-    alpha = 0.1) +
+    alpha = 0.05) +
   geom_linerange(aes(ymin = l, ymax = u), colour = "#4E9DF0") +
   geom_point(aes(size = median_sample_n), colour = "#4E9DF0") +
   facet_wrap(~class) +
