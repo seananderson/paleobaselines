@@ -45,13 +45,13 @@ er_dat2$Lat_Zone <- NULL # avoid warning below
 er_dat3  <- plyr::join(er_dat2, resids,
   by = c("PROVINCE"))
 er_dat3$mean.ext <- er_dat3$residual.ext
-pdf("../figs/obis-residuals-maps-overall.pdf", width = 7, height = 3.5)
-par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
-  las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
-labs.nbb <- seq(0.016, 0.028, 0.004)
-map_hotspots(er_dat3, hotspots = FALSE,
-  add_legend = TRUE, at = log(labs.nbb), at.labels = labs.nbb)
-mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
-  line = -1.2, las = 0, col = "grey30", cex = 0.9)
-dev.off()
+# pdf("../figs/obis-residuals-maps-overall.pdf", width = 7, height = 3.5)
+# par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
+#   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
+# labs.nbb <- seq(0.016, 0.028, 0.004)
+# map_hotspots(er_dat3, hotspots = FALSE,
+#   add_legend = TRUE, at = log(labs.nbb), at.labels = labs.nbb)
+# mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
+#   line = -1.2, las = 0, col = "grey30", cex = 0.9)
+# dev.off()
 @
