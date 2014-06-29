@@ -555,6 +555,17 @@ modern <- plyr::join(modern,
 saveRDS(modern, file = "../data/modern-predictions.rds")
 @
 
+<<plot-genus-predictions-against-gcd, fig.cap='TODO', fig.width=11, fig.height=6>>=
+ggplot(modern, aes(y = gbm_pred_binned, x = jitter(great.circle, amount = 600), colour = class)) + geom_point(alpha = 0.5) + facet_wrap(~group) + theme_bw() + xlab("Great circle distance") + ylab("Predicted intrinsic risk by genus") + theme(axis.ticks.y = element_blank(), panel.grid.major=element_blank(), panel.grid.minor=element_blank()) + theme(strip.text.x = element_text(size = 7), axis.text = element_text(size = 8))
+@
+
+% <<plot-genus-predictions-against-gcd2, fig.cap='TODO', fig.width=9, fig.height=5.5>>=
+% d2 <- ddply(modern, "class", transform, 
+%   group_id = as.numeric(as.factor(as.character(as.numeric(group)))))
+% 
+% ggplot(d2, aes(y = jitter(gbm_pred_binned, amount = 0.02), x = jitter(great.circle, amount = 800), colour = as.factor(group_id))) + geom_point(alpha = 0.5) + facet_wrap(~class) + theme_bw() + xlab("Great circle distance") + ylab("Predicted intrinsic risk by genus") + theme(axis.ticks.y = element_blank(), panel.grid.major=element_blank(), panel.grid.minor=element_blank()) + theme(strip.text.x = element_text(size = 8), axis.text = element_text(size = 8)) + theme(legend.position = "none")
+% @
+
 % Merge predictions with contemporary spatial observations
 % and climate/impact hotspots:
 <<merge-predictions-spatial, child='merge-predictions-spatial-child.Rnw', echo=FALSE>>=
@@ -774,25 +785,27 @@ by.prov.classes.long <- reshape2::melt(by.prov.classes, id.vars =
   c("mean.lat.range", "mean.occupancy", "mean.gcd", "mean.occurrences",
     "mean.richness"))
 by.prov.classes.long <- plyr::join(by.prov.classes.long, by.prov.classes[,
-  c("PROV_CODE", "class", "mean.ext")],
+  c("PROV_CODE", "class", "mean.ext", "Lat_Zone")],
   by = c("PROV_CODE", "class"))
-
 ggplot(by.prov.classes.long,
-  aes(value, mean.ext)) +
+  aes(value, mean.ext, colour = Lat_Zone)) +
   geom_point(alpha = 0.7) +
   facet_wrap(variable~class, scales = "free") +
-  stat_smooth(method = "lm", se = TRUE, lwd = 1.5) +
+# stat_smooth(method = "lm", se = TRUE, lwd = 1.5) +
   ylab("log(Mean intrinsic extinction risk)") +
   xlab("Predictor value")
 @
 
-<<relationship-between-mean-risk-and-sampling-intensity, fig.width=11, fig.height=5.5, fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus number of OBIS records (of the indicated class) from that province.  Each point represents a single biogeographic province. Lines and gray-shaded regions indicate linear regressions and 95\\% confidence intervals, colors indicate latitudinal zone of province.", cache=FALSE>>=
-p <- ggplot(by.prov.classes, aes(log_OBIS_records, mean.ext)) +
-  facet_wrap(~class,scales="free",ncol=3) +
+<<relationship-between-mean-risk-and-sampling-intensity, fig.width=9, fig.height=5.5, out.width="5in", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus number of OBIS records (of the indicated class) from that province.  Each point represents a single biogeographic province. Lines and gray-shaded regions indicate linear regressions and 95\\% confidence intervals, colors indicate latitudinal zone of province.", cache=TRUE>>=
+temp_dat <- droplevels(subset(by.prov.classes, 
+    !class %in% c("Elasmobranchii", "Mammalia")))
+p <- ggplot(temp_dat,
+  aes(log_OBIS_records, mean.ext)) +
+  facet_wrap(~class,scales="free",ncol=2) +
   stat_smooth(method = "lm", se = TRUE, size = .5,colour="black") +
   ylab("log(Mean intrinsic extinction risk)") +
   xlab("log(Number of OBIS records)") +
-  geom_point(data=by.prov.classes,
+  geom_point(data=temp_dat,
     aes(log_OBIS_records, mean.ext,colour=Zone), alpha = 0.6) +
   scale_colour_manual(values=c("blue","green3","red"))
 print(p)
@@ -803,7 +816,8 @@ print(p)
 Because the distribution apparent geographic ranges may be influenced by sampling intensity, it is important to quantify variability in sampling intensity among provinces.  The number of OBIS records from a given province can serve as a rough index of sampling intensity (Fig.~\ref{fig:plot-n-genera-prov}). The correspondence between number of OBIS records and mean intrinsic risk is not strong, but several groups do show a positive relationship (Fig.~\ref{fig:plot-n-genera-prov})
 
 <<plot-n-genera-prov, fig.cap="Number of OBIS occurrence records for each biogeographic province \\cite{spalding2007}. Scale bars on the right (log-distributed scale) indicate the range for a given group, and this scale is used to plot relative sampling intensity heatmaps.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
-map_class_ext(er_dat_class, plot_column = "log_OBIS_records",
+map_class_ext(subset(er_dat_class, !class %in% c("Elasmobranchii", "Mammalia")), 
+  plot_column = "log_OBIS_records",
   min_prov_genera = 0, ylab = "Number of OBIS records",
   yticks = c(2, 20, 200, 2000, 20000),
   col_pal = RColorBrewer::brewer.pal(9, "YlGnBu"),
@@ -938,3 +952,6 @@ mtext("Min. genera = 200", cex = 2)
 \newpage
 
 \end{document}
+
+%ggplot(d, aes(y = jitter(rep(1, nrow(d)), amount = 0.1), x = jitter(gbm_pred_binned, amount = 0.015))) + geom_point(alpha = 0.2) + facet_wrap(~class) + ylim(0.7, 1.3) + theme_bw() + ylab("") + xlab("Predicted intrinsic risk by genus") + theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(), panel.grid.major=element_blank(), panel.grid.minor=element_blank())
+
