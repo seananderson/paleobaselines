@@ -479,9 +479,9 @@ ri <- ldply(m, function(x) {
   gbm::relative.influence(x, scale. = TRUE,
     sort. = FALSE, n.trees = NTREES)
   })
-ri_median <- apply(ri[,-1], 2, median)
-ri_lq <- apply(ri[,-1], 2, function(x) quantile(x, probs = 0.25))
-ri_uq <- apply(ri[,-1], 2, function(x) quantile(x, probs = 0.75))
+ri_median <- apply(ri, 2, median)
+ri_lq <- apply(ri, 2, function(x) quantile(x, probs = 0.25))
+ri_uq <- apply(ri, 2, function(x) quantile(x, probs = 0.75))
 
 ri_order <- order(ri_median)
 ri_median <- ri_median[ri_order]
