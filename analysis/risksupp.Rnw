@@ -384,7 +384,7 @@ Another way to evaluate the similarity in extinction regimes between different t
 \begin{figure}[htbp]
  \centering
  \includegraphics[width=4.86in]{../figs/plot-cross-interval-gbms-base.pdf}
- \caption{Conservatism of relative extinction risk patterns throughout the Neogene fossil record. Shown are comparisons of scaled genus extinction probabilities estimated from models built and tested on different geological stages. For example, the upper right-hand panel plots the extinction risk of Plio-Pleistocene genera predicted by the model built on those data (x axis) compared to a predictions by a model built using the Lower Miocene data (y axis). The higher the rank order correlation, as shown by Spearman's Rho values in upper left panel corners (except for within-interval comparisons), the more similar the determinants of extinction risk are between two given intervals.}
+ \caption{Conservatism of relative extinction risk patterns throughout the Neogene fossil record. Shown are comparisons of scaled genus extinction probabilities estimated from models built and tested on different geological stages. For example, the upper right-hand panel plots the extinction risk of Plio-Pleistocene genera predicted by the model built on those data (x axis) compared to a predictions by a model built using the Lower Miocene data (y axis). The higher the rank order correlation, as shown by Spearman's Rho values in upper left panel corners (except for within-interval comparisons), the more similar the determinants of extinction risk are between two given intervals. Note that because extinctions were weighted more heavily in the GBM models, the absolute values shown on the x and y axes here are transformed versions of the real probabilities. This was corrected for through our calibration procedure when we applied the Neogene model to the modern dataset.}
 \end{figure}
 
 The median Spearman's rank correlation for the cross-interval predictions is \Sexpr{median(Rsqs$Rsq)} and the rank correlations range from \Sexpr{min(Rsqs$Rsq)} to \Sexpr{max(Rsqs$Rsq)}.
@@ -468,7 +468,7 @@ partial_groups <- plyr::rename(partial_groups, c("group" = "value"))
 <<partial-plots-base, child='make-partial-dependence-plot.Rnw', echo=FALSE, results='hide'>>=
 @
 
-We will also identify the relative contribution of taxonomy vs.\ range and occupancy characteristics. To do this, we'll look at the relative importance of each of the GBM predictors using the \texttt{relative.influence()} function in the \pkg{gbm} package, which uses the algorithm as described in Ref.~\cite{friedman2001}.
+We also identified the relative contribution of taxonomy vs.\ range and occupancy characteristics. To do this, we examined the relative importance of each of the GBM predictors using the \texttt{relative.influence()} function in the \pkg{gbm} package, which uses the algorithm as described in Ref.~\cite{friedman2001}.
 
 <<get-relative-importance>>=
 if(!file.exists("../data/main_model.rds")) {
@@ -497,7 +497,7 @@ ri_lq <- ri_lq[ri_order]
 ri_uq <- ri_uq[ri_order]
 @
 
-<<plot-relative-importance, out.width="3in", fig.height=4, fig.width=4, fig.cap="Relative influence of the predictor variables in the Neogene GBM model. The values are scaled so that the variable with the maximum influence has a relative importance of 1. Shown are the median (dots) and interquartile range (line segments) across 25 model runs.">>=
+<<plot-relative-importance, out.width="3in", fig.height=4, fig.width=4, fig.cap="Relative influence of the predictor variables in the Neogene GBM model. The values are scaled so that the variable with the maximum influence has a relative importance of 1. Shown are the median (dots) and interquartile range (line segments) across 20 model runs. There is minimal variation from run to run so the line segments are small.">>=
 par(xpd = NA, mar = c(4, 8, 1, 1), cex = 0.8)
 plot(ri_median, 1:length(ri_median), xlab = "Relative influence", ylab = "",
   xlim = c(0, 1), xaxs = "i", pch = 19, yaxt = "n")
@@ -511,7 +511,7 @@ The \texttt{group} variable refers to the taxonomic groupings (primarily order) 
 
 We will use our GBM model built on the entire Neogene period to predict extinction risk in the contemporary dataset. Because of the slight stochasticity from run to run of a GBM, we will run our model a number of times and take the average predictions.
 
-<<check-classification-error, child='check-classification-error-child.Rnw', results='hide', fig.height=7, fig.width=14, fig.cap='Receiver operating characteristic (ROC) curves. ROC curves show sensitivity (true positive rate) plotted against specificity (true negative rate) across all possible probability thresholds. The area under the curves (AUC) represents the probability that a randomly chosen extinct genera will be correctly ranked as more at risk than a randomly chosen genera that survives. The dashed line represents the the 50\\% line --- predictions on this line would be no better than tossing a coin. We show predictions for models built on the entire Neogene (as used in Fig.~2 and Fig.~3) and for models built on stages within the Neogene. The coloured lines represent ROC curves from the same models but split out by major taxonomic groups.'>>=
+<<check-classification-error, child='check-classification-error-child.Rnw', results='hide', fig.height=7, fig.width=12, fig.cap='Receiver operating characteristic (ROC) curves. ROC curves show sensitivity (true positive rate) plotted against specificity (true negative rate) across all possible probability thresholds. The area under the curves (AUC) represents the probability that a randomly chosen extinct genera will be correctly ranked as more at risk than a randomly chosen genera that survives. The dashed line represents the the 50\\% line --- predictions on this line would be no better than tossing a coin. We show predictions for models built on the entire Neogene (as used in Fig.~2 and Fig.~3) and for models built on stages within the Neogene. The coloured lines represent ROC curves from the same models but split out by major taxonomic groups.'>>=
 @
 
 <<load-modern-data>>=
