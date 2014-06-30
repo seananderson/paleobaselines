@@ -599,7 +599,7 @@ ggplot(temp, aes(mean_observed + 0.001)) +
   geom_histogram(aes(fill = class, colour = class),
     position = "stack", alpha = 0.5, binwidth = 0.4) +
   facet_wrap(~ PROV_pretty) +
-  scale_x_log10() +
+  scale_x_log10() + theme(strip.text.x = element_text(size = 7))
   ylab("Number of genera") + xlab("Predicted extinction probabilty")
 @
 
