@@ -896,7 +896,7 @@ dev.off()
   \centering
   \includegraphics[width=\textwidth]{../figs/remove-single-province-genera-class-map.pdf}
   \includegraphics[width=3.75in]{../figs/remove-single-province-genera-overall-map.pdf}
-  \caption{Mean predicted extinction susceptibility of genera inhabiting different ocean biogeographic provinces \cite{spalding2007} for each of the 6 major groups considered (upper 6 panels) and across all genera (lower centred panel), as in Fig.~3 and 4, but \textbf{with genera occurring in single biogeographic provinces removed}. Scale bars on the right indicate the range of intrinsic extinction probability values for a given group, and this scale is used to plot mean extinction susceptibility heatmaps on the left.}
+  \caption{Mean predicted extinction susceptibility of genera inhabiting different ocean biogeographic provinces \cite{spalding2007} for each of the 6 major groups considered (upper 6 panels) and across all genera (lower centred panel), as in Fig.~2 and 3, but \textbf{with genera occurring in single biogeographic provinces removed}. Scale bars on the right indicate the range of intrinsic extinction probability values for a given group, and this scale is used to plot mean extinction susceptibility heatmaps on the left.}
   \label{fig:remove-single-province-genera}
 \end{figure}
 
