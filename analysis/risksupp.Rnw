@@ -685,7 +685,7 @@ dev.off()
 
 \subsection{The effect of interpolation of OBIS records}
 
-In order to evaluate the effects of the within-realm bounding box interpolation, we begin by creating a version of figures 1 and 2 that omits this step.  This figure shows the same broad patterns apparent in figures 1 and 2, but with more unevenness.  This reflects a combinations of actual differences in intrinsic risk among provinces and apparent differences caused by differences in sampling intensity. Comparing this figure to  TODO: finish this
+To evaluate the effects of the within-realm bounding box interpolation, we created a version of Fig.~1 and 2 that omits this step (Fig.~\ref{fig:no-bounding-box}). This figure shows the same broad patterns apparent in Fig.~1 and 2, but with greater unevenness between provinces. This reflects a combinations of actual differences in intrinsic risk among provinces and apparent differences caused by differences in sampling intensity. Comparing this figure to TODO: finish this
 
 <<predict-no-bounding-box, fig.width=7, fig.height=4, out.width="6.25in">>=
 # Read in raw (not interpolated) contemporary data:
@@ -778,9 +778,11 @@ dev.off()
 
 \subsection{Jackknife analysis}
 
-We can recreate the global intrinsic extinction probability map leaving out each taxonomic class in succession in a jackknife analysis. This gives us an idea if any one class is driving the pattern.
+One way to test the sensitivity of our aggregate map (Fig.~3) is to create the map multiple times, each time leaving out one taxonomic class in succession. This is often referred to as a jackknife analysis and can be an effective way to visually present uncertainty \cite{branch2010}. The plot gives us an idea if any one class is driving the pattern. The jackknifed figure is shown in Fig.~\ref{fig:jackknife-map}.
 
-<<jackknife-map, fig.cap="Global distribution of mean predicted intrinsic extinction probability (as in Fig.~3) \\textbf{with one phylogenetic class removed, or jackknifed, in each panel}. The colour scale is adjusted in each panel to display the full range of predictions.", fig.width=7, fig.height=7>>=
+We see that the Caribbean and Antarctic hotspots are driven primarily by gastropods. Many hotspots in the Indo-Pacific remain regardless of removing any one taxonomic class.
+
+<<jackknife-map, fig.cap="Global distribution of mean predicted intrinsic extinction probability (as in Fig.~3) \\textbf{with one taxonomic class removed, or jackknifed, in each panel}. Note that the colour scale is adjusted in each panel to display the full range of predictions.", fig.width=7, fig.height=7>>=
 load("../data/by.prov.all.jk.rda")
 classes <- as.character(unique(modern$class))
 par(mfrow = c(3, 2))
