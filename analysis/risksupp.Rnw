@@ -791,7 +791,7 @@ for(i in 1:length(classes)) {
 }
 @
 
-<<predictors-vs-risk, fig.width=18, fig.height=11.5, out.width="\\textwidth", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus various predictors for that province. Each point represents a single biogeographic province. Lines and gray-shaded regions indicate linear regressions and 95\\% confidence intervals.">>=
+<<predictors-vs-risk, fig.width=18, fig.height=11.5, out.width="\\textwidth", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus various predictors for that province. Each point represents a single biogeographic province. Province points are colored and shaped according to whether they are tropical (pink and closed symbols) or extratropical (purple and open symbols).">>=
 by.prov.classes.long <- reshape2::melt(by.prov.classes, id.vars =
   c("PROV_CODE", "class"), measure.vars =
   c("mean.lat.range", "mean.occupancy", "mean.gcd", "mean.occurrences",
@@ -810,7 +810,7 @@ ggplot(by.prov.classes.long,
   xlab("Predictor value")
 @
 
-<<relationship-between-mean-risk-and-sampling-intensity, fig.width=9, fig.height=5.5, out.width="5in", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus number of OBIS records (of the indicated class) from that province. Each point represents a single biogeographic province. Lines and gray-shaded regions indicate linear regressions and 95\\% confidence intervals, colors indicate latitudinal zone of province.", cache=TRUE>>=
+<<relationship-between-mean-risk-and-sampling-intensity, fig.width=9, fig.height=5.5, out.width="5in", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus number of OBIS records (of the indicated class) from that province. Each point represents a single biogeographic province. Lines and gray-shaded regions indicate linear regressions and 95\\% confidence intervals; colors indicate latitudinal zone of province.", cache=TRUE>>=
 temp_dat <- droplevels(subset(by.prov.classes,
     !class %in% c("Elasmobranchii", "Mammalia")))
 p <- ggplot(temp_dat,
@@ -854,7 +854,7 @@ TODO discuss these maps
 \centering
   \includegraphics[width=\textwidth]{../figs/obis-residuals-maps-class.pdf}
   %\includegraphics[width=3.75in]{../figs/obis-residuals-maps-overall.pdf}
-\caption{TODO OBIS residuals}
+  \caption{The geographic distribution of \textbf{intrinsic risk residuals after applying a linear model accounting for the number of OBIS records}. Panels for sharks and mammals are not shown because we used range maps instead of OBIS data for the modern distributions.}
 \label{fig:obis-residuals-maps}
 \end{figure}
 
