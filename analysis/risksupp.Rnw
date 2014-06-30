@@ -556,15 +556,17 @@ saveRDS(modern, file = "../data/modern-predictions.rds")
 @
 
 <<plot-genus-predictions-against-gcd, fig.cap='TODO', fig.width=11, fig.height=6>>=
-ggplot(modern, aes(y = gbm_pred_binned, x = jitter(great.circle, amount = 600), colour = class)) + geom_point(alpha = 0.5) + facet_wrap(~group) + theme_bw() + xlab("Great circle distance") + ylab("Predicted intrinsic risk by genus") + theme(axis.ticks.y = element_blank(), panel.grid.major=element_blank(), panel.grid.minor=element_blank()) + theme(strip.text.x = element_text(size = 7), axis.text = element_text(size = 8))
+ggplot(modern, aes(y = gbm_pred_binned, x = great.circle, colour = class)) + geom_point(alpha = 0.5) + facet_wrap(~group) + theme_bw() + xlab("Great circle distance") + ylab("Predicted intrinsic risk by genus") + theme(axis.ticks.y = element_blank(), panel.grid.minor=element_blank()) + theme(strip.text.x = element_text(size = 7), axis.text = element_text(size = 8)) + stat_summary(fun.data = "mean_cl_boot", colour = "black")
 @
 
-% <<plot-genus-predictions-against-gcd2, fig.cap='TODO', fig.width=9, fig.height=5.5>>=
-% d2 <- ddply(modern, "class", transform, 
-%   group_id = as.numeric(as.factor(as.character(as.numeric(group)))))
-% 
-% ggplot(d2, aes(y = jitter(gbm_pred_binned, amount = 0.02), x = jitter(great.circle, amount = 800), colour = as.factor(group_id))) + geom_point(alpha = 0.5) + facet_wrap(~class) + theme_bw() + xlab("Great circle distance") + ylab("Predicted intrinsic risk by genus") + theme(axis.ticks.y = element_blank(), panel.grid.major=element_blank(), panel.grid.minor=element_blank()) + theme(strip.text.x = element_text(size = 8), axis.text = element_text(size = 8)) + theme(legend.position = "none")
-% @
+
+
+<<plot-genus-predictions-against-gcd2, fig.cap='TODO', fig.width=9, fig.height=5.5>>=
+d2 <- ddply(modern, "class", transform, 
+group_id = as.numeric(as.factor(as.character(as.numeric(group)))))
+
+ggplot(d2, aes(y = jitter(gbm_pred_binned, amount = 0.02), x = jitter(great.circle, amount = 800))) + geom_point(alpha=.5,pch=1) + facet_wrap(~class) + theme_bw() + xlab("Great circle distance") + ylab("Predicted intrinsic risk by genus") + theme(axis.ticks.y = element_blank(), panel.grid.major=element_blank(), panel.grid.minor=element_blank()) + theme(strip.text.x = element_text(size = 8), axis.text = element_text(size = 8)) + theme(legend.position = "none") + geom_density2d()
+@
 
 % Merge predictions with contemporary spatial observations
 % and climate/impact hotspots:
