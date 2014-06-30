@@ -560,11 +560,15 @@ ggplot(modern, aes(y = gbm_pred_binned, x = great.circle, colour = class)) + geo
 @
 
 
-<<plot-genus-predictions-against-gcd2, fig.cap='Predicted intrinsic risk versus great circle distance for modern genera in each of six classes.  The blue points represent individual genera, the black contour lines indicate the density of genera, and the red line represents the mean intrinsic risk of all genera.', fig.width=9, fig.height=5.5>>=
+<<plot-genus-predictions-against-gcd2, fig.cap='Predicted intrinsic risk versus geographic range (great circle distance) for modern genera in each of six classes.  The points represent individual genera and are colored according to taxonomic identity, the black contour lines indicate the density of genera, and the red line represents the mean intrinsic risk of all genera.', fig.width=9, fig.height=5.5>>=
 d2 <- ddply(modern, "class", transform, 
 group_id = as.numeric(as.factor(as.character(as.numeric(group)))))
 
-ggplot(d2, aes(y = jitter(gbm_pred_binned, amount = 0.02), x = jitter(great.circle, amount = 800))) +  geom_hline(yintercept=mean(d2$gbm_pred_binned),colour="red") + geom_point(alpha=.5,pch=1,size=2,colour="cornflowerblue") + facet_wrap(~class) + theme_bw() + xlab("Great circle distance") + ylab("Predicted intrinsic risk by genus") + theme(strip.text.x = element_text(size = 8), axis.text = element_text(size = 8)) + theme(legend.position = "none") + stat_density2d(colour="black",size=.25,bins=15)
+colourCount = length(unique(d2$group))
+getPalette = colorRampPalette(brewer.pal(9, "Set1"))
+
+
+ggplot(d2, aes(y = jitter(gbm_pred_binned, amount = 0.02), x = jitter(great.circle, amount = 800),colour=as.factor(group))) +  geom_hline(yintercept=mean(d2$gbm_pred_binned),colour="red") + geom_point(alpha=.6,pch=1,size=2) + facet_wrap(~class) + theme_bw() + xlab("Great circle distance") + ylab("Predicted intrinsic risk") + theme(strip.text.x = element_text(size = 8), axis.text = element_text(size = 8)) + stat_density2d(colour="black",size=.25,bins=16) + theme(legend.text = element_text(size = 9)) + theme(legend.key.size = unit(.45, "cm")) + coord_cartesian(xlim=c(0,20000),ylim=c(0,1)) + scale_colour_manual(values=c("red","blue","green","orange","red","blue","green3","deeppink1","orange","cyan","yellow3","cornflowerblue","darkorchid1","red","blue","green3","red","red","blue","green3","deeppink1","orange","cyan","yellow3","cornflowerblue","red","blue","green3")) + theme(legend.title=element_blank())
 @
 
 % Merge predictions with contemporary spatial observations
