@@ -825,7 +825,7 @@ print(p)
 
 \subsection{Exploring contemporary sampling intensity}
 
-Because the distribution apparent geographic ranges may be influenced by sampling intensity, it is important to quantify variability in sampling intensity among provinces. The number of OBIS records from a given province can serve as a rough index of sampling intensity (Fig.~\ref{fig:plot-n-genera-prov}). The correspondence between number of OBIS records and mean intrinsic risk is not strong, but several groups do show a positive relationship (Fig.~\ref{fig:plot-n-genera-prov})
+Because the distribution of apparent geographic ranges may be influenced by sampling intensity, it is important to quantify variability in sampling intensity among provinces. The number of OBIS records from a given province can serve as a rough index of sampling intensity (Fig.~\ref{fig:plot-n-genera-prov}). The correspondence between number of OBIS records and mean intrinsic risk is not strong, but several groups do show a positive relationship (Fig.~\ref{fig:plot-n-genera-prov}).
 
 <<plot-n-genera-prov, fig.cap="Number of OBIS occurrence records for each biogeographic province \\cite{spalding2007}. Scale bars on the right (log-distributed scale) indicate the range for a given group, and this scale is used to plot relative sampling intensity heatmaps.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
 map_class_ext(subset(er_dat_class, !class %in% c("Elasmobranchii", "Mammalia")),
@@ -837,12 +837,13 @@ map_class_ext(subset(er_dat_class, !class %in% c("Elasmobranchii", "Mammalia")),
 
 @
 
-TODO: discuss the plot of number of occurrences per province above, the crossplot of number of occurrences vs. mean risk, and the use of the latter relatinships to detrend and produce the residuals map
+TODO: discuss the plot of number of occurrences per province above, the crossplot of number of occurrences vs. mean risk, and the use of the latter relationships to detrend and produce the residuals map
 
-Although the correspondance
+TODO Although the correspondence
 
+We also considered class-level maps (a version of Fig.~2) after accounting for the relationship between OBIS sampling and predicted extinction probability shown in Fig.~\ref{fig:plot-n-genera-prov}. To do this, we mapped the residuals from the regressions in Fig.~\ref{fig:plot-n-genera-prov}. The resulting maps are shown in Fig.~\ref{fig:obis-residuals-maps}.
 
-We can also look at the class-province maps after taking out the relationship between OBIS sampling and predicted extinction probability. We'll plot the residuals.
+TODO discuss these maps
 
 <<obis-residuals-maps, results='hide', child='obis-residuals-maps-child.Rnw'>>=
 @
@@ -855,7 +856,9 @@ We can also look at the class-province maps after taking out the relationship be
 \label{fig:obis-residuals-maps}
 \end{figure}
 
-As another test, we will try removing genera that are only reported in one province. This removes \Sexpr{single.genera.provs.removed} from a total of \Sexpr{total.genera} genera (Fig.~\ref{fig:remove-single-province-genera-class-map} and Fig.~\ref{fig:remove-single-province-genera-overall-map}).
+As another test, we tried removing genera that were only reported in one province. This removes \Sexpr{single.genera.provs.removed} from a total of \Sexpr{total.genera} genera (Fig.~\ref{fig:remove-single-province-genera}).
+
+TODO interpret these results
 
 <<remove-single-province-genera-class-map, results='hide'>>=
 load("../data/by.prov.classes.no.singles.rda")
