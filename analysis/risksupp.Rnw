@@ -617,8 +617,7 @@ write.table(diff_in_range, file = "diff_in_range.txt", row.names = FALSE)
 
 \subsection{Mapping risk predictions using contemporary species distributions}
 
-Now, we will create Fig.~2 and Fig.~3 from the paper.
-
+% Now, we will create Fig.~2 and Fig.~3 from the paper.
 <<plot-class-maps, results='hide'>>=
 # create the dataset to map:
 load("../data/by.prov.classes.rda")
