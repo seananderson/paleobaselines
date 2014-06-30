@@ -11,6 +11,7 @@ Plio <- Plio.Modern[(Plio.Modern$Interval_Name == "Plio-Pleistocene"),]
 Plio$Interval_Name <- NULL
 Plio$stage_top <- NULL
 Plio.Modern2 <- merge(Modern,Plio,by = c("class","group","genus","variable"),all.x=FALSE,all.y=FALSE)
+n_plio_common_genera <- length(unique(Plio.Modern2$genus))
 
 RMA.lines <- function(df){
 mod <- lmodel2::lmodel2(value.y ~ value.x, data=df,"interval", "interval", 99)
