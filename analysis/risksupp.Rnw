@@ -195,7 +195,7 @@ As one illustrative example, below is a simplified plot of the interpolation pro
 
 We've only shown the biogeographic realm containing any contemporary observations (all shaded region combined). Individual polygons represent biogeographic regions. We've shown two occurrences as red crosses. We then draw a minimum bounding box around those observations (the rectangle) and shade with a darker grey the single biogeographic province crossed by the bounding box. We record this darker biogeographic province as containing the genus.
 
-As another example on a larger scale, the following plot shows the interpolations for 6 genera. The red crosses indicate sampling observations in the OBIS database. The various biogeographic realms are shown in different colour shadings. The outlined provinces are all the provinces within any realm that has occurrences. The grey-shaded polygons represent biogeographic provinces that are added based on the minimum-bounding-box interpolation scheme. Outlined provinces that aren't shaded are provinces that the bounding box didn't overlap. Keep in mind that some realms wrap from one side of the plot to the other.
+As another example on a larger scale, the following plot shows the interpolations for 6 genera. The red crosses indicate sampling observations in the OBIS database. The various biogeographic realms are shown in different color shadings. The outlined provinces are all the provinces within any realm that has occurrences. The grey-shaded polygons represent biogeographic provinces that are added based on the minimum-bounding-box interpolation scheme. Outlined provinces that aren't shaded are provinces that the bounding box didn't overlap. Keep in mind that some realms wrap from one side of the plot to the other.
 
 \includegraphics[width=\textwidth]{../static-figs/province_interpolation_test_eg.pdf}
 
@@ -511,7 +511,7 @@ The \texttt{group} variable refers to the taxonomic groupings (primarily order) 
 
 We will use our GBM model built on the entire Neogene period to predict extinction risk in the contemporary dataset. Because of the slight stochasticity from run to run of a GBM, we will run our model a number of times and take the average predictions.
 
-<<check-classification-error, child='check-classification-error-child.Rnw', results='hide', fig.height=7, fig.width=12, fig.cap='Receiver operating characteristic (ROC) curves. ROC curves show sensitivity (true positive rate) plotted against specificity (true negative rate) across all possible probability thresholds. The area under the curves (AUC) represents the probability that a randomly chosen extinct genera will be correctly ranked as more at risk than a randomly chosen genera that survives. The dashed line represents the the 50\\% line --- predictions on this line would be no better than tossing a coin. We show predictions for models built on the entire Neogene (as used in Fig.~2 and Fig.~3) and for models built on stages within the Neogene. The coloured lines represent ROC curves from the same models but split out by major taxonomic groups.'>>=
+<<check-classification-error, child='check-classification-error-child.Rnw', results='hide', fig.height=7, fig.width=11.5, fig.cap='Receiver operating characteristic (ROC) curves. ROC curves show sensitivity (true positive rate) plotted against specificity (true negative rate) across all possible probability thresholds. The area under the curves (AUC) represents the probability that a randomly chosen extinct genera will be correctly ranked as more at risk than a randomly chosen genera that survives. The dashed line represents the the 50\\% line --- predictions on this line would be no better than tossing a coin. We show predictions for models built on the entire Neogene (as used in Fig.~2 and Fig.~3) and for models built on stages within the Neogene. The colored lines represent ROC curves from the same models but split out by major taxonomic groups.'>>=
 @
 
 <<load-modern-data>>=
@@ -585,7 +585,7 @@ ggplot(d2, aes(y = jitter(gbm_pred_binned, amount = 0.02), x = jitter(great.circ
 
 We can also look at the distribution of our predictions by biogeographic province \cite{spalding2007} and class (Fig.~\ref{fig:plot-density-risk-by-province}).
 
-<<plot-density-risk-by-province, fig.width=17, fig.height=13, fig.cap="The distribution of intrinsic extinction risk by biogeographic province \\cite{spalding2007} (panels) and taxonomic class (colours). Note the log transformed x-axis.", echo=FALSE>>=
+<<plot-density-risk-by-province, fig.width=17, fig.height=13, fig.cap="The distribution of intrinsic extinction risk by biogeographic province \\cite{spalding2007} (panels) and taxonomic class (colors). Note the log transformed x-axis.", echo=FALSE>>=
 # merge in province names:
 er <- readShapePoly("../data/MEOW2/meow_ecos.shp")
 prov_names <- er@data[,c("PROVINCE", "PROV_CODE")]
@@ -778,7 +778,7 @@ One way to test the sensitivity of our aggregate map (Fig.~3) is to create the m
 
 We see that the Caribbean and Antarctic hotspots are driven primarily by gastropods. Many hotspots in the Indo-Pacific remain regardless of removing any one taxonomic class.
 
-<<jackknife-map, fig.cap="Global distribution of mean predicted intrinsic extinction probability (as in Fig.~3) \\textbf{with one taxonomic class removed, or jackknifed, in each panel}. Note that the colour scale is adjusted in each panel to display the full range of predictions.", fig.width=7, fig.height=7>>=
+<<jackknife-map, fig.cap="Global distribution of mean predicted intrinsic extinction probability (as in Fig.~3) \\textbf{with one taxonomic class removed, or jackknifed, in each panel}. Note that the color scale is adjusted in each panel to display the full range of predictions.", fig.width=7, fig.height=7>>=
 load("../data/by.prov.all.jk.rda")
 classes <- as.character(unique(modern$class))
 par(mfrow = c(3, 2))
@@ -921,7 +921,7 @@ map_class_ext(er_dat_class, plot_column = "log.mean.gcd",
 
 We will look at the effect of the changing the cutoff for the minimum-genera-per-province-class combination. In other words, as we increase this threshold, some classes with fewer genera in a given province are removed.
 
-<<min-gen-thresh-sensitivity, fig.height=8.5, fig.width=13, fig.cap='Effect of raising the minimum genus richness cutoff  provinces on the global distribution of mean intrinsic risk (a cutoff of 50 genera is used in Figure 3). At low cutoff values, island provinces with low sampled diversity tend to dominate the relative risk pattern. This is primarily attributable to differential sampling effects: even poorly-sampled provinces have a complete inventory of mammal and shark genera because the distributions of genera are based on published range maps not OBIS occurrences. Since mammals have very high intrinsic risk relative to most other groups, the high ratio of mammal genera to other genera gives leads to exceptionally high mean intrinsic risk estimates in poorly sampled provinces. Removing provinces that are clearly badly undersampled ameliorates this effect. The colour scale is adjusted to represent the full range of variation shown in each map.'>>=
+<<min-gen-thresh-sensitivity, fig.height=8.5, fig.width=13, fig.cap='Effect of raising the minimum genus richness cutoff  provinces on the global distribution of mean intrinsic risk (a cutoff of 50 genera is used in Figure 3). At low cutoff values, island provinces with low sampled diversity tend to dominate the relative risk pattern. This is primarily attributable to differential sampling effects: even poorly-sampled provinces have a complete inventory of mammal and shark genera because the distributions of genera are based on published range maps not OBIS occurrences. Since mammals have very high intrinsic risk relative to most other groups, the high ratio of mammal genera to other genera gives leads to exceptionally high mean intrinsic risk estimates in poorly sampled provinces. Removing provinces that are clearly badly undersampled ameliorates this effect. The color scale is adjusted to represent the full range of variation shown in each map.'>>=
 
 par(mfrow = c(2, 2))
 par(mar = c(0, 0, 2, 0), oma = c(2, 2, 2, 2))
