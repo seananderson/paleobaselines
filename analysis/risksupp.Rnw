@@ -84,8 +84,8 @@ References
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=6in]{../static-figs/didactic_method.pdf}
-\caption{Schematic illustration of the sequence of steps used to build the modern genus range dataset and to make intrinsic risk predictions for modern genera from the Neogene fossil record. \textit{TODO Note that the grid that is currently shown is the 2x2 degree grid, not the equal area grid. This will be clarified or changed.}}
+\includegraphics[width=\textwidth]{../static-figs/didactic_method.pdf}
+\caption{Schematic illustration of the sequence of steps used to build the modern genus range dataset and to make intrinsic risk predictions for modern genera from the Neogene fossil record.}
 \label{fig:didactic}
 \end{figure}
 
@@ -384,7 +384,7 @@ Another way to evaluate the similarity in extinction regimes between different t
 \begin{figure}[htbp]
  \centering
  \includegraphics[width=4.86in]{../figs/plot-cross-interval-gbms-base.pdf}
- \caption{Conservatism of relative extinction risk patterns throughout the Neogene fossil record. Shown are comparison of genus extinction probabilities estimated from models built and tested on different geological stages. For example, the upper right-hand panel plots the extinction risk of Plio-Pleistocene genera predicted by the model built on those data (x axis) compared to a model built using the Lower Miocene data (y axis). The higher the rank order correlation, as shown by Spearman Rho values in upper left panel corners (except for within-interval comparisons), the more similar the determinants of extinction risk are between two given intervals.}
+ \caption{Conservatism of relative extinction risk patterns throughout the Neogene fossil record. Shown are comparisons of scaled genus extinction probabilities estimated from models built and tested on different geological stages. For example, the upper right-hand panel plots the extinction risk of Plio-Pleistocene genera predicted by the model built on those data (x axis) compared to a predictions by a model built using the Lower Miocene data (y axis). The higher the rank order correlation, as shown by Spearman's Rho values in upper left panel corners (except for within-interval comparisons), the more similar the determinants of extinction risk are between two given intervals.}
 \end{figure}
 
 The median Spearman's rank correlation for the cross-interval predictions is \Sexpr{median(Rsqs$Rsq)} and the rank correlations range from \Sexpr{min(Rsqs$Rsq)} to \Sexpr{max(Rsqs$Rsq)}.
