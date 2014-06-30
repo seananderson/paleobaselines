@@ -800,8 +800,10 @@ by.prov.classes.long <- plyr::join(by.prov.classes.long, by.prov.classes[,
   c("PROV_CODE", "class", "mean.ext", "Lat_Zone")],
   by = c("PROV_CODE", "class"))
 ggplot(by.prov.classes.long,
-  aes(value, mean.ext, colour = Lat_Zone)) +
+  aes(value, mean.ext, colour = Lat_Zone, shape = Lat_Zone)) +
   geom_point(alpha = 0.7) +
+  scale_colour_manual(values=c("#7570b3","#e7298a")) +
+  scale_shape_manual(values = c(21, 19)) +
   facet_wrap(variable~class, scales = "free") +
 # stat_smooth(method = "lm", se = TRUE, lwd = 1.5) +
   ylab("log(Mean intrinsic extinction risk)") +
