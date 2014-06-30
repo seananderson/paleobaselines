@@ -37,7 +37,7 @@ cols_df <- data.frame(
   class = c("Anthozoa", "Bivalvia", "Echinoidea",
     "Elasmobranchii", "Gastropoda", "Mammalia"),
   cols_solid = cols,
-  cols_outer = paste0(cols, "70"),
+  cols_outer = paste0(cols, "60"),
   cols_inner = paste0(cols, "10"),
   proper_name = c("Scleractinia", "Bivalvia", "Echinoidea",
     "Sharks", "Gastropoda", "Mammalia"),
@@ -66,10 +66,10 @@ plyr::d_ply(cross_pred2, c("stage_train", "stage_test"), function(x) {
   if(i %in% seq(4, 16, 4))
     mtext(unique(x$stage_train), side = 4, cex = 0.6, col = "grey50", 
       las = 0, line = 0.3)
-  text(0.005, 0.7, labels = unique(x$Rsq_sp), col = "grey50")
+  text(0.001, 0.67, labels = unique(x$Rsq_sp), col = "grey50")
   if(i == 1) {
     par(xpd = NA)
-    legend(0.0032, 8.5, legend = cols_df$proper_name, bty = "n", cex = 1.1,
+    legend(0.0032, 11, legend = cols_df$proper_name, bty = "n", cex = 1.1,
       text.col = "grey50", horiz = TRUE, pch = 21, pt.bg =
       paste0(cols_df$cols_solid, 40), col = paste0(cols_df$cols_solid, 98))
       par(xpd = FALSE)
