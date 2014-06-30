@@ -565,7 +565,7 @@ ggplot(modern, aes(y = gbm_pred_binned, x = great.circle, colour = class)) + geo
 d2 <- ddply(modern, "class", transform, 
 group_id = as.numeric(as.factor(as.character(as.numeric(group)))))
 
-ggplot(d2, aes(y = jitter(gbm_pred_binned, amount = 0.02), x = jitter(great.circle, amount = 800))) + geom_point(alpha=.5,pch=1) + facet_wrap(~class) + theme_bw() + xlab("Great circle distance") + ylab("Predicted intrinsic risk by genus") + theme(axis.ticks.y = element_blank(), panel.grid.major=element_blank(), panel.grid.minor=element_blank()) + theme(strip.text.x = element_text(size = 8), axis.text = element_text(size = 8)) + theme(legend.position = "none") + geom_density2d()
+ggplot(d2, aes(y = jitter(gbm_pred_binned, amount = 0.02), x = jitter(great.circle, amount = 800))) +  geom_hline(yintercept=mean(d2$gbm_pred_binned),colour="red") + geom_point(alpha=.5,pch=1,size=2,colour="cadetblue") + facet_wrap(~class) + theme_bw() + xlab("Great circle distance") + ylab("Predicted intrinsic risk by genus") + theme(strip.text.x = element_text(size = 8), axis.text = element_text(size = 8)) + theme(legend.position = "none") + geom_density2d(colour="black") 
 @
 
 % Merge predictions with contemporary spatial observations
