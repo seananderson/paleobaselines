@@ -560,7 +560,7 @@ ggplot(modern, aes(y = gbm_pred_binned, x = great.circle, colour = class)) + geo
 @
 
 
-<<plot-genus-predictions-against-gcd2, fig.cap='TODO', fig.width=9, fig.height=5.5>>=
+<<plot-genus-predictions-against-gcd2, fig.cap='Predicted intrinsic risk versus great circle distance for modern genera in each of six classes.  The blue points represent individual genera, the black contour lines indicate the density of genera, and the red line represents the mean intrinsic risk of all genera.', fig.width=9, fig.height=5.5>>=
 d2 <- ddply(modern, "class", transform, 
 group_id = as.numeric(as.factor(as.character(as.numeric(group)))))
 
