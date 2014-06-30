@@ -567,7 +567,7 @@ saveRDS(modern, file = "../data/modern-predictions.rds")
 %ggplot(modern, aes(y = gbm_pred_binned, x = great.circle, colour = class)) + geom_point(alpha = 0.5) + %facet_wrap(~group) + theme_bw() + xlab("Great circle distance") + ylab("Predicted intrinsic risk by genus") + theme(axis.ticks.y = element_blank(), panel.grid.minor=element_blank()) + theme(strip.text.x = element_text(size = 7), axis.text = element_text(size = 8)) + stat_summary(fun.data = "mean_cl_boot", colour = "black")
 %@
 
-<<plot-genus-predictions-against-gcd2, fig.cap='Predicted intrinsic risk versus geographic range (great circle distance) for modern genera in each of six classes. The points represent individual genera and are colored according to taxonomic identity, the black contour lines indicate the density of genera, and the red line represents the mean intrinsic risk of all genera.', fig.width=9, fig.height=5.5>>=
+<<plot-genus-predictions-against-gcd2, fig.cap='Predicted intrinsic risk versus geographic range (great circle distance) for modern genera in each of six classes. The points represent individual genera and are colored according to taxonomic identity within each class, the black contour lines indicate the density of genera, and the red line represents the mean intrinsic risk of all genera.', fig.width=9, fig.height=5.5>>=
 d2 <- ddply(modern, "class", transform,
 group_id = as.numeric(as.factor(as.character(as.numeric(group)))))
 
@@ -766,9 +766,9 @@ dev.off()
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\textwidth]{../figs/plot-class-prov-ext-raw-ranges.pdf}
-  \includegraphics[width=3.75in]{../figs/no-bounding-box-overall-map.pdf}
-  \caption{Mean predicted extinction susceptibility of genera inhabiting different ocean biogeographic provinces \cite{spalding2007} for each of the 6 major groups considered (upper 6 panels) and across all genera (lower centred panel), as in Fig.~3 and 4, but \textbf{with predictions based on raw ranges in OBIS without the within-realm minimum bounding box interpolation}. Scale bars on the right indicate the range of intrinsic extinction probability values for a given group, and this scale is used to plot mean extinction susceptibility heatmaps on the left.}
+  \includegraphics[width=5.65in]{../figs/plot-class-prov-ext-raw-ranges.pdf}
+  \includegraphics[width=3.45in]{../figs/no-bounding-box-overall-map.pdf}
+  \caption{Mean intrinsic extinction risk of genera inhabiting different ocean biogeographic provinces \cite{spalding2007} for each of the 6 major groups considered (upper 6 panels) and across all genera (lower centred panel), as in Fig.~2 and 3, but \textbf{with predictions based on raw ranges in OBIS without the within-realm minimum bounding box interpolation}. Scale bars on the right indicate the range of intrinsic extinction probability values for a given group, and this scale is used to plot mean extinction susceptibility heatmaps on the left. Note that the modern distribution of sharks and mammals was based on range maps instead of OBIS observations and so panels A and B are the same as Fig.~2.}
   \label{fig:no-bounding-box}
 \end{figure}
 
