@@ -124,7 +124,12 @@ extract_ranges <- function() {
   #save(pbdb,file='~/Dropbox/nescent_extinction_map/data/PaleoDB downloads/4.6.2014/4.6.2014.occs.rda')
 
   #pbdb2 <- readRDS('~/Dropbox/nescent_extinction_map/data/PaleoDB downloads/6.25.2014/6.25.2014.occs.rds')
-  load('~/Dropbox/nescent_extinction_map/data/PaleoDB downloads/4.6.2014/4.6.2014.occs.rda')
+#  load('~/Dropbox/nescent_extinction_map/data/PaleoDB downloads/4.6.2014/4.6.2014.occs.rda')
+
+download.file("https://dl.dropboxusercontent.com/u/254940/riskmaps-data/4.6.2014.pbdb.occs.rda",
+  "../data/4.6.2014.pbdb.occs.rda",
+  method = "curl")
+load("../data/4.6.2014.pbdb.occs.rda")
 
   ### redefine Plio-Pleistocene FR_2 Bin
   pbdb$FR2_bin <- ifelse(pbdb$interval_base <= 5.333 & pbdb$interval_top >= .0117,"Plio-Pleistocene",as.character(pbdb$FR2_bin))
