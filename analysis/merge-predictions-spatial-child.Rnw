@@ -2,7 +2,7 @@
 # read in the modern genus-occupancy data:
 load("../data/interpolated_provs_all_taxa.rda")
 d.eco.filled <- interpolated_provs_all_taxa
-# d.eco.filled <- gdata::drop.levels(subset(d.eco.filled,
+# d.eco.filled <- droplevels(subset(d.eco.filled,
 #     d.eco.filled$Ranges == "Interpolated"))
 # d.eco.filled$Ranges <- NULL
 
