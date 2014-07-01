@@ -1,16 +1,25 @@
 # ====================================================================
 # Created by:    Sean Anderson, sean@seananderson.ca
 # Created:       Sep 29, 2012
-# Last modified: Jun 02, 2014
+# Last modified: Jul 01, 2014
 # Purpose:       Steps to do interpolation of modern occurrence data
 #                and overlay grid etc.
 # ====================================================================
 
-# temp for Bugaboo:
+# Download data:
+download.file("https://dl.dropboxusercontent.com/u/254940/riskmaps-data/composite.occ2.filled.rda",
+  "../data/composite.occ2.filled.rda",
+  method = "curl")
 
-setwd("/home/anderson/riskmaps/r")
+download.file("https://dl.dropboxusercontent.com/u/254940/riskmaps-data/MarineMammalProvinceJoin2.csv",
+  "../data/MarineMammalProvinceJoin2.csv",
+  method = "curl")
 
-# What comes first to generate "composite.occ2.rda"?
+download.file("https://dl.dropboxusercontent.com/u/254940/riskmaps-data/SharkProvinceJoin2pt5DegreeBuffer_20121009.csv",
+  "../data/SharkProvinceJoin2pt5DegreeBuffer_20121009.csv",
+  method = "curl")
+
+# ... generating steps for "composite.occ2.rda"
 
 # Warning, these take a long time. These scripts were run on a server.
 
