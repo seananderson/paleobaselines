@@ -121,7 +121,6 @@ devtools::install("../paleorisk/")
 <<load-packages, cache=FALSE>>=
 library("paleorisk")
 library("plyr")
-library("gdata")
 library("reshape2")
 library("ggplot2")
 library("gbm")
