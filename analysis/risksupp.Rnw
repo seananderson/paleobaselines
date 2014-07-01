@@ -218,7 +218,7 @@ TODO expand this.
 # quantity of memory.
 # TODO clean up these files the paths are right, also copy over a couple missing data files
 # see bugaboo server
-source("README_interpolation.R")
+source("run_interpolation.R")
 @
 
 \subsection{Standardizing predictor variables}
