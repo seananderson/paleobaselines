@@ -597,8 +597,8 @@ temp <- transform(temp, PROV_pretty = paste(PROV_CODE, PROVINCE))
 ggplot(temp, aes(mean_observed + 0.001)) +
   geom_histogram(aes(fill = class, colour = class),
     position = "stack", alpha = 0.5, binwidth = 0.4) +
-  facet_wrap(~ PROV_pretty) +
-  scale_x_log10() + theme(strip.text.x = element_text(size = 7)) +
+  facet_wrap(~ PROV_pretty,ncol=6) +
+  scale_x_log10() + theme(strip.text.x = element_text(size = 8)) +
   ylab("Number of genera") + xlab("Predicted extinction probabilty")
 @
 
@@ -800,7 +800,7 @@ ggplot(by.prov.classes.long,
   geom_point(alpha = 0.7) +
   scale_colour_manual(values=c("#7570b3","#e7298a")) +
   scale_shape_manual(values = c(21, 19)) +
-  facet_wrap(variable~class, scales = "free") +
+  facet_wrap(variable~class, ncol=5, scales = "free") +
 # stat_smooth(method = "lm", se = TRUE, lwd = 1.5) +
   ylab("log(Mean intrinsic extinction risk)") +
   xlab("Predictor value")
