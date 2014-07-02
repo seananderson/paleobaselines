@@ -783,7 +783,12 @@ for(i in 1:length(classes)) {
   er_dat_jk <- plyr::join(er_points, er@data, by = "id")
   er_dat_jk <- plyr::join(er_dat_jk, by.prov.all.jk[[i]], by = "PROV_CODE")
   map_hotspots(er_dat_jk, min_prov_genera = 100, hotspots = FALSE)
-  mtext(paste("Exclude", classes[i]), line = -0.5)
+  if(classes[i] == "Elasmobranchii")
+    mtext(paste("Exclude", "Sharks"), line = -0.5)
+  if(classes[i] == "Anthozoa")
+    mtext(paste("Exclude", "Scleractinia"), line = -0.5)
+  if(!classes[i] %in% c("Elasmobranchii", "Anthozoa"))
+    mtext(paste("Exclude", classes[i]), line = -0.5)
 }
 @
 
@@ -809,6 +814,8 @@ ggplot(by.prov.classes.long,
 <<relationship-between-mean-risk-and-sampling-intensity, fig.width=9, fig.height=5.5, out.width="5in", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus number of OBIS records (of the indicated class) from that province. Each point represents a single biogeographic province. Lines and gray-shaded regions indicate linear regressions and 95\\% confidence intervals; colors indicate latitudinal zone of province.", cache=TRUE>>=
 temp_dat <- droplevels(subset(by.prov.classes,
     !class %in% c("Elasmobranchii", "Mammalia")))
+temp_dat$class <- as.character(temp_dat$class)
+temp_dat$class[temp_dat$class == "Anthozoa"] <- "Scleractinia"
 p <- ggplot(temp_dat,
   aes(log_OBIS_records, mean.ext)) +
   facet_wrap(~class,scales="free",ncol=2) +
