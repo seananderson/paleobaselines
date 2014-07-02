@@ -584,7 +584,7 @@ ggplot(d2, aes(y = jitter(gbm_pred_binned, amount = 0.02), x = jitter(great.circ
 
 We can also look at the distribution of our predictions by biogeographic province \cite{spalding2007} and class (Fig.~\ref{fig:plot-density-risk-by-province}).
 
-<<plot-density-risk-by-province, fig.width=17, fig.height=13, fig.cap="The distribution of intrinsic extinction risk by biogeographic province \\cite{spalding2007} (panels) and taxonomic class (colors). Note the log transformed x-axis.", echo=FALSE>>=
+<<plot-density-risk-by-province, fig.width=13, fig.height=15.5, fig.cap="The distribution of intrinsic extinction risk by biogeographic province \\cite{spalding2007} (panels) and taxonomic class (colors). Note the log-transformed x-axis.", echo=FALSE>>=
 # merge in province names:
 er <- readShapePoly("../data/MEOW2/meow_ecos.shp")
 prov_names <- er@data[,c("PROVINCE", "PROV_CODE")]
@@ -597,7 +597,7 @@ temp <- transform(temp, PROV_pretty = paste(PROV_CODE, PROVINCE))
 ggplot(temp, aes(mean_observed + 0.001)) +
   geom_histogram(aes(fill = class, colour = class),
     position = "stack", alpha = 0.5, binwidth = 0.4) +
-  facet_wrap(~ PROV_pretty,ncol=6) +
+  facet_wrap(~ PROV_pretty,ncol=5) +
   scale_x_log10() + theme(strip.text.x = element_text(size = 8)) +
   ylab("Number of genera") + xlab("Predicted extinction probabilty")
 @
@@ -787,7 +787,7 @@ for(i in 1:length(classes)) {
 }
 @
 
-<<predictors-vs-risk, fig.width=18, fig.height=11.5, out.width="\\textwidth", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus various predictors for that province. Each point represents a single biogeographic province. Province points are colored and shaped according to whether they are tropical (pink and closed symbols) or extratropical (purple and open symbols).">>=
+<<predictors-vs-risk, fig.width=15, fig.height=12.5, out.width="\\textwidth", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus various predictors for that province. Each point represents a single biogeographic province. Province points are colored and shaped according to whether they are tropical (pink and closed symbols) or extratropical (purple and open symbols).">>=
 by.prov.classes.long <- reshape2::melt(by.prov.classes, id.vars =
   c("PROV_CODE", "class"), measure.vars =
   c("mean.lat.range", "mean.occupancy", "mean.gcd", "mean.occurrences",
