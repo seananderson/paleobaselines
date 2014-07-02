@@ -821,9 +821,13 @@ p <- ggplot(temp_dat,
 print(p)
 @
 
-\subsection{Exploring contemporary sampling intensity}
+\subsection{Exploring the effects of contemporary sampling intensity on intrinsic risk predictions}
 
-Because the distribution of apparent geographic ranges may be influenced by sampling intensity, it is important to quantify variability in sampling intensity among provinces. The number of OBIS records from a given province can serve as a rough index of sampling intensity (Fig.~\ref{fig:plot-n-genera-prov}). The correspondence between number of OBIS records and mean intrinsic risk is not strong, but several groups do show a positive relationship (Fig.~\ref{fig:plot-n-genera-prov}).
+Geographic variation in sampling intensity may influence the observed distribution of geographic ranges and consequently the predicted extinction probabilities of contemporary marine genera. We use the number of OBIS records in a given province (Fig.~\ref{fig:plot-n-genera-prov}) as a rough index of sampling intensity and compare these values with mean intrinsic risk estimates for the four taxonomic groups (scleractinian corals, bivalves, echinoids, and gastropods) in which OBIS records were used to calculate genus geographic ranges. The correspondence between the number of OBIS records in a province and the mean intrinsic risk of genera in a province is not strong, however a positive relationship is observed in each group (Fig.~\ref{fig:relationship-between-mean-risk-and-sampling-intensity}).
+
+To determine whether the broad-scale patterns of mean intrinsic risk (Fig.~2) are robust to geographic variation in sampling intensity, we plot the residual variation in intrinsic risk remaining after accounting for provincial variation in the number of OBIS records using a linear model (Fig.~\ref{fig:obis-residuals-maps}). These maps are qualitatively similar to those presented in Fig.~2. Echinoids show relatively little change in mean risk estimates. For gastropods, scleractinian corals, and bivalves, hotspots of intrinsic risk in the Indo-Pacific and tropical West Atlantic remain; however, the relative risk of the Caribbean is muted after accounting for the intense sampling that has occurred in the region (Fig.~\ref{fig:plot-n-genera-prov}). Differences in mean intrinsic risk between northern and southern hemisphere extratropics are also preserved (Fig.~\ref{fig:obis-residuals-maps}).
+
+Geographic variation in sampling intensity could result in the observation of ``pseudo-endemics'', genera found in a well-sampled provinces but not observed in adjacent provinces that have not been sampled as intensely. To determine the potential effect of pseudoendemics on mean intrinsic risk estimates we removed genera that were only reported in one province. For this sensitivity test, we explicitly assume that these genera are solely the result of variation in sampling intensity although in reality single province genera are most likely a combination of pseudoendemics and true endemics. Culling genera known from only one province reduces the sample size of contemporary genera by \Sexpr{single.genera.provs.removed} to a total of \Sexpr{total.genera} genera. Maps of mean intrinsic risk in which single province genera were excluded (Fig.~\ref{fig:remove-single-province-genera}) are congruent with those derived from the full dataset (Fig.~2 and 3), indicating that single province genera are not responsible for the broad-scale patterns of intrinsic risk.
 
 <<plot-n-genera-prov, fig.cap="Number of OBIS occurrence records for each biogeographic province \\cite{spalding2007}. Color scale bars on the right are log-distributed. Panels for sharks and mammals (as in Fig.~2) are not shown because we used range maps instead of OBIS data for the modern distributions.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
 map_class_ext(subset(er_dat_class, !class %in% c("Elasmobranchii", "Mammalia")),
@@ -835,14 +839,6 @@ map_class_ext(subset(er_dat_class, !class %in% c("Elasmobranchii", "Mammalia")),
 
 @
 
-TODO: discuss the plot of number of occurrences per province above, the crossplot of number of occurrences vs. mean risk, and the use of the latter relationships to detrend and produce the residuals map
-
-TODO Although the correspondence
-
-We also considered class-level maps (a version of Fig.~2) after accounting for the relationship between OBIS sampling and predicted extinction probability shown in Fig.~\ref{fig:plot-n-genera-prov}. To do this, we mapped the residuals from the regressions in Fig.~\ref{fig:plot-n-genera-prov}. The resulting maps are shown in Fig.~\ref{fig:obis-residuals-maps}.
-
-TODO discuss these maps
-
 <<obis-residuals-maps, results='hide', child='obis-residuals-maps-child.Rnw'>>=
 @
 
@@ -853,10 +849,6 @@ TODO discuss these maps
   \caption{The geographic distribution of \textbf{intrinsic risk residuals after applying a linear model accounting for the number of OBIS records}. Panels for sharks and mammals (as in Fig.~2) are not shown because we used range maps instead of OBIS data for the modern distributions.}
 \label{fig:obis-residuals-maps}
 \end{figure}
-
-As another test, we tried removing genera that were only reported in one province. This removes \Sexpr{single.genera.provs.removed} from a total of \Sexpr{total.genera} genera (Fig.~\ref{fig:remove-single-province-genera}).
-
-TODO interpret these results
 
 <<remove-single-province-genera-class-map, results='hide'>>=
 load("../data/by.prov.classes.no.singles.rda")
