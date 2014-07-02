@@ -599,7 +599,7 @@ ggplot(temp, aes(mean_observed + 0.001)) +
     position = "stack", alpha = 0.5, binwidth = 0.4) +
   facet_wrap(~ PROV_pretty,ncol=5) +
   scale_x_log10() + theme(strip.text.x = element_text(size = 8)) +
-  ylab("Number of genera") + xlab("Predicted extinction probabilty")
+  ylab("Number of genera") + xlab("Predicted extinction probabilty") + theme(legend.position="top")
 @
 
 <<determine-range-of-extinction-predictions, results='hide'>>=
@@ -808,7 +808,7 @@ ggplot(by.prov.classes.long,
   facet_wrap(variable~class, ncol=5, scales = "free") +
 # stat_smooth(method = "lm", se = TRUE, lwd = 1.5) +
   ylab("log(Mean intrinsic extinction risk)") +
-  xlab("Predictor value")
+  xlab("Predictor value") + theme(legend.position="top")
 @
 
 <<relationship-between-mean-risk-and-sampling-intensity, fig.width=9, fig.height=5.5, out.width="5in", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus number of OBIS records (of the indicated class) from that province. Each point represents a single biogeographic province. Lines and gray-shaded regions indicate linear regressions and 95\\% confidence intervals; colors indicate latitudinal zone of province.", cache=TRUE>>=
