@@ -74,21 +74,12 @@ References
 \clearpage
 \setlength\parskip{0.11in}
 
-% Load Fig S1 here to make sure it's the first figure.
 % Supplementary figures all get printed at the end because we loaded the
 % endfloat LaTeX package.
 
 \linenumbers
 \modulolinenumbers[2]
 \begin{spacing}{1.05}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=\textwidth]{../static-figs/didactic_method.pdf}
-\caption{Schematic illustration of the sequence of steps used to build the modern genus range dataset and to make intrinsic risk predictions for modern genera from the Neogene fossil record.}
-\label{fig:didactic}
-\end{figure}
-% TODO What is this "cull OBIS data with 30 occurrences per genus" in the figure?
 
 \section{Introduction}
 
@@ -360,34 +351,8 @@ We can use these observed extinction probabilities as calibration for our GBM-pr
 TODO mention gbm settings
 %We will examine the effect of varying some of the main arguments to the \texttt{gbm()} function. We will test the effect of the \texttt{shrinkage} (the rate of improvement between each tree iteration), \texttt{interaction.depth} (the maximum number of variable interactions), and \texttt{n.trees} (the total number of trees to build) arguments. We will vary each argument one at a time. We do this to check that predictive performance doesn't look substantially better by adjusting any of these arguments.
 
-\subsection{Testing predictive performance across geologic stages}
-
-<<cross-intervals-gbms, results='hide'>>=
-stage_df <- expand.grid(stage_train = unique(neog$stage),
-  stage_test = unique(neog$stage))
-if(!file.exists("../data/cross_pred.rds")) {
-  cross_pred <- mdply(stage_df, fit_interval_gbm, dat = neog,
-    n.trees = NTREES, shrinkage = SHRINKAGE, interaction.depth = INT.DEPTH,
-    use_weights = TRUE)
-  saveRDS(cross_pred, file = "../data/cross_pred.rds")
-} else {
-  cross_pred <- readRDS("../data/cross_pred.rds")
-}
+<<check-classification-error, child='check-classification-error-child.Rnw', results='hide', fig.height=7, fig.width=11.5, fig.cap='Receiver operating characteristic (ROC) curves. ROC curves show sensitivity (true positive rate) plotted against specificity (true negative rate) across all possible probability thresholds. The area under the curves (AUC) represents the probability that a randomly chosen extinct genera will be correctly ranked as more at risk than a randomly chosen genera that survives. The dashed line represents the the 50\\% line --- predictions on this line would be no better than tossing a coin. We show predictions for models built on the entire Neogene (as used in Fig.~2 and Fig.~3) and for models built on stages within the Neogene. The colored lines represent ROC curves from the same models but split out by major taxonomic groups.'>>=
 @
-
-% get cross-interval predictions and create plot:
-<<plot-cross-interval-gbms, results='hide', child='plot-cross-interval-gbms-child.Rnw'>>=
-@
-
-Another way to evaluate the similarity in extinction regimes between different time intervals is to predict extinction risk for each genus in a given interval from the model trained on that interval with predicted extinction risk for that genus from a model trained on a different interval. If the relationship between predictors and extinction risk is similar in both intervals, genus risk predictions from the two models will be strongly positively correlated. If the relationship between predictors and extinction risk differs strongly between the two stages, genus risk estimates will be only weakly correlated. We see that in general there is substantial similarity in per-genus extinction risk predictions across all four stages, with Spearman's rank-order correlation coefficients for cross-interval predictions ranging from \Sexpr{min(Rsqs$Rsq)} to \Sexpr{max(Rsqs$Rsq)} with a median of \Sexpr{median(Rsqs$Rsq)}.
-
-\begin{figure}[htbp]
- \centering
- \includegraphics[width=4.86in]{../figs/plot-cross-interval-gbms-base.pdf}
- \caption{Conservatism of relative extinction risk patterns throughout the Neogene fossil record. Shown are comparisons of scaled genus extinction probabilities estimated from models built and tested on different geological stages. For example, the upper right-hand panel plots the extinction risk of Plio-Pleistocene genera predicted by the model built on those data (x axis) compared to a predictions by a model built using the Lower Miocene data (y axis). The higher the rank order correlation, as shown by Spearman's Rho values in upper left panel corners (except for within-interval comparisons), the more similar the determinants of extinction risk are between two given intervals. Note that because extinctions were weighted more heavily in the GBM models, the absolute values shown on the x and y axes here are transformed versions of the real probabilities. This was corrected for through our calibration procedure when we applied the Neogene model to the modern dataset.}
-\end{figure}
-
-The median Spearman's rank correlation for the cross-interval predictions is \Sexpr{median(Rsqs$Rsq)} and the rank correlations range from \Sexpr{min(Rsqs$Rsq)} to \Sexpr{max(Rsqs$Rsq)}.
 
 \subsection{Evaluating the marginal effects of predictor variables}
 
@@ -507,12 +472,49 @@ axis(2, at = 1:length(ri_median), labels = names(ri_median), las = 1)
 
 The \texttt{group} variable refers to the taxonomic groupings (primarily order) and has the greatest relative importance followed by the great circle distance of range.
 
+
+\subsection{Testing predictive performance across geologic stages}
+
+<<cross-intervals-gbms, results='hide'>>=
+stage_df <- expand.grid(stage_train = unique(neog$stage),
+  stage_test = unique(neog$stage))
+if(!file.exists("../data/cross_pred.rds")) {
+  cross_pred <- mdply(stage_df, fit_interval_gbm, dat = neog,
+    n.trees = NTREES, shrinkage = SHRINKAGE, interaction.depth = INT.DEPTH,
+    use_weights = TRUE)
+  saveRDS(cross_pred, file = "../data/cross_pred.rds")
+} else {
+  cross_pred <- readRDS("../data/cross_pred.rds")
+}
+@
+
+% get cross-interval predictions and create plot:
+<<plot-cross-interval-gbms, results='hide', child='plot-cross-interval-gbms-child.Rnw'>>=
+@
+
+Another way to evaluate the similarity in extinction regimes between different time intervals is to predict extinction risk for each genus in a given interval from the model trained on that interval with predicted extinction risk for that genus from a model trained on a different interval. If the relationship between predictors and extinction risk is similar in both intervals, genus risk predictions from the two models will be strongly positively correlated. If the relationship between predictors and extinction risk differs strongly between the two stages, genus risk estimates will be only weakly correlated. We see that in general there is substantial similarity in per-genus extinction risk predictions across all four stages, with Spearman's rank-order correlation coefficients for cross-interval predictions ranging from \Sexpr{min(Rsqs$Rsq)} to \Sexpr{max(Rsqs$Rsq)} with a median of \Sexpr{median(Rsqs$Rsq)}.
+
+\begin{figure}[htbp]
+ \centering
+ \includegraphics[width=4.86in]{../figs/plot-cross-interval-gbms-base.pdf}
+ \caption{Conservatism of relative extinction risk patterns throughout the Neogene fossil record. Shown are comparisons of scaled genus extinction probabilities estimated from models built and tested on different geological stages. For example, the upper right-hand panel plots the extinction risk of Plio-Pleistocene genera predicted by the model built on those data (x axis) compared to a predictions by a model built using the Lower Miocene data (y axis). The higher the rank order correlation, as shown by Spearman's Rho values in upper left panel corners (except for within-interval comparisons), the more similar the determinants of extinction risk are between two given intervals. Note that because extinctions were weighted more heavily in the GBM models, the absolute values shown on the x and y axes here are transformed versions of the real probabilities. This was corrected for through our calibration procedure when we applied the Neogene model to the modern dataset.}
+\end{figure}
+
+The median Spearman's rank correlation for the cross-interval predictions is \Sexpr{median(Rsqs$Rsq)} and the rank correlations range from \Sexpr{min(Rsqs$Rsq)} to \Sexpr{max(Rsqs$Rsq)}.
+
+% Overview methods fig to put in right order:
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{../static-figs/didactic_method.pdf}
+\caption{Schematic illustration of the sequence of steps used to build the modern genus range dataset and to make intrinsic risk predictions for modern genera from the Neogene fossil record.}
+\label{fig:didactic}
+\end{figure}
+% TODO remove "cull OBIS data with 30 occurrences per genus"
+
+
 \subsection{Predicting contemporary extinction risk with paleontological models}
 
 We will use our GBM model built on the entire Neogene period to predict extinction risk in the contemporary dataset. Because of the slight stochasticity from run to run of a GBM, we will run our model a number of times and take the average predictions.
-
-<<check-classification-error, child='check-classification-error-child.Rnw', results='hide', fig.height=7, fig.width=11.5, fig.cap='Receiver operating characteristic (ROC) curves. ROC curves show sensitivity (true positive rate) plotted against specificity (true negative rate) across all possible probability thresholds. The area under the curves (AUC) represents the probability that a randomly chosen extinct genera will be correctly ranked as more at risk than a randomly chosen genera that survives. The dashed line represents the the 50\\% line --- predictions on this line would be no better than tossing a coin. We show predictions for models built on the entire Neogene (as used in Fig.~2 and Fig.~3) and for models built on stages within the Neogene. The colored lines represent ROC curves from the same models but split out by major taxonomic groups.'>>=
-@
 
 <<load-modern-data>>=
 temp_dat <- readRDS("../data/stand-predictors-cen-obis.rds")
@@ -595,41 +597,6 @@ values=c("red","blue","green3","deeppink1","orange","cyan","yellow3","cornflower
 <<merge-predictions-spatial, child='merge-predictions-spatial-child.Rnw', echo=FALSE>>=
 @
 
-We can also look at the distribution of our predictions by biogeographic province \cite{spalding2007} and class (Fig.~\ref{fig:plot-density-risk-by-province}).
-
-<<plot-density-risk-by-province, fig.width=12.5, fig.height=15, fig.cap="The distribution of intrinsic extinction risk by biogeographic province \\cite{spalding2007} (panels) and taxonomic class (colors). Note the log-transformed x-axis.", echo=FALSE>>=
-# merge in province names:
-er <- readShapePoly("../data/MEOW2/meow_ecos.shp")
-prov_names <- er@data[,c("PROVINCE", "PROV_CODE")]
-prov_names <- prov_names[!duplicated(prov_names), ]
-temp <- plyr::join(d.eco.filled, prov_names, by = "PROV_CODE")
-# add "0" to the single digit numbers for alphabetical ordering:
-temp$PROV_CODE[nchar(temp$PROV_CODE) == 1] <-
-  paste0("0", temp$PROV_CODE[nchar(temp$PROV_CODE) == 1])
-temp <- transform(temp, PROV_pretty = paste(PROV_CODE, PROVINCE))
-temp$class <- as.character(temp$class)
-temp$class[temp$class == "Anthozoa"] <- "Scleractinia"
-temp$class[temp$class == "Elasmobranchii"] <- "Sharks"
-ggplot(temp, aes(mean_observed + 0.001)) +
-  geom_histogram(aes(fill = class, colour = class),
-    position = "stack", alpha = 0.5, binwidth = 0.4) +
-  facet_wrap(~ PROV_pretty,ncol=5) +
-  scale_x_log10() + theme(strip.text.x = element_text(size = 8)) +
-  ylab("Number of genera") + xlab("Predicted extinction probabilty") + theme(legend.position="top")
-@
-
-<<determine-range-of-extinction-predictions, results='hide'>>=
-range_between <- diff(range(exp(by.prov.all$mean.ext)))
-folds <- ddply(temp, c("PROV_CODE", "PROVINCE"), plyr::summarize,
-#  lq = quantile(mean_observed, probs = 0.25),
-#  uq = quantile(mean_observed, probs = 0.75),
-#  iqr = uq - lq,
-  range = diff(range(mean_observed))
-  )
-diff_in_range <- round(range(folds$range) / range_between, 0)
-write.table(diff_in_range, file = "diff_in_range.txt", row.names = FALSE)
-@
-
 \subsection{Mapping risk predictions using contemporary species distributions}
 
 % Now, we will create Fig.~2 and Fig.~3 from the paper.
@@ -693,7 +660,189 @@ mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
 dev.off()
 @
 
+<<plot-n-gen-genera-prov, fig.cap="Spatial distribution of the \\textbf{mean number of genera} in the contemporary dataset.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
+er_dat_class$log.N.gen <- log(er_dat_class$N.gen)
+map_class_ext(er_dat_class, plot_column = "log.N.gen",
+  min_prov_genera = 0, ylab = "Number of genera",
+  yticks = c(1, 10, 100, 500),
+  col_pal = RColorBrewer::brewer.pal(9, "YlGnBu"))
+@
+
+<<remove-single-province-genera-class-map, results='hide'>>=
+load("../data/by.prov.classes.no.singles.rda")
+er_dat_class_no_single <- plyr::join(er_points, er@data, by = "id")
+er_dat_class_no_single <- plyr::join(er_dat_class_no_single, by.prov.classes.no.singles, by = "PROV_CODE")
+pdf("../figs/remove-single-province-genera-class-map.pdf", width = 6.45, height = 5.1)
+map_class_ext(er_dat_class_no_single, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10),
+  picture_files = picture_files,
+  silhouette_coords = silhouette_coords,
+  min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0034,
+    0.15),
+  ylabel = "Intrinsic extinction probability (over ~23 Myr)")
+dev.off()
+@
+
+<<remove-single-province-genera-overall-map, results='hide'>>=
+load("../data/by.prov.all.no.singles.rda")
+er_dat_no_single <- plyr::join(er_points, er@data, by = "id")
+er_dat_no_single <- plyr::join(er_dat_no_single, by.prov.all.no.singles, by = "PROV_CODE")
+pdf("../figs/remove-single-province-genera-overall-map.pdf", width = 7, height = 3.5)
+par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
+  las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
+labs.ns <- seq(0.012, 0.022, 0.004)
+map_hotspots(er_dat_no_single, min_prov_genera = 100, add_legend = TRUE,
+  hotspots = FALSE, at = log(labs.ns), at.labels = labs.ns)
+par(xpd = NA)
+mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
+  line = -1.2, las = 0, col = "grey30", cex = 0.9)
+dev.off()
+@
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{../figs/remove-single-province-genera-class-map.pdf}
+  \includegraphics[width=3.75in]{../figs/remove-single-province-genera-overall-map.pdf}
+  \caption{Mean predicted extinction susceptibility of genera inhabiting different ocean biogeographic provinces \cite{spalding2007} for each of the 6 major groups considered (upper 6 panels) and across all genera (lower centred panel), as in Fig.~2 and 3, but \textbf{with genera occurring in single biogeographic provinces removed}. Scale bars on the right indicate the range of intrinsic extinction probability values for a given group, and this scale is used to plot mean extinction susceptibility heatmaps on the left.}
+  \label{fig:remove-single-province-genera}
+\end{figure}
+
+<<plot-gcd-genera-prov, fig.cap="Spatial distribution of \\textbf{mean great circle distance of range size} in the contemporary dataset.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
+er_dat_class$log.mean.gcd <- log(er_dat_class$mean.gcd)
+map_class_ext(er_dat_class, plot_column = "log.mean.gcd",
+  min_prov_genera = 0, ylab = "Mean great circle distance",
+  yticks = c(14000, 17000, 20000), exact_limits = c(14000, 20000),
+  col_pal = RColorBrewer::brewer.pal(9, "YlGnBu"), limit_pad = 0.05,
+  fixed_range = TRUE)
+@
+
+%We can also look at the distribution of our predictions by biogeographic province \cite{spalding2007} and class (Fig.~\ref{fig:plot-density-risk-by-province}).
+<<plot-density-risk-by-province, fig.width=12.5, fig.height=15, fig.cap="The distribution of intrinsic extinction risk by biogeographic province \\cite{spalding2007} (panels) and taxonomic class (colors). Note the log-transformed x-axis.", echo=FALSE>>=
+# merge in province names:
+er <- readShapePoly("../data/MEOW2/meow_ecos.shp")
+prov_names <- er@data[,c("PROVINCE", "PROV_CODE")]
+prov_names <- prov_names[!duplicated(prov_names), ]
+temp <- plyr::join(d.eco.filled, prov_names, by = "PROV_CODE")
+# add "0" to the single digit numbers for alphabetical ordering:
+temp$PROV_CODE[nchar(temp$PROV_CODE) == 1] <-
+  paste0("0", temp$PROV_CODE[nchar(temp$PROV_CODE) == 1])
+temp <- transform(temp, PROV_pretty = paste(PROV_CODE, PROVINCE))
+temp$class <- as.character(temp$class)
+temp$class[temp$class == "Anthozoa"] <- "Scleractinia"
+temp$class[temp$class == "Elasmobranchii"] <- "Sharks"
+ggplot(temp, aes(mean_observed + 0.001)) +
+  geom_histogram(aes(fill = class, colour = class),
+    position = "stack", alpha = 0.5, binwidth = 0.4) +
+  facet_wrap(~ PROV_pretty,ncol=5) +
+  scale_x_log10() + theme(strip.text.x = element_text(size = 8)) +
+  ylab("Number of genera") + xlab("Predicted extinction probabilty") + theme(legend.position="top")
+@
+
+
+
+
 \section{Model exploration and sensitivity analyses}
+
+% <<predictors-vs-risk, fig.width=15, fig.height=12.5, out.width="\\textwidth", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus various predictors for that province. Each point represents a single biogeographic province. Province points are colored and shaped according to whether they are tropical (pink and closed symbols) or extratropical (purple and open symbols).">>=
+% by.prov.classes.long <- reshape2::melt(by.prov.classes, id.vars =
+%   c("PROV_CODE", "class"), measure.vars =
+%   c("mean.lat.range", "mean.occupancy", "mean.gcd", "mean.occurrences",
+%     "mean.richness"))
+% by.prov.classes.long <- plyr::join(by.prov.classes.long, by.prov.classes[,
+%   c("PROV_CODE", "class", "mean.ext", "Lat_Zone")],
+%   by = c("PROV_CODE", "class"))
+% by.prov.classes.long$class <- as.character(by.prov.classes.long$class)
+% by.prov.classes.long$class[by.prov.classes.long$class == "Anthozoa"] <- "Scleractinia"
+% by.prov.classes.long$class[by.prov.classes.long$class == "Elasmobranchii"] <- "Sharks"
+% ggplot(by.prov.classes.long,
+%   aes(value, mean.ext, colour = Lat_Zone, shape = Lat_Zone)) +
+%   geom_point(alpha = 0.7) +
+%   scale_colour_manual(values=c("#7570b3","#e7298a")) +
+%   scale_shape_manual(values = c(21, 19)) +
+%   facet_wrap(variable~class, ncol=6, scales = "free") +
+% # stat_smooth(method = "lm", se = TRUE, lwd = 1.5) +
+%   ylab("log(Mean intrinsic extinction risk)") +
+%   xlab("Predictor value") + theme(legend.position="top")
+% @
+
+
+\subsection{Exploring the effects of contemporary sampling intensity on intrinsic risk predictions}
+
+Geographic variation in sampling intensity may influence the observed distribution of geographic ranges and consequently the predicted extinction probabilities of contemporary marine genera. We use the number of OBIS records in a given province (Fig.~\ref{fig:plot-n-obis-prov}) as a rough index of sampling intensity and compare these values with mean intrinsic risk estimates for the four taxonomic groups (scleractinian corals, bivalves, echinoids, and gastropods) in which OBIS records were used to calculate genus geographic ranges. The correspondence between the number of OBIS records in a province and the mean intrinsic risk of genera in a province is not strong, however a positive relationship is observed in each group (Fig.~\ref{fig:relationship-between-mean-risk-and-sampling-intensity}).
+
+To determine whether the broad-scale patterns of mean intrinsic risk (Fig.~2) are robust to geographic variation in sampling intensity, we plot the residual variation in intrinsic risk remaining after accounting for provincial variation in the number of OBIS records using a linear model (Fig.~\ref{fig:obis-residuals-maps}). These maps are qualitatively similar to those presented in Fig.~2. Echinoids show relatively little change in mean risk estimates. For gastropods, scleractinian corals, and bivalves, hotspots of intrinsic risk in the Indo-Pacific and tropical West Atlantic remain; however, the relative risk of the Caribbean is muted after accounting for the intense sampling that has occurred in the region (Fig.~\ref{fig:plot-n-obis-prov}). Differences in mean intrinsic risk between northern and southern hemisphere extratropics are also preserved (Fig.~\ref{fig:obis-residuals-maps}).
+
+Geographic variation in sampling intensity could result in the observation of ``pseudo-endemics'', genera found in a well-sampled provinces but not observed in adjacent provinces that have not been sampled as intensely. To determine the potential effect of pseudoendemics on mean intrinsic risk estimates we removed genera that were only reported in one province. For this sensitivity test, we explicitly assume that these genera are solely the result of variation in sampling intensity although in reality single province genera are most likely a combination of pseudoendemics and true endemics. Culling genera known from only one province reduces the sample size of contemporary genera by \Sexpr{single.genera.provs.removed} to a total of \Sexpr{total.genera} genera. Maps of mean intrinsic risk in which single province genera were excluded (Fig.~\ref{fig:remove-single-province-genera}) are congruent with those derived from the full dataset (Fig.~2 and 3), indicating that single province genera are not responsible for the broad-scale patterns of intrinsic risk.
+
+<<plot-n-obis-prov, fig.cap="Number of OBIS occurrence records for each biogeographic province \\cite{spalding2007}. Color scale bars on the right are log-distributed. Panels for sharks and mammals (as in Fig.~2) are not shown because we used range maps instead of OBIS data for the modern distributions.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
+map_class_ext(subset(er_dat_class, !class %in% c("Elasmobranchii", "Mammalia")),
+  plot_column = "log_OBIS_records",
+  min_prov_genera = 0, ylab = "Number of OBIS records",
+  yticks = c(2, 20, 200, 2000, 20000),
+  col_pal = RColorBrewer::brewer.pal(9, "YlGnBu"),
+  fixed_range = TRUE)
+
+@
+
+<<relationship-between-mean-risk-and-sampling-intensity, fig.width=9, fig.height=5.5, out.width="5in", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus number of OBIS records (of the indicated class) from that province. Each point represents a single biogeographic province. Lines and gray-shaded regions indicate linear regressions and 95\\% confidence intervals; colors indicate latitudinal zone of province.", cache=TRUE>>=
+temp_dat <- droplevels(subset(by.prov.classes,
+    !class %in% c("Elasmobranchii", "Mammalia")))
+temp_dat$class <- as.character(temp_dat$class)
+temp_dat$class[temp_dat$class == "Anthozoa"] <- "Scleractinia"
+p <- ggplot(temp_dat,
+  aes(log_OBIS_records, mean.ext)) +
+  facet_wrap(~class,scales="free",ncol=2) +
+  stat_smooth(method = "lm", se = TRUE, size = .5,colour="black") +
+  ylab("log(Mean intrinsic extinction risk)") +
+  xlab("log(Number of OBIS records)") +
+  geom_point(data=temp_dat,
+    aes(log_OBIS_records, mean.ext,colour=Zone), alpha = 0.6) +
+  scale_colour_manual(values=c("blue","green3","red"))
+print(p)
+@
+
+<<obis-residuals-maps, results='hide', child='obis-residuals-maps-child.Rnw'>>=
+@
+
+\begin{figure}[htbp]
+\centering
+  \includegraphics[width=\textwidth]{../figs/obis-residuals-maps-class.pdf}
+  %\includegraphics[width=3.75in]{../figs/obis-residuals-maps-overall.pdf}
+  \caption{The geographic distribution of \textbf{intrinsic risk residuals after applying a linear model accounting for the number of OBIS records}. Panels for sharks and mammals (as in Fig.~2) are not shown because we used range maps instead of OBIS data for the modern distributions.}
+\label{fig:obis-residuals-maps}
+\end{figure}
+
+
+\subsection{Exploring the distribution of the predictors}
+
+<<determine-range-of-extinction-predictions, results='hide'>>=
+range_between <- diff(range(exp(by.prov.all$mean.ext)))
+folds <- ddply(temp, c("PROV_CODE", "PROVINCE"), plyr::summarize,
+#  lq = quantile(mean_observed, probs = 0.25),
+#  uq = quantile(mean_observed, probs = 0.75),
+#  iqr = uq - lq,
+  range = diff(range(mean_observed))
+  )
+diff_in_range <- round(range(folds$range) / range_between, 0)
+write.table(diff_in_range, file = "diff_in_range.txt", row.names = FALSE)
+@
+
+
+\subsection{Alternative maps of contemporary extinction risk}
+
+The mean intrinsic risk values plotted in Fig.~3 include all genera in a given province.  However, not all provinces are equally sampled and not all provinces are equally diverse.  Some extremely poorly-sampled provinces have fewer than 100 genera included in mean intrinsic risk estimates.  Extreme values are more likely at such low numbers, and when all provinces with at least 50 genera are included island provinces with low sampled diversity tend to dominate the relative risk pattern. This is partially attributable to differential sampling effects: even poorly-sampled provinces have a complete inventory of mammal and shark genera because the distributions of genera are based on published range maps not OBIS occurrences. Since mammals have very high intrinsic risk relative to most other groups, the high ratio of mammal genera to other genera leads to exceptionally high mean intrinsic risk estimates in poorly sampled provinces. As can be seen below, removing provinces with fewer than 100 sampled genera ameliorates this effect. However, then ranges in the distribution of mean intrinsic risk as this minimum sampled genera cutoff is successively raised to 150 and 200 are comparatively minor.  At a cutoff of 200, major provinces such as Antarctica are removed from consideration. Therefore, we included all provinces with at least 100 sampled genera in Fig.~3.
+
+<<min-gen-thresh-sensitivity, fig.height=8.5, fig.width=13>>=
+par(mfrow = c(2, 2))
+par(mar = c(0, 0, 2, 0), oma = c(2, 2, 2, 2))
+map_hotspots(er_dat, min_prov_genera = 25, hotspots = FALSE)
+mtext("Min. genera = 25", cex = 2)
+map_hotspots(er_dat, min_prov_genera = 50, hotspots = FALSE)
+mtext("Min. genera = 50", cex = 2)
+map_hotspots(er_dat, min_prov_genera = 100, hotspots = FALSE)
+mtext("Min. genera = 100", cex = 2)
+map_hotspots(er_dat, min_prov_genera = 200, hotspots = FALSE)
+mtext("Min. genera = 200", cex = 2)
+@
 
 \subsection{The effect of interpolation of OBIS records}
 
@@ -751,7 +900,6 @@ er_dat_class_raw <- plyr::join(er_points, er@data, by = "id")
 er_dat_class_raw <- plyr::join(er_dat_class_raw, by.prov.classes.raw, by = "PROV_CODE")
 @
 
-% The follow code produces Fig.~\ref{fig:plot-class-prov-ext-raw-ranges}.
 <<plot-class-prov-ext-raw-ranges", results='hide'>>=
 # Make the class figure:
 pdf("../figs/plot-class-prov-ext-raw-ranges.pdf", width = 6.45, height = 5.1)
@@ -763,7 +911,6 @@ map_class_ext(er_dat_class_raw,
 dev.off()
 @
 
-% The follow code produces Fig.~\ref{fig:no-bounding-box-overall-map}.
 <<no-bounding-box-overall-map, results='hide'>>=
 er_dat_raw <- plyr::join(er_points, er@data, by = "id")
 er_dat_raw <- plyr::join(er_dat_raw, by.prov.all.raw, by = "PROV_CODE")
@@ -785,6 +932,7 @@ dev.off()
   \caption{Mean intrinsic extinction risk of genera inhabiting different ocean biogeographic provinces \cite{spalding2007} for each of the 6 major groups considered (upper 6 panels) and across all genera (lower centred panel), as in Fig.~2 and 3, but \textbf{with predictions based on raw ranges in OBIS without the within-realm minimum bounding box interpolation}. Scale bars on the right indicate the range of intrinsic extinction probability values for a given group, and this scale is used to plot mean extinction susceptibility heatmaps on the left. Note that the modern distribution of sharks and mammals was based on range maps instead of OBIS observations and so panels A and B are the same as Fig.~2.}
   \label{fig:no-bounding-box}
 \end{figure}
+
 
 \subsection{Jackknife analysis}
 
@@ -808,148 +956,6 @@ for(i in 1:length(classes)) {
 }
 @
 
-<<predictors-vs-risk, fig.width=15, fig.height=12.5, out.width="\\textwidth", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus various predictors for that province. Each point represents a single biogeographic province. Province points are colored and shaped according to whether they are tropical (pink and closed symbols) or extratropical (purple and open symbols).">>=
-by.prov.classes.long <- reshape2::melt(by.prov.classes, id.vars =
-  c("PROV_CODE", "class"), measure.vars =
-  c("mean.lat.range", "mean.occupancy", "mean.gcd", "mean.occurrences",
-    "mean.richness"))
-by.prov.classes.long <- plyr::join(by.prov.classes.long, by.prov.classes[,
-  c("PROV_CODE", "class", "mean.ext", "Lat_Zone")],
-  by = c("PROV_CODE", "class"))
-by.prov.classes.long$class <- as.character(by.prov.classes.long$class)
-by.prov.classes.long$class[by.prov.classes.long$class == "Anthozoa"] <- "Scleractinia"
-by.prov.classes.long$class[by.prov.classes.long$class == "Elasmobranchii"] <- "Sharks"
-ggplot(by.prov.classes.long,
-  aes(value, mean.ext, colour = Lat_Zone, shape = Lat_Zone)) +
-  geom_point(alpha = 0.7) +
-  scale_colour_manual(values=c("#7570b3","#e7298a")) +
-  scale_shape_manual(values = c(21, 19)) +
-  facet_wrap(variable~class, ncol=6, scales = "free") +
-# stat_smooth(method = "lm", se = TRUE, lwd = 1.5) +
-  ylab("log(Mean intrinsic extinction risk)") +
-  xlab("Predictor value") + theme(legend.position="top")
-@
-
-<<relationship-between-mean-risk-and-sampling-intensity, fig.width=9, fig.height=5.5, out.width="5in", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus number of OBIS records (of the indicated class) from that province. Each point represents a single biogeographic province. Lines and gray-shaded regions indicate linear regressions and 95\\% confidence intervals; colors indicate latitudinal zone of province.", cache=TRUE>>=
-temp_dat <- droplevels(subset(by.prov.classes,
-    !class %in% c("Elasmobranchii", "Mammalia")))
-temp_dat$class <- as.character(temp_dat$class)
-temp_dat$class[temp_dat$class == "Anthozoa"] <- "Scleractinia"
-p <- ggplot(temp_dat,
-  aes(log_OBIS_records, mean.ext)) +
-  facet_wrap(~class,scales="free",ncol=2) +
-  stat_smooth(method = "lm", se = TRUE, size = .5,colour="black") +
-  ylab("log(Mean intrinsic extinction risk)") +
-  xlab("log(Number of OBIS records)") +
-  geom_point(data=temp_dat,
-    aes(log_OBIS_records, mean.ext,colour=Zone), alpha = 0.6) +
-  scale_colour_manual(values=c("blue","green3","red"))
-print(p)
-@
-
-\subsection{Exploring the effects of contemporary sampling intensity on intrinsic risk predictions}
-
-Geographic variation in sampling intensity may influence the observed distribution of geographic ranges and consequently the predicted extinction probabilities of contemporary marine genera. We use the number of OBIS records in a given province (Fig.~\ref{fig:plot-n-genera-prov}) as a rough index of sampling intensity and compare these values with mean intrinsic risk estimates for the four taxonomic groups (scleractinian corals, bivalves, echinoids, and gastropods) in which OBIS records were used to calculate genus geographic ranges. The correspondence between the number of OBIS records in a province and the mean intrinsic risk of genera in a province is not strong, however a positive relationship is observed in each group (Fig.~\ref{fig:relationship-between-mean-risk-and-sampling-intensity}).
-
-To determine whether the broad-scale patterns of mean intrinsic risk (Fig.~2) are robust to geographic variation in sampling intensity, we plot the residual variation in intrinsic risk remaining after accounting for provincial variation in the number of OBIS records using a linear model (Fig.~\ref{fig:obis-residuals-maps}). These maps are qualitatively similar to those presented in Fig.~2. Echinoids show relatively little change in mean risk estimates. For gastropods, scleractinian corals, and bivalves, hotspots of intrinsic risk in the Indo-Pacific and tropical West Atlantic remain; however, the relative risk of the Caribbean is muted after accounting for the intense sampling that has occurred in the region (Fig.~\ref{fig:plot-n-genera-prov}). Differences in mean intrinsic risk between northern and southern hemisphere extratropics are also preserved (Fig.~\ref{fig:obis-residuals-maps}).
-
-Geographic variation in sampling intensity could result in the observation of ``pseudo-endemics'', genera found in a well-sampled provinces but not observed in adjacent provinces that have not been sampled as intensely. To determine the potential effect of pseudoendemics on mean intrinsic risk estimates we removed genera that were only reported in one province. For this sensitivity test, we explicitly assume that these genera are solely the result of variation in sampling intensity although in reality single province genera are most likely a combination of pseudoendemics and true endemics. Culling genera known from only one province reduces the sample size of contemporary genera by \Sexpr{single.genera.provs.removed} to a total of \Sexpr{total.genera} genera. Maps of mean intrinsic risk in which single province genera were excluded (Fig.~\ref{fig:remove-single-province-genera}) are congruent with those derived from the full dataset (Fig.~2 and 3), indicating that single province genera are not responsible for the broad-scale patterns of intrinsic risk.
-
-<<plot-n-genera-prov, fig.cap="Number of OBIS occurrence records for each biogeographic province \\cite{spalding2007}. Color scale bars on the right are log-distributed. Panels for sharks and mammals (as in Fig.~2) are not shown because we used range maps instead of OBIS data for the modern distributions.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
-map_class_ext(subset(er_dat_class, !class %in% c("Elasmobranchii", "Mammalia")),
-  plot_column = "log_OBIS_records",
-  min_prov_genera = 0, ylab = "Number of OBIS records",
-  yticks = c(2, 20, 200, 2000, 20000),
-  col_pal = RColorBrewer::brewer.pal(9, "YlGnBu"),
-  fixed_range = TRUE)
-
-@
-
-<<obis-residuals-maps, results='hide', child='obis-residuals-maps-child.Rnw'>>=
-@
-
-\begin{figure}[htbp]
-\centering
-  \includegraphics[width=\textwidth]{../figs/obis-residuals-maps-class.pdf}
-  %\includegraphics[width=3.75in]{../figs/obis-residuals-maps-overall.pdf}
-  \caption{The geographic distribution of \textbf{intrinsic risk residuals after applying a linear model accounting for the number of OBIS records}. Panels for sharks and mammals (as in Fig.~2) are not shown because we used range maps instead of OBIS data for the modern distributions.}
-\label{fig:obis-residuals-maps}
-\end{figure}
-
-<<remove-single-province-genera-class-map, results='hide'>>=
-load("../data/by.prov.classes.no.singles.rda")
-er_dat_class_no_single <- plyr::join(er_points, er@data, by = "id")
-er_dat_class_no_single <- plyr::join(er_dat_class_no_single, by.prov.classes.no.singles, by = "PROV_CODE")
-pdf("../figs/remove-single-province-genera-class-map.pdf", width = 6.45, height = 5.1)
-map_class_ext(er_dat_class_no_single, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10),
-  picture_files = picture_files,
-  silhouette_coords = silhouette_coords,
-  min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0034,
-    0.15),
-  ylabel = "Intrinsic extinction probability (over ~23 Myr)")
-dev.off()
-@
-
-<<remove-single-province-genera-overall-map, results='hide'>>=
-load("../data/by.prov.all.no.singles.rda")
-er_dat_no_single <- plyr::join(er_points, er@data, by = "id")
-er_dat_no_single <- plyr::join(er_dat_no_single, by.prov.all.no.singles, by = "PROV_CODE")
-pdf("../figs/remove-single-province-genera-overall-map.pdf", width = 7, height = 3.5)
-par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
-  las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
-labs.ns <- seq(0.012, 0.022, 0.004)
-map_hotspots(er_dat_no_single, min_prov_genera = 100, add_legend = TRUE,
-  hotspots = FALSE, at = log(labs.ns), at.labels = labs.ns)
-par(xpd = NA)
-mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
-  line = -1.2, las = 0, col = "grey30", cex = 0.9)
-dev.off()
-@
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=\textwidth]{../figs/remove-single-province-genera-class-map.pdf}
-  \includegraphics[width=3.75in]{../figs/remove-single-province-genera-overall-map.pdf}
-  \caption{Mean predicted extinction susceptibility of genera inhabiting different ocean biogeographic provinces \cite{spalding2007} for each of the 6 major groups considered (upper 6 panels) and across all genera (lower centred panel), as in Fig.~2 and 3, but \textbf{with genera occurring in single biogeographic provinces removed}. Scale bars on the right indicate the range of intrinsic extinction probability values for a given group, and this scale is used to plot mean extinction susceptibility heatmaps on the left.}
-  \label{fig:remove-single-province-genera}
-\end{figure}
-
-\subsection{Exploring the distribution of the predictors}
-
-<<plot-n-gen-genera-prov, fig.cap="Spatial distribution of the \\textbf{mean number of genera} in the contemporary dataset.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
-er_dat_class$log.N.gen <- log(er_dat_class$N.gen)
-map_class_ext(er_dat_class, plot_column = "log.N.gen",
-  min_prov_genera = 0, ylab = "Number of genera",
-  yticks = c(1, 10, 100, 500),
-  col_pal = RColorBrewer::brewer.pal(9, "YlGnBu"))
-@
-
-<<plot-gcd-genera-prov, fig.cap="Spatial distribution of \\textbf{mean great circle distance of range size} in the contemporary dataset.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
-er_dat_class$log.mean.gcd <- log(er_dat_class$mean.gcd)
-map_class_ext(er_dat_class, plot_column = "log.mean.gcd",
-  min_prov_genera = 0, ylab = "Mean great circle distance",
-  yticks = c(14000, 17000, 20000), exact_limits = c(14000, 20000),
-  col_pal = RColorBrewer::brewer.pal(9, "YlGnBu"), limit_pad = 0.05,
-  fixed_range = TRUE)
-@
-
-\subsection{Alternative maps of contemporary extinction risk}
-
-The mean intrinsic risk values plotted in Fig.~3 include all genera in a given province.  However, not all provinces are equally sampled and not all provinces are equally diverse.  Some extremely poorly-sampled provinces have fewer than 100 genera included in mean intrinsic risk estimates.  Extreme values are more likely at such low numbers, and when all provinces with at least 50 genera are included island provinces with low sampled diversity tend to dominate the relative risk pattern. This is partially attributable to differential sampling effects: even poorly-sampled provinces have a complete inventory of mammal and shark genera because the distributions of genera are based on published range maps not OBIS occurrences. Since mammals have very high intrinsic risk relative to most other groups, the high ratio of mammal genera to other genera leads to exceptionally high mean intrinsic risk estimates in poorly sampled provinces. As can be seen below, removing provinces with fewer than 100 sampled genera ameliorates this effect. However, then ranges in the distribution of mean intrinsic risk as this minimum sampled genera cutoff is successively raised to 150 and 200 are comparatively minor.  At a cutoff of 200, major provinces such as Antarctica are removed from consideration. Therefore, we included all provinces with at least 100 sampled genera in Fig.~3.
-
-<<min-gen-thresh-sensitivity, fig.height=8.5, fig.width=13, fig.cap='Effect of raising the minimum genus richness cutoff  provinces on the global distribution of mean intrinsic risk (based on this analysis, a cutoff of 100 genera is used in Figure 3).'>>=
-
-par(mfrow = c(2, 2))
-par(mar = c(0, 0, 2, 0), oma = c(2, 2, 2, 2))
-map_hotspots(er_dat, min_prov_genera = 25, hotspots = FALSE)
-mtext("Min. genera = 25", cex = 2)
-map_hotspots(er_dat, min_prov_genera = 50, hotspots = FALSE)
-mtext("Min. genera = 50", cex = 2)
-map_hotspots(er_dat, min_prov_genera = 100, hotspots = FALSE)
-mtext("Min. genera = 100", cex = 2)
-map_hotspots(er_dat, min_prov_genera = 200, hotspots = FALSE)
-mtext("Min. genera = 200", cex = 2)
-@
 
 \bibliographystyle{science}
 \bibliography{jshort,risksupp}
