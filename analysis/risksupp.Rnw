@@ -265,10 +265,12 @@ Table.S1$Interval_Name <- factor(Table.S1$Interval_Name,
   levels = c("Lower Miocene", "Middle Miocene",
     "Upper Miocene","Plio-Pleistocene", "Modern"))
 Table.S1 <- Table.S1[order(Table.S1$Interval_Name, Table.S1$class), ]
-Table.S1 <- plyr::rename(Table.S1, c("class" = "Class"))
+Table.S1 <- plyr::rename(Table.S1, c("class" = "Group"))
 Table.S1 <- plyr::rename(Table.S1, c("Interval_Name" = "Interval"))
+Table.S1$Group <- sub("Elasmobranchii", "Sharks", Table.S1$Group)
+Table.S1$Group <- sub("Anthozoa", "Scleractinia", Table.S1$Group)
 xtable::print.xtable(xtable::xtable(Table.S1, digits = c(0, 0, 0, 0, 0),
-    caption = "Total number of unique genera and occurrences of those genera in the Paleobiology Database for phylogenetic classes and geologic intervals used in our analysis."),
+    caption = "Total number of unique genera and occurrences of those genera in the Paleobiology Database for major taxonomic groups and geologic intervals used in our analysis. TODO FIX THIS CAPTION"),
   include.rownames = FALSE, caption.placement = "top", booktabs = TRUE)
 @
 
