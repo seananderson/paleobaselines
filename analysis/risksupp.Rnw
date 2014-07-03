@@ -967,6 +967,8 @@ mtext("Min. genera = 200", cex = 2)
 % \newpage
 
 \end{spacing}
+
+\section{Supplementary tables and figures}
 \end{document}
 
 %ggplot(d, aes(y = jitter(rep(1, nrow(d)), amount = 0.1), x = jitter(gbm_pred_binned, amount = 0.015))) + geom_point(alpha = 0.2) + facet_wrap(~class) + ylim(0.7, 1.3) + theme_bw() + ylab("") + xlab("Predicted intrinsic risk by genus") + theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(), panel.grid.major=element_blank(), panel.grid.minor=element_blank())
