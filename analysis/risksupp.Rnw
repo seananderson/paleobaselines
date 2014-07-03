@@ -51,8 +51,7 @@ opts_knit$set(out.format = "latex", out.width="\\textwidth")
 opts_knit$set(eval.after = 'fig.cap') # evaluate fig.cap after the chunk
 @
 
-\title{Supporting Online Material for\\Paleontological Baselines for Evaluating
-Contemporary Extinction Risk in Modern Oceans}
+\title{Supporting Online Material for\\Paleontological Baselines for Evaluating Extinction Risk in the Modern Oceans}
 \author{Seth Finnegan\textsuperscript{$\ast$} \and Sean C. Anderson \and Paul
 G. Harnik \and Carl Simpson \and Derek P. Tittensor \and Jarrett E. Byrnes \and
 Zoe V. Finkel \and David R. Lindberg \and Lee Hsiang Liow \and Rowan Lockwood
