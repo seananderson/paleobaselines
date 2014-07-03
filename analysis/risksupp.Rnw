@@ -88,6 +88,7 @@ References
 \caption{Schematic illustration of the sequence of steps used to build the modern genus range dataset and to make intrinsic risk predictions for modern genera from the Neogene fossil record.}
 \label{fig:didactic}
 \end{figure}
+% TODO What is this "cull OBIS data with 30 occurrences per genus" in the figure?
 
 \section{Introduction}
 
@@ -215,8 +216,6 @@ TODO expand this.
 # Run the OBIS interpolation
 # Will take a very long time to run and requires a server with a large
 # quantity of memory.
-# TODO clean up these files the paths are right, also copy over a couple missing data files
-# see bugaboo server
 source("run_interpolation.R")
 @
 
@@ -584,7 +583,7 @@ ggplot(d2, aes(y = jitter(gbm_pred_binned, amount = 0.02), x = jitter(great.circ
 
 We can also look at the distribution of our predictions by biogeographic province \cite{spalding2007} and class (Fig.~\ref{fig:plot-density-risk-by-province}).
 
-<<plot-density-risk-by-province, fig.width=13, fig.height=15.5, fig.cap="The distribution of intrinsic extinction risk by biogeographic province \\cite{spalding2007} (panels) and taxonomic class (colors). Note the log-transformed x-axis.", echo=FALSE>>=
+<<plot-density-risk-by-province, fig.width=12.5, fig.height=15, fig.cap="The distribution of intrinsic extinction risk by biogeographic province \\cite{spalding2007} (panels) and taxonomic class (colors). Note the log-transformed x-axis.", echo=FALSE>>=
 # merge in province names:
 er <- readShapePoly("../data/MEOW2/meow_ecos.shp")
 prov_names <- er@data[,c("PROVINCE", "PROV_CODE")]
@@ -594,6 +593,9 @@ temp <- plyr::join(d.eco.filled, prov_names, by = "PROV_CODE")
 temp$PROV_CODE[nchar(temp$PROV_CODE) == 1] <-
   paste0("0", temp$PROV_CODE[nchar(temp$PROV_CODE) == 1])
 temp <- transform(temp, PROV_pretty = paste(PROV_CODE, PROVINCE))
+temp$class <- as.character(temp$class)
+temp$class[temp$class == "Anthozoa"] <- "Scleractinia"
+temp$class[temp$class == "Elasmobranchii"] <- "Sharks"
 ggplot(temp, aes(mean_observed + 0.001)) +
   geom_histogram(aes(fill = class, colour = class),
     position = "stack", alpha = 0.5, binwidth = 0.4) +
@@ -800,12 +802,15 @@ by.prov.classes.long <- reshape2::melt(by.prov.classes, id.vars =
 by.prov.classes.long <- plyr::join(by.prov.classes.long, by.prov.classes[,
   c("PROV_CODE", "class", "mean.ext", "Lat_Zone")],
   by = c("PROV_CODE", "class"))
+by.prov.classes.long$class <- as.character(by.prov.classes.long$class)
+by.prov.classes.long$class[by.prov.classes.long$class == "Anthozoa"] <- "Scleractinia"
+by.prov.classes.long$class[by.prov.classes.long$class == "Elasmobranchii"] <- "Sharks"
 ggplot(by.prov.classes.long,
   aes(value, mean.ext, colour = Lat_Zone, shape = Lat_Zone)) +
   geom_point(alpha = 0.7) +
   scale_colour_manual(values=c("#7570b3","#e7298a")) +
   scale_shape_manual(values = c(21, 19)) +
-  facet_wrap(variable~class, ncol=5, scales = "free") +
+  facet_wrap(variable~class, ncol=6, scales = "free") +
 # stat_smooth(method = "lm", se = TRUE, lwd = 1.5) +
   ylab("log(Mean intrinsic extinction risk)") +
   xlab("Predictor value") + theme(legend.position="top")
