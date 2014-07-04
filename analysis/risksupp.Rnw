@@ -319,7 +319,7 @@ Boosting models work, in general, by building a sequence of models, each fit to 
 
 We fit GBMs with the \pkg{gbm} package \cite{gbm2013} for the \proglang{R} statistical language and environment \cite{r2013}. The \pkg{gbm} package implements GBMs based on Ref.\ \cite{friedman2001} with some minor modifications \cite{gbm2013}. Further, the \pkg{gbm} package implements the stochastic method proposed in Ref.\ \cite{friedman2001} in which a random subsample of the data is chosen at each model iteration. This random subsample is used to fit the model before computing residuals for that step thereby reducing chances of overfitting the data. Specifically, we chose to leave out 50\% of the data as a random subset on each iteration --- the default in the \texttt{gbm()} function.
 
-\subsection{Model building, testing, and calibration}
+\subsection{Model building and calibration}
 
 % We will load the standardized data and subset it for the Neogene period. The contemporary data are also contained in this data frame with \texttt{stage\_top = 0}. Therefore, we will also exclude the contemporary dataset from what we call \texttt{neog}.
 
@@ -329,13 +329,6 @@ neog <- droplevels(subset(neog, stage_top < 23 & stage_top != 0))
 @
 
 We initially explored out-of-sample predictive performance across a range of argument values for the GBM models. We tried \texttt{shrinkage} argument values (learning rates; how much improvement in model fit the GBM attempts with each tree) ranging from 0.001 to 0.1, interaction depths (\texttt{interaction.depth}) ranging from 1 to 5, and the number of trees (\texttt{n.trees}) ranging from 500 to 5000. Predictions were qualitatively similar, regardless of argument values, as long as a sufficient number of trees was run for the learning rate. Slower learning rates require more trees for the same performance \cite{elith2008}. We settled on a learning rate of 0.01, an interaction depth of 5, and 2000 trees. These settings achieved near-optimal predictive ability while still being computationally feasible to run many times across our analysis.
-
-An important component of testing the predictive ability of a model is to test it on different data than it was built on. This is called out-of-sample prediction or cross validation. We built models on one part of the data (the in-sample data) and then tested on the rest of the data (the out-of-sample data). 
-We tested the predictive ability of our models in 2 ways: (1) on out-of-sample data from the same geologic stage the model was built on and (2) on predictions from models built on a different stage. 
-
-In the first case, we built models on two thirds of the data and then tested on one third of the data and repeated this procedure 150 times. We did this for each of the stage models and for the overall Neogene model. We recorded the predicted extinction probabilities from the model and compared these to the original data (extinct or survived). From this dataset we built out-of-sample ROC (receiver operating characteristic) curves (Fig.~\ref{fig:check-classfication-error-child.Rnw}). The area under these ROC curves is referred to as the AUC (area under the ROC curve) and is a measure of predictive ability of the model. Formally, it represents the probability that a randomly selected extinct genera will be correctly assigned a higher extinction probability than a randomly selected genera that survived. We refer to these AUC values in our paper.
-
-In the second case, we built models on individual stages and then compared those predictions from predictions made by models from other stages (Fig.~\ref{fig:plot-cross-interval-gbms}). This is one test of the consistency of the determinants of extinction risk through time. We see that one stage can predict a considerable proportion of variability in predicted extinction probability from another stage, with Spearman's rank correlation coefficients ranging from TODO to TODO.
 
 GBMs, like other machine learning techniques, can perform poorly in cases where one predictive class (extinctions) is much less common than the other predictive class (survival) (TODO REF?). One method of improving model performance in this situation is to assign greater weights to the sparser class. In all our modeling we applied a weight to the extinct data points equal to the ratio of survival and extinct. This considerably improved predictive performance, but has the trade-off that our final predictions are no longer on the original probability scale. 
 Further, our models included all broader taxonomic groups. However, in our projections onto modern taxa, we are concerned with unbiased predictions at for each larger taxonomic group.
@@ -403,9 +396,7 @@ We used these observed extinction probabilities as calibration for our GBM-predi
 
 \subsection{Evaluating the marginal effects of predictor variables}
 
-We will now look at the marginal effect of each predictor on extinction risk. We can do this through partial dependence plots, as shown in Fig.~1. This procedure finds the marginal effect of each predictor by integrating across all other predictor values using the method described in Ref.~\cite{friedman2001}.
-
-Because there's some stochasticity when running a GBM, we will run our models a number of times, and each time record the marginal effects. We will then take the median and interquartile range of those predictions for plotting.
+We evaluated the marginal effect of each predictor on intrinsic extinction risk through partial dependence plots (Fig.~1). This procedure finds the marginal effect of each predictor by integrating across all other predictor values using the method described in Ref.~\cite{friedman2001}. Because there is some stochasticity when running a GBM, we ran models for each stage 20 times and each time record the marginal effects. We then took the median and interquartile range of those predictions. The range of these predictions is very small and hardly noticeable in Fig.~1.
 
 % first, we will write a function to fit the GBM models to a given stage:
 <<shape-data-partial-plots, cache=FALSE>>=
@@ -480,7 +471,7 @@ partial_groups <- plyr::rename(partial_groups, c("group" = "value"))
 <<partial-plots-base, child='make-partial-dependence-plot.Rnw', echo=FALSE, results='hide'>>=
 @
 
-We also identified the relative contribution of taxonomy vs.\ range and occupancy characteristics. To do this, we examined the relative importance of each of the GBM predictors using the \texttt{relative.influence()} function in the \pkg{gbm} package, which uses the algorithm as described in Ref.~\cite{friedman2001}.
+We also identified the relative contribution of each predictor. In particular, we were interested in the relative contribution of taxonomy vs.\ range and occupancy characteristics. To do this, we examined the relative importance of each of the GBM predictors using the \texttt{relative.influence()} function in the \pkg{gbm} package, which uses the algorithm as described in Ref.~\cite{friedman2001} (Fig.~\ref{fig:plot-relative-importance}). The \texttt{group} variable, which refers to the taxonomic groupings (primarily order), and has the greatest relative importance followed by the great circle distance of range.
 
 <<get-relative-importance>>=
 if(!file.exists("../data/main_model.rds")) {
@@ -517,10 +508,6 @@ segments(ri_lq, 1:length(ri_median), ri_uq, 1:length(ri_median))
 axis(2, at = 1:length(ri_median), labels = names(ri_median), las = 1)
 @
 
-The \texttt{group} variable refers to the taxonomic groupings (primarily order) and has the greatest relative importance followed by the great circle distance of range.
-
-
-\subsection{Testing predictive performance across geologic stages}
 
 <<cross-intervals-gbms, results='hide'>>=
 stage_df <- expand.grid(stage_train = unique(neog$stage),
@@ -539,7 +526,14 @@ if(!file.exists("../data/cross_pred.rds")) {
 <<plot-cross-interval-gbms, results='hide', child='plot-cross-interval-gbms-child.Rnw'>>=
 @
 
-Another way to evaluate the similarity in extinction regimes between different time intervals is to predict extinction risk for each genus in a given interval from the model trained on that interval with predicted extinction risk for that genus from a model trained on a different interval. If the relationship between predictors and extinction risk is similar in both intervals, genus risk predictions from the two models will be strongly positively correlated. If the relationship between predictors and extinction risk differs strongly between the two stages, genus risk estimates will be only weakly correlated. We see that in general there is substantial similarity in per-genus extinction risk predictions across all four stages, with Spearman's rank-order correlation coefficients for cross-interval predictions ranging from \Sexpr{min(Rsqs$Rsq)} to \Sexpr{max(Rsqs$Rsq)} with a median of \Sexpr{median(Rsqs$Rsq)}.
+\subsection{Testing the predictive performance of the models}
+
+An important component of testing the predictive ability of a model is to test it on different data than it was built on. This is called out-of-sample prediction or cross validation. We built models on one part of the data (the in-sample data) and then tested on the rest of the data (the out-of-sample data).
+We tested the predictive ability of our models in 2 ways: (1) on out-of-sample data from the same geologic stage the model was built on and (2) on predictions from models built on a different stage.
+
+In the first case, we built models on two thirds of the data and then tested on one third of the data and repeated this procedure 150 times. We did this for each of the stage models and for the overall Neogene model. We recorded the predicted extinction probabilities from the model and compared these to the original data (extinct or survived). From this dataset we built out-of-sample ROC (receiver operating characteristic) curves (Fig.~\ref{fig:check-classfication-error-child.Rnw}). The area under these ROC curves is referred to as the AUC (area under the ROC curve) and is a measure of predictive ability of the model. Formally, it represents the probability that a randomly selected extinct genera will be correctly assigned a higher extinction probability than a randomly selected genera that survived. We refer to these AUC values in our paper.
+
+In the second case, we evaluated the similarity in extinction regimes between different time intervals by predicting extinction risk for each genus in a given interval from the model trained on that interval with predicted extinction risk for that genus from a model trained on a different interval. If the relationship between predictors and extinction risk was similar in both intervals then genus risk predictions from the two models would be strongly positively correlated. If the relationship between predictors and extinction risk differed strongly between the two stages, genus risk estimates would be only weakly correlated. We see that in general there is substantial similarity in per-genus extinction risk predictions across all four stages, with Spearman's rank-order correlation coefficients for cross-interval predictions ranging from \Sexpr{min(Rsqs$Rsq)} to \Sexpr{max(Rsqs$Rsq)} with a median of \Sexpr{round(median(Rsqs$Rsq), 2)}.
 
 \begin{figure}[htbp]
  \centering
@@ -547,8 +541,6 @@ Another way to evaluate the similarity in extinction regimes between different t
  \caption{Conservatism of relative extinction risk patterns throughout the Neogene fossil record. Shown are comparisons of scaled genus extinction probabilities estimated from models built and tested on different geological stages. For example, the upper right-hand panel plots the extinction risk of Plio-Pleistocene genera predicted by the model built on those data (x axis) compared to a predictions by a model built using the Lower Miocene data (y axis). The higher the rank order correlation, as shown by Spearman's Rho values in upper left panel corners (except for within-interval comparisons), the more similar the determinants of extinction risk are between two given intervals. Note that because extinctions were weighted more heavily in the GBM models, the absolute values shown on the x and y axes here are transformed versions of the real probabilities. This was corrected for through our calibration procedure when we applied the Neogene model to the modern dataset.}
  \label{fig:plot-cross-interval-gbms}
 \end{figure}
-
-The median Spearman's rank correlation for the cross-interval predictions is \Sexpr{median(Rsqs$Rsq)} and the rank correlations range from \Sexpr{min(Rsqs$Rsq)} to \Sexpr{max(Rsqs$Rsq)}.
 
 % Overview methods fig to put in right order:
 \begin{figure}[htbp]
