@@ -80,6 +80,46 @@ References
 \modulolinenumbers[2]
 \begin{spacing}{1.05}
 
+% cite everything in the main text:
+
+\nocite{burrows2011}
+\nocite{halpern2008}
+\nocite{jackson2008}
+\nocite{pandolfi2011}
+\nocite{harnik2012a}
+\nocite{mcclenachan2012}
+\nocite{hughes2003}
+\nocite{dulvy2003}
+\nocite{cardillo2008}
+\nocite{jones2003}
+\nocite{owens2000}
+\nocite{roberts2002}
+\nocite{davidson2012}
+\nocite{dulvy2014}
+\nocite{parravicini2014}
+\nocite{clark2001}
+\nocite{bromham2012}
+\nocite{dulvy2009}
+\nocite{ronov1982}
+\nocite{renema2008}
+\nocite{SOM}
+\nocite{alroy2008}
+\nocite{tittensor2010}
+\nocite{valentine2008}
+\nocite{foote2008}
+\nocite{harnik2012b}
+\nocite{wang2008}
+\nocite{purvis2005}
+\nocite{obis}
+\nocite{schipper2008}
+\nocite{lucifora2011}
+\nocite{belanger2012}
+\nocite{spalding2007}
+\nocite{mora2005}
+\nocite{clarke2008}
+\nocite{linse2006}
+\nocite{doak2008}
+
 \section{Introduction}
 
 This document contains supplementary information about the sources of data used in our analyses, culls and transformations applied to those data, our analytical methodology, and potential sources of error.
