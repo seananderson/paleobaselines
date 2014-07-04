@@ -217,6 +217,7 @@ We've only shown the biogeographic realm containing any contemporary observation
 
 As another example on a larger scale, the following plot shows the interpolations for 6 genera. The red crosses indicate sampling observations in the OBIS database. The various biogeographic realms are shown in different color shadings. The outlined provinces are all the provinces within any realm that has occurrences. The grey-shaded polygons represent biogeographic provinces that are added based on the minimum-bounding-box interpolation scheme. Outlined provinces that aren't shaded are provinces that the bounding box didn't overlap. Keep in mind that some realms wrap from one side of the plot to the other.
 
+%TODO: Sean, the current version of this figure is plotting a couple of genera (a nudibranch and a sea slug) that aren't included once we cull by higher taxonomy.  We should make sure that the final version has only genera that are actually included.
 \includegraphics[width=\textwidth]{../static-figs/province_interpolation_test_eg.pdf}
 
 For the contemporary dataset, we took the interpolated provinces, overlaid an equal-area grid, recorded the centre points of that grid for all cells that overlapped a province, and then calculated the range statistics based on the centre points from the grid overlay.
