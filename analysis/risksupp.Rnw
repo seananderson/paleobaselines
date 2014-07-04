@@ -246,6 +246,7 @@ To standardize the spatial resolution of contemporary and paleontological datase
 We used a similar approach for the paleontological dataset. We overlaid the same equal-area grid on the paleontological observations, identified any grid cells that overlapped fossil occurrences, and recorded the centre points of these overlapping cells.
 
 \subsection{Standardizing predictor variables}
+\label{sec:standardizing-predictors}
 
 All of the geographic range, species richness, and occurrence frequency predictors are potentially influenced by sampling intensity. Furthermore, the modern dataset is much larger in terms of total number of occurrences than the paleontological datasets (Table S1). Standardizing predictor variables could control for variable sampling over time, focusing our analysis on relative differences among genera in these predictors and their associations with intrinsic extinction risk. Yet metrics that are geographically explicit and have a finite maximum value(max.lat, min.lat, mean.lat, lat.range, great.circle) cannot easily be standardized without potentially distorting underlying patterns. (TODO PLEASE DOUBLE CHECK THAT YOU'RE OK WITH HOW START OF THIS SECTION IS NOW FRAMED) Those predictors with no finite limit (richness, occurrences, occupancy) are strongly influenced by sampling intensity and can be more readily standardized. To ameliorate sampling effects on these predictors we first log-transformed them and then divided the value for each genus-interval combination (e.g.\ Acropora occurrences in the Plio-Pleistocene) by the maximum log-transformed value of the predictor observed in that interval. Hence, the scale on these standardized predictors ranges from 0 to 1 (Figure 1). The other variables (e.g.\ latitude variables and great circle distance) retain the same absolute scale across all paleontological and contemporary records --- a degree of latitude is still a degree latitude and a kilometre is still a kilometre. To avoid overfitting of models we reduced the dimensionality of all numerical predictor variables. Maximum latitude, minimum latitude, mean latitude, and latitudinal range were grouped into $10\,^{\circ}$ bins. Great circle distances were grouped into 2000 km bins. Following division by the maximum value within each interval, richness, occupancy, and occurrences were rounded to one decimal place so that values ranged from 0 to 1.0 in increments of 0.1.
 
@@ -1050,22 +1051,24 @@ for(i in 1:length(classes)) {
 
 \end{spacing}
 
+
 \begin{table}
  \centering
-  \caption{TODO a description of all predictors}
+ \caption{Description of predictors included in the GBM models. We describe how we standardized many of these predictors across time intervals in Section \ref{sec:standardizing-predictors}.}
   \smallskip
-\begin{tabular}{ll}
+  \begin{tabular}{p{4cm}p{8cm}}
 \toprule
-Species richness & Description\\
+Predictor & Description\\
 \midrule
-Occupancy & Description\\
-Occurrences & Description\\
-Minimum latitude & Description\\
-Maximum latitude & Description\\
-Latitudinal range & Description\\
-Mean latitude & Description\\
-Great circle distance & Description\\
-Taxonomic group & Description\\
+Species richness & Number of congeneric species in each genus in each interval\\
+Occupancy & Number of equal-area grid cells in which each genus occurred in each interval\\
+Occurrences & Total number of occurrences of each genus globally in each interval\\
+Minimum latitude & Minimum absolute latitude at which each genus was sampled in each interval\\
+Maximum latitude & Maximum absolute latitude at which each genus was sampled in each interval\\
+Latitudinal range & Maximum minus minimum latitude of each genus in each interval\\
+Mean latitude & Mean absolute latitude at which each genus was sampled in each interval\\
+Great circle distance & Maximum distance between occurrences of each genus in each interval\\
+Taxonomic group & Ordinal to family rank taxonomic assignments for each genus\\
 \bottomrule
 \end{tabular}
 \end{table}
