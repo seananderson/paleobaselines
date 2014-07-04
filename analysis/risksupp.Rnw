@@ -740,7 +740,7 @@ map_class_ext(er_dat_class, plot_column = "log.mean.gcd",
 @
 
 %We can also look at the distribution of our predictions by biogeographic province \cite{spalding2007} and class (Fig.~\ref{fig:plot-density-risk-by-province}).
-<<plot-density-risk-by-province, fig.width=12.5, fig.height=15, fig.cap="The distribution of intrinsic extinction risk by biogeographic province \\cite{spalding2007} (panels) and taxonomic class (colors). Note that the x-axis is log-transformed.", echo=FALSE>>=
+<<plot-density-risk-by-province, fig.width=12.5, fig.height=15, fig.cap="Histograms showing the distribution of intrinsic extinction risk predictions for genera in each coastal biogeographic province \\cite{spalding2007} (panels) and taxonomic class (colors). Note that the x-axis is log-transformed.", echo=FALSE>>=
 # merge in province names:
 er <- readShapePoly("../data/MEOW2/meow_ecos.shp")
 prov_names <- er@data[,c("PROVINCE", "PROV_CODE")]
