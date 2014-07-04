@@ -28,24 +28,24 @@ map_class_ext(subset(er_dat_class3, !class %in% c("Elasmobranchii", "Mammalia"))
 dev.off()
 
 # now for the overall version:
-resids_overall <- ddply(resids, "PROVINCE", plyr::summarize, mean(residual.ext))
-
-
-load("../data/by.prov.all.rda")
-er_dat <- plyr::join(er_points, er@data, by = "id")
-er_dat <- plyr::join(er_dat, by.prov.all, by = "PROV_CODE")
-er_dat2 <- er_dat
-mean.ext2 <- function(df) mean(df$mean.ext) # already logged
-total.occs <- function(df) log(max(df$OBIS_records))
-prov.means <- plyr::ddply(er_dat_class2, plyr::.(PROVINCE),
-  plyr::each(mean.ext2, total.occs))
-
-resids <- residual.exrisk(prov.means)
-
-er_dat2$Lat_Zone <- NULL # avoid warning below
-er_dat3  <- plyr::join(er_dat2, resids,
-  by = c("PROVINCE"))
-er_dat3$mean.ext <- er_dat3$residual.ext
+# resids_overall <- ddply(resids, "PROVINCE", plyr::summarize, mean(residual.ext))
+# 
+# 
+# load("../data/by.prov.all.rda")
+# er_dat <- plyr::join(er_points, er@data, by = "id")
+# er_dat <- plyr::join(er_dat, by.prov.all, by = "PROV_CODE")
+# er_dat2 <- er_dat
+# mean.ext2 <- function(df) mean(df$mean.ext) # already logged
+# total.occs <- function(df) log(max(df$OBIS_records))
+# prov.means <- plyr::ddply(er_dat_class2, plyr::.(PROVINCE),
+#   plyr::each(mean.ext2, total.occs))
+# 
+# resids <- residual.exrisk(prov.means)
+# 
+# er_dat2$Lat_Zone <- NULL # avoid warning below
+# er_dat3  <- plyr::join(er_dat2, resids,
+#   by = c("PROVINCE"))
+# er_dat3$mean.ext <- er_dat3$residual.ext
 # pdf("../figs/obis-residuals-maps-overall.pdf", width = 7, height = 3.5)
 # par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
 #   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
