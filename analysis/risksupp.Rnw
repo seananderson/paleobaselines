@@ -297,8 +297,7 @@ Table.S1 <- plyr::rename(Table.S1, c("Interval_Name" = "Interval"))
 Table.S1$Group <- sub("Elasmobranchii", "Sharks", Table.S1$Group)
 Table.S1$Group <- sub("Anthozoa", "Scleractinia", Table.S1$Group)
 xtable::print.xtable(xtable::xtable(Table.S1, digits = c(0, 0, 0, 0, 0),
-    caption = " Total number of genera and occurrences of those genera in the
-Paleobiology Database (Neogene intervals) and OBIS database (modern) for the six major taxonomic groups used in our analysis."),
+    caption = " Total number of genera and occurrences of those genera in the Paleobiology Database (Neogene intervals) and OBIS database (modern) for the six major taxonomic groups used in our analysis."),
   include.rownames = FALSE, caption.placement = "top", booktabs = TRUE)
 @
 
