@@ -63,7 +63,7 @@ Aaron O'Dea \and John M. Pandolfi}
 \textsuperscript{$\ast$}Corresponding author. E-mail sethf@berkeley.edu
 
 This PDF file includes:\\
-Figs.\ S1 to S-TODO\\
+Figs.\ S1 to S18\\
 Tables S1 to S-TODO\\
 References
 
@@ -297,7 +297,7 @@ Table.S1 <- plyr::rename(Table.S1, c("Interval_Name" = "Interval"))
 Table.S1$Group <- sub("Elasmobranchii", "Sharks", Table.S1$Group)
 Table.S1$Group <- sub("Anthozoa", "Scleractinia", Table.S1$Group)
 xtable::print.xtable(xtable::xtable(Table.S1, digits = c(0, 0, 0, 0, 0),
-    caption = "Total number of unique genera and occurrences of those genera in the Paleobiology Database for major taxonomic groups and geologic intervals used in our analysis. TODO FIX THIS CAPTION"),
+    caption = "Total number of unique genera and occurrences of those genera in the Paleobiology Database (Neogene intervals) and OBIS database (modern) for major taxonomic groups and time intervals used in our analysis."),
   include.rownames = FALSE, caption.placement = "top", booktabs = TRUE)
 @
 
@@ -722,7 +722,7 @@ mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
 dev.off()
 @
 
-<<plot-n-gen-genera-prov, fig.cap="Spatial distribution of \\textbf{genus richness} in the contemporary dataset. The number of genera occupying each province (following within-realm minimum bounding box interpolation) is plotted. Note that although the low genus richness values of some provinces clearly reflect undersampling, gradients of increasing genus richness from pole to tropics are recognizable in all groups except for mammals, which are known to exhibit an inverse latitudinal gradient \cite{tittensor2010}", fig.width=6.25, fig.height=4.8, out.width="6in">>=
+<<plot-n-gen-genera-prov, fig.cap="Spatial distribution of \\textbf{genus richness} in the contemporary dataset. The number of genera occupying each province (following within-realm minimum bounding box interpolation) is plotted. Note that although the low genus richness values of some provinces clearly reflect undersampling, gradients of increasing genus richness from pole to tropics are recognizable in all groups except for mammals, which are known to exhibit an inverse latitudinal gradient \\cite{tittensor2010}.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
 er_dat_class$log.N.gen <- log(er_dat_class$N.gen)
 map_class_ext(er_dat_class, plot_column = "log.N.gen",
   min_prov_genera = 0, ylab = "Number of genera",
