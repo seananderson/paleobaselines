@@ -1058,6 +1058,26 @@ for(i in 1:length(classes)) {
 
 \end{spacing}
 
+\begin{table}
+ \centering
+  \caption{TODO a description of all predictors}
+  \smallskip
+\begin{tabular}{ll}
+\toprule
+Species richness & Description\\
+\midrule
+Occupancy & Description\\
+Occurrences & Description\\
+Minimum latitude & Description\\
+Maximum latitude & Description\\
+Latitudinal range & Description\\
+Mean latitude & Description\\
+Great circle distance & Description\\
+Taxonomic group & Description\\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \section{Supplementary tables and figures}
 \end{document}
 
