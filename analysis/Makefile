@@ -1,4 +1,8 @@
-all: knit pdf
+all: knit pdf rnwdrop
+
+rnwdrop:
+	cp risksupp.Rnw ~/Dropbox/nescent_extinction_map/risksupp.Rnw
+	cp risksupp.pdf ~/Dropbox/nescent_extinction_map/risksupp.pdf
 
 knit:
 	Rscript -e "knitr::knit('risksupp.Rnw')"
