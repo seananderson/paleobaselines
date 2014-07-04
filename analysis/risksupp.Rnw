@@ -740,7 +740,7 @@ map_class_ext(er_dat_class, plot_column = "log.mean.gcd",
 @
 
 %We can also look at the distribution of our predictions by biogeographic province \cite{spalding2007} and class (Fig.~\ref{fig:plot-density-risk-by-province}).
-<<plot-density-risk-by-province, fig.width=12.5, fig.height=15, fig.cap="The distribution of intrinsic extinction risk by biogeographic province \\cite{spalding2007} (panels) and taxonomic class (colors). Note the log-transformed x-axis.", echo=FALSE>>=
+<<plot-density-risk-by-province, fig.width=12.5, fig.height=15, fig.cap="The distribution of intrinsic extinction risk by biogeographic province \\cite{spalding2007} (panels) and taxonomic class (colors). Note that the x-axis is log-transformed.", echo=FALSE>>=
 # merge in province names:
 er <- readShapePoly("../data/MEOW2/meow_ecos.shp")
 prov_names <- er@data[,c("PROVINCE", "PROV_CODE")]
@@ -831,7 +831,7 @@ print(p)
 \centering
   \includegraphics[width=\textwidth]{../figs/obis-residuals-maps-class.pdf}
   %\includegraphics[width=3.75in]{../figs/obis-residuals-maps-overall.pdf}
-  \caption{The geographic distribution of \textbf{intrinsic risk residuals after applying a linear model accounting for the number of OBIS records}. Panels for sharks and mammals (as in Fig.~2) are not shown because we used range maps instead of OBIS data for the modern distributions.}
+  \caption{The geographic distribution of \textbf{intrinsic risk residuals} across coastal biogeographic provinces after applying a linear model accounting for the relationship between number of OBIS records and mean intrinsic risk. Panels for sharks and mammals (as in Fig.~2) are not shown because we used range maps instead of OBIS data for the modern distributions. The broad-scale mean intrinsic risk patterns plotted in Fig. 2 remain after accounting for this relationship }
 \label{fig:obis-residuals-maps}
 \end{figure}
 
@@ -902,7 +902,7 @@ dev.off()
   \centering
   \includegraphics[width=\textwidth]{../figs/remove-single-province-genera-class-map.pdf}
   \includegraphics[width=3.75in]{../figs/remove-single-province-genera-overall-map.pdf}
-  \caption{Mean predicted extinction susceptibility of genera inhabiting different ocean biogeographic provinces \cite{spalding2007} for each of the 6 major groups considered (upper 6 panels) and across all genera (lower centred panel), as in Fig.~2 and 3, but \textbf{with genera occurring in single biogeographic provinces removed}. Scale bars on the right indicate the range of intrinsic extinction probability values for a given group, and this scale is used to plot mean extinction susceptibility heatmaps on the left.}
+  \caption{Mean predicted extinction susceptibility of genera inhabiting different ocean biogeographic provinces \cite{spalding2007} for each of the 6 major groups considered (upper 6 panels) and across all genera (lower centred panel), as in Fig.~2 and 3, but \textbf{with genera occurring only in a single biogeographic province removed}. Scale bars on the right indicate the range of intrinsic extinction probability values for a given group, and this scale is used to plot mean extinction susceptibility heatmaps on the left.}
   \label{fig:remove-single-province-genera}
 \end{figure}
 
