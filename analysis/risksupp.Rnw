@@ -673,7 +673,7 @@ ggplot(d2, aes(y = jitter(gbm_pred_binned, amount = 0.02),
 
 \subsection{Mapping risk predictions using contemporary species distributions}
 
-As described above, we used GBM models built on the Neogene fossil record to produce intrinsic risk extimates for modern genera.  In order to map out the distribution of mean intrinsic risk across coastal biogeographic provinces, we summed intrinsic risk estimates for all genera occupying a given province (following the minimum bounding box interpolation) and divided by the total number of genera.  This was done both separately for each major taxonomic group (Fig. 2) and for all genera combined (Fig. 3).
+As described above, we used GBM models built on the Neogene fossil record to produce intrinsic risk extimates for modern genera.  These estimates are interesting on a genus-by-genus basis but can also be used to examine the distribution of intrinsic risk within major taxonomic groups and across regions, both of which may be useful in thinking about potential interactions between intrinsic risk and modern impacts. To map out the distribution of mean intrinsic risk across coastal biogeographic provinces, we summed intrinsic risk estimates for all genera occupying a given province (following the minimum bounding box interpolation) and divided by the total number of genera in the province.  We first did this separately for each major taxonomic group (Fig. 2) and then for all genera combined (Fig. 3).
 
 
 % Now, we will create Fig.~2 and Fig.~3 from the paper.
