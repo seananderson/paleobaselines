@@ -673,7 +673,7 @@ er_dat_class <- plyr::join(er_dat_class, by.prov.classes, by = "PROV_CODE")
 
 silhouette_coords <- list()
 for(i in 1:6) {
-  silhouette_coords[[i]] <- c(-2.6, -1.8, -1.8, -1.0)
+  silhouette_coords[[i]] <- c(-2.6, -1.9, -1.8, -1.1)
 }
 # fix mammals:
 silhouette_coords[[1]] <- silhouette_coords[[1]] + c(0, 0, 0.2, 0)
