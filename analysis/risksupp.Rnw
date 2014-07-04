@@ -226,18 +226,22 @@ grid_lat <- sprintf("%.2f", round(global_45x14$latitude, 2))
 grid_mid_lat <- sprintf("%.2f", round(read.csv("../data/grid_mid_lat.csv")$x, 2))
 @
 
-For the contemporary dataset, we took the interpolated provinces, overlaid an equal-area grid, recorded the centre points of that grid for all cells that overlapped a province, and then calculated the range statistics based on the centre points from the grid overlay. Our equal-area grid was divided into 45 east-west cells and 14 north-south cells. The longitudes started at $-180\,^{\circ}$ and increased by $8\,^{\circ}$ to $180\,^{\circ}$. The latitude values of the grid line (in degrees) were: \Sexpr{grid_lat}. We recorded the centre coordinates for all grid cells that overlapped with a province with observations or interpolated observations. The longitude midpoints were the arithmetic midpoint between the grid longitudes listed above. The latitude midpoints were chosen to maintain an equal area in the upper and lower halves. These values, in degrees, were \Sexpr{grid_mid_lat}.
-
-We took a similar approach for the paleontological dataset. We overlaid the same equal-area grid on the paleontological observations, identified any grid cells that overlapped the occurrences, and recorded the centre points of these overlapping cells. 
-
-% TODO mention that we used these grid overlays for all range stats
-
 <<interpolation, eval=FALSE>>=
 # Run the OBIS interpolation
 # Will take a very long time to run and requires a server with a large
 # quantity of memory.
 source("run_interpolation.R")
 @
+
+\subsection{Overlaying an equal-area grid}
+
+TODO justify overlaying a grid in the first place. Something to do with standardizing the resolution of the modern and paleo datasets?
+
+TODO We used these equal-area grid cell center points as the data when calculating all range-based predictor variables.
+
+For the contemporary dataset, we took the interpolated provinces (and non-interpolated provinces), overlaid an equal-area grid, recorded the centre points of that grid for all cells that overlapped a province, and then calculated the range statistics based on the centre points from the grid overlay. Our equal-area grid was divided into 45 east-west cells and 14 north-south cells. The longitudes started at $-180\,^{\circ}$ and increased by $8\,^{\circ}$ to $180\,^{\circ}$. The latitude values of the grid line (in degrees) were: \Sexpr{grid_lat}. We recorded the centre coordinates for all grid cells that overlapped with a province with observations or interpolated observations. The longitude midpoints were the arithmetic midpoint between the grid longitudes listed above. The latitude midpoints were chosen to maintain an equal area in the upper and lower halves. These values, in degrees, were \Sexpr{grid_mid_lat}.
+
+We took a similar approach for the paleontological dataset. We overlaid the same equal-area grid on the paleontological observations, identified any grid cells that overlapped the occurrences, and recorded the centre points of these overlapping cells. 
 
 \subsection{Standardizing predictor variables}
 
