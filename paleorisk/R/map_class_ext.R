@@ -60,7 +60,7 @@ map_class_ext <- function(er_dat, min_prov_genera = 20,
   er.df$value.to.plot <- er.df[, plot_col_n]
 
   # remove provinces with fewer than a specified number of genera:
-  er.df <- gdata::drop.levels(subset(er.df, er.df$N.gen >= min_prov_genera))
+  er.df <- droplevels(subset(er.df, er.df$N.gen >= min_prov_genera))
 
   if(!col_range) { # colour range goes from min to max value:
     # transform values to a 0 to 1 range for cutting into colours:
@@ -149,7 +149,7 @@ map_class_ext <- function(er_dat, min_prov_genera = 20,
       message(paste("Plotting", unique(class.dat$class)))
 
       # remove provinces with fewer than a specified number of genera:
-      class.dat <- gdata::drop.levels(subset(class.dat, class.dat$N.gen >=
+      class.dat <- droplevels(subset(class.dat, class.dat$N.gen >=
           min_prov_genera))
 
       # Set up a blank map:

@@ -33,7 +33,7 @@ standardize_data <- function(dat, min_lat_bin = 10, max_lat_bin = 10,
     cull.taxa <- c("Bivalvia", "Gastropoda")
     dat$cull.val <- ifelse(dat$class %in% cull.taxa, min_modern_occurrences, 1)
     dat <- dat[(dat$occurrences >= dat$cull.val), ]
-    data1  <- drop.levels(dat)
+    data1  <- droplevels(dat)
   } else {
     data1  <- droplevels(dat)
   }
