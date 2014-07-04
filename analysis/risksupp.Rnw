@@ -601,10 +601,6 @@ modern <- plyr::join(modern,
 saveRDS(modern, file = "../data/modern-predictions.rds")
 @
 
-%<<plot-genus-predictions-against-gcd, fig.cap='TODO', fig.width=11, fig.height=6>>=
-%ggplot(modern, aes(y = gbm_pred_binned, x = great.circle, colour = class)) + geom_point(alpha = 0.5) + %facet_wrap(~group) + theme_bw() + xlab("Great circle distance") + ylab("Predicted intrinsic risk by genus") + theme(axis.ticks.y = element_blank(), panel.grid.minor=element_blank()) + theme(strip.text.x = element_text(size = 7), axis.text = element_text(size = 8)) + stat_summary(fun.data = "mean_cl_boot", colour = "black")
-%@
-
 <<plot-genus-predictions-against-gcd2, fig.cap='Predicted intrinsic risk versus geographic range (great circle distance) for modern genera in each of six classes. The points represent individual genera and are colored according to taxonomic identity within each class, the black contour lines indicate the density of genera, and the red line represents the mean intrinsic risk of all 2889 modern genera.', fig.width=10, fig.height=7.5>>=
 class2 <- data.frame(c("Anthozoa", "Bivalvia", "Echinoidea", 
   "Elasmobranchii", "Gastropoda", "Mammalia"), c("Scleractinia", 
