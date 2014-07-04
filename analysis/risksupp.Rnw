@@ -721,7 +721,7 @@ mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
 dev.off()
 @
 
-<<plot-n-gen-genera-prov, fig.cap="Spatial distribution of the \\textbf{mean number of genera} in the contemporary dataset.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
+<<plot-n-gen-genera-prov, fig.cap="Spatial distribution of \\textbf{genus richness} in the contemporary dataset. The number of genera occupying each province (following within-realm minimum bounding box interpolation) is plotted. Note that although the low genus richness values of some provinces clearly reflect undersampling, gradients of increasing genus richness from pole to tropics are recognizable in all groups except for mammals, which are known to exhibit an inverse latitudinal gradient \cite{tittensor2010}", fig.width=6.25, fig.height=4.8, out.width="6in">>=
 er_dat_class$log.N.gen <- log(er_dat_class$N.gen)
 map_class_ext(er_dat_class, plot_column = "log.N.gen",
   min_prov_genera = 0, ylab = "Number of genera",
@@ -729,7 +729,7 @@ map_class_ext(er_dat_class, plot_column = "log.N.gen",
   col_pal = RColorBrewer::brewer.pal(9, "YlGnBu"))
 @
 
-<<plot-gcd-genera-prov, fig.cap="Spatial distribution of \\textbf{mean great circle distance of range size} in the contemporary dataset.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
+<<plot-gcd-genera-prov, fig.cap="Spatial distribution of \\textbf{mean great circle distance of range size} in the contemporary dataset. The mean global geographic range (great circle distance, calculated following within-realm minimum bounding box interpolation) of all genera occupying each province are plotted. Low mean values indicate that the province contains many genera with relatively limited global geographic ranges and high mean values indicate that it contains a relatively cosmopolitan fauna.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
 er_dat_class$log.mean.gcd <- log(er_dat_class$mean.gcd)
 map_class_ext(er_dat_class, plot_column = "log.mean.gcd",
   min_prov_genera = 0, ylab = "Mean great circle distance",
@@ -796,7 +796,7 @@ To determine whether the broad-scale patterns of mean intrinsic risk (Fig.~2) ar
 
 Geographic variation in sampling intensity could result in the observation of ``pseudo-endemics'', genera found in a well-sampled provinces but not observed in adjacent provinces that have not been sampled as intensely. To determine the potential effect of pseudoendemics on mean intrinsic risk estimates we removed genera that were only reported in one province. For this sensitivity test, we explicitly assume that these genera are solely the result of variation in sampling intensity although in reality single province genera are most likely a combination of pseudoendemics and true endemics. Culling genera known from only one province reduces the sample size of contemporary genera by \Sexpr{single.genera.provs.removed} to a total of \Sexpr{total.genera} genera. Maps of mean intrinsic risk in which single province genera were excluded (Fig.~\ref{fig:remove-single-province-genera}) are congruent with those derived from the full dataset (Fig.~2 and 3), indicating that single province genera are not responsible for the broad-scale patterns of intrinsic risk.
 
-<<plot-n-obis-prov, fig.cap="Number of OBIS occurrence records for each biogeographic province \\cite{spalding2007}. Color scale bars on the right are log-distributed. Panels for sharks and mammals (as in Fig.~2) are not shown because we used range maps instead of OBIS data for the modern distributions.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
+<<plot-n-obis-prov, fig.cap="Number of OBIS occurrence records for each biogeographic province \\cite{spalding2007}. Color scale bars on the right are log-distributed. Panels for sharks and mammals (as in Fig.~2) are not shown because we used range maps instead of OBIS data for the modern distributions.  For other classes, number of OBIS occurrence records provides a rough index of sampling effort across regions.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
 map_class_ext(subset(er_dat_class, !class %in% c("Elasmobranchii", "Mammalia")),
   plot_column = "log_OBIS_records",
   min_prov_genera = 0, ylab = "Number of OBIS records",
@@ -806,7 +806,7 @@ map_class_ext(subset(er_dat_class, !class %in% c("Elasmobranchii", "Mammalia")),
 
 @
 
-<<relationship-between-mean-risk-and-sampling-intensity, fig.width=9, fig.height=5.5, out.width="5in", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus number of OBIS records (of the indicated class) from that province. Each point represents a single biogeographic province. Lines and gray-shaded regions indicate linear regressions and 95\\% confidence intervals; colors indicate latitudinal zone of province.", cache=TRUE>>=
+<<relationship-between-mean-risk-and-sampling-intensity, fig.width=9, fig.height=5.5, out.width="5in", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus number of OBIS records (of the indicated class) from that province. Each point represents a single biogeographic province. Lines and gray-shaded regions indicate linear regressions and 95\\% confidence intervals; colors indicate latitudinal zone of province. Positive correlations between mean intrinsic risk and number of OBIS records (as an index of sampling effort) suggest that heavily sampled provinces may contain a greater proportion of “pseudoendemic” genera that have not been sampled in other provinces that they actually occupy.", cache=TRUE>>=
 temp_dat <- droplevels(subset(by.prov.classes,
     !class %in% c("Elasmobranchii", "Mammalia")))
 temp_dat$class <- as.character(temp_dat$class)
