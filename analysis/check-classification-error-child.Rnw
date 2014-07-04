@@ -53,8 +53,12 @@ if(!file.exists("../data/roc_vals.rds")) {
 } else {
   roc_vals <- readRDS("../data/roc_vals.rds")
 }
-auc_vals <- ddply(roc_vals, c("stage", "class"), summarize, auc = round(unique(auc), 4))
+auc_vals <- ddply(roc_vals, c("stage", "class"), plyr::summarize, auc = round(unique(auc), 4))
 write.csv(auc_vals, file = "../data/auc_vals.csv")
+
+auc_full <- subset(auc_vals, class == "All")
+auc_range <- sprintf("%.2f", round(range(auc_full$auc), 2))
+auc_neog <- sprintf("%.2f", round(subset(auc_vals, class == "All" & stage == "Entire Neogene")$auc, 2))
 
 # downsample to make figure smaller file size:
 roc_vals <- roc_vals[round(seq(1, nrow(roc_vals), length.out = 25000)), ]
