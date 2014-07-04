@@ -185,7 +185,7 @@ OBIS is the largest single source of modern-day geolocated marine biological dat
 
 \subsection{Sources of paleontological data}
 
-All of the fossil occurrence data used for this study were downloaded from the Paleobiology Database (PaleoDB, \url{http://paleobiodb.org}), a global compilation of the spatial and temporal occurrences of taxa in the fossil record. The Paleobiology Database has been used in previous investigations of marine extinction rates \cite{harnik2012, hannisdal2011} TODO:(ref Alroy 2010), extinction selectivity \cite{heim2011}, and geographic range size \cite{payne2007, harnik2012a}.
+All of the fossil occurrence data used for this study were downloaded from the Paleobiology Database (PaleoDB, \url{http://paleobiodb.org}), a global compilation of the spatial and temporal occurrences of taxa in the fossil record. The Paleobiology Database has been used in previous investigations of marine extinction rates \cite{harnik2012a, hannisdal2011} TODO:(ref Alroy 2010), extinction selectivity \cite{heim2011}, and geographic range size \cite{payne2007, harnik2012a}.
 
 We downloaded occurrences from the Paleobiology Database on 6 April 2014. We downloaded only occurrences associated with collections from marine environments. We subsetted these data to included only occurrences of the following higher taxa: Echinoidea, Bivalvia, Gastropoda, Anthozoa, Elasmobranchii (Selachii), and Mammalia (Cetacea and Pinnipedia). We then manually checked the data to remove nonmarine taxa, such as freshwater mollusks and land snails, that are occasionally preserved in marine sediments.
 
