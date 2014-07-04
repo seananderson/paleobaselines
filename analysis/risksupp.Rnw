@@ -423,6 +423,8 @@ fit_stage_models <- function(dat, stage_name) {
 
 % We will fit the models for each stage. Within each stage we will fit the model a number of times:
 <<fit-marginal-stage-models>>=
+stage_order <- c("Lower Miocene", "Middle Miocene", "Upper Miocene",
+  "Plio-Pleistocene")
 if(!file.exists("../data/stage_models.rds")) {
   stage_models <- llply(c(stage_order, "all"), function(x)
     rlply(20, fit_stage_models(neog, stage_name = x)))
