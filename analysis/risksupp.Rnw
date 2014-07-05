@@ -64,6 +64,7 @@ Aaron O'Dea \and John M. Pandolfi}
 \textsuperscript{$\ast$}Corresponding author. E-mail sethf@berkeley.edu
 
 This PDF file includes:\\
+Supporting methods\\
 References\\
 Tables S1 to S2\\
 Figs.\ S1 to S15
@@ -128,7 +129,7 @@ This document contains supplementary information about the sources of data used 
 
 This document is written with the \pkg{knitr} package \cite{xie2013b,xie2014a,xie2014} for the \proglang{R} statistical environment \cite{r2013}. The entire analysis can be recreated by running \texttt{knitr::knit()} on the underlying source code (or using the \texttt{make} command as outlined below). A number of functions that are used in this analysis have been compiled into an \proglang{R} package \pkg{paleorisk}.
 
-The \proglang{R} package, analysis files, and data files can be accessed in the Git repository: \url{https://github.com/seananderson/riskmaps/}. \textit{Currently private while in review}
+The \proglang{R} package, analysis files, and data files can be accessed in the Git repository: \url{https://github.com/seananderson/riskmaps/}. \textit{Currently private while in review.}
 
 You can recreate the entire analysis by opening the root \texttt{riskmaps} folder on the command line and running:
 
@@ -828,8 +829,12 @@ print(p)
 \end{figure}
 
 <<determine-range-of-extinction-predictions, results='hide'>>=
+er <- readShapePoly("../data/MEOW2/meow_ecos.shp")
+prov_names <- er@data[,c("PROVINCE", "PROV_CODE")]
+prov_names <- prov_names[!duplicated(prov_names), ]
+temp2 <- plyr::join(d.eco.filled, prov_names, by = "PROV_CODE")
 range_between <- diff(range(exp(by.prov.all$mean.ext)))
-folds <- ddply(temp, c("PROV_CODE", "PROVINCE"), plyr::summarize,
+folds <- ddply(temp2, c("PROV_CODE"), plyr::summarize,
   range = diff(range(mean_observed))
   )
 diff_in_range <- round(range(folds$range) / range_between, 0)
