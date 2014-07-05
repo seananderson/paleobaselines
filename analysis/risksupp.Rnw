@@ -665,6 +665,10 @@ ggplot(d2, aes(y = jitter(gbm_pred_binned, amount = 0.02),
 
 As described above, we used GBM models built on the Neogene fossil record to produce intrinsic risk extimates for modern genera.  These estimates are interesting on a genus-by-genus basis but can also be used to examine the distribution of intrinsic risk within major taxonomic groups and across regions, both of which may be useful in thinking about potential interactions between intrinsic risk and modern impacts. To map out the distribution of mean intrinsic risk across coastal biogeographic provinces, we summed intrinsic risk estimates for all genera occupying a given province (following the minimum bounding box interpolation) and divided by the total number of genera in the province.  We first did this separately for each major taxonomic group (Fig. 2) and then for all genera combined (Fig. 3).
 
+\subsection{Mapping contemporary threats}
+
+In order to delineate the geographic distribution of potential interactions between intrinsic risk and contemporary stresses, we compared our mean intrinsic risk estimates with recent estimates of the global distribution of anthrpogenic impacts on marine ecosystems \nocite{halpern2008} and the velocity of climate change \nocite{burrows2011}.  We extracted mean anthropogenic impact and velocity of climate change values for each province by overlaying these data layers on the provincial maps of Spalding et al., 2007 \cite{spalding2007} and taking the mean value of all cells within a given province. To highlight the regions most impacted by these contemporary threats, the outlined and hatched provinces in Fig. 3 indicate areas above the 80th percentile for mean anthrpogenic impact and mean velocity of climate change, respectively.
+
 
 % Now, we will create Fig.~2 and Fig.~3 from the paper.
 <<plot-class-maps, results='hide'>>=
