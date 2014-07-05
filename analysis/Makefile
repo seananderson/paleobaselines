@@ -3,6 +3,7 @@ all: knit pdf rnwdrop
 rnwdrop:
 	cp risksupp.Rnw ~/Dropbox/nescent_extinction_map/risksupp.Rnw
 	cp risksupp.pdf ~/Dropbox/nescent_extinction_map/risksupp.pdf
+	#cp risksupp.rtf ~/Dropbox/nescent_extinction_map/risksupp.rtf
 
 knit:
 	Rscript -e "knitr::knit('risksupp.Rnw')"
@@ -51,4 +52,7 @@ deletemainmodel:
 
 cleanall: clean deleteranges deletecv deleteroc deletecross deletestagemodels deletemainmodel
 
-
+rtf:
+	latex2rtf -Z2 -d 0 -b risksupp.bbl -E0 -M6 risksupp.tex
+	#latex2rtf -d 0 -b risksupp.bbl -E0 -M6 risksupp.tex
+	
