@@ -315,6 +315,7 @@ Boosting models work, in general, by building a sequence of models, each fit to 
 We fit GBMs with the \pkg{gbm} package \cite{gbm2013} for the \proglang{R} statistical language and environment \cite{r2013}. The \pkg{gbm} package implements GBMs based on Ref.\ \cite{friedman2001} with some minor modifications \cite{gbm2013}. Further, the \pkg{gbm} package implements the stochastic method proposed in Ref.\ \cite{friedman2001} in which a random subsample of the data is chosen at each model iteration. This random subsample is used to fit the model before computing residuals for that step thereby reducing chances of overfitting the data. Specifically, we chose to leave out 50\% of the data as a random subset on each iteration --- the default in the \texttt{gbm()} function.
 
 \subsection{Model building and calibration}
+\label{sec:build-calibrate}
 
 % We will load the standardized data and subset it for the Neogene period. The contemporary data are also contained in this data frame with \texttt{stage\_top = 0}. Therefore, we will also exclude the contemporary dataset from what we call \texttt{neog}.
 
@@ -502,14 +503,25 @@ ri_lq <- ri_lq[ri_order]
 ri_uq <- ri_uq[ri_order]
 @
 %TODO: update this with dynamic link to table S2
-<<plot-relative-importance, out.width="3in", fig.height=4, fig.width=4, fig.cap="Relative influence of the predictor variables (table S2) in the Neogene GBM model. The values are scaled so that the variable with the maximum influence on accurate extinction risk prediction has a relative importance of 1. Shown are the median (dots) and interquartile range (line segments) across 20 model runs. There is minimal variation from run to run so the line segments are small.">>=
+<<plot-relative-importance>>=
 names(ri_median) <- sub("group", "subgroup", names(ri_median))
 par(xpd = NA, mar = c(4, 8, 1, 1), cex = 0.8)
+pdf("plot-relative-importance.pdf", width = 3, height = 4)
 plot(ri_median, 1:length(ri_median), xlab = "Relative influence", ylab = "",
   xlim = c(0, 1), xaxs = "i", pch = 19, yaxt = "n")
 segments(ri_lq, 1:length(ri_median), ri_uq, 1:length(ri_median))
 axis(2, at = 1:length(ri_median), labels = names(ri_median), las = 1)
+dev.off()
 @
+
+\begin{figure}[htbp]
+ \centering
+ \includegraphics[width=3in]{../figs/plot-relative-importance.pdf}
+ \caption{Relative influence of the predictor variables (Table~\ref{table:predictors}) in the Neogene GBM model. The values are scaled so that the variable with the maximum influence on accurate extinction risk prediction has a relative importance of 1. Shown are the median (dots) and interquartile range (line segments) across 20 model runs. There is minimal variation from run to run so the line segments are small.}
+ \label{fig:plot-relative-importance}
+\end{figure}
+
+
 
 <<cross-intervals-gbms, results='hide'>>=
 stage_df <- expand.grid(stage_train = unique(neog$stage),
@@ -539,12 +551,10 @@ In the second case, we evaluated the similarity in extinction regimes between di
 \begin{figure}[htbp]
  \centering
  \includegraphics[width=4.86in]{../figs/plot-cross-interval-gbms-base.pdf}
- \caption{Consistency of relative extinction risk patterns throughout the Neogene fossil record. Shown are comparisons of scaled genus extinction probabilities estimated from models built and tested on different geologic intervals. For example, the upper right-hand panel plots the extinction risk of Plio-Pleistocene genera predicted by the model built on those data (x axis) compared to a predictions by a model built using the Lower Miocene data (y axis). The higher the rank order correlation, as shown by Spearman's Rho values in upper left panel corners (except for within-interval comparisons), the more similar the determinants of extinction risk are between two given intervals. Note that because extinctions were weighted more heavily in the GBM models, the absolute values shown on the x and y axes here are transformed versions of the real probabilities. We corrected this using a calibration procedure when we applied the Neogene model to the modern dataset. Genus risk predictions are similar across interval-specific models despite interval-to-interval variation in the environmental drivers of extinction and in the sampling of the fossil record.}
+ \caption{Consistency of relative extinction risk patterns throughout the Neogene fossil record. Shown are comparisons of scaled genus extinction probabilities estimated from models built and tested on different geologic intervals. For example, the upper right-hand panel plots the extinction risk of Plio-Pleistocene genera predicted by the model built on those data (x axis) compared to a predictions by a model built using the Lower Miocene data (y axis). The higher the rank order correlation, as shown by Spearman's Rho values in upper left panel corners (except for within-interval comparisons), the more similar the determinants of extinction risk are between two given intervals. Note that because extinctions were weighted more heavily in the GBM models (Section~\ref{sec:build-calibrate}), the absolute values shown on the x and y axes here are transformed versions of the real probabilities. We corrected this using a calibration procedure when we applied the Neogene model to the modern dataset (Section~\ref{sec:build-calibrate}). Genus risk predictions are similar across interval-specific models despite interval-to-interval variation in the environmental drivers of extinction and in the sampling of the fossil record.}
  \label{fig:plot-cross-interval-gbms}
 \end{figure}
-%TODO build in hyperlink to section describing observation weights (model building and calibration)
-%TODO build in hyperlink to section describing calibration (model building and calibration)
-% Overview methods fig to put in right order:
+
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{../static-figs/didactic_method.pdf}
