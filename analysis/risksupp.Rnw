@@ -334,7 +334,7 @@ This is called out-of-sample prediction or cross validation. Out-of-sample data 
 
 We initially explored out-of-sample predictive performance across a range of argument values for the GBM models. We tried \texttt{shrinkage} argument values (learning rates; how much improvement in model fit the GBM attempts with each tree) ranging from 0.001 to 0.1, interaction depths (\texttt{interaction.depth}) ranging from 1 to 5, and the number of trees (\texttt{n.trees}) ranging from 500 to 5000. Predictions were qualitatively similar, regardless of argument values, as long as a sufficient number of trees was run for the learning rate. Slower learning rates require more trees for the same performance \cite{elith2008}. We settled on a learning rate of 0.01, an interaction depth of 5, and 2000 trees. These settings achieved near-optimal predictive ability while still being computationally feasible to run many times across our analysis.
 
-GBMs, like other machine learning techniques, can perform poorly in cases where one predictive class (extinctions) is much less common than the other predictive class (survival) \cite{he2009}. One method of improving model performance in this situation is to assign greater weights to the sparser class (described as a ``cost-sensitive'' approach in Ref.~\cite{he2009}). In all our modeling we applied a weight to the extinct data points equal to the ratio of survival and extinct. This considerably improved predictive performance, but has the trade-off that our final predictions are no longer on the original probability scale. In our projections onto modern taxa we were concerned with producing unbiased predictions for each of the major taxonomic groups. Therefore, we calibrated our model predictions using cross-validation within the paleontological dataset. Our calibration serves as an additional test of the predictive ability of our model.
+GBMs, like other machine learning techniques, can perform poorly in cases where one predictive class (extinctions) is much less common than the other predictive class (survival) \cite{he2009}. One method of improving model performance in this situation is to assign greater weights to the sparser class (described as a ``cost-sensitive'' approach in Ref.~\cite{he2009}). In all our modeling we applied a weight to the extinct genera equal to the ratio of survived and extinct genera and a weight to the survived genera points of 1. This considerably improved predictive performance, but has the trade-off that our final predictions are no longer on the original probability scale. In our projections onto modern taxa we were concerned with producing unbiased predictions for each of the major taxonomic groups. Therefore, we calibrated our model predictions using cross-validation within the paleontological dataset. Our calibration serves as an additional test of the predictive ability of our model.
 
 To calibrate our model, we grouped the predicted extinction probabilities for each class into bins from 0 to 1 in 0.05 increments. For example, we grouped predicted probabilities of 0.12, 0.11, and 0.14 for 3 different genera into a bin of 0.10--0.15. We then calculated the mean observed extinction probability for each of those bins. For example, if those 3 genera had observed extinction probabilities of 0.21, 0.09, and 0.10, the mean observed out-of-sample extinction probability would be 0.133. We then compared the mean of our prediction bin (0.125 in this example) with the mean observed value (0.133). In this example our model is slightly biased. Because we're building and testing the model on independent datasets, this is a good test of how our model might perform on a new but equivalent dataset.
 
@@ -559,9 +559,7 @@ In the second case, we evaluated the similarity in extinction regimes between di
 % TODO remove "cull OBIS data with 30 occurrences per genus"
 
 
-\subsection{Predicting contemporary extinction risk with paleontological models}
-
-We will use our GBM model built on the entire Neogene period to predict extinction risk in the contemporary dataset. Because of the slight stochasticity from run to run of a GBM, we will run our model a number of times and take the average predictions.
+%We will use our GBM model built on the entire Neogene period to predict extinction risk in the contemporary dataset. Because of the slight stochasticity from run to run of a GBM, we will run our model a number of times and take the average predictions.
 
 <<load-modern-data>>=
 temp_dat <- readRDS("../data/stand-predictors-cen-obis.rds")
@@ -570,7 +568,7 @@ modern$stage <- "Modern"
 rm(temp_dat)
 @
 
-Next we look at the distribution of the predictors across the taxonomic groups in the contemporary dataset:
+%Next we look at the distribution of the predictors across the taxonomic groups in the contemporary dataset:
 
 <<modern-predictor-distributions, fig.width=13, fig.height=12>>=
 modern_long <- reshape2::melt(modern, id.vars = c("class", "group", "genus"),
@@ -581,7 +579,7 @@ p <- ggplot(modern_long, aes(value)) +
   facet_grid(class~variable, scales = "free")
 @
 
-And the distribution of predictors across the taxonomic groups in the paleontological dataset:
+%And the distribution of predictors across the taxonomic groups in the paleontological dataset:
 
 <<paleo-predictor-distributions, fig.width=13, fig.height=12>>=
 paleo_long <- reshape2::melt(neog, id.vars = c("class", "group", "genus"),
