@@ -17,7 +17,7 @@ d.eco.filled.no.singles <- plyr::ddply(d.eco.filled,
 
 # merge occurrence data with risk predictions:
 d.eco.filled <- merge(d.eco.filled, modern, by = "genus", all.x = FALSE)
-d.eco.filled.no.singles <- merge(d.eco.filled.no.singles, modern, by = "genus", all = FALSE)
+d.eco.filled.no.singles <- merge(d.eco.filled.no.singles, modern, by = "genus", all.x = FALSE)
 
 # for the text:
 single.genera.provs.removed <- length(unique(d.eco.filled$genus)) - length(unique(d.eco.filled.no.singles$genus))
