@@ -1,7 +1,7 @@
 # ====================================================================
 # Created by:    Sean Anderson, sean@seananderson.ca
 # Created:       Sep 24, 2012
-# Last modified: Jun 02, 2014
+# Last modified: Jul 04, 2014
 # Purpose:       test the realm_bouning_box.R output
 # ====================================================================
 
@@ -11,7 +11,6 @@ require(rgeos) # for overlays with 2 sets of polygons
 require(ggplot2)
 require(maptools)
 require(RColorBrewer)
-gpclibPermit()
 gc()
 load("../data/interpolated_provs.rda")
 load("../data/composite.occ2.rda")
