@@ -13,7 +13,7 @@ pdf:
 	bibtex risksupp
 	pdflatex risksupp
 	pdflatex risksupp
-	#pdflatex risksupp
+	pdflatex risksupp
 
 dropbox:
 	cp risksupp.pdf ~/Dropbox/Public/
@@ -56,3 +56,11 @@ rtf:
 	latex2rtf -Z2 -d 0 -b risksupp.bbl -E0 -M6 risksupp.tex
 	#latex2rtf -d 0 -b risksupp.bbl -E0 -M6 risksupp.tex
 	
+png:
+	#rm ../figs/*\.png
+	#rm ../static-figs/*\.png
+	Rscript -e "source('pdf2png.R')"
+	perl -p -i -e "s/\.pdf/.png/g" risksupp.tex
+	awk -v n=2 -v s="\\\DeclareGraphicsExtensions{.png,.pdf}" 'NR == n {print s} {print}' risksupp.tex > risksupp2.tex
+	mv risksupp2.tex risksupp.tex
+	pdflatex risksupp
