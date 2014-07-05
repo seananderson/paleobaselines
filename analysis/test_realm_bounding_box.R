@@ -36,6 +36,17 @@ oc.df <- oc.df[!is.na(oc.df$RLM_CODE), ]
 all_genuses <- unique(interpolated_provs$genus)
 genuses_sample <- all_genuses[sample(1:length(all_genuses), size = 9)]
 
+genuses_sample <- c(
+"Cryptopecten",
+"Adipicola",
+"Lottia",
+"Psilaxis",
+"Neotrapezium",
+"Spiromoelleria",
+"Harpovoluta",
+"Petrophyllia",
+"Conus")
+
 pdf("../figs/province_interpolation_tests.pdf", width = 9, height = 7)
 par(mfrow = c(3, 3), cex = 0.6, mar = c(0,0,4,0), oma = c(1,1,1,1))
 
