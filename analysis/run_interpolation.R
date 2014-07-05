@@ -1,14 +1,14 @@
 # ====================================================================
 # Created by:    Sean Anderson, sean@seananderson.ca
 # Created:       Sep 29, 2012
-# Last modified: Jul 01, 2014
+# Last modified: Jul 04, 2014
 # Purpose:       Steps to do interpolation of modern occurrence data
 #                and overlay grid etc.
 # ====================================================================
 
 # Download data:
-download.file("https://dl.dropboxusercontent.com/u/254940/riskmaps-data/composite.occ2.filled.rda",
-  "../data/composite.occ2.filled.rda",
+download.file("https://dl.dropboxusercontent.com/u/254940/riskmaps-data/composite.occ2.rda",
+  "../data/composite.occ2.rda",
   method = "curl")
 
 download.file("https://dl.dropboxusercontent.com/u/254940/riskmaps-data/MarineMammalProvinceJoin2.csv",
