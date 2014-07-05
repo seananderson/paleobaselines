@@ -62,9 +62,9 @@ Aaron O'Dea \and John M. Pandolfi}
 \textsuperscript{$\ast$}Corresponding author. E-mail sethf@berkeley.edu
 
 This PDF file includes:\\
-Figs.\ S1 to S15\\
-Tables S1 to S2\\
 References
+Tables S1 to S2\\
+Figs.\ S1 to S15\\
 
 \clearpage
 \setlength\parskip{0in}
