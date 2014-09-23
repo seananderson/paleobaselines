@@ -149,8 +149,10 @@ extract_ranges <- function() {
     pbdb$interval_top >= .0117, "Plio-Pleistocene", as.character(pbdb$FR2_bin))
 
   #define the stages we want to use, for reference
-  FR2_bin <- c("Pleistocene", "Pliocene", "Plio-Pleistocene", "Upper Miocene", "Middle Miocene", "Lower Miocene", "Chattian", "Rupelian")
-  stage.name <- c("Plio-Pleistocene", "Plio-Pleistocene", "Plio-Pleistocene", "Upper Miocene", "Middle Miocene", "Lower Miocene", "Chattian", "Rupelian")
+  FR2_bin <- c("Pleistocene", "Pliocene", "Plio-Pleistocene", "Upper Miocene",
+    "Middle Miocene", "Lower Miocene", "Chattian", "Rupelian")
+  stage.name <- c("Plio-Pleistocene", "Plio-Pleistocene", "Plio-Pleistocene",
+    "Upper Miocene", "Middle Miocene", "Lower Miocene", "Chattian", "Rupelian")
   top <- c(.0117,.0117,.0117,5.333,11.608,15.97,23.03,28.1)
   bottom <- c(5.333,5.333,5.333,11.608,15.97,23.03,28.1,33.9)
   stage.dates <- data.frame(FR2_bin,stage.name,bottom,top)
@@ -187,7 +189,8 @@ extract_ranges <- function() {
 
   pbdb.gen.cats <- read.csv("../data/PBDB.genera.Groups.csv", header=TRUE)
 
-  genera.to.drop <- unique(pbdb$occurrence.genus_name)[!unique(pbdb$occurrence.genus_name) %in% unique(pbdb.gen.cats$Genus)]
+  genera.to.drop <- unique(pbdb$occurrence.genus_name)[!unique(pbdb$occurrence.genus_name)
+    %in% unique(pbdb.gen.cats$Genus)]
   pbdb.dropped <- pbdb[pbdb$occurrence.genus_name %in% genera.to.drop, ]
 
   pbdb.gen <- data.frame(pbdb$class_name,pbdb$order_name,
@@ -203,7 +206,6 @@ extract_ranges <- function() {
 
   pbdb.gen <- data.frame(pbdb.gen.cats$Group,pbdb.gen.cats$Genus)
   colnames(pbdb.gen) <- c("genus.Group", "occurrence.genus_name")
-
 
   pbdb$order.Group <- ifelse(pbdb$class_name == "Chondrichthyes",
     "Elasmobranchii_Elasmobranchii",
@@ -308,7 +310,7 @@ if(!file.exists("../data/modern_and_paleo_ranges.rds")) {
   extract_ranges()
 } else {
   message("Using previously extracted range data.")
-  message("Delete data/modern_and_paleo_ranges.rds and re-run to re-extract.")
+  message("Delete ../data/modern_and_paleo_ranges.rds and re-run to re-extract.")
 }
 
 ###Temporary code to make plots to check distributions
