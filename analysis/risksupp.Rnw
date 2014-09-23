@@ -280,8 +280,6 @@ We modelled intrinsic contemporary extinction probability from paleontological d
 
 Boosting models work, in general, by building a sequence of models, each fit to the residuals of the previous model with larger residuals being given stronger weights. This means that each subsequent model focuses more heavily on data which were poorly fit by previous models. In theory, this ensemble of weak models can be combined to produce one strong overall predictive model with reduced bias compared to other machine learning methods, such as random forests \cite{elith2008}. Boosted tree methods have been shown to outperform other machine learning methods in many cases \cite{caruana2006} and are commonly used in applied prediction problems (e.g.\ by Yahoo for website rankings; \cite{cossock2008}).
 
-% TODO: Add comment about collinearity
-
 We fit GBMs with the \pkg{gbm} package \cite{gbm2013} for the \proglang{R} statistical language and environment \cite{r2013}. The \pkg{gbm} package implements GBMs based on Ref.\ \cite{friedman2001} with some minor modifications \cite{gbm2013}. Further, the \pkg{gbm} package implements the stochastic method proposed in Ref.\ \cite{friedman2001} in which a random subsample of the data is chosen at each model iteration. This random subsample is used to fit the model before computing residuals for that step thereby reducing chances of overfitting the data. Specifically, we chose to leave out 50\% of the data as a random subset on each iteration --- the default in the \texttt{gbm()} function.
 
 \subsection{Model building and calibration}
@@ -302,6 +300,8 @@ We initially explored out-of-sample predictive performance across a range of arg
 GBMs, like other machine learning techniques, can perform poorly in cases where one predictive class (extinctions) is much less common than the other predictive class (survival) \cite{he2009}. One method of improving model performance in this situation is to assign greater weights to the sparser class (described as a ``cost-sensitive'' approach in Ref.~\cite{he2009}). In all our modeling we applied a weight to the extinct genera equal to the ratio of survived and extinct genera and a weight to the survived genera points of 1. This considerably improved predictive performance, but has the trade-off that our final predictions are no longer on the original probability scale. In our projections onto modern taxa we were concerned with producing unbiased predictions for each of the major taxonomic groups. Therefore, we calibrated our model predictions using cross-validation within the paleontological dataset. Our calibration serves as an additional test of the predictive ability of our model.
 
 To calibrate our model, we grouped the predicted extinction probabilities for each class into bins from 0 to 1 in 0.05 increments. For example, we grouped predicted probabilities of 0.12, 0.11, and 0.14 for three different genera into a bin of 0.10--0.15. We then calculated the mean observed extinction probability for each of those bins. For example, if those three genera had observed extinction probabilities of 0.21, 0.09, and 0.10, the mean observed out-of-sample extinction probability would be 0.133. We then compared the mean of our prediction bin (0.125 in this example) with the mean observed value (0.133). In this example our model is slightly biased. Because we're building and testing the model on independent datasets, this is a good test of how our model might perform on a new but equivalent dataset.
+
+% TODO 20140923 add bit here with alternative culled paleo datasets
 
 <<test-gbm1, results='hide', cache=FALSE>>=
 INT.DEPTH <- 5
@@ -336,6 +336,8 @@ ggplot(subset(val_test, .n == 1),
 
 By running the cross validation 1000 times, we calculated a mean bias at the taxonomic-group level for each prediction bin. We illustrate this in the following figure. The blue dots represent the mean estimate from a binomial logistic generalized linear model (GLM) fit to the black dots (observed mean extinction proportions based on individual cross-validation runs) with weights equal to the sample size in that bin across runs. The vertical lines represent 95\% confidence intervals. The size of the blue dots corresponds to the median number of extinction/survival observations in that bin across replicates. For visualization purposes, we have downsampled the number of black dots by a factor of about 10.
 
+% TODO 20140923 add chunk here with alternative versions of paleo data
+
 <<test-gbm1-summary>>=
 val_test_summarized <- ddply(val_test, c("class", "gbm_pred_binned"),
   summarize_val_test)
@@ -358,7 +360,6 @@ ggplot(val_test_summarized,
 @
 
 We used these observed extinction probabilities (blue dots in the previous figure) to calibrate our predicted extinction probabilities in the contemporary dataset. We started with the predicted extinction probability from our GBM model applied to each contemporary genus, fit that value into our binning scheme, and extracted the empirically-observed mean extinction probability for that bin. This removes the observed out-of-sample non-linear bias in our model \cite{thorson2012}.
-%Put another way, we found our predicted value on the x-axis of the above plot and drew a vertical line up until we met a blue dot. We then used the y-axis value of the blue dot as our calibrated extinction probability.
 
 <<establish-stage-order>>=
 stage_order <- c("Lower Miocene", "Middle Miocene", "Upper Miocene",
@@ -372,7 +373,7 @@ stage_order <- c("Lower Miocene", "Middle Miocene", "Upper Miocene",
 
 We evaluated the marginal effect of each predictor on intrinsic extinction risk through partial dependence plots (Fig.~1). This procedure finds the marginal effect of each predictor by integrating across all other predictor values using the method described in Ref.~\cite{friedman2001}. Because there is some stochasticity when running a GBM, we ran models for each interval 20 times and each time recorded the marginal effects. We then took the median and interquartile range of those predictions. The range of these predictions is very small and hardly noticeable in Fig.~1.
 
-% first, we will write a function to fit the GBM models to a given stage:
+% First, we will write a function to fit the GBM models to a given stage:
 <<shape-data-partial-plots>>=
 fit_stage_models <- function(dat, stage_name) {
   if(stage_name == "all") {
@@ -441,6 +442,8 @@ partial_groups$value <- NULL
 partial_groups <- plyr::rename(partial_groups, c("group" = "value"))
 @
 
+% TODO 20140923 adapt this chunk to also create versions with the different culls of paleo data
+
 % We can re-create Fig.~1 in the paper by running the code in \texttt{make-partial-dependence-plot.Rnw}. We will suppress the code here to save space. Note that in this plotting code we centre the marginal effects for each geologic stage for visual purposes (so that the mean marginal effect of each variable is 0.5). We need to do this since the base rate of extinction is different in each geologic stage.
 <<partial-plots-base, child='make-partial-dependence-plot.Rnw', echo=FALSE, results='hide'>>=
 @
@@ -474,6 +477,9 @@ ri_lq <- ri_lq[ri_order]
 ri_uq <- ri_uq[ri_order]
 @
 
+% TODO 20140923 if we want to get fancy, also add dots on the following relative
+% importance plot that shows the RI for different completeness culls
+
 <<plot-relative-importance, results='hide'>>=
 names(ri_median) <- sub("group", "subgroup", names(ri_median))
 par(xpd = NA, mar = c(4, 8, 1, 1), cex = 0.8)
@@ -492,8 +498,6 @@ dev.off()
 \label{fig:plot-relative-importance}
 \end{figure}
 
-
-
 <<cross-intervals-gbms, results='hide'>>=
 stage_df <- expand.grid(stage_train = unique(neog$stage),
   stage_test = unique(neog$stage))
@@ -507,7 +511,7 @@ if(!file.exists("../data/cross_pred.rds")) {
 }
 @
 
-% get cross-interval predictions and create plot:
+% Get cross-interval predictions and create plot:
 <<plot-cross-interval-gbms, results='hide', child='plot-cross-interval-gbms-child.Rnw'>>=
 @
 
@@ -534,7 +538,7 @@ In the second case, we evaluated the similarity in extinction regimes between di
 \end{figure}
 % TODO talk to Sean about whether part 4 is potentially misleading
 
-%We will use our GBM model built on the entire Neogene period to predict extinction risk in the contemporary dataset. Because of the slight stochasticity from run to run of a GBM, we will run our model a number of times and take the average predictions.
+% We will use our GBM model built on the entire Neogene period to predict extinction risk in the contemporary dataset. Because of the slight stochasticity from run to run of a GBM, we will run our model a number of times and take the average predictions. First we will read back in the modern data:
 
 <<load-modern-data>>=
 temp_dat <- readRDS("../data/stand-predictors-cen-obis.rds")
@@ -543,7 +547,7 @@ modern$stage <- "Modern"
 rm(temp_dat)
 @
 
-%Next we look at the distribution of the predictors across the taxonomic groups in the contemporary dataset:
+% Next we look at the distribution of the predictors across the taxonomic groups in the contemporary dataset:
 
 <<modern-predictor-distributions, fig.width=13, fig.height=12>>=
 modern_long <- reshape2::melt(modern, id.vars = c("class", "group", "genus"),
@@ -554,7 +558,7 @@ p <- ggplot(modern_long, aes(value)) +
   facet_grid(class~variable, scales = "free")
 @
 
-%And the distribution of predictors across the taxonomic groups in the paleontological dataset:
+% And the distribution of predictors across the taxonomic groups in the paleontological dataset:
 
 <<paleo-predictor-distributions, fig.width=13, fig.height=12>>=
 paleo_long <- reshape2::melt(neog, id.vars = c("class", "group", "genus"),
@@ -564,6 +568,10 @@ p <- ggplot(paleo_long, aes(value)) +
   geom_histogram(aes(colour = class, fill = class)) +
   facet_grid(class~variable, scales = "free")
 @
+
+% TODO 20140923 add code here to also predict from different paleo culls, and in
+% the next chunk to calibrate the predictions, and then again in the next chunk
+% to save the various versions of modern predictions
 
 % Predict contemporary intrinsic extinction risk from the paleontological models:
 <<predict-risk-modern>>=
@@ -637,8 +645,7 @@ ggplot(d2, aes(y = jitter(gbm_pred_binned, amount = 0.02),
       20800), ylim = c(0, 1))
 @
 
-% Merge predictions with contemporary spatial observations
-% and climate/impact hotspots:
+% Merge predictions with contemporary spatial observations and climate/impact hotspots:
 <<merge-predictions-spatial, child='merge-predictions-spatial-child.Rnw', echo=FALSE>>=
 @
 
@@ -650,7 +657,7 @@ As described above, we used GBM models built on the Neogene fossil record to pro
 
 In order to delineate the geographic distribution of potential interactions between intrinsic risk and contemporary threats, we compared our mean intrinsic risk estimates with recent estimates of the global distribution of anthropogenic impacts on marine ecosystems \cite{halpern2008} and the velocity of climate change \cite{burrows2011}.  We extracted mean anthropogenic impact and velocity of climate change values for each province by overlaying data layers for these two indices on the provincial maps of Ref.~\cite{spalding2007} and taking the mean value for all cells within a given province. To highlight the regions most impacted by these contemporary threats, the outlined and hatched provinces in Fig.~3 indicate areas above the 80th percentile for mean anthropogenic impact and mean velocity of climate change, respectively.
 
-% Now, we will create Fig.~2 and Fig.~3 from the paper.
+% Now, we will create Fig. 2 and Fig. 3 from the paper.
 <<plot-class-maps, results='hide'>>=
 # create the dataset to map:
 load("../data/by.prov.classes.rda")
@@ -728,7 +735,7 @@ map_class_ext(er_dat_class, plot_column = "log.mean.gcd",
   fixed_range = TRUE)
 @
 
-%We can also look at the distribution of our predictions by biogeographic province \cite{spalding2007} and class (Fig.~\ref{fig:plot-density-risk-by-province}).
+% We can also look at the distribution of our predictions by biogeographic province \cite{spalding2007} and class (Fig.~\ref{fig:plot-density-risk-by-province}).
 <<plot-density-risk-by-province, fig.width=12.5, fig.height=15, fig.cap="Histograms showing the distribution of intrinsic extinction risk predictions for contemporary genera in each coastal biogeographic province \\cite{spalding2007} (panels) and taxonomic class (colors). Note that the x-axis is log-distributed.", echo=FALSE>>=
 # merge in province names:
 er <- readShapePoly("../data/MEOW2/meow_ecos.shp")
@@ -752,12 +759,20 @@ ggplot(temp, aes(mean_observed + 0.001)) +
 
 \section{Model exploration and sensitivity analyses}
 
+\subsection{Exploring the effects of preservation potential in the fossil record}
+
+\textbf{TODO fill in this part.}
+
+Look at sensitivity of Figure 1, 2, and 3 as well as plots of potential against estimates.
+
+
 \subsection{Exploring the effects of contemporary sampling intensity on intrinsic risk predictions}
 
 Geographic variation in sampling intensity may influence the observed distribution of geographic ranges and consequently the predicted extinction probabilities of contemporary marine genera. We used the number of OBIS records in a given province (Fig.~\ref{fig:plot-n-obis-prov}) as a rough index of sampling intensity and compared these values with mean intrinsic risk estimates for the four taxonomic groups (scleractinian corals, bivalves, echinoids, and gastropods) in which OBIS records were used to calculate genus geographic ranges. The correspondence between the number of OBIS records in a province and the mean intrinsic risk of genera in a province is not strong; however, a positive relationship is observed in each group (Fig.~\ref{fig:relationship-between-mean-risk-and-sampling-intensity}).
 
 To determine whether the broad-scale patterns of mean intrinsic risk (Fig.~2) are robust to geographic variation in sampling intensity, we plotted the residual variation in intrinsic risk remaining after accounting for provincial variation in the number of OBIS records using a linear model (Fig.~\ref{fig:obis-residuals-maps}). These maps are qualitatively similar to those presented in Fig.~2. Echinoids show relatively little change in mean risk estimates. For gastropods, scleractinian corals, and bivalves, hotspots of intrinsic risk in the Indo-Pacific and tropical West Atlantic remain; however, the relative risk of the Caribbean is muted after accounting for the intense sampling that has occurred in the region (Fig.~\ref{fig:plot-n-obis-prov}). Differences in mean intrinsic risk between northern and southern hemisphere extratropics are also preserved (Fig.~\ref{fig:obis-residuals-maps}).
 
+% TODO this section will need to be expanded
 Geographic variation in sampling intensity could result in the observation of ``pseudo-endemics'' --- genera found in a well-sampled provinces but not observed in adjacent provinces that have not been sampled as intensely. To determine the potential effect of ``pseudo-endemics'' on mean intrinsic risk estimates we removed genera that were only reported in one province. For this sensitivity test, we explicitly assumed that these genera were solely the result of variation in sampling intensity, although in reality single province genera are most likely a combination of ``pseudo-endemics'' and true endemics. 
 %Culling genera known from only one province reduces the sample size of contemporary genera by \Sexpr{single.genera.provs.removed} to a total of \Sexpr{total.genera} genera. 
 Maps of mean intrinsic risk in which single province genera were excluded (Fig.~\ref{fig:remove-single-province-genera}) are congruent with those derived from the full dataset (Figs.~2 and 3), indicating that single-province genera are not responsible for the broad-scale patterns of intrinsic risk.
@@ -827,6 +842,8 @@ mtext("Min. genera = 100", cex = 2)
 map_hotspots(er_dat, min_prov_genera = 200, hotspots = FALSE)
 mtext("Min. genera = 200", cex = 2)
 @
+
+% TODO 20140923 follow this framework below to build fossil sensitivity maps
 
 <<remove-single-province-genera-class-map, results='hide'>>=
 load("../data/by.prov.classes.no.singles.rda")
