@@ -296,6 +296,9 @@ extract_ranges <- function() {
 
   ####### now merge modern and paleo data#######
 
+  # create empty prop_comp column to match the paleo data frame:
+  byGenus.OBIS$prop_comp <- NA
+
   data <- rbind(byGenus.OBIS,byGenus.PBDB)
   data$AbsLatRange <- data$MaxAbsLat - data$MinAbsLat
   data$class <- ifelse(data$class == "Decapoda", "Malacostraca",data$class)
@@ -303,6 +306,7 @@ extract_ranges <- function() {
   ### now finally, before saving, drop the pre-Neogene stages
   dropstages <- c("Chattian", "Rupelian")
   data <- data[!(data$Interval %in% dropstages),]
+  data <- droplevels(data)
   data$singleton.single.occ <- ifelse(data$Singleton ==1 & data$occurrences ==1 ,1,0)
   saveRDS(data, file = "../data/modern_and_paleo_ranges.rds")
 }
