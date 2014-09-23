@@ -165,7 +165,7 @@ extract_ranges <- function() {
   ### extract apparent origination and extinction dates of genera
   gen.LA <- function(df) min(df$top)
   gen.FA <- function(df) max(df$top)
-  gen.LAs <- plyr::ddply(pbdb, plyr::.(clgen), plyr::each(gen.LA,gen.FA), plyr::.progress="text")
+  gen.LAs <- plyr::ddply(pbdb, plyr::.(clgen), plyr::each(gen.LA,gen.FA), .progress = "text")
 
   ### merge back in and add row to indicate extinction in LA bin if the genus is not listed as extant
   pbdb <- merge(pbdb,gen.LAs,by="clgen",all.x=TRUE)
