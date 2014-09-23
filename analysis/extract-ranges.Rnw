@@ -71,7 +71,7 @@ extract_ranges <- function() {
       events <- PBSmapping::as.EventData(na.omit(events),
         projection='UTM')
       fc <- PBSmapping::findCells(events, polys)
-      richness <- mean(unique(droplevels(df$richness)))
+      richness <- mean(unique(df$richness))
       eac <-length(unique(subset(fc,select=c(PID,SID)))[,1])
       gcd <-max(fields::rdist.earth(events[,2:3], mile = FALSE))
       MaxLat <- max(df$latitude)
@@ -84,7 +84,7 @@ extract_ranges <- function() {
     else{
       eac=1
       gcd=1
-      richness <- mean(unique(droplevels(df$richness)))
+      richness <- mean(unique(df$richness))
       MaxLat <- max(df$latitude)
       MinLat <- min(df$latitude)
       MaxAbsLat <- max(abs(df$latitude))
