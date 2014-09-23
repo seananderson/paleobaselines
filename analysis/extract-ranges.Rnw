@@ -143,7 +143,8 @@ extract_ranges <- function() {
   pbdb <- plyr::join(pbdb, prop_comp, by = "occurrence.genus_name")
 
   ### redefine Plio-Pleistocene FR_2 Bin
-  pbdb$FR2_bin <- ifelse(pbdb$interval_base <= 5.333 & pbdb$interval_top >= .0117,"Plio-Pleistocene",as.character(pbdb$FR2_bin))
+  pbdb$FR2_bin <- ifelse(pbdb$interval_base <= 5.333 &
+    pbdb$interval_top >= .0117,"Plio-Pleistocene", as.character(pbdb$FR2_bin))
 
   #define the stages we want to use, for reference
   FR2_bin <- c("Pleistocene","Pliocene","Plio-Pleistocene","Upper Miocene","Middle Miocene","Lower Miocene","Chattian","Rupelian")
