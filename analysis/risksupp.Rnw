@@ -44,7 +44,7 @@
 <<set-knitr-options, cache=FALSE, echo=FALSE>>=
 library("knitr")
 opts_chunk$set(fig.align='center', fig.pos="htpb", cache=TRUE, echo=FALSE,
-message=FALSE, autodep=FALSE, fig.path='../figs/', fig.width=6, par=TRUE)
+  message=FALSE, autodep=FALSE, fig.path='../figs/', fig.width=6, par=TRUE)
 opts_chunk$set(warning=FALSE, message=FALSE, tidy=FALSE, refresh=TRUE,
   cache.path="../cache/", cache.lazy=TRUE, size="small", cache.comments=FALSE)
 opts_chunk$set(dev = 'pdf')
@@ -199,9 +199,9 @@ dat$Interval <- factor(dat$Interval)
 dat <- subset(dat, !class %in% c("Foraminifera", "Testudines", "Malacostraca"))
 dat <- droplevels(dat)
 dat <- rename(dat, c("Interval" = "Interval_Name",
-    "MaxAbsLat" = "MaxLat", "MinAbsLat" = "MinLat",
-    "group" = "MatchTaxon", "top" = "stage_top",
-    "MeanAbsLat" = "mean_lat", "Ex" = "Extinct.in.stage"))
+  "MaxAbsLat" = "MaxLat", "MinAbsLat" = "MinLat",
+  "group" = "MatchTaxon", "top" = "stage_top",
+  "MeanAbsLat" = "mean_lat", "Ex" = "Extinct.in.stage"))
 stcen <- ddply(dat, "Interval_Name", standardize_data)
 saveRDS(stcen, file = "../data/stand-predictors-cen-obis.rds")
 @
@@ -223,9 +223,9 @@ Occurrences <- function(df) sum(df$occurrences)
 Table.S1 <- plyr::ddply(dat, plyr::.(Interval_Name,class),
   plyr::each(Genera, Occurrences))
 Table.S1 <- Table.S1[(Table.S1$Interval_Name != "Modern_merged" &
-  Table.S1$class != "Malacostraca" &
-  Table.S1$class != "Foraminifera" &
-  Table.S1$class != "Testudines"), ]
+    Table.S1$class != "Malacostraca" &
+    Table.S1$class != "Foraminifera" &
+    Table.S1$class != "Testudines"), ]
 Table.S1$Interval_Name <- plyr::revalue(Table.S1$Interval_Name, c("Modern_raw" = "Modern"))
 Table.S1$Interval_Name <- factor(Table.S1$Interval_Name,
   levels = c("Lower Miocene", "Middle Miocene",
@@ -236,7 +236,7 @@ Table.S1 <- plyr::rename(Table.S1, c("Interval_Name" = "Interval"))
 Table.S1$Group <- sub("Elasmobranchii", "Sharks", Table.S1$Group)
 Table.S1$Group <- sub("Anthozoa", "Scleractinia", Table.S1$Group)
 xtable::print.xtable(xtable::xtable(Table.S1, digits = c(0, 0, 0, 0, 0),
-    caption = "Total number of genera and occurrences of those genera in the Paleobiology Database (Neogene intervals) and OBIS database (modern) for the six major taxonomic groups used in our analysis.\\label{tab:genera}"),
+  caption = "Total number of genera and occurrences of those genera in the Paleobiology Database (Neogene intervals) and OBIS database (modern) for the six major taxonomic groups used in our analysis.\\label{tab:genera}"),
   include.rownames = FALSE, caption.placement = "top", booktabs = TRUE)
 @
 
@@ -346,7 +346,7 @@ if(!file.exists("../data/val_test.rds")) {
   saveRDS(val_test, file = "../data/val_test.rds")
 } else {
   message(paste("Loading previous GBM cross-validations.",
-      "Delete ../data/val_test.rds to rerun these."))
+    "Delete ../data/val_test.rds to rerun these."))
   val_test <- readRDS("../data/val_test.rds")
 }
 @
@@ -414,8 +414,8 @@ fit_stage_models <- function(dat, stage_name) {
   w <- paleorisk::get_weights(d$Ex)
   weights <- ifelse(d$Ex == 1, w$ex_weight, w$sur_weight)
   gbm::gbm(Ex ~ richness + occupancy + occurrences + min.lat + max.lat +
-    lat.range + mean.lat + great.circle + group, data =
-    d, n.trees = NTREES, interaction.depth = INT.DEPTH,
+      lat.range + mean.lat + great.circle + group, data =
+      d, n.trees = NTREES, interaction.depth = INT.DEPTH,
     distribution = "bernoulli", shrinkage = SHRINKAGE, weights = weights)
 }
 @
@@ -444,7 +444,7 @@ partial_dat <- ldply(c(stage_order, "all"), function(stage_name) {
     names(p1) <- c("value", "response")
     p1$predictor <- var_name
     p1
-    })
+  })
   p2$stage <- stage_name
   p2
 })
@@ -465,7 +465,7 @@ partial_dat2 <- plyr::ddply(partial_dat,
 partial_groups <- partial_dat2[partial_dat2$predictor == "group", ]
 partial_continuous <- partial_dat2[partial_dat2$predictor != "group", ]
 groups_match <- data.frame(value =
-  1:length(unique(neog$group)),
+    1:length(unique(neog$group)),
   group = sort(unique(neog$group)), stringsAsFactors = FALSE)
 partial_groups <- plyr::join(partial_groups, groups_match)
 partial_groups$value <- NULL
@@ -484,8 +484,8 @@ if(!file.exists("../data/main_model.rds")) {
   weights <- ifelse(neog$Ex == 1, w$ex_weight, w$sur_weight)
   m <- rlply(20, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
       max.lat + lat.range + mean.lat + great.circle + group,
-      data = neog, n.trees = NTREES, interaction.depth = INT.DEPTH,
-      distribution = "bernoulli", shrinkage = SHRINKAGE, weights = weights))
+    data = neog, n.trees = NTREES, interaction.depth = INT.DEPTH,
+    distribution = "bernoulli", shrinkage = SHRINKAGE, weights = weights))
   saveRDS(m, file = "../data/main_model.rds")
 } else {
   m <- readRDS("../data/main_model.rds")
@@ -494,7 +494,7 @@ if(!file.exists("../data/main_model.rds")) {
 ri <- ldply(m, function(x) {
   gbm::relative.influence(x, scale. = TRUE,
     sort. = FALSE, n.trees = NTREES)
-  })
+})
 ri_median <- apply(ri, 2, median)
 ri_lq <- apply(ri, 2, function(x) quantile(x, probs = 0.25))
 ri_uq <- apply(ri, 2, function(x) quantile(x, probs = 0.75))
@@ -517,10 +517,10 @@ dev.off()
 @
 
 \begin{figure}[htbp]
- \centering
- \includegraphics[width=3in]{../figs/plot-relative-importance.pdf}
- \caption{Relative influence of the predictor variables (Table~\ref{tab:predictors}) in the Neogene GBM model. The values are scaled so that the variable with the maximum influence on accurate extinction risk prediction has a relative importance of 1. Shown are the median (dots) and interquartile range (line segments) across 20 model runs. There is minimal variation from run to run so the line segments are small.}
- \label{fig:plot-relative-importance}
+\centering
+\includegraphics[width=3in]{../figs/plot-relative-importance.pdf}
+\caption{Relative influence of the predictor variables (Table~\ref{tab:predictors}) in the Neogene GBM model. The values are scaled so that the variable with the maximum influence on accurate extinction risk prediction has a relative importance of 1. Shown are the median (dots) and interquartile range (line segments) across 20 model runs. There is minimal variation from run to run so the line segments are small.}
+\label{fig:plot-relative-importance}
 \end{figure}
 
 
@@ -551,10 +551,10 @@ In the first case, we built models on two thirds of the data and then tested on 
 In the second case, we evaluated the similarity in extinction regimes between different time intervals by predicting extinction risk for each genus in a given interval from the model trained on that interval with predicted extinction risk for that genus from a model trained on a different interval. If the relationship between predictors and extinction risk was similar in both intervals then genus risk predictions from the two models would be strongly positively correlated. If the relationship between predictors and extinction risk differed strongly between the two intervals, genus risk estimates would be only weakly correlated. We see that in general there is substantial similarity in per-genus extinction risk predictions across all four intervals, with Spearman's rank-order correlation coefficients for cross-interval predictions ranging from \Sexpr{min(Rsqs$Rsq)} to \Sexpr{max(Rsqs$Rsq)} with a median of \Sexpr{round(median(Rsqs$Rsq), 2)}.
 
 \begin{figure}[htbp]
- \centering
- \includegraphics[width=4.86in]{../figs/plot-cross-interval-gbms-base.pdf}
- \caption{Consistency of relative extinction risk patterns throughout the Neogene fossil record. Shown are comparisons of scaled genus extinction probabilities estimated from models built and tested on different geologic intervals. For example, the upper right-hand panel plots the extinction risk of Plio-Pleistocene genera predicted by the model built on those data (x axis) compared to a predictions by a model built using the Lower Miocene data (y axis). The higher the rank order correlation, as shown by Spearman's Rho values in upper left panel corners (except for within-interval comparisons), the more similar the determinants of extinction risk are between two given intervals. Note that because extinctions were weighted more heavily in the GBM models (Section~\ref{sec:build-calibrate}), the absolute values shown on the x and y axes here are transformed versions of the real probabilities. We corrected this using a calibration procedure when we applied the Neogene model to the modern dataset (Section~\ref{sec:build-calibrate}). Genus risk predictions are similar across interval-specific models despite interval-to-interval variation in the environmental drivers of extinction and in the sampling of the fossil record.}
- \label{fig:plot-cross-interval-gbms}
+\centering
+\includegraphics[width=4.86in]{../figs/plot-cross-interval-gbms-base.pdf}
+\caption{Consistency of relative extinction risk patterns throughout the Neogene fossil record. Shown are comparisons of scaled genus extinction probabilities estimated from models built and tested on different geologic intervals. For example, the upper right-hand panel plots the extinction risk of Plio-Pleistocene genera predicted by the model built on those data (x axis) compared to a predictions by a model built using the Lower Miocene data (y axis). The higher the rank order correlation, as shown by Spearman's Rho values in upper left panel corners (except for within-interval comparisons), the more similar the determinants of extinction risk are between two given intervals. Note that because extinctions were weighted more heavily in the GBM models (Section~\ref{sec:build-calibrate}), the absolute values shown on the x and y axes here are transformed versions of the real probabilities. We corrected this using a calibration procedure when we applied the Neogene model to the modern dataset (Section~\ref{sec:build-calibrate}). Genus risk predictions are similar across interval-specific models despite interval-to-interval variation in the environmental drivers of extinction and in the sampling of the fossil record.}
+\label{fig:plot-cross-interval-gbms}
 \end{figure}
 
 \begin{figure}[htbp]
@@ -619,7 +619,7 @@ saveRDS(modern, file = "../data/modern-predictions.rds")
 <<plot-genus-predictions-against-gcd2, fig.cap='Predicted intrinsic risk versus geographic range size (great circle distance) for modern genera in each of six taxonomic groups. The points represent individual genera and are colored according to taxonomic subgroups within each major taxonomic group, the black contour lines indicate the density of genera, and the red line represents the mean intrinsic risk of all modern genera.', fig.width=10, fig.height=7.5>>=
 class2 <- data.frame(c("Anthozoa", "Bivalvia", "Echinoidea",
   "Elasmobranchii", "Gastropoda", "Mammalia"), c("Scleractinia",
-  "Bivalvia", "Echinoidea", "Sharks", "Gastropoda", "Mammalia"))
+    "Bivalvia", "Echinoidea", "Sharks", "Gastropoda", "Mammalia"))
 colnames(class2) <- c("class", "newclass")
 modern <- merge(modern, class2, by = "class")
 group <- levels(as.factor(modern$group))
@@ -649,7 +649,7 @@ colnames(group2) <- c("group", "group2")
 modern <- merge(modern, group2, by = "group")
 
 d2 <- ddply(modern, "newclass", transform,
-group_id = as.numeric(as.factor(as.character(as.numeric(group2)))))
+  group_id = as.numeric(as.factor(as.character(as.numeric(group2)))))
 
 ggplot(d2, aes(y = jitter(gbm_pred_binned, amount = 0.02),
   x = jitter(great.circle, amount = 800), colour = as.factor(group2))) +
@@ -658,14 +658,14 @@ ggplot(d2, aes(y = jitter(gbm_pred_binned, amount = 0.02),
   theme_bw() + xlab("Great circle distance") + ylab("Predicted intrinsic risk") +
   theme(strip.text.x = element_text(size = 8), axis.text = element_text(size = 8)) +
   theme(legend.text = element_text(size = 9)) + scale_colour_manual(values = c("red",
-  "blue", "green3", "deeppink1", "orange", "cyan", "yellow3",
-  "cornflowerblue", "darkorchid1", "red", "blue", "green3",
-  "red", "blue", "green3", "deeppink1", "orange", "cyan",
-  "yellow3", "cornflowerblue", "red", "blue", "green3",
-  "red", "blue", "green3", "deeppink1", "red")) + theme(legend.title = element_blank()) +
+    "blue", "green3", "deeppink1", "orange", "cyan", "yellow3",
+    "cornflowerblue", "darkorchid1", "red", "blue", "green3",
+    "red", "blue", "green3", "deeppink1", "orange", "cyan",
+    "yellow3", "cornflowerblue", "red", "blue", "green3",
+    "red", "blue", "green3", "deeppink1", "red")) + theme(legend.title = element_blank()) +
   theme(strip.text.x = element_text(size = 14)) + stat_density2d(colour = "black",
-  size = 0.25, bins = 16) + coord_cartesian(xlim = c(0,
-  20800), ylim = c(0, 1))
+    size = 0.25, bins = 16) + coord_cartesian(xlim = c(0,
+      20800), ylim = c(0, 1))
 @
 
 % Merge predictions with contemporary spatial observations
@@ -704,7 +704,7 @@ silhouette_coords[[3]] <- silhouette_coords[[3]] + c(0, 0, -0.1, -0.1)
 # fix bivalves:
 silhouette_coords[[6]] <- silhouette_coords[[6]] + c(0, 0, -0.05, -0.05)
 picture_files <- paste0("../silhouettes/", c("Mammalia", "Sharks",
-      "Echinoidea", "Gastropoda", "Scleractinia", "Bivalvia"), ".eps.xml")
+  "Echinoidea", "Gastropoda", "Scleractinia", "Bivalvia"), ".eps.xml")
 
 # make the figure:
 pdf("../figs/class-risk-maps-mean-log-ext.pdf", width = 6.45, height = 5.1)
@@ -733,7 +733,7 @@ pdf("../figs/hotspots.pdf", width = 7, height = 3.5)
 par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
 labs <- c(0.012, 0.016, 0.02)
- labs_show <- sprintf("%.3f", labs)
+labs_show <- sprintf("%.3f", labs)
 map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
   hotspots = TRUE, at = log(labs), at.labels = labs_show)
 par(xpd = NA)
@@ -804,7 +804,7 @@ map_class_ext(subset(er_dat_class, !class %in% c("Elasmobranchii", "Mammalia")),
 
 <<relationship-between-mean-risk-and-sampling-intensity, fig.width=9, fig.height=5.5, out.width="5in", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus number of OBIS records (of the indicated taxonomic group) from that province. Each point represents a single biogeographic province; colors indicate latitudinal zone of province. Lines and gray-shaded regions indicate linear regressions and 95\\% confidence intervals. Positive correlations between mean intrinsic risk and number of OBIS records (as a rough index of sampling effort) suggest that heavily sampled provinces may contain a greater proportion of ``pseudoendemic'' genera that have not been sampled in other provinces in which they actually occur.", cache=TRUE>>=
 temp_dat <- droplevels(subset(by.prov.classes,
-    !class %in% c("Elasmobranchii", "Mammalia")))
+  !class %in% c("Elasmobranchii", "Mammalia")))
 temp_dat$class <- as.character(temp_dat$class)
 temp_dat$class[temp_dat$class == "Anthozoa"] <- "Scleractinia"
 p <- ggplot(temp_dat,
@@ -824,8 +824,8 @@ print(p)
 %TODO: recenter y-axis text?  not important at this stage
 \begin{figure}[htbp]
 \centering
-  \includegraphics[width=\textwidth]{../figs/obis-residuals-maps-class.pdf}
-  \caption{The geographic distribution of \textbf{intrinsic risk residuals} across coastal biogeographic provinces after applying a linear model accounting for the relationship between number of OBIS records and mean intrinsic risk. Panels for sharks and mammals (as in Fig.~2) are not shown because we used range maps instead of OBIS data for the modern distributions. The broad-scale mean intrinsic risk patterns plotted in Fig.~2 remain after accounting for this relationship. }
+\includegraphics[width=\textwidth]{../figs/obis-residuals-maps-class.pdf}
+\caption{The geographic distribution of \textbf{intrinsic risk residuals} across coastal biogeographic provinces after applying a linear model accounting for the relationship between number of OBIS records and mean intrinsic risk. Panels for sharks and mammals (as in Fig.~2) are not shown because we used range maps instead of OBIS data for the modern distributions. The broad-scale mean intrinsic risk patterns plotted in Fig.~2 remain after accounting for this relationship. }
 \label{fig:obis-residuals-maps}
 \end{figure}
 
@@ -837,7 +837,7 @@ temp2 <- plyr::join(d.eco.filled, prov_names, by = "PROV_CODE")
 range_between <- diff(range(exp(by.prov.all$mean.ext)))
 folds <- ddply(temp2, c("PROV_CODE"), plyr::summarize,
   range = diff(range(mean_observed))
-  )
+)
 diff_in_range <- round(range(folds$range) / range_between, 0)
 write.table(diff_in_range, file = "diff_in_range.txt", row.names = FALSE)
 @
@@ -893,11 +893,11 @@ dev.off()
 @
 
 \begin{figure}[htbp]
-  \centering
-  \includegraphics[width=\textwidth]{../figs/remove-single-province-genera-class-map.pdf}
-  \includegraphics[width=3.75in]{../figs/remove-single-province-genera-overall-map.pdf}
-  \caption{Mean predicted extinction susceptibility of genera inhabiting different ocean biogeographic provinces \cite{spalding2007} for each of the six major groups considered (upper six panels) and across all genera (lower centred panel), as in Fig.~2 and 3, but \textbf{with genera occurring only in a single biogeographic province removed}. Scale bars on the right indicate the range of intrinsic extinction probability values for a given group.}
-  \label{fig:remove-single-province-genera}
+\centering
+\includegraphics[width=\textwidth]{../figs/remove-single-province-genera-class-map.pdf}
+\includegraphics[width=3.75in]{../figs/remove-single-province-genera-overall-map.pdf}
+\caption{Mean predicted extinction susceptibility of genera inhabiting different ocean biogeographic provinces \cite{spalding2007} for each of the six major groups considered (upper six panels) and across all genera (lower centred panel), as in Fig.~2 and 3, but \textbf{with genera occurring only in a single biogeographic province removed}. Scale bars on the right indicate the range of intrinsic extinction probability values for a given group.}
+\label{fig:remove-single-province-genera}
 \end{figure}
 
 \subsection{The effect of interpolation of OBIS records}
@@ -982,11 +982,11 @@ dev.off()
 @
 
 \begin{figure}[htbp]
-  \centering
-  \includegraphics[width=5.65in]{../figs/plot-class-prov-ext-raw-ranges.pdf}
-  \includegraphics[width=3.45in]{../figs/no-bounding-box-overall-map.pdf}
-  \caption{Mean intrinsic extinction risk of genera inhabiting different ocean biogeographic provinces \cite{spalding2007} for each of the six major groups considered (upper six panels) and across all genera (lower centred panel), as in Fig.~2 and 3, but \textbf{with predictions based on raw ranges in OBIS without the within-realm minimum bounding box interpolation}. Scale bars on the right indicate the range of intrinsic extinction probability values for a given group. Note that the modern distribution of sharks and mammals was based on range maps instead of OBIS observations and so panels A and B are the same as in Fig.~2.}
-  \label{fig:no-bounding-box}
+\centering
+\includegraphics[width=5.65in]{../figs/plot-class-prov-ext-raw-ranges.pdf}
+\includegraphics[width=3.45in]{../figs/no-bounding-box-overall-map.pdf}
+\caption{Mean intrinsic extinction risk of genera inhabiting different ocean biogeographic provinces \cite{spalding2007} for each of the six major groups considered (upper six panels) and across all genera (lower centred panel), as in Fig.~2 and 3, but \textbf{with predictions based on raw ranges in OBIS without the within-realm minimum bounding box interpolation}. Scale bars on the right indicate the range of intrinsic extinction probability values for a given group. Note that the modern distribution of sharks and mammals was based on range maps instead of OBIS observations and so panels A and B are the same as in Fig.~2.}
+\label{fig:no-bounding-box}
 \end{figure}
 
 \subsection{Testing the influence of individual taxonomic groups on contemporary risk maps}
@@ -1043,11 +1043,11 @@ for(i in 1:length(classes)) {
 \end{spacing}
 
 \begin{table}
- \centering
- \caption{Description of predictors included in the GBM models. We describe how we standardized many of these predictors across time intervals in Section \ref{sec:standardizing-predictors}.}
-  \label{tab:predictors}
-  \smallskip
-  \begin{tabular}{p{4cm}p{8cm}}
+\centering
+\caption{Description of predictors included in the GBM models. We describe how we standardized many of these predictors across time intervals in Section \ref{sec:standardizing-predictors}.}
+\label{tab:predictors}
+\smallskip
+\begin{tabular}{p{4cm}p{8cm}}
 \toprule
 Predictor & Description\\
 \midrule
