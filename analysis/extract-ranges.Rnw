@@ -97,7 +97,7 @@ extract_ranges <- function() {
   }
 
   # Apply it to the modern range data:
-  byGenus.OBIS <- ddply(OBIS.grid.2,
+  byGenus.OBIS <- plyr::ddply(OBIS.grid.2,
     .(Spalding.version,Interval,class,MatchTaxon,genus),
     ranges, .progress="text")
   colnames(byGenus.OBIS) <- c("Interval","top","class","group","genus",
@@ -165,7 +165,7 @@ extract_ranges <- function() {
   ### extract apparent origination and extinction dates of genera
   gen.LA <- function(df) min(df$top)
   gen.FA <- function(df) max(df$top)
-  gen.LAs <- ddply(pbdb,.(clgen),each(gen.LA,gen.FA),.progress="text")
+  gen.LAs <- plyr::ddply(pbdb, plyr::.(clgen), plyr::each(gen.LA,gen.FA), plyr::.progress="text")
 
   ### merge back in and add row to indicate extinction in LA bin if the genus is not listed as extant
   pbdb <- merge(pbdb,gen.LAs,by="clgen",all.x=TRUE)
@@ -280,9 +280,8 @@ extract_ranges <- function() {
   }
 
   #####  now apply it to the PBDB data
-  byGenus.PBDB <- ddply(pbdb, .(stage.name, top, class,
-    Group, occurrence.genus_name),ranges,
-    .progress="text")
+  byGenus.PBDB <- plyr::ddply(pbdb, plyr::.(stage.name, top, class,
+    Group, occurrence.genus_name), ranges, plyr::.progress="text")
   colnames(byGenus.PBDB) <- c("Interval","top","class",
     "group","genus","occurrences","eac","gcd",
     "richness","MaxAbsLat","MinAbsLat","MeanAbsLat","Ex","Singleton")
