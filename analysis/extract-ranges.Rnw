@@ -282,7 +282,7 @@ extract_ranges <- function() {
 
   #####  now apply it to the PBDB data
   byGenus.PBDB <- plyr::ddply(pbdb, plyr::.(stage.name, top, class,
-    Group, occurrence.genus_name), ranges, plyr::.progress="text")
+    Group, occurrence.genus_name), ranges, .progress="text")
   colnames(byGenus.PBDB) <- c("Interval","top","class",
     "group","genus","occurrences","eac","gcd",
     "richness","MaxAbsLat","MinAbsLat","MeanAbsLat","Ex","Singleton")
