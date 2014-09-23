@@ -131,6 +131,17 @@ download.file("https://dl.dropboxusercontent.com/u/254940/riskmaps-data/4.6.2014
   method = "curl")
 load("../data/4.6.2014.pbdb.occs.rda")
 
+  # Estimation of proportional completness using FR2 bins
+  # From Carl on 20140923
+  int <- length(which(levels(pbdb$FR2_bin)!=""))
+  times <- function(x) {
+    y <- unique(x$FR2_bin)
+    z <- length(which(y != ""))
+    data.frame(prop_comp = z/int)
+  }
+  prop_comp <- plyr::ddply(pbdb, "occurrence.genus_name", times)
+  pbdb <- plyr::join(pbdb, prop_comp, by = "occurrence.genus_name")
+  
   ### redefine Plio-Pleistocene FR_2 Bin
   pbdb$FR2_bin <- ifelse(pbdb$interval_base <= 5.333 & pbdb$interval_top >= .0117,"Plio-Pleistocene",as.character(pbdb$FR2_bin))
 
