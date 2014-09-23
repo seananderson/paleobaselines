@@ -36,7 +36,7 @@ extract_ranges <- function() {
 
   latitude <- round(OBIS.for.plot$lat_mid)
   longitude <- round(OBIS.for.plot$long_mid)
-  LongLat <- paste(round(longitude,2),"_",round(latitude,2),sep="")
+  LongLat <- paste(round(longitude,2), "_",round(latitude,2),sep="")
   genus <- OBIS.for.plot$genus
   Spalding.version <- OBIS.for.plot$provinces
   richness <- OBIS.for.plot$Richness
@@ -100,9 +100,9 @@ extract_ranges <- function() {
   byGenus.OBIS <- plyr::ddply(OBIS.grid.2,
     .(Spalding.version,Interval,class,MatchTaxon,genus),
     ranges, .progress="text")
-  colnames(byGenus.OBIS) <- c("Interval","top","class","group","genus",
-    "occurrences","eac","gcd","richness","MaxAbsLat","MinAbsLat",
-    "MeanAbsLat","Ex")
+  colnames(byGenus.OBIS) <- c("Interval", "top", "class", "group", "genus",
+    "occurrences", "eac", "gcd", "richness", "MaxAbsLat", "MinAbsLat",
+    "MeanAbsLat", "Ex")
   ### add in a dummy "Singleton" column so can be merged with PBDB
   byGenus.OBIS$Singleton <- rep(0,length(byGenus.OBIS[,1]))
   write.table(byGenus.OBIS, "../data/OBIS.ranges.processed.csv", sep = ",")
@@ -131,7 +131,7 @@ extract_ranges <- function() {
     method = "curl")
   load("../data/4.6.2014.pbdb.occs.rda")
 
-  # Estimation of proportional completness using FR2 bins
+  # Estimation of proportional completeness using FR2 bins
   # From Carl on 20140923
   int <- length(which(levels(pbdb$FR2_bin)!=""))
   times <- function(x) {
@@ -144,11 +144,11 @@ extract_ranges <- function() {
 
   ### redefine Plio-Pleistocene FR_2 Bin
   pbdb$FR2_bin <- ifelse(pbdb$interval_base <= 5.333 &
-    pbdb$interval_top >= .0117,"Plio-Pleistocene", as.character(pbdb$FR2_bin))
+    pbdb$interval_top >= .0117, "Plio-Pleistocene", as.character(pbdb$FR2_bin))
 
   #define the stages we want to use, for reference
-  FR2_bin <- c("Pleistocene","Pliocene","Plio-Pleistocene","Upper Miocene","Middle Miocene","Lower Miocene","Chattian","Rupelian")
-  stage.name <- c("Plio-Pleistocene","Plio-Pleistocene","Plio-Pleistocene","Upper Miocene","Middle Miocene","Lower Miocene","Chattian","Rupelian")
+  FR2_bin <- c("Pleistocene", "Pliocene", "Plio-Pleistocene", "Upper Miocene", "Middle Miocene", "Lower Miocene", "Chattian", "Rupelian")
+  stage.name <- c("Plio-Pleistocene", "Plio-Pleistocene", "Plio-Pleistocene", "Upper Miocene", "Middle Miocene", "Lower Miocene", "Chattian", "Rupelian")
   top <- c(.0117,.0117,.0117,5.333,11.608,15.97,23.03,28.1)
   bottom <- c(5.333,5.333,5.333,11.608,15.97,23.03,28.1,33.9)
   stage.dates <- data.frame(FR2_bin,stage.name,bottom,top)
@@ -190,23 +190,23 @@ extract_ranges <- function() {
 
   pbdb.gen <- data.frame(pbdb$class_name,pbdb$order_name,
     pbdb$family_name, pbdb$occurrence.genus_name)
-  colnames(pbdb.gen) <- c("class","order","family","Genus")
+  colnames(pbdb.gen) <- c("class", "order", "family", "Genus")
 
   pbdb.cats <- merge(pbdb.gen,pbdb.gen.cats,by="Genus",all.x=TRUE)
 
   ### make table show family-level and higher matches to our categories
   pbdb.fams <- na.omit(unique(data.frame(pbdb.cats$family,pbdb.cats$Group)))
-  colnames(pbdb.fams) <- c("family","family.Group")
+  colnames(pbdb.fams) <- c("family", "family.Group")
   pbdb.fams <- pbdb.fams[!(is.na(pbdb.fams$family) | pbdb.fams$family==""), ]
 
   pbdb.gen <- data.frame(pbdb.gen.cats$Group,pbdb.gen.cats$Genus)
-  colnames(pbdb.gen) <- c("genus.Group","occurrence.genus_name")
+  colnames(pbdb.gen) <- c("genus.Group", "occurrence.genus_name")
 
 
   pbdb$order.Group <- ifelse(pbdb$class_name == "Chondrichthyes",
     "Elasmobranchii_Elasmobranchii",
-    ifelse(pbdb$order_name == "Decapoda","Decapoda_Decapoda",
-      ifelse(pbdb$order_name == "Testudines","Testudines_Testudines",
+    ifelse(pbdb$order_name == "Decapoda", "Decapoda_Decapoda",
+      ifelse(pbdb$order_name == "Testudines", "Testudines_Testudines",
         "none")))
 
   pbdb <- merge(pbdb,pbdb.gen,by="occurrence.genus_name",all.x=TRUE)
@@ -285,44 +285,22 @@ extract_ranges <- function() {
   #####  now apply it to the PBDB data
   byGenus.PBDB <- plyr::ddply(pbdb, plyr::.(stage.name, top, class,
     Group, occurrence.genus_name), ranges, .progress="text")
-  colnames(byGenus.PBDB) <- c("Interval","top","class",
-    "group","genus","occurrences","eac","gcd",
-    "richness","MaxAbsLat","MinAbsLat","MeanAbsLat","Ex","Singleton")
-  write.table(byGenus.PBDB,"../data/PBDB.ranges.processed.csv", sep = ",")
+  colnames(byGenus.PBDB) <- c("Interval", "top", "class",
+    "group", "genus", "occurrences", "eac", "gcd",
+    "richness", "MaxAbsLat", "MinAbsLat", "MeanAbsLat", "Ex", "Singleton", "prop_comp")
+  write.table(byGenus.PBDB, "../data/PBDB.ranges.processed.csv", sep = ",")
 
   ####### now merge modern and paleo data#######
 
   data <- rbind(byGenus.OBIS,byGenus.PBDB)
   data$AbsLatRange <- data$MaxAbsLat - data$MinAbsLat
-  data$class <- ifelse(data$class == "Decapoda","Malacostraca",data$class)
+  data$class <- ifelse(data$class == "Decapoda", "Malacostraca",data$class)
   data <- data[(data$group != "Bivalvia_Trigonioida"),]
   ### now finally, before saving, drop the pre-Neogene stages
-  dropstages <- c("Chattian","Rupelian")
+  dropstages <- c("Chattian", "Rupelian")
   data <- data[!(data$Interval %in% dropstages),]
   data$singleton.single.occ <- ifelse(data$Singleton ==1 & data$occurrences ==1 ,1,0)
   saveRDS(data, file = "../data/modern_and_paleo_ranges.rds")
-  # write.table(data,"~/Dropbox/nescent_extinction_map/data/Modern.and.Paleo.Ranges.csv",sep=",")
-  #table(pbdb$family_name,pbdb$class)
-
-  #  table(data$Interval)
-  #  table(data$Interval,data$class)
-  #exrate <- function(df) mean(df$Ex)
-  #exrates <- ddply(data,.(top),each(exrate))
-
-  ### compare modern and Plio-Pleistocene ranges
-  #PlioPleis  <- droplevels(subset(data,data$Interval=="Plio-Pleistocene"))
-  #Modern <- droplevels(subset(data,data$Interval=="Modern_raw"))
-
-  #Plio.eac <- PlioPleis$AbsLatRange
-  #Genus <- PlioPleis$genus
-  #PlioPleis <- data.frame(Genus,Plio.eac)
-
-  #Mod.eac <- Modern$AbsLatRange
-  #Genus <- Modern$genus
-  #Modern <- data.frame(Genus,Mod.eac)
-
-  #plot.data <- merge(Modern,PlioPleis, by='Genus')
-  #qplot(plot.data$Mod.eac,plot.data$Plio.eac) + geom_smooth(method="lm")
 }
 if(!file.exists("../data/modern_and_paleo_ranges.rds")) {
   extract_ranges()
@@ -333,13 +311,11 @@ if(!file.exists("../data/modern_and_paleo_ranges.rds")) {
 
 ###Temporary code to make plots to check distributions
 
-
 #d <- readRDS("../data/modern_and_paleo_ranges.rds")
 #data <- d
 
 #p <- ggplot(d,aes(richness+1,fill=class))
 #p + geom_histogram() + facet_wrap(~Interval, scales="free") + scale_y_log10()
-
 
 #means <- function(df) mean(df$Ex)
 #number <-function(df) length(df$Ex)
@@ -347,5 +323,4 @@ if(!file.exists("../data/modern_and_paleo_ranges.rds")) {
 
 #p <- ggplot(ExMeans,aes(log(eac),means,size=log(number),colour=Interval))
 #p + geom_point() + facet_wrap(~class)
-
 @
