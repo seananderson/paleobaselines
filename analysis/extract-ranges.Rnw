@@ -262,6 +262,7 @@ extract_ranges <- function() {
       occurrences <- length(df$paleolatdec)
       Ex <- min(df$Extinct.in.bin)
       Singletons <- max(df$Singleton)
+      prop_comp <- unique(df$prop_comp) # one per genus
     }
     else {
       eac = 1
@@ -275,9 +276,10 @@ extract_ranges <- function() {
       occurrences <- length(df$paleolatdec)
       Ex <- min(df$Extinct.in.bin)
       Singletons <- max(df$Singleton)
+      prop_comp <- unique(df$prop_comp) # one per genus
     }
     return(data.frame(occurrences, eac, gcd, richness, MaxAbsLat,
-      MinAbsLat, MeanAbsLat, Ex, Singletons))
+      MinAbsLat, MeanAbsLat, Ex, Singletons, prop_comp))
   }
 
   #####  now apply it to the PBDB data
