@@ -71,9 +71,9 @@ standardize_data <- function(dat, min_lat_bin = 10, max_lat_bin = 10,
   stage <- rep(stage_name, length(Ex))
   stage_top <- rep(stage_top, length(Ex))
 
-  stand_dat <- droplevels(na.omit(data.frame(stage, stage_top, class, group,
+  stand_dat <- droplevels(data.frame(stage, stage_top, class, group,
         genus, richness, occupancy, occurrences, min.lat, max.lat, lat.range,
-        mean.lat, great.circle, tropical_only, Ex)))
+        mean.lat, great.circle, tropical_only, Ex, prop_comp = data1$prop_comp))
 
   return(stand_dat)
 }
