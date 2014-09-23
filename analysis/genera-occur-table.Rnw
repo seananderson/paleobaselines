@@ -1,0 +1,33 @@
+<<occurrences-table>>=
+dat <- readRDS("../data/modern_and_paleo_ranges.rds")
+dat$Interval <- factor(dat$Interval)
+#drop unused classes
+dat <- subset(dat, !class %in% c("Foraminifera", "Testudines", "Malacostraca"))
+dat <- droplevels(dat)
+dat <- plyr::rename(dat, c("Interval" = "Interval_Name"))
+cull.taxa <- c("Bivalvia","Gastropoda")
+dat$cull.val <- ifelse(dat$top == 0 & dat$class %in% cull.taxa, 2,1)
+dat <- dat[(dat$occurrences >= dat$cull.val),]
+
+num_unique_paleo_genera <- length(unique(subset(dat, top > 0 & top < 23)$genus))
+Genera <- function(df) length(unique(df$genus))
+Occurrences <- function(df) sum(df$occurrences)
+Table.S1 <- plyr::ddply(dat, plyr::.(Interval_Name,class),
+  plyr::each(Genera, Occurrences))
+Table.S1 <- Table.S1[(Table.S1$Interval_Name != "Modern_merged" &
+    Table.S1$class != "Malacostraca" &
+    Table.S1$class != "Foraminifera" &
+    Table.S1$class != "Testudines"), ]
+Table.S1$Interval_Name <- plyr::revalue(Table.S1$Interval_Name, c("Modern_raw" = "Modern"))
+Table.S1$Interval_Name <- factor(Table.S1$Interval_Name,
+  levels = c("Lower Miocene", "Middle Miocene",
+    "Upper Miocene","Plio-Pleistocene", "Modern"))
+Table.S1 <- Table.S1[order(Table.S1$Interval_Name, Table.S1$class), ]
+Table.S1 <- plyr::rename(Table.S1, c("class" = "Group"))
+Table.S1 <- plyr::rename(Table.S1, c("Interval_Name" = "Interval"))
+Table.S1$Group <- sub("Elasmobranchii", "Sharks", Table.S1$Group)
+Table.S1$Group <- sub("Anthozoa", "Scleractinia", Table.S1$Group)
+xtable::print.xtable(xtable::xtable(Table.S1, digits = c(0, 0, 0, 0, 0),
+  caption = "Total number of genera and occurrences of those genera in the Paleobiology Database (Neogene intervals) and OBIS database (modern) for the six major taxonomic groups used in our analysis.\\label{tab:genera}"),
+  include.rownames = FALSE, caption.placement = "top", booktabs = TRUE)
+@
