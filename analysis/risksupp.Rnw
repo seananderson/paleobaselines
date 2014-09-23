@@ -202,7 +202,7 @@ dat <- rename(dat, c("Interval" = "Interval_Name",
   "MaxAbsLat" = "MaxLat", "MinAbsLat" = "MinLat",
   "group" = "MatchTaxon", "top" = "stage_top",
   "MeanAbsLat" = "mean_lat", "Ex" = "Extinct.in.stage"))
-stcen <- ddply(dat, "Interval_Name", standardize_data)
+stcen <- plyr::ddply(dat, "Interval_Name", standardize_data)
 saveRDS(stcen, file = "../data/stand-predictors-cen-obis.rds")
 @
 
