@@ -304,7 +304,7 @@ To calibrate our model, we grouped the predicted extinction probabilities for ea
 % TODO 20140923 add bit here with alternative culled paleo datasets
 
 <<test-gbm1, results='hide', cache=FALSE>>=
-INT.DEPTH <- 5
+INT.DEPTH <- 5 # these constants hold throughout the document
 NTREES <- 2000
 SHRINKAGE <- 0.01
 if(!file.exists("../data/val_test.rds")) {
