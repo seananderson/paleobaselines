@@ -320,6 +320,38 @@ if(!file.exists("../data/val_test.rds")) {
 }
 @
 
+% Also build alternative models with different preservation potential
+% thresholds: >= 0.5, >=0.75, ==1.00
+% We'll start with >= 0.5 and then go from there
+<<alternative-validations, cache=FALSE>>=
+# only p >= 0.5:
+if(!file.exists("../data/val_test_0.50.rds")) {
+  val_test_0.50 <- rdply(500, validate_gbm(neog[neog$prop_comp >= 0.50, ],
+    shrinkage = SHRINKAGE,
+    interaction.depth = INT.DEPTH, n.trees = NTREES,
+    use_weights = TRUE)$bin_validation,
+    .progress = "text")
+  saveRDS(val_test_0.50, file = "../data/val_test_0.50.rds")
+} else {
+  message(paste("Loading previous GBM cross-validations.",
+    "Delete ../data/val_test_0.50.rds to rerun these."))
+  val_test_0.50 <- readRDS("../data/val_test_0.50.rds")
+}
+# # only p >= 0.75:
+# if(!file.exists("../data/val_test_0.75.rds")) {
+#   val_test_0.75 <- rdply(1000, validate_gbm(neog[neog$prop_comp >= 0.75, ],
+#     shrinkage = SHRINKAGE,
+#     interaction.depth = INT.DEPTH, n.trees = NTREES,
+#     use_weights = TRUE)$bin_validation,
+#     .progress = "text")
+#   saveRDS(val_test_0.75, file = "../data/val_test_0.75.rds")
+# } else {
+#   message(paste("Loading previous GBM cross-validations.",
+#     "Delete ../data/val_test_0.75.rds to rerun these."))
+#   val_test_0.75 <- readRDS("../data/val_test_0.75.rds")
+# }
+@
+
 For example, here are the predicted and observed extinction probabilities for one run of our cross-validation. The model was built on half the data and then used to predict the other half of the data.
 
 <<single-cv-rep, fig.width=8.25, fig.height=5, out.width="4.8in">>=
@@ -341,6 +373,10 @@ By running the cross validation 1000 times, we calculated a mean bias at the tax
 <<test-gbm1-summary>>=
 val_test_summarized <- ddply(val_test, c("class", "gbm_pred_binned"),
   summarize_val_test)
+val_test_summarized_0.50 <- ddply(val_test_0.50, c("class", "gbm_pred_binned"),
+  summarize_val_test)
+#val_test_summarized_0.75 <- ddply(val_test_0.75, c("class", "gbm_pred_binned"),
+  #summarize_val_test)
 @
 
 <<test-gbm1-bias-plot, fig.width=9, fig.height=5, echo=FALSE>>=
