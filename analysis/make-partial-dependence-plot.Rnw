@@ -108,9 +108,14 @@ o$predictor <- factor(o$predictor, levels = c("occupancy",
     "occurrences", "richness", "great.circle", "max.lat", "min.lat",
     "mean.lat", "lat.range"))
 
-col_df <- data.frame(stage = c("Lower Miocene", "Middle Miocene",
-    "Upper Miocene", "Plio-Pleistocene", "all"), col = pal, stage_order =
-  1:length(pal), lwd = lwd.u, stringsAsFactors = FALSE)
+if(length(unique(o$stage)) == 5) {
+  col_df <- data.frame(stage = c("Lower Miocene", "Middle Miocene",
+      "Upper Miocene", "Plio-Pleistocene", "all"), col = pal, stage_order =
+    1:length(pal), lwd = lwd.u, stringsAsFactors = FALSE)
+} else {
+  col_df <- data.frame(stage = c("all"), col = "#000000", stage_order =
+    1, lwd = max(lwd.u), stringsAsFactors = FALSE)
+}
 
 o <- plyr::join(o, col_df, by = "stage")
 
@@ -118,7 +123,7 @@ l <- rbind(c(1,2,3,4),
   c(5,6,7,8),
   c(9,9,9,9))
 
-pdf("../figs/partial-plot-base.pdf", width = 5.9, height = 5.0)
+pdf("../figs/partial-plot-base-cull-0.75.pdf", width = 5.9, height = 5.0)
 layout(l)
 
 ## the upper half:
@@ -143,7 +148,7 @@ plyr::d_ply(o, "predictor", function(x) {
   if(ii %in% c(1, 5)) axis(2, at = o.y.axis.at, labels = o.y.axis.labs, las = 1, col = col.axis,
     col.axis = col.axis, cex.axis = cex.axis)
 
-  if(ii == 3) {
+  if(ii == 3 & length(unique(o$stage)) > 1) {
     par(xpd = NA)
 
     legend_stages <- col_df$stage
@@ -187,11 +192,19 @@ abline(v = g$x.pos, col = "grey88", lwd = .5)
 # the points and lines:
 add.seg <- TRUE
 
-stage_ord <- c("Lower Miocene", "Middle Miocene",
-  "Upper Miocene", "Plio-Pleistocene", "all")
+# TODO FIX THIS!!!!!!!!! 20140924
+if("Lower Miocene" %in% names(g)) {
+  stage_ord <- c("Lower Miocene", "Middle Miocene",
+    "Upper Miocene", "Plio-Pleistocene", "all")
+} else {
+  stage_ord <- c("all")
+  pal <- "#000000"
+  cex <- max(cex)
+  lwd <- max(lwd)
+}
 box(col= col.axis)
 
-for(i in 1:5) {
+for(i in 1:length(stage_ord)) {
   ci <- which(names(g) == stage_ord[i]) # [c]olumn [i]
   par(xpd = NA)
   points(g$x.pos, g[,ci], col = pal[i], pch = pch[i], cex = cex[i])
