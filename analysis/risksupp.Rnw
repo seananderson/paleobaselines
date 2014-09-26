@@ -373,73 +373,7 @@ stage_order <- c("Lower Miocene", "Middle Miocene", "Upper Miocene",
 
 We evaluated the marginal effect of each predictor on intrinsic extinction risk through partial dependence plots (Fig.~1). This procedure finds the marginal effect of each predictor by integrating across all other predictor values using the method described in Ref.~\cite{friedman2001}. Because there is some stochasticity when running a GBM, we ran models for each interval 20 times and each time recorded the marginal effects. We then took the median and interquartile range of those predictions. The range of these predictions is very small and hardly noticeable in Fig.~1.
 
-% First, we will write a function to fit the GBM models to a given stage:
-<<shape-data-partial-plots>>=
-fit_stage_models <- function(dat, stage_name) {
-  if(stage_name == "all") {
-    d <- dat
-  } else {
-    d <- dat[dat$stage == stage_name, ]
-  }
-  w <- paleorisk::get_weights(d$Ex)
-  weights <- ifelse(d$Ex == 1, w$ex_weight, w$sur_weight)
-  gbm::gbm(Ex ~ richness + occupancy + occurrences + min.lat + max.lat +
-      lat.range + mean.lat + great.circle + group, data =
-      d, n.trees = NTREES, interaction.depth = INT.DEPTH,
-    distribution = "bernoulli", shrinkage = SHRINKAGE, weights = weights)
-}
-@
-
-% We will fit the models for each stage. Within each stage we will fit the model a number of times:
-<<fit-marginal-stage-models>>=
-if(!file.exists("../data/stage_models.rds")) {
-  stage_models <- llply(c(stage_order, "all"), function(x)
-    rlply(20, fit_stage_models(neog, stage_name = x)))
-  names(stage_models) <- c(stage_order, "all")
-  saveRDS(stage_models, file = "../data/stage_models.rds")
-} else {
-  stage_models <- readRDS("../data/stage_models.rds")
-}
-@
-
-% And, we will go through the stage-based models and pull out the partial dependence data:
-<<pull-out-marginal-data>>=
-vars <- c("richness", "occupancy", "occurrences", "min.lat",
-  "max.lat", "lat.range", "mean.lat", "great.circle", "group")
-partial_dat <- ldply(c(stage_order, "all"), function(stage_name) {
-  p2 <- ldply(vars, function(var_name){
-    p1 <- ldply(stage_models[[stage_name]], function(x)
-      plot.gbm(x, return.grid = TRUE, i.var = var_name,
-        type = "response"))
-    names(p1) <- c("value", "response")
-    p1$predictor <- var_name
-    p1
-  })
-  p2$stage <- stage_name
-  p2
-})
-@
-
-% We will get the median and interquartile range of the marginal effects:
-<<summarize-marginal-effects>>=
-partial_dat2 <- plyr::ddply(partial_dat,
-  c("stage", "predictor", "value"),
-  plyr::summarize,
-  median = median(response),
-  lower = quantile(response, probs = 0.25),
-  upper = quantile(response, probs = 0.75))
-@
-
-% Because the taxonomic variables are categorical and the other variables are continuous and numeric, we will split these into separate data frames for plotting:
-<<separate-taxonomic-and-numeric-predictions>>=
-partial_groups <- partial_dat2[partial_dat2$predictor == "group", ]
-partial_continuous <- partial_dat2[partial_dat2$predictor != "group", ]
-groups_match <- data.frame(value =
-    1:length(unique(neog$group)),
-  group = sort(unique(neog$group)), stringsAsFactors = FALSE)
-partial_groups <- plyr::join(partial_groups, groups_match)
-partial_groups$value <- NULL
-partial_groups <- plyr::rename(partial_groups, c("group" = "value"))
+<<make-partial-dependence-data, child='make-partial-dependence-data-child.Rnw>>==
 @
 
 % TODO 20140923 adapt this chunk to also create versions with the different culls of paleo data
