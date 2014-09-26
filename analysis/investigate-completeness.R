@@ -24,6 +24,14 @@ ne_sum <- ddply(ne_long, c("prop_comp_thresh", "variable", "value"),
 neog$pred <- predict(stage_models_culls[[1]][[1]], n.trees = NTREES, type = "response")
 ne$pred <- predict(stage_models_culls[[1]][[1]], n.trees = NTREES, type = "response",newdata = ne)
 
+ns <- ddply(neog, "group", plyr::summarise, mean_prop_comp = mean(prop_comp), median_prop_comp = median(prop_comp), l_prop_comp = quantile(prop_comp, probs = 0.25), u_prop_comp = quantile(prop_comp, probs = 0.75))
+
+
+
+
+
+### make plots
+
 p1 <- ggplot(partial_continuous_culled, aes(value, median_shifted, colour = as.factor(preservation_cutoff))) + geom_line(lwd = 1.8) + facet_wrap(~predictor, scales = "free", nrow = 2) + theme_bw() + scale_colour_manual(values = rev(c(RColorBrewer::brewer.pal(5, "YlGnBu"))[]), name = "Preservation threshold") + ylab("Relative partial dependence") + xlab("Value")
 ggsave("../figs/fossil-cull-comparison-continuous.pdf", width = 12, height = 5)
 
@@ -56,3 +64,4 @@ p2 <- ggplot(ne, aes(prop_comp_thresh, pred, fill = class, colour = class)) + ge
 pdf("../figs/fossil-cull-self-prediction-threshold-distributions.pdf", width = 9, height = 7)
 gridExtra::grid.arrange(p1, p2)
 dev.off()
+

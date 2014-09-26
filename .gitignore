@@ -38,3 +38,5 @@ analysis/diff_in_range.txt
 *.rtf
 
 analysis/Session.vim
+
+*.gz
