@@ -815,6 +815,82 @@ mtext("Min. genera = 200", cex = 2)
 
 % TODO 20140923 follow this framework below to build fossil sensitivity maps
 
+<<maps-of-with-obis-sampling-thresholds, results='hide'>>=
+load("../data/by.prov.classes.obis.culls.rda")
+er <- maptools::readShapePoly("../data/MEOW2/meow_ecos.shp")
+er@data$id = rownames(er@data)
+er_points = ggplot2::fortify(er, region = "id")
+
+# first find max_range across all culls:
+max_ranges <- vector(length = length(obis.culls))
+for(i in seq_along(obis.culls)) {
+  er_dat_class_obis_cull <- plyr::join(er_points, er@data, by = "id")
+  er_dat_class_obis_cull <- plyr::join(er_dat_class_obis_cull,
+    by.prov.classes.obis.culls[[i]], by = "PROV_CODE")
+  max_ranges[i] <- map_class_ext(er_dat_class_obis_cull,
+    picture_files = picture_files,
+    silhouette_coords = silhouette_coords,
+    min_prov_genera = 10, col_range = TRUE,
+    exact_limits = c(0.0034, 0.15),
+    make_plot = FALSE)
+}
+
+pdf("../figs/class-map-obis-culls.pdf", width = 6.45, height = 5.1)
+for(i in seq_along(obis.culls)) {
+  er_dat_class_obis_cull <- plyr::join(er_points, er@data, by = "id")
+  er_dat_class_obis_cull <- plyr::join(er_dat_class_obis_cull,
+    by.prov.classes.obis.culls[[i]], by = "PROV_CODE")
+  mr <- NULL
+  map_class_ext(er_dat_class_obis_cull,
+    yticks = c(0.005, 0.01, 0.02, 0.05, 0.10),
+    picture_files = picture_files,
+    silhouette_coords = silhouette_coords,
+    min_prov_genera = 10, col_range = TRUE,
+    exact_limits = c(0.0034, 0.15), max_range_given = max(max_ranges),
+    ylabel = "Intrinsic extinction probability (over ~23 Myr)")
+}
+dev.off()
+@
+
+% And the overall map with various OBIS culls:
+<<overall-map-of-with-obis-sampling-thresholds, results='hide'>>=
+load("../data/by.prov.all.obis.culls.rda")
+pdf("../figs/overall-map-obis-culls.pdf", width = 7, height = 7)
+par(mfrow = c(3, 2))
+par(mar = c(0, 0, 1.5, 0), oma = c(2, 2, 2, 2))
+labs.ns <- seq(0.012, 0.022, 0.004)
+for(i in seq_along(obis.culls)) {
+  # par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
+  #   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
+  er_dat_obis_cull <- plyr::join(er_points, er@data, by = "id")
+  er_dat_obis_cull <- plyr::join(er_dat_obis_cull, by.prov.all.obis.culls[[i]],
+    by = "PROV_CODE")
+  map_hotspots(er_dat_obis_cull, min_prov_genera = 100, add_legend = FALSE,
+    hotspots = FALSE, at = log(labs.ns), at.labels = labs.ns)
+  mtext(paste("Exclude genera with <", obis.culls[i], "OBIS records"), line = -0.5)
+  #par(xpd = NA)
+  #mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
+  #  line = -1.2, las = 0, col = "grey30", cex = 0.9)
+}
+dev.off()
+@
+
+% and show crossplots:
+<<cross-plots-prov-culls, results='hide'>>=
+for(i in seq_along(obis.culls)) {
+  by.prov.all.obis.culls[[i]]$obis_cull <- obis.culls[i]
+}
+dcull <- do.call("rbind", by.prov.all.obis.culls)
+dcull <- reshape2::dcast(dcull, PROV_CODE ~ obis_cull, value.var = "mean.ext")
+# p <- ggplot(dcull, aes(`5`, `1`)) + geom_point()
+# p <- ggplot(dcull, aes(`5`, `10`)) + geom_point()
+# p <- ggplot(dcull, aes(`5`, `20`)) + geom_point()
+pdf("../figs/pairs-obis-culls.pdf", width = 6, height = 6)
+pairs(dcull[,-1], pch = 21, col = "#00000050", bg = "#00000010")
+dev.off()
+@
+
+
 <<remove-single-province-genera-class-map, results='hide'>>=
 load("../data/by.prov.classes.no.singles.rda")
 er <- maptools::readShapePoly("../data/MEOW2/meow_ecos.shp")
