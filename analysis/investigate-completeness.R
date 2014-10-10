@@ -1,9 +1,12 @@
 # This file makes a bunch of plots to investigate the role of fossil
 # record completeness in the extinction risk estimates
 #
-# Run after running 
+# Run after running
 # "make-partial-dependence-data-child.Rnw"
 # Sean 20140926
+
+neog <- readRDS("../data/stand-predictors-cen-obis.rds")
+neog <- droplevels(subset(neog, stage_top < 23 & stage_top != 0))
 
 # make an expanded version for plyr:
 ne <- neog
@@ -16,7 +19,7 @@ for(i in seq(0.25, 1, 0.25)) {
 ne_long <- melt(ne, id.vars = c("stage", "prop_comp_thresh", "genus", "Ex"), measure.vars = c("richness", "occupancy", "occurrences", "min.lat", "max.lat", "lat.range", "mean.lat", "great.circle"))
 
 # find sample sizes:
-ne_sum <- ddply(ne_long, c("prop_comp_thresh", "variable", "value"), 
+ne_sum <- ddply(ne_long, c("prop_comp_thresh", "variable", "value"),
   plyr::summarize,
   N = length(Ex), N_ex = sum(Ex))
 
@@ -24,15 +27,18 @@ ne_sum <- ddply(ne_long, c("prop_comp_thresh", "variable", "value"),
 neog$pred <- predict(stage_models_culls[[1]][[1]], n.trees = NTREES, type = "response")
 ne$pred <- predict(stage_models_culls[[1]][[1]], n.trees = NTREES, type = "response",newdata = ne)
 
-ns <- ddply(neog, "group", plyr::summarise, mean_prop_comp = mean(prop_comp), median_prop_comp = median(prop_comp), l_prop_comp = quantile(prop_comp, probs = 0.25), u_prop_comp = quantile(prop_comp, probs = 0.75))
+x <- ddply(neog, c("class", "group"), plyr::summarise, mean_prop_comp = mean(prop_comp), median_prop_comp = median(prop_comp), l_prop_comp = quantile(prop_comp, probs = 0.25), u_prop_comp = quantile(prop_comp, probs = 0.75))
 
-
-
+partial_groups_culled$group <- partial_groups_culled$value
+partial_groups_culled <- plyr::join(partial_groups_culled, x)
 
 
 ### make plots
 
-p1 <- ggplot(partial_continuous_culled, aes(value, median_shifted, colour = as.factor(preservation_cutoff))) + geom_line(lwd = 1.8) + facet_wrap(~predictor, scales = "free", nrow = 2) + theme_bw() + scale_colour_manual(values = rev(c(RColorBrewer::brewer.pal(5, "YlGnBu"))[]), name = "Preservation threshold") + ylab("Relative partial dependence") + xlab("Value")
+p <- ggplot(partial_groups_culled, aes(mean_prop_comp, median, colour = class)) + geom_point() + xlab("Mean proportional completeness") + ylab("Partial dependence extinction risk") + theme_bw()
+ggsave("../figs/fossil-cull-partial-groups-vs-completeness.pdf",  width = 7, height = 5)
+
+p1 <- ggplot(partial_continuous_culled, aes(value, median_shifted, colour = as.factor(preservation_cutoff))) + geom_line(lwd = 1.8) + facet_wrap(~predictor, scales = "free_x", nrow = 2) + theme_bw() + scale_colour_manual(values = rev(c(RColorBrewer::brewer.pal(5, "YlGnBu"))[]), name = "Preservation threshold") + ylab("Relative partial dependence") + xlab("Value")
 ggsave("../figs/fossil-cull-comparison-continuous.pdf", width = 12, height = 5)
 
 p2 <- ggplot(partial_groups_culled, aes(median, value, fill = as.factor(preservation_cutoff))) + geom_point(cex = 3, pch = 21, col = "black") + theme_bw() + scale_fill_manual(values = rev(c(RColorBrewer::brewer.pal(5, "YlGnBu"))), name = "Preservation threshold") + xlab("Relative partial dependence") + ylab("")
