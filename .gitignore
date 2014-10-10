@@ -40,3 +40,11 @@ analysis/diff_in_range.txt
 analysis/Session.vim
 
 *.gz
+
+analysis/sub.25.sh
+
+analysis/sub.50.sh
+
+analysis/temp.25.R
+
+analysis/temp.50.R
