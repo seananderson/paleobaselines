@@ -34,6 +34,9 @@
 #' @param silhouette_coords A list of numeric vectors of length 4 giving the
 #' coordinates to pass to \code{readPicture} in the \pkg{grImport} package. x1,
 #' y1, x2, y2. One list element per panel.
+#' @param max_range_given A value giving the maximum multiplicative range of the
+#'   colour scale. If left to \code{NULL} then this will be calculated internally.
+#' @param make_plot Logical: should the maps be made?
 #' @param ... Anything extra to pass to \code{col_box_key}.
 #' @export
 
@@ -45,7 +48,7 @@ map_class_ext <- function(er_dat, min_prov_genera = 20,
   ylabel = "Intrinsic extinction probability", col_range = FALSE,
   exact_limits = NULL, log_yticks = FALSE, fixed_range = FALSE,
   picture_files = NULL, silhouette_coords = list(c(-2.2, -0.75, -1.9, -0,86)),
-  ...) {
+  max_range_given = NULL, make_plot = TRUE, ...) {
 
   plot_order <- data.frame(class = plot_order, plot_order = 1:length(plot_order))
 
@@ -72,7 +75,11 @@ map_class_ext <- function(er_dat, min_prov_genera = 20,
   } else { # colour range goes from +/- some fixed multiplicative value
     er.df <- plyr::ddply(er.df, "class", mutate, range.val =
         abs(diff(range(value.to.plot))))
-    max_range <- max(er.df$range.val)
+    if(is.null(max_range_given)) {
+      max_range <- max(er.df$range.val)
+    } else {
+      max_range <- max_range_given
+    }
     er.df <- plyr::ddply(er.df, "class", transform, value.to.plot.01.temp =
         range01(value.to.plot))
     er.df$prop_range <- er.df$range.val / max_range
@@ -134,6 +141,7 @@ map_class_ext <- function(er_dat, min_prov_genera = 20,
         rep(N+i+3, kg)) # key gap
   }
 
+  if(make_plot) {
   layout(lo)
 
   par(mar = c(0,0,0, 0), oma = c(0,0,1,3.5))
@@ -226,6 +234,7 @@ map_class_ext <- function(er_dat, min_prov_genera = 20,
       }
     })
   mtext(ylabel, side = 4, outer = TRUE, line = 2.0, las = 0, cex = 0.8, col = "grey30")
+  }
 
   invisible(max_range)
 }

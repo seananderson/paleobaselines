@@ -8,12 +8,14 @@
 #'   \code{\link[maptools]{readShapePoly}} version of the EcoRegion data. Also
 #'   should have columns named \code{Halpern}, \code{Burrows},
 #'   \code{log_OBIS_records}, \code{N.gen}, \code{mean.ext}. \code{mean.ext}
-#'   should contain *log*-transformed extinction probability.
+#'   should contain *log*-transformed extinction probability. (note that you can
+#'   chose to plot a different column by specifying \code{plot_column}
 #' @param min_prov_genera The minimum contemporary genera per province required
 #'   to plot.
 #' @param hotspot_thresh Percentile threshold to declare a contemporary hotspot.
 #' @param col_pal The colour palette to plot with. Should be approximately a
 #'   vector of length 9.
+#' @param plot_column The name of the column to plot.
 #' @param hotspots Show the contemporary hotspots?
 #' @param add_legend Add a colour legend? You may need to increase the right
 #' margin in \code{par} to see this.
@@ -22,7 +24,8 @@
 #' @export
 
 map_hotspots <- function(er_dat, min_prov_genera = 50, hotspot_thresh = 0.8,
-  col_pal = RColorBrewer::brewer.pal(9, "YlOrRd"), hotspots = TRUE,
+  col_pal = RColorBrewer::brewer.pal(9, "YlOrRd"), plot_column = "mean.ext",
+  hotspots = TRUE,
   add_legend = FALSE, at = c(-1, 1), at.labels = c(-1, 1)) {
 
   if(add_legend) {
@@ -40,7 +43,9 @@ map_hotspots <- function(er_dat, min_prov_genera = 50, hotspot_thresh = 0.8,
   oval <- mapproj::mapproject(list(x = square$x, y = square$y),
     proj = "mollweide")
 
-  er.df.all$ext.plot <- er.df.all$mean.ext
+  plot_col_n <- (1:ncol(er.df.all))[names(er.df.all) %in% plot_column]
+
+  er.df.all$ext.plot <- er.df.all[, plot_col_n]
   halp.thresh <- as.numeric(quantile(er.df.all$Halpern, probs = hotspot_thresh,
     na.rm = TRUE))
   bur.thresh <- as.numeric(quantile(er.df.all$Burrows, probs = hotspot_thresh,
