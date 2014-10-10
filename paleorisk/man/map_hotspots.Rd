@@ -5,8 +5,8 @@
 \usage{
 map_hotspots(er_dat, min_prov_genera = 50, hotspot_thresh = 0.8,
   col_pal = RColorBrewer::brewer.pal(9, "YlOrRd"), plot_column = "mean.ext",
-  hotspots = TRUE, add_legend = FALSE, at = c(-1, 1), at.labels = c(-1,
-  1))
+  hotspots = TRUE, col_limits = NULL, add_legend = FALSE, at = c(-1, 1),
+  at.labels = c(-1, 1))
 }
 \arguments{
   \item{er_dat}{A data frame with the data to plot. Should
@@ -31,6 +31,12 @@ map_hotspots(er_dat, min_prov_genera = 50, hotspot_thresh = 0.8,
   \item{plot_column}{The name of the column to plot.}
 
   \item{hotspots}{Show the contemporary hotspots?}
+
+  \item{col_limits}{\code{NULL} to calculate colour limits
+  internally. Set to a numeric vector of length 2 to set
+  lower and upper limits for the colour scale. All values
+  outside this range will be compressed to the min and max
+  values.}
 
   \item{add_legend}{Add a colour legend? You may need to
   increase the right margin in \code{par} to see this.}

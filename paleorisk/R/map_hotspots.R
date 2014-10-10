@@ -13,6 +13,10 @@
 #' @param min_prov_genera The minimum contemporary genera per province required
 #'   to plot.
 #' @param hotspot_thresh Percentile threshold to declare a contemporary hotspot.
+#' @param col_limits \code{NULL} to calculate colour limits internally. Set to
+#'   a numeric vector of length 2 to set lower and upper limits for the colour
+#'   scale. All values outside this range will be compressed to the min and max
+#'   values.
 #' @param col_pal The colour palette to plot with. Should be approximately a
 #'   vector of length 9.
 #' @param plot_column The name of the column to plot.
@@ -25,12 +29,16 @@
 
 map_hotspots <- function(er_dat, min_prov_genera = 50, hotspot_thresh = 0.8,
   col_pal = RColorBrewer::brewer.pal(9, "YlOrRd"), plot_column = "mean.ext",
-  hotspots = TRUE,
+  hotspots = TRUE, col_limits = NULL,
   add_legend = FALSE, at = c(-1, 1), at.labels = c(-1, 1)) {
 
   if(add_legend) {
     lo <- t(matrix(c(rep(1, 45), 3, 2, 4, 4, 4, 4, 4)))
     layout(lo)
+  }
+
+  if(!is.null(col_limits)) {
+    col_limits <- log(col_limits)
   }
 
   er.df.all <- er_dat
@@ -69,9 +77,19 @@ map_hotspots <- function(er_dat, min_prov_genera = 50, hotspot_thresh = 0.8,
   #}
   er.df <- subset(er.df,er.df$PROV_CODE != 7)
 
+  if(is.null(col_limits)) {
   er.df$col.pal.ext.plot <- col_pal[findInterval(er.df$ext.plot,
     seq(min(er.df$ext.plot)-0.00001, max(er.df$ext.plot) + 0.00001,
       length.out = 10))]
+  } else {
+  # compress those outside our limits to our limits:
+  er.df$ext.plot[er.df$ext.plot <= col_limits[1]] <- col_limits[1] + 0.00001
+  er.df$ext.plot[er.df$ext.plot >= col_limits[2]] <- col_limits[2] - 0.00001
+  # and find colours:
+  er.df$col.pal.ext.plot <- col_pal[findInterval(er.df$ext.plot,
+    seq(col_limits[1], col_limits[2], length.out = 10))]
+  }
+
   #if(black_sea_remove) {
     #er.df <- rbind(er.df, black_sea)
   #}
@@ -147,10 +165,16 @@ map_hotspots <- function(er_dat, min_prov_genera = 50, hotspot_thresh = 0.8,
 
  if(add_legend) {
    #at <- range(er.df$ext.plot)
-   limits <- range(er.df$ext.plot)
 
-   col.regions <- with(er.df, seq(min(ext.plot),
-       max(ext.plot), length.out = length(col_pal)+1))
+   if(is.null(col_limits)) {
+     limits <- range(er.df$ext.plot)
+     col.regions <- with(er.df, seq(min(ext.plot),
+         max(ext.plot), length.out = length(col_pal)+1))
+   } else {
+     limits <- col_limits
+     col.regions <- with(er.df, seq(col_limits[1],
+         col_limits[2], length.out = length(col_pal)+1))
+   }
 
    col_box_key(col.pal = col_pal, limits = limits, xpos = 0.1,
      width = 0.01, col.regions = col.regions, bg = "grey85", border.col =
