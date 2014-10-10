@@ -1,8 +1,0 @@
-load("../data/Burrows.Spalding.rda")
-library(plyr)
-data <- data.frame(Burrows.Spalding)
-logvelocity <- ifelse(data$velocity <1 & data$velocity > -1,data$velocity,ifelse(data$velocity>1,log(data$velocity),-log(abs(data$velocity))))
-data <- cbind(data,logvelocity)
-MeanVelocity <- function(df) mean(df$logvelocity)
-BurrowsbyProvince <- ddply(data,.(RLM_CODE,PROV_CODE),MeanVelocity)
-write.table(BurrowsbyProvince,"Mean.log.velocity.Provinces.csv",sep=",")
