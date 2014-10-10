@@ -840,8 +840,14 @@ panel.cor <- function(x, y, digits = 2, prefix = "", ...) {
   txt <- paste0(prefix, txt)
   text(0.5, 0.5, txt, cex = 1.2)
 }
-pdf("../figs/pairs-paleo-culls.pdf", width = 6, height = 6)
+pdf("../figs/pairs-paleo-culls-genera.pdf", width = 6, height = 6)
 pairs(modern[,c("mean_observed", "mean_observed_0.25", "mean_observed_0.50")],
+  pch = 21, col = "#00000050", bg = "#00000010",
+  upper.panel = panel.cor)
+dev.off()
+
+pdf("../figs/pairs-paleo-culls-provinces.pdf", width = 6, height = 6)
+pairs(by.prov.all[,c("mean.ext", "mean.ext.25", "mean.ext.50")],
   pch = 21, col = "#00000050", bg = "#00000010",
   upper.panel = panel.cor)
 dev.off()
