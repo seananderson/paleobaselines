@@ -1,0 +1,170 @@
+\documentclass[11pt]{article}
+\usepackage{geometry}
+\geometry{letterpaper}
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}
+\geometry{verbose,letterpaper,tmargin=2.54cm,bmargin=2.54cm,lmargin=2.54cm,rmargin=2.54cm}
+\textheight 22.0cm
+\usepackage{rotating}
+\usepackage[right]{showlabels}
+\renewcommand{\showlabelsetlabel}[1]
+{\begin{turn}{90}\showlabelfont #1\end{turn}}
+
+
+\title{Supplemental figures for revision 1}
+\author{}
+
+\begin{document}
+\maketitle
+
+\section{Fossil data sensitivity analyses}
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=0.95\textwidth]{fossil-cull-comparison-continuous.pdf}
+\includegraphics[width=0.65\textwidth]{fossil-cull-comparison-group.pdf}
+\caption{Partial dependence plots with increasing threshold of proportion complete.}
+\label{fig:partial-paleo-culls}
+\end{center}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=\textwidth]{fossil-cull-N.pdf}
+\caption{Total sample size (genera), sample size of extinct genera, and ratio of extinct to total for each of the continuous variables at various thresholds for proportion complete. Should have used this colour scale in the earlier plots.}
+\label{fig:raw-predictor-paleo-culls}
+\end{center}
+\end{figure}
+
+\clearpage
+
+%\begin{figure}[htbp]
+%\begin{center}
+%\includegraphics[width=\textwidth]{fossil-cull-self-prediction-distributions.pdf}
+%\caption{Distributions of predicted risk at precise values of proportion complete (not cumulative thresholds). Same thing in violin and boxplots.}
+%\label{default}
+%\end{center}
+%\end{figure}
+
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=\textwidth]{fossil-cull-self-prediction-threshold-distributions.pdf}
+\caption{Distributions of predicted risk at cumulative thresholds. Same thing in violin and boxplots. E.g.\ all above 0.25, all above 0.5, etc. Only show the boxplots and add a median point or line?}
+\label{fig:ext-boxplots-paleo-culls}
+\end{center}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=0.9\textwidth]{fossil-cull-partial-groups-vs-completeness.pdf}
+\caption{Partial dependence values for different group values plotted against mean proportional completeness.}
+\label{fig:ext-prop-compl-scatter}
+\end{center}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=0.9\textwidth]{pairs-paleo-culls-provinces}
+\caption{Pairs plots for paleo culls by province. The values in the upper-right panels are Spearman's rank-order correlation coefficients.}
+\label{fig:pairs-prov-paleo-culls}
+\end{center}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=0.9\textwidth]{pairs-paleo-culls-genera}
+\caption{Pairs plots for paleo culls by genus.}
+\label{fig:pairs-genus-paleo-culls}
+\end{center}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=0.6\textwidth]{hotspots-paleo-00}
+\includegraphics[width=0.6\textwidth]{hotspots-paleo-25}
+\includegraphics[width=0.6\textwidth]{hotspots-paleo-50}
+\caption{Global maps with various paleo culls. From top to bottom: all, $\ge$ 0.25, $\ge$ 0.50.}
+\label{fig:overall-maps-paleo-culls}
+\end{center}
+\end{figure}
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=\textwidth]{class-risk-maps-mean-log-ext-paleo-25}
+\caption{Global class-level maps at a paleo cull of $\ge 0.25$. Note that the colour scales shift slightly between the main paper Fig.\ 2, this figure, and the next figure.}
+\label{fig:class-maps-paleo-cull-0.25}
+\end{center}
+\end{figure}
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=\textwidth]{class-risk-maps-mean-log-ext-paleo-50}
+\caption{Global class-level maps at a paleo cull of $\ge 0.50$.}
+\label{fig:class-maps-paleo-cull-0.50}
+\end{center}
+\end{figure}
+
+\clearpage
+
+\section{Contemporary data sensitivity analyses}
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=\textwidth]{../analysis/obis-samping-vs-predictors}
+\caption{Predictors vs.\ number of OBIS records. Remove all but top two panels?}
+\label{fig:obis-sampling-vs-predictors}
+\end{center}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=\textwidth]{../analysis/obis-sampling-vs-predictors-class-facets}
+\caption{Predictors vs.\ number of OBIS records. Split by class. Remove this?}
+\label{fig:obis-sampling-vs-predictors-by-class}
+\end{center}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=0.7\textwidth]{../analysis/meanext-vs-obis-n-by-prov}
+\caption{Province-level overall mean extinction risk vs.\ number of OBIS records. Line is a loess smoother with 95\% CI. I hadn't circulated this one. Do we want to keep it?}
+\label{fig:ext-vs-obis-n-by-prov}
+\end{center}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=0.9\textwidth]{pairs-obis-culls}
+\caption{Pairs plots for OBIS culls by province.}
+\label{fig:pairs-prov-obis-culls}
+\end{center}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=\textwidth]{overall-map-obis-culls}
+\caption{Global maps with various OBIS culls. Note that the colours are rescaled on each map --- I will fix this.}
+\label{fig:overall-maps-obis-culls}
+\end{center}
+\end{figure}
+
+\end{document}

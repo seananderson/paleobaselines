@@ -48,3 +48,7 @@ analysis/sub.50.sh
 analysis/temp.25.R
 
 analysis/temp.50.R
+
+*.fdb_latexmk
+
+*.fls
