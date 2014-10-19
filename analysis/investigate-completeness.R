@@ -16,10 +16,10 @@ for(i in seq(0.25, 1, 0.25)) {
   x$prop_comp_thresh <- i
   ne <- rbind(ne, x)
 }
-ne_long <- melt(ne, id.vars = c("stage", "prop_comp_thresh", "genus", "Ex"), measure.vars = c("richness", "occupancy", "occurrences", "min.lat", "max.lat", "lat.range", "mean.lat", "great.circle"))
+ne_long <- reshape2::melt(ne, id.vars = c("stage", "prop_comp_thresh", "genus", "Ex"), measure.vars = c("richness", "occupancy", "occurrences", "min.lat", "max.lat", "lat.range", "mean.lat", "great.circle"))
 
 # find sample sizes:
-ne_sum <- ddply(ne_long, c("prop_comp_thresh", "variable", "value"),
+ne_sum <- plyr::ddply(ne_long, c("prop_comp_thresh", "variable", "value"),
   plyr::summarize,
   N = length(Ex), N_ex = sum(Ex))
 
@@ -27,7 +27,7 @@ ne_sum <- ddply(ne_long, c("prop_comp_thresh", "variable", "value"),
 neog$pred <- predict(stage_models_culls[[1]][[1]], n.trees = NTREES, type = "response")
 ne$pred <- predict(stage_models_culls[[1]][[1]], n.trees = NTREES, type = "response",newdata = ne)
 
-x <- ddply(neog, c("class", "group"), plyr::summarise, mean_prop_comp = mean(prop_comp), median_prop_comp = median(prop_comp), l_prop_comp = quantile(prop_comp, probs = 0.25), u_prop_comp = quantile(prop_comp, probs = 0.75))
+x <- plyr::ddply(neog, c("class", "group"), plyr::summarise, mean_prop_comp = mean(prop_comp), median_prop_comp = median(prop_comp), l_prop_comp = quantile(prop_comp, probs = 0.25), u_prop_comp = quantile(prop_comp, probs = 0.75))
 
 partial_groups_culled$group <- partial_groups_culled$value
 partial_groups_culled <- plyr::join(partial_groups_culled, x)
@@ -64,10 +64,32 @@ pdf("../figs/fossil-cull-self-prediction-distributions.pdf", width = 9, height =
 gridExtra::grid.arrange(p1, p2)
 dev.off()
 
+class_medians_culls <- ne %>% group_by(class, prop_comp_thresh) %>%
+  dplyr::summarise(m = median(pred),
+    l = quantile(pred, probs = 0.4),
+    u = quantile(pred, probs = 0.6)) %>%
+  group_by(prop_comp_thresh) %>%
+  dplyr::arrange(m) %>%
+  dplyr::mutate(m_order = seq_along(m))
+
+# ggplot(class_medians_culls, aes(prop_comp_thresh, m_order, group = class)) + geom_line()
+p1 <- ggplot(class_medians_culls, aes(prop_comp_thresh, m, group = class, colour = class)) +
+  geom_ribbon(aes(ymax = u, ymin = l, fill = class, linetype = NA), alpha = 0.15) +
+  geom_line(lwd = 1.5) +
+  scale_y_log10(breaks = c(0.05, 0.1, 0.2, 0.5, 1)) +
+  ylab("Partial dependence component aggregated by class") +
+  xlab("Proportion complete") + theme_bw()
+ggsave("../figs/partial-class-level-median-estimates.pdf", width = 8, height = 5)
+
 p1 <- ggplot(ne, aes(prop_comp_thresh, pred, fill = class, colour = class)) + geom_violin(aes(group = prop_comp_thresh), scale = "width") + facet_wrap(~class)+ theme_bw() + xlab("Threshold prop. completeness") + ylab("Predicted relative extinction risk")
 
-p2 <- ggplot(ne, aes(prop_comp_thresh, pred, fill = class, colour = class)) + geom_boxplot(aes(group = prop_comp_thresh)) + facet_wrap(~class)+ theme_bw() +  xlab("Threshold prop. completeness") + ylab("Predicted relative extinction risk")
-pdf("../figs/fossil-cull-self-prediction-threshold-distributions.pdf", width = 9, height = 7)
-gridExtra::grid.arrange(p1, p2)
+p2 <- ggplot(ne, aes(prop_comp_thresh, pred, fill = class)) + geom_boxplot(aes(group = prop_comp_thresh)) + facet_wrap(~class)+ theme_bw() +  xlab("Threshold prop. completeness") + ylab("Predicted relative extinction risk") + theme(legend.position = "none")
+#   geom_point(data = class_medians_culls, aes(x = prop_comp_thresh, y = m), colour = "black", pch = 3)
+
+# pdf("../figs/fossil-cull-self-prediction-threshold-distributions.pdf", width = 9, height = 7)
+pdf("../figs/fossil-cull-self-prediction-threshold-distributions.pdf", width = 9, height = 4)
+# gridExtra::grid.arrange(p1, p2)
+print(p2)
 dev.off()
 
+ggplot(class_medians_culls, aes())
