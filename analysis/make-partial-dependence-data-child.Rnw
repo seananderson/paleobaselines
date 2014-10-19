@@ -18,7 +18,7 @@ fit_stage_models <- function(dat, stage_name) {
 }
 
 ####################################
-# We will fit the models for each stage. Within each stage we will fit 
+# We will fit the models for each stage. Within each stage we will fit
 # the model a number of times:
 # fit-marginal-stage-models
 if(!file.exists("../data/stage_models.rds")) {
@@ -32,7 +32,7 @@ if(!file.exists("../data/stage_models.rds")) {
 # and for culled versions of paleo data:
 cull_cuts <- seq(0, 1, 0.25)
 stage_models_culls <- plyr::llply(cull_cuts, function(i) {
-  rlply(1, fit_stage_models(neog[neog$prop_comp >= i, ], stage_name = "all"))
+  plyr::rlply(1, fit_stage_models(neog[neog$prop_comp >= i, ], stage_name = "all"))
   })
 
 ####################################
@@ -41,9 +41,9 @@ stage_models_culls <- plyr::llply(cull_cuts, function(i) {
 # pull-out-marginal-data
 vars <- c("richness", "occupancy", "occurrences", "min.lat",
   "max.lat", "lat.range", "mean.lat", "great.circle", "group")
-partial_dat <- ldply(c(stage_order, "all"), function(stage_name) {
-  p2 <- ldply(vars, function(var_name){
-    p1 <- ldply(stage_models[[stage_name]], function(x)
+partial_dat <- plyr::ldply(c(stage_order, "all"), function(stage_name) {
+  p2 <- plyr::ldply(vars, function(var_name){
+    p1 <- plyr::ldply(stage_models[[stage_name]], function(x)
       plot.gbm(x, return.grid = TRUE, i.var = var_name,
         type = "response"))
     names(p1) <- c("value", "response")
@@ -55,9 +55,9 @@ partial_dat <- ldply(c(stage_order, "all"), function(stage_name) {
 })
 
 # and for the culled versions:
-partial_dat_culls <- ldply(1:length(cull_cuts), function(i) {
-  p2 <- ldply(vars, function(var_name){
-    p1 <- ldply(stage_models_culls[[i]], function(x)
+partial_dat_culls <- plyr::ldply(1:length(cull_cuts), function(i) {
+  p2 <- plyr::ldply(vars, function(var_name){
+    p1 <- plyr::ldply(stage_models_culls[[i]], function(x)
       plot.gbm(x, return.grid = TRUE, i.var = var_name,
         type = "response"))
     names(p1) <- c("value", "response")
@@ -71,7 +71,7 @@ partial_dat_culls <- ldply(1:length(cull_cuts), function(i) {
 ####################################
 # We will get the median and interquartile range of the marginal effects:
 # <<summarize-marginal-effects>>=
-partial_dat2 <- plyr::ddply(partial_dat, 
+partial_dat2 <- plyr::ddply(partial_dat,
   c("stage", "predictor", "value"),
   plyr::summarize,
   median = median(response),
@@ -105,16 +105,16 @@ partial_groups_culled <- partial_dat2_culls[partial_dat2_culls$predictor ==
     "group", ]
 partial_groups_culled <- plyr::join(partial_groups_culled, groups_match)
 partial_groups_culled$value <- NULL
-partial_groups_culled <- plyr::rename(partial_groups_culled, 
+partial_groups_culled <- plyr::rename(partial_groups_culled,
   c("group" = "value"))
-partial_groups_culled <- plyr::rename(partial_groups_culled, 
+partial_groups_culled <- plyr::rename(partial_groups_culled,
   c("stage" = "preservation_cutoff"))
 
 partial_continuous_culled <- partial_dat2_culls[partial_dat2_culls$predictor != "group", ]
-partial_continuous_culled <- plyr::rename(partial_continuous_culled, 
+partial_continuous_culled <- plyr::rename(partial_continuous_culled,
   c("stage" = "preservation_cutoff"))
-partial_continuous_culled <- plyr::ddply(partial_continuous_culled, 
+partial_continuous_culled <- plyr::ddply(partial_continuous_culled,
   c("predictor", "preservation_cutoff"), function(x) {
     data.frame(x, median_shifted = x$median - mean(x$median))
-  }) 
+  })
 @
