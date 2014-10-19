@@ -24,7 +24,7 @@
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=\textwidth]{fossil-cull-N.pdf}
-\caption{Total number of genera (top 2 rows), number of extinct genera (rows 3--4) , and ratio of extinct to total genera for each of the continuous variables at various thresholds of proportion complete.}
+\caption{Total number of genera (top 2 rows), number of extinct genera (rows 3--4) , and ratio of extinct to total genera for each of the continuous variables at various thresholds of proportion complete in the Neogene fossil record.}
 \label{fig:raw-predictor-paleo-culls}
 \end{center}
 \end{figure}
@@ -43,8 +43,18 @@
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=\textwidth]{fossil-cull-self-prediction-threshold-distributions.pdf}
-\caption{The distribution of predicted risk at increasing thresholds of proportion complete in the Neogene fossil record. The upper and lower panels show the same data in violin and boxplots. \textit{Only show the boxplots and add a median point or line?}}
+\caption{The distribution of the taxonomic partial-dependence component of the GBM models at various levels of proportion complete in the Neogene fossil record. The boxes show the interquartile range, the whiskers show 1.5 times the interquartile range, and dots show outliers beyond that range. Lines in the middle indicate the median values.}
 \label{fig:ext-boxplots-paleo-culls}
+\end{center}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=0.9\textwidth]{partial-class-level-median-estimates}
+\caption{The same data as Fig.~\ref{fig:ext-boxplots-paleo-culls} but arranged differently. These are medians with 40\% and 60\% quantiles of the `group'-level partial dependence values aggregated by class.}
+\label{fig:class-level-partial-order}
 \end{center}
 \end{figure}
 
@@ -54,7 +64,7 @@
 \begin{center}
 \includegraphics[width=0.95\textwidth]{fossil-cull-comparison-continuous.pdf}
 \includegraphics[width=0.65\textwidth]{fossil-cull-comparison-group.pdf}
-\caption{Partial dependence plots with increasing threshold of proportion complete.}
+\caption{Partial dependence plots with increasing threshold of proportion complete in the Neogene fossil record. This is a sensitivity test of Fig.~1 in the main text.}
 \label{fig:partial-paleo-culls}
 \end{center}
 \end{figure}
@@ -74,7 +84,7 @@
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=0.9\textwidth]{pairs-paleo-culls-genera}
-\caption{Pairs plots for paleo culls by genus.}
+\caption{Pairs plots for paleo culls. Each dot is an individual genus.}
 \label{fig:pairs-genus-paleo-culls}
 \end{center}
 \end{figure}
@@ -132,23 +142,23 @@
 
 \clearpage
 
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[width=\textwidth]{../analysis/obis-sampling-vs-predictors-class-facets}
-\caption{Predictors vs.\ number of OBIS records. Split by class. Remove this?}
-\label{fig:obis-sampling-vs-predictors-by-class}
-\end{center}
-\end{figure}
+%\begin{figure}[htbp]
+%\begin{center}
+%\includegraphics[width=\textwidth]{../analysis/obis-sampling-vs-predictors-class-facets}
+%\caption{Predictors vs.\ number of OBIS records. Split by class. Remove this?}
+%\label{fig:obis-sampling-vs-predictors-by-class}
+%\end{center}
+%\end{figure}
+%
+%\clearpage
 
-\clearpage
-
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[width=0.7\textwidth]{../analysis/meanext-vs-obis-n-by-prov}
-\caption{Province-level overall mean extinction risk vs.\ number of OBIS records. Line is a loess smoother with 95\% CI. I hadn't circulated this one. Do we want to keep it?}
-\label{fig:ext-vs-obis-n-by-prov}
-\end{center}
-\end{figure}
+%\begin{figure}[htbp]
+%\begin{center}
+%\includegraphics[width=0.7\textwidth]{../analysis/meanext-vs-obis-n-by-prov}
+%\caption{Province-level overall mean extinction risk vs.\ number of OBIS records. Line is a loess smoother with 95\% CI. I hadn't circulated this one. Do we want to keep it?}
+%\label{fig:ext-vs-obis-n-by-prov}
+%\end{center}
+%\end{figure}
 
 \clearpage
 
