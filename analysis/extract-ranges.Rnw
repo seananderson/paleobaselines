@@ -24,16 +24,8 @@ extract_ranges <- function() {
   OBIS.genera <- genus_grid_merged2
   genus.Matches <- read.csv("../data/modern-genera-matchtaxa.csv", header = TRUE)
   OBIS.for.plot <- merge(OBIS.genera,genus.Matches,by.x = "genus",all.x = FALSE)
-  # save(OBIS.for.plot,file = "../data/OBIS.for.plot_rare_removed.rda")
 
   # Now extract range parameters from the OBIS data
-
-  # Load required packages:
-  # library(fields)
-  # library(plyr)
-  # library(PBSmapping)
-  # library(gdata)
-
   latitude <- round(OBIS.for.plot$lat_mid)
   longitude <- round(OBIS.for.plot$long_mid)
   LongLat <- paste(round(longitude,2), "_",round(latitude,2),sep="")
