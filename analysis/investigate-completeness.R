@@ -35,7 +35,7 @@ partial_groups_culled <- plyr::join(partial_groups_culled, x)
 
 ### make plots
 
-p <- ggplot(partial_groups_culled, aes(mean_prop_comp, median, colour = class)) + geom_point() + xlab("Mean proportional completeness") + ylab("Partial dependence extinction risk") + theme_bw()
+p <- ggplot(partial_groups_culled, aes(mean_prop_comp, median, colour = class)) + geom_point() + xlab("Mean preservation probability") + ylab("Partial dependence extinction risk") + theme_bw()
 ggsave("../figs/fossil-cull-partial-groups-vs-completeness.pdf",  width = 7, height = 5)
 
 p1 <- ggplot(partial_continuous_culled, aes(value, median_shifted, colour = as.factor(preservation_cutoff))) + geom_line(lwd = 1.8) + facet_wrap(~predictor, scales = "free_x", nrow = 2) + theme_bw() + scale_colour_manual(values = rev(c(RColorBrewer::brewer.pal(5, "YlGnBu"))[]), name = "Preservation threshold") + ylab("Relative partial dependence") + xlab("Value")
@@ -47,11 +47,11 @@ ggsave("../figs/fossil-cull-comparison-group.pdf", width = 7, height = 5)
 p3 <- ggplot(partial_groups_culled, aes(preservation_cutoff, median, group = value)) + geom_line() + theme_bw() + ylab("Relative influence on extinction probability") + xlab("Preservation threshold")
 ggsave("../figs/fossil-cull-comparison-bump.pdf", width = 7, height = 5)
 
-p1 <- ggplot(ne_sum, aes(value, N, colour = prop_comp_thresh, group = prop_comp_thresh)) + geom_line(lwd = 1.5) + facet_wrap(~variable, scales = "free", nrow = 2) + labs(colour = ">= proportion complete") + theme_bw()
+p1 <- ggplot(ne_sum, aes(value, N, colour = prop_comp_thresh, group = prop_comp_thresh)) + geom_line(lwd = 1.5) + facet_wrap(~variable, scales = "free", nrow = 2) + labs(colour = ">= preservation probability") + theme_bw()
 
-p2 <- ggplot(ne_sum, aes(value, N_ex, colour = prop_comp_thresh, group = prop_comp_thresh)) + geom_line(lwd = 1.5) + facet_wrap(~variable, scales = "free", nrow = 2) + labs(colour = ">= proportion complete") + theme_bw()
+p2 <- ggplot(ne_sum, aes(value, N_ex, colour = prop_comp_thresh, group = prop_comp_thresh)) + geom_line(lwd = 1.5) + facet_wrap(~variable, scales = "free", nrow = 2) + labs(colour = ">= preservation probability") + theme_bw()
 
-p3 <- ggplot(ne_sum, aes(value, N_ex/N, colour = prop_comp_thresh, group = prop_comp_thresh)) + geom_line(lwd = 1.5) + facet_wrap(~variable, scales = "free", nrow = 2) + labs(colour = ">= proportion complete") + theme_bw()
+p3 <- ggplot(ne_sum, aes(value, N_ex/N, colour = prop_comp_thresh, group = prop_comp_thresh)) + geom_line(lwd = 1.5) + facet_wrap(~variable, scales = "free", nrow = 2) + labs(colour = ">= preservation probability") + theme_bw()
 
 pdf("../figs/fossil-cull-N.pdf", width = 10, height = 9)
 gridExtra::grid.arrange(p1, p2, p3)
@@ -59,7 +59,7 @@ dev.off()
 
 p1 <- ggplot(neog, aes(prop_comp, pred, fill = class, colour = class)) + geom_violin(aes(group = prop_comp), scale = "width") + facet_wrap(~class)+ theme_bw() + geom_point(alpha = 0.1, colour = "black", position = position_jitter(width = 0.05)) + xlab("Proportional completeness") + ylab("Predicted relative extinction risk")
 
-p2 <- ggplot(neog, aes(prop_comp, pred, fill = class, colour = class)) + geom_boxplot(aes(group = prop_comp)) + facet_wrap(~class)+ theme_bw() + geom_point(alpha = 0.05, colour = "black", position = position_jitter(width = 0.05)) + xlab("Proportional completeness") + ylab("Predicted relative extinction risk")
+p2 <- ggplot(neog, aes(prop_comp, pred, fill = class, colour = class)) + geom_boxplot(aes(group = prop_comp)) + facet_wrap(~class)+ theme_bw() + geom_point(alpha = 0.05, colour = "black", position = position_jitter(width = 0.05)) + xlab("Preservation probability") + ylab("Predicted relative extinction risk")
 pdf("../figs/fossil-cull-self-prediction-distributions.pdf", width = 9, height = 7)
 gridExtra::grid.arrange(p1, p2)
 dev.off()
@@ -78,12 +78,12 @@ p1 <- ggplot(class_medians_culls, aes(prop_comp_thresh, m, group = class, colour
   geom_line(lwd = 1.5) +
   scale_y_log10(breaks = c(0.05, 0.1, 0.2, 0.5, 1)) +
   ylab("Partial dependence component aggregated by class") +
-  xlab("Proportion complete") + theme_bw()
+  xlab("Preservation probability threshold") + theme_bw()
 ggsave("../figs/partial-class-level-median-estimates.pdf", width = 8, height = 5)
 
-p1 <- ggplot(ne, aes(prop_comp_thresh, pred, fill = class, colour = class)) + geom_violin(aes(group = prop_comp_thresh), scale = "width") + facet_wrap(~class)+ theme_bw() + xlab("Threshold prop. completeness") + ylab("Predicted relative extinction risk")
+p1 <- ggplot(ne, aes(prop_comp_thresh, pred, fill = class, colour = class)) + geom_violin(aes(group = prop_comp_thresh), scale = "width") + facet_wrap(~class)+ theme_bw() + xlab("Preservation probability threshold") + ylab("Predicted relative extinction risk")
 
-p2 <- ggplot(ne, aes(prop_comp_thresh, pred, fill = class)) + geom_boxplot(aes(group = prop_comp_thresh)) + facet_wrap(~class)+ theme_bw() +  xlab("Threshold prop. completeness") + ylab("Predicted relative extinction risk") + theme(legend.position = "none")
+p2 <- ggplot(ne, aes(prop_comp_thresh, pred, fill = class)) + geom_boxplot(aes(group = prop_comp_thresh)) + facet_wrap(~class)+ theme_bw() +  xlab("Preservation probability threshold") + ylab("Predicted relative extinction risk") + theme(legend.position = "none")
 #   geom_point(data = class_medians_culls, aes(x = prop_comp_thresh, y = m), colour = "black", pch = 3)
 
 # pdf("../figs/fossil-cull-self-prediction-threshold-distributions.pdf", width = 9, height = 7)
