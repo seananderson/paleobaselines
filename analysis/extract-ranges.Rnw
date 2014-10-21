@@ -196,7 +196,7 @@ extract_ranges <- function() {
 
 
   ### drop any name without a taxon #
-  pbdb <- pbdb[!(is.na(pbdb$taxon_no) | pbdb$taxon_no==0), ] # not removing anything
+##  pbdb <- pbdb[!(is.na(pbdb$taxon_no) | pbdb$taxon_no==0), ] # not removing anything
 
 
   ### make column of class-genus to avoid mixing up different groups
