@@ -346,8 +346,11 @@ extract_ranges <- function() {
 
   temp <- data[data$occurrences == 1, ]
   single_occurrences <- as.character(unique(temp$genus))
-  data$single_occurrence <- 0
-  data[data$genus %in% single_occurrences, "single_occurrence"] <- 1
+  data$single_occ_any_stage <- 0 # default value
+  data[data$genus %in% single_occurrences &
+    data$Interval != "Modern_raw" &
+    data$Interval != "Modern_merged",
+      "single_occ_any_stage"] <- 1
 
   saveRDS(data, file = "../data/modern_and_paleo_ranges.rds")
 }
