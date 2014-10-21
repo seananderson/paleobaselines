@@ -131,7 +131,7 @@ extract_ranges <- function() {
   #    "../data/4.6.2014.pbdb.occs.rda", method = "curl")
   # If that's the case, you'll need to download this file and place it in the
   # ../data/ folder
-  load("../data/4.6.2014.pbdb.occs.rda")
+  load("../data/4.6.2014.occs.rda")
 
   # Estimation of proportional completeness using FR2 bins
   # From Carl on 20140923
