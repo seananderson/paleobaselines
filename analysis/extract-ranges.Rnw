@@ -343,6 +343,12 @@ extract_ranges <- function() {
   data <- data[!(data$Interval %in% dropstages),]
   data <- droplevels(data)
   data$singleton.single.occ <- ifelse(data$Singleton ==1 & data$occurrences ==1 ,1,0)
+
+  temp <- data[data$occurrences == 1, ]
+  single_occurrences <- as.character(unique(temp$genus))
+  data$single_occurrence <- 0
+  data[data$genus %in% single_occurrences, "single_occurrence"] <- 1
+
   saveRDS(data, file = "../data/modern_and_paleo_ranges.rds")
 }
 if(!file.exists("../data/modern_and_paleo_ranges.rds")) {
