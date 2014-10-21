@@ -112,25 +112,14 @@ extract_ranges <- function() {
   # byGenus.OBIS <- rbind_all(byGenus.OBIS.list)
   # rm(byGenus.OBIS.list)
 
-
   ################# now process PaleoDB data   #################
 
   # The first step is to read in the PBDB data and do a bunch of processing to
-  # standardize the taxonomic names and the time bins.  This can probably be
-  # cleaned up substantially before a final submission
+  # standardize the taxonomic names and the time bins.
 
   # read in csv file and convert to rda
-  #pbdb <- read.csv('~/Dropbox/nescent_extinction_map/data/PaleoDB downloads/4.6.2014/4.6.2014.occs.csv')
-  #save(pbdb,file='~/Dropbox/nescent_extinction_map/data/PaleoDB downloads/4.6.2014/4.6.2014.occs.rda')
-
-  #pbdb2 <- readRDS('~/Dropbox/nescent_extinction_map/data/PaleoDB downloads/6.25.2014/6.25.2014.occs.rds')
-  #  load('~/Dropbox/nescent_extinction_map/data/PaleoDB downloads/4.6.2014/4.6.2014.occs.rda')
-
-  # Warning, sometimes this crashes my R session:
-  #  download.file("https://dl.dropboxusercontent.com/u/254940/riskmaps-data/4.6.2014.pbdb.occs.rda",
-  #    "../data/4.6.2014.pbdb.occs.rda", method = "curl")
-  # If that's the case, you'll need to download this file and place it in the
-  # ../data/ folder
+  # pbdb <- read.csv('~/Dropbox/nescent_extinction_map/data/PaleoDB downloads/4.6.2014/4.6.2014.occs.csv')
+  # save(pbdb, file='~/Dropbox/nescent_extinction_map/data/PaleoDB downloads/4.6.2014/4.6.2014.occs.rda')
   load("../data/4.6.2014.occs.rda")
   pbdb <- pbdb[-which(pbdb$FR2_bin == ""), ]
   pbdb <- droplevels(pbdb)
@@ -147,36 +136,30 @@ extract_ranges <- function() {
       (max(x$FR2_num) - min(x$FR2_num) + 1)
      data.frame(prop_comp = out)
   }
+# testing:
 #   d <- data.frame(FR2_num = c(1, 2, 3, 5))
 #   pres_prob(d)
-#
 #   d <- data.frame(FR2_num = c(1, 2, 5))
 #   pres_prob(d)
-#
 #   d <- data.frame(FR2_num = c(1, 2, 3, 4, 5))
 #   pres_prob(d)
-#
 #   d <- data.frame(FR2_num = c(2, 3, 4, 5))
 #   pres_prob(d)
-#
 #   d <- data.frame(FR2_num = c(2, 4, 5))
 #   pres_prob(d)
 
-  # Estimation of proportional completeness using FR2 bins
-  # From Carl on 20140923
+# Estimation of proportional completeness using FR2 bins
+# From Carl on 20140923
 #  int <- length(which(levels(pbdb$FR2_bin)!=""))
 #  times <- function(x) {
 #    y <- unique(x$FR2_bin)
 #    z <- length(which(y != ""))
 #    data.frame(prop_comp_carl = z/int)
 #  }
-#
-#   d <- data.frame(FR2_num = c(1, 2, 3, 4, 5))
-#   pres_prob(d)
-  prop_comp2 <- plyr::ddply(pbdb, "occurrence.genus_name", pres_prob)
-
  # prop_comp <- plyr::ddply(pbdb, "occurrence.genus_name", times)
  # pbdb <- plyr::join(pbdb, prop_comp, by = "occurrence.genus_name")
+
+  prop_comp2 <- plyr::ddply(pbdb, "occurrence.genus_name", pres_prob)
   pbdb <- plyr::join(pbdb, prop_comp2, by = "occurrence.genus_name")
 
   ### redefine Plio-Pleistocene FR_2 Bin
@@ -193,11 +176,6 @@ extract_ranges <- function() {
   stage.dates <- data.frame(FR2_bin,stage.name,bottom,top)
 
   pbdb <- merge(pbdb,stage.dates,by="FR2_bin")
-
-
-  ### drop any name without a taxon #
-##  pbdb <- pbdb[!(is.na(pbdb$taxon_no) | pbdb$taxon_no==0), ] # not removing anything
-
 
   ### make column of class-genus to avoid mixing up different groups
   pbdb$clgen <- paste(pbdb$class_name,pbdb$occurrence.genus_name)
@@ -361,18 +339,18 @@ if(!file.exists("../data/modern_and_paleo_ranges.rds")) {
   message("Delete ../data/modern_and_paleo_ranges.rds and re-run to re-extract.")
 }
 
-###Temporary code to make plots to check distributions
-
-#d <- readRDS("../data/modern_and_paleo_ranges.rds")
-#data <- d
-
-#p <- ggplot(d,aes(richness+1,fill=class))
-#p + geom_histogram() + facet_wrap(~Interval, scales="free") + scale_y_log10()
-
-#means <- function(df) mean(df$Ex)
-#number <-function(df) length(df$Ex)
-#ExMeans <- ddply(data,.(Interval,class,eac),each(means,number))
-
-#p <- ggplot(ExMeans,aes(log(eac),means,size=log(number),colour=Interval))
-#p + geom_point() + facet_wrap(~class)
+# make plots to check distributions
+#
+# d <- readRDS("../data/modern_and_paleo_ranges.rds")
+# data <- d
+#
+# p <- ggplot(d,aes(richness+1,fill=class))
+# p + geom_histogram() + facet_wrap(~Interval, scales="free") + scale_y_log10()
+#
+# means <- function(df) mean(df$Ex)
+# number <-function(df) length(df$Ex)
+# ExMeans <- ddply(data,.(Interval,class,eac),each(means,number))
+#
+# p <- ggplot(ExMeans,aes(log(eac),means,size=log(number),colour=Interval))
+# p + geom_point() + facet_wrap(~class)
 @
