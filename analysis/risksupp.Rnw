@@ -199,7 +199,7 @@ dat$Interval <- factor(dat$Interval)
 # drop unused classes
 dat <- subset(dat, !class %in% c("Foraminifera", "Testudines", "Malacostraca"))
 dat <- droplevels(dat)
-dat <- rename(dat, c("Interval" = "Interval_Name",
+dat <- plyr::rename(dat, c("Interval" = "Interval_Name",
   "MaxAbsLat" = "MaxLat", "MinAbsLat" = "MinLat",
   "group" = "MatchTaxon", "top" = "stage_top",
   "MeanAbsLat" = "mean_lat", "Ex" = "Extinct.in.stage"))
