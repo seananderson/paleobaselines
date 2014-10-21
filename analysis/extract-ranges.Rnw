@@ -132,17 +132,52 @@ extract_ranges <- function() {
   # If that's the case, you'll need to download this file and place it in the
   # ../data/ folder
   load("../data/4.6.2014.occs.rda")
+  pbdb <- pbdb[-which(pbdb$FR2_bin == ""), ]
+  pbdb <- droplevels(pbdb)
+
+  lookup_pbdb  <- data.frame(FR2_bin =
+    c("Upper Miocene", "Middle Miocene", "Lower Miocene",
+      "Pliocene", "Pleistocene"),
+    FR2_num = c(1:5), stringsAsFactors = FALSE)
+
+  pbdb <- plyr::join(pbdb, lookup_pbdb)
+
+  pres_prob <- function(x) {
+    out <- length(unique(x$FR2_num)) /
+      (max(x$FR2_num) - min(x$FR2_num) + 1)
+     data.frame(prop_comp = out)
+  }
+#   d <- data.frame(FR2_num = c(1, 2, 3, 5))
+#   pres_prob(d)
+#
+#   d <- data.frame(FR2_num = c(1, 2, 5))
+#   pres_prob(d)
+#
+#   d <- data.frame(FR2_num = c(1, 2, 3, 4, 5))
+#   pres_prob(d)
+#
+#   d <- data.frame(FR2_num = c(2, 3, 4, 5))
+#   pres_prob(d)
+#
+#   d <- data.frame(FR2_num = c(2, 4, 5))
+#   pres_prob(d)
 
   # Estimation of proportional completeness using FR2 bins
   # From Carl on 20140923
-  int <- length(which(levels(pbdb$FR2_bin)!=""))
-  times <- function(x) {
-    y <- unique(x$FR2_bin)
-    z <- length(which(y != ""))
-    data.frame(prop_comp = z/int)
-  }
-  prop_comp <- plyr::ddply(pbdb, "occurrence.genus_name", times)
-  pbdb <- plyr::join(pbdb, prop_comp, by = "occurrence.genus_name")
+#  int <- length(which(levels(pbdb$FR2_bin)!=""))
+#  times <- function(x) {
+#    y <- unique(x$FR2_bin)
+#    z <- length(which(y != ""))
+#    data.frame(prop_comp_carl = z/int)
+#  }
+#
+#   d <- data.frame(FR2_num = c(1, 2, 3, 4, 5))
+#   pres_prob(d)
+  prop_comp2 <- plyr::ddply(pbdb, "occurrence.genus_name", pres_prob)
+
+ # prop_comp <- plyr::ddply(pbdb, "occurrence.genus_name", times)
+ # pbdb <- plyr::join(pbdb, prop_comp, by = "occurrence.genus_name")
+  pbdb <- plyr::join(pbdb, prop_comp2, by = "occurrence.genus_name")
 
   ### redefine Plio-Pleistocene FR_2 Bin
   pbdb$FR2_bin <- ifelse(pbdb$interval_base <= 5.333 &
