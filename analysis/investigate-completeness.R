@@ -8,18 +8,39 @@
 neog <- readRDS("../data/stand-predictors-cen-obis.rds")
 neog <- droplevels(subset(neog, stage_top < 23 & stage_top != 0))
 
+p1 <- ggplot(neog, aes(prop_comp, fill = class)) + geom_histogram() + xlab("Preservation probability") + ylab("Number of genera")
+ggsave("../figs/hist-preserv-prob.pdf", width = 6, height = 4)
+
+#ne2 <- plyr::join(neog, data.frame(single_obs = c(0, 1)))
+
+ne2 <- neog
+ne2_no_singles <- subset(ne2, single_obs == 0)
+ne2$single_obs_TF <- FALSE
+ne2_no_singles$single_obs_TF <- TRUE
+ne2 <- rbind(ne2, ne2_no_singles)
+
+#p2 <- ggplot(ne2, aes(single_obs_TF, fill = class)) + geom_histogram() + xlab("Excude singletons?") + ylab("Number of genera")
+#ggsave("../figs/hist-single-occ.pdf", width = 6, height = 3)
+
 # make an expanded version for plyr:
 ne <- neog
+cull_cuts <- c(0, sort(unique(neog$prop_comp))) # all possible
 ne$prop_comp_thresh <- 0
-for(i in seq(0.25, 1, 0.25)) {
+for(i in cull_cuts) {
   x <- subset(neog, prop_comp >= i)
   x$prop_comp_thresh <- i
   ne <- rbind(ne, x)
 }
 ne_long <- reshape2::melt(ne, id.vars = c("stage", "prop_comp_thresh", "genus", "Ex"), measure.vars = c("richness", "occupancy", "occurrences", "min.lat", "max.lat", "lat.range", "mean.lat", "great.circle"))
 
+ne_long_sing <- reshape2::melt(ne2, id.vars = c("stage", "single_obs_TF", "genus", "Ex"), measure.vars = c("richness", "occupancy", "occurrences", "min.lat", "max.lat", "lat.range", "mean.lat", "great.circle"))
+
 # find sample sizes:
 ne_sum <- plyr::ddply(ne_long, c("prop_comp_thresh", "variable", "value"),
+  plyr::summarize,
+  N = length(Ex), N_ex = sum(Ex))
+
+ne_sum_sing <- plyr::ddply(ne_long_sing, c("single_obs_TF", "variable", "value"),
   plyr::summarize,
   N = length(Ex), N_ex = sum(Ex))
 
@@ -38,22 +59,28 @@ partial_groups_culled <- plyr::join(partial_groups_culled, x)
 p <- ggplot(partial_groups_culled, aes(mean_prop_comp, median, colour = class)) + geom_point() + xlab("Mean preservation probability") + ylab("Partial dependence extinction risk") + theme_bw()
 ggsave("../figs/fossil-cull-partial-groups-vs-completeness.pdf",  width = 7, height = 5)
 
-p1 <- ggplot(partial_continuous_culled, aes(value, median_shifted, colour = as.factor(preservation_cutoff))) + geom_line(lwd = 1.8) + facet_wrap(~predictor, scales = "free_x", nrow = 2) + theme_bw() + scale_colour_manual(values = rev(c(RColorBrewer::brewer.pal(5, "YlGnBu"))[]), name = "Preservation threshold") + ylab("Relative partial dependence") + xlab("Value")
+p1 <- ggplot(partial_continuous_culled, aes(value, median_shifted, colour = preservation_cutoff, group = preservation_cutoff)) + geom_line(lwd = 1.8) + facet_wrap(~predictor, scales = "free_x", nrow = 2) + theme_bw() + ylab("Relative partial dependence") + xlab("Value")
 ggsave("../figs/fossil-cull-comparison-continuous.pdf", width = 12, height = 5)
 
-p2 <- ggplot(partial_groups_culled, aes(median, value, fill = as.factor(preservation_cutoff))) + geom_point(cex = 3, pch = 21, col = "black") + theme_bw() + scale_fill_manual(values = rev(c(RColorBrewer::brewer.pal(5, "YlGnBu"))), name = "Preservation threshold") + xlab("Relative partial dependence") + ylab("")
+p2 <- ggplot(partial_groups_culled, aes(median, value, fill = preservation_cutoff, group = preservation_cutoff)) + geom_point(cex = 3, pch = 21, col = "black") + theme_bw() + scale_fill_continuous(name = "Preservation threshold") + xlab("Relative partial dependence") + ylab("")
 ggsave("../figs/fossil-cull-comparison-group.pdf", width = 7, height = 5)
 
 p3 <- ggplot(partial_groups_culled, aes(preservation_cutoff, median, group = value)) + geom_line() + theme_bw() + ylab("Relative influence on extinction probability") + xlab("Preservation threshold")
 ggsave("../figs/fossil-cull-comparison-bump.pdf", width = 7, height = 5)
 
 p1 <- ggplot(ne_sum, aes(value, N, colour = prop_comp_thresh, group = prop_comp_thresh)) + geom_line(lwd = 1.5) + facet_wrap(~variable, scales = "free", nrow = 2) + labs(colour = ">= preservation probability") + theme_bw()
-
 p2 <- ggplot(ne_sum, aes(value, N_ex, colour = prop_comp_thresh, group = prop_comp_thresh)) + geom_line(lwd = 1.5) + facet_wrap(~variable, scales = "free", nrow = 2) + labs(colour = ">= preservation probability") + theme_bw()
-
 p3 <- ggplot(ne_sum, aes(value, N_ex/N, colour = prop_comp_thresh, group = prop_comp_thresh)) + geom_line(lwd = 1.5) + facet_wrap(~variable, scales = "free", nrow = 2) + labs(colour = ">= preservation probability") + theme_bw()
-
 pdf("../figs/fossil-cull-N.pdf", width = 10, height = 9)
+gridExtra::grid.arrange(p1, p2, p3)
+dev.off()
+
+## same with singular obs. cull:
+#ne_sum_sing <- plyr::join(ne_sum_sing, data.frame(single_obs = c(0, 1), single_obs_TF = c(FALSE, TRUE)))
+p1 <- ggplot(ne_sum_sing, aes(value, N, colour = single_obs_TF, group = single_obs_TF)) + geom_line(lwd = 1.5) + facet_wrap(~variable, scales = "free", nrow = 2) + labs(colour = "Cull single\noccurrences") + theme_bw()
+p2 <- ggplot(ne_sum_sing, aes(value, N_ex, colour = single_obs_TF, group = single_obs_TF)) + geom_line(lwd = 1.5) + facet_wrap(~variable, scales = "free", nrow = 2) + labs(colour = "Cull single\noccurrences") + theme_bw()
+p3 <- ggplot(ne_sum_sing, aes(value, N_ex/N, colour = single_obs_TF, group = single_obs_TF)) + geom_line(lwd = 1.5) + facet_wrap(~variable, scales = "free", nrow = 2) + labs(colour = "Cull single\noccurrences") + theme_bw()
+pdf("../figs/fossil-cull-N-sing.pdf", width = 10, height = 9)
 gridExtra::grid.arrange(p1, p2, p3)
 dev.off()
 
@@ -92,4 +119,4 @@ pdf("../figs/fossil-cull-self-prediction-threshold-distributions.pdf", width = 9
 print(p2)
 dev.off()
 
-ggplot(class_medians_culls, aes())
+#ggplot(class_medians_culls, aes())

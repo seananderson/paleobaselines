@@ -23,14 +23,14 @@ fit_stage_models <- function(dat, stage_name) {
 # fit-marginal-stage-models
 if(!file.exists("../data/stage_models.rds")) {
   stage_models <- llply(c(stage_order, "all"), function(x)
-    rlply(20, fit_stage_models(neog, stage_name = x)))
+    rlply(10, fit_stage_models(neog, stage_name = x)), .parallel = TRUE)
   names(stage_models) <- c(stage_order, "all")
   saveRDS(stage_models, file = "../data/stage_models.rds")
 } else {
   stage_models <- readRDS("../data/stage_models.rds")
 }
 # and for culled versions of paleo data:
-cull_cuts <- seq(0, 1, 0.25)
+cull_cuts <- c(0, sort(unique(neog$prop_comp))) # all possible
 stage_models_culls <- plyr::llply(cull_cuts, function(i) {
   plyr::rlply(1, fit_stage_models(neog[neog$prop_comp >= i, ], stage_name = "all"))
   })
@@ -79,6 +79,7 @@ partial_dat2 <- plyr::ddply(partial_dat,
   upper = quantile(response, probs = 0.75))
 
 # culled:
+# CULL-CODE TODO
 partial_dat2_culls <- plyr::ddply(partial_dat_culls,
   c("stage", "predictor", "value"),
   plyr::summarize,
@@ -101,6 +102,7 @@ partial_groups <- plyr::rename(partial_groups, c("group" = "value"))
 
 # and for the culled paleo data:
 # culled-separate-taxonomic-and-numeric-predictions:
+# CULL-CODE TODO
 partial_groups_culled <- partial_dat2_culls[partial_dat2_culls$predictor ==
     "group", ]
 partial_groups_culled <- plyr::join(partial_groups_culled, groups_match)

@@ -6,9 +6,9 @@
 \geometry{verbose,letterpaper,tmargin=2.54cm,bmargin=2.54cm,lmargin=2.54cm,rmargin=2.54cm}
 \textheight 22.0cm
 \usepackage{rotating}
-\usepackage[right]{showlabels}
-\renewcommand{\showlabelsetlabel}[1]
-{\begin{turn}{90}\showlabelfont #1\end{turn}}
+%\usepackage[right]{showlabels}
+%\renewcommand{\showlabelsetlabel}[1]
+%{\begin{turn}{90}\showlabelfont #1\end{turn}}
 
 
 \title{Supplemental figures for revision 1}
@@ -19,13 +19,32 @@
 
 \section{Fossil data sensitivity analyses}
 
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=5in]{hist-preserv-prob.pdf}
+%\includegraphics[width=5in]{hist-single-occ.pdf}
+\caption{Preservation probability histogram.}
+\label{fig:hist-preserv-prob}
+\end{center}
+\end{figure}
 
+\clearpage
 
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=\textwidth]{fossil-cull-N.pdf}
-\caption{Total number of genera (top 2 rows), number of extinct genera (rows 3--4) , and ratio of extinct to total genera for each of the continuous variables at various thresholds of proportion complete in the Neogene fossil record.}
-\label{fig:raw-predictor-paleo-culls}
+\caption{Effect of different minimum preservation probability culls on the distribution of fossil genera with respect to potential extinction risk predictors. Rows 1--2: total number of genera, rows 3--4: number of extinct genera, rows 5--6: proportion of extinct genera.}
+%\label{fig:raw-predictor-paleo-culls}
+\end{center}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=\textwidth]{fossil-cull-N-sing.pdf}
+\caption{Effect of culling genera with single occurrences in the fossil record in any stage in which we would have expected to observe them on the distribution of fossil genera with respect to potential extinction risk predictors. Rows 1--2: total number of genera, rows 3--4: number of extinct genera, rows 5--6: proportion of extinct genera.}
+%\label{fig:raw-predictor-paleo-culls}
 \end{center}
 \end{figure}
 
@@ -43,7 +62,7 @@
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=\textwidth]{fossil-cull-self-prediction-threshold-distributions.pdf}
-\caption{The distribution of the taxonomic partial-dependence component of the GBM models at various levels of proportion complete in the Neogene fossil record. The boxes show the interquartile range, the whiskers show 1.5 times the interquartile range, and dots show outliers beyond that range. Lines in the middle indicate the median values.}
+\caption{Distributions of predicted intrinsic risk for genera in each of the six major marine groups, varying the preservation probability threshold above which genera are included in the Neogene GBM model. A threshold of 0.0, for example, includes all genera, whereas a threshold of 0.5 includes only those genera with preservation probabilities of 0.5 or greater. Plotted are raw GBM risk estimates prior to calibration. Median intrinsic risk declines with more stringent preservation thresholds as rare and/or poorly sampled genera are excluded from the data. The boxes show the interquartile range, the whiskers show 1.5 times the interquartile range, and dots show outliers beyond that range. Lines in the middle indicate the median values.}
 \label{fig:ext-boxplots-paleo-culls}
 \end{center}
 \end{figure}
@@ -71,14 +90,14 @@
 
 \clearpage
 
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[width=0.9\textwidth]{fossil-cull-partial-groups-vs-completeness.pdf}
-\caption{Partial dependence values for different group values plotted against mean proportional completeness.}
-\label{fig:ext-prop-compl-scatter}
-\end{center}
-\end{figure}
-
+% \begin{figure}[htbp]
+% \begin{center}
+% \includegraphics[width=0.9\textwidth]{fossil-cull-partial-groups-vs-completeness.pdf}
+% \caption{Partial dependence values for different group values plotted against mean proportional completeness. \textbf{not sure how useful this is now}}
+% \label{fig:ext-prop-compl-scatter}
+% \end{center}
+% \end{figure}
+%
 \clearpage
 
 \begin{figure}[htbp]
@@ -101,30 +120,29 @@
 
 \clearpage
 
-
 \begin{figure}[htbp]
 \begin{center}
-\includegraphics[width=0.6\textwidth]{hotspots-paleo-00}
-\includegraphics[width=0.6\textwidth]{hotspots-paleo-25}
-\includegraphics[width=0.6\textwidth]{hotspots-paleo-50}
-\caption{Global maps with various paleo culls. From top to bottom: all, $\ge$ 0.25, $\ge$ 0.50.}
+\includegraphics[width=0.6\textwidth]{hotspots-paleo-0-pp}
+\includegraphics[width=0.6\textwidth]{hotspots-paleo-1-pp}
+\includegraphics[width=0.6\textwidth]{hotspots-paleo-sing-pp}
+\caption{Global maps with various paleo culls. From top to bottom: all, preservation probability $=$ 1.0, singular occurrence cull.}
 \label{fig:overall-maps-paleo-culls}
 \end{center}
 \end{figure}
 
 \begin{figure}[htbp]
 \begin{center}
-\includegraphics[width=\textwidth]{class-risk-maps-mean-log-ext-paleo-25}
-\caption{Global class-level maps at a paleo cull of $\ge 0.25$. Note that the colour scales shift slightly between the main paper Fig.\ 2, this figure, and the next figure.}
-\label{fig:class-maps-paleo-cull-0.25}
+\includegraphics[width=\textwidth]{class-risk-maps-mean-log-ext-paleo-1-pp}
+\caption{Global class-level maps at a paleo cull of preservation probability $= 1.0$. Note that the colour scales shift slightly between the main paper Fig.\ 2, this figure, and the next figure.}
+\label{fig:class-maps-paleo-cull-1-pp}
 \end{center}
 \end{figure}
 
 \begin{figure}[htbp]
 \begin{center}
-\includegraphics[width=\textwidth]{class-risk-maps-mean-log-ext-paleo-50}
-\caption{Global class-level maps at a paleo cull of $\ge 0.50$.}
-\label{fig:class-maps-paleo-cull-0.50}
+\includegraphics[width=\textwidth]{class-risk-maps-mean-log-ext-paleo-sing-pp}
+\caption{Global class-level maps culling all paleo genera which are ever observed only once in a stage where they should have been observed.}
+\label{fig:class-maps-paleo-sing-pp}
 \end{center}
 \end{figure}
 
@@ -134,8 +152,8 @@
 
 \begin{figure}[htbp]
 \begin{center}
-\includegraphics[width=\textwidth]{../analysis/obis-samping-vs-predictors}
-\caption{Predictors vs.\ number of OBIS records. Remove all but top two panels?}
+\includegraphics[width=0.8\textwidth]{obis-samping-vs-predictors}
+\caption{Variation among extant genera in intrinsic extinction risk and great circle distance as a function of the number of OBIS records. Overall intrinsic extinction risk declines as the number of OBIS records increases, as expected biologically and under a model in which poorly sampled genera artificially appear to be at elevated extinction risk. Notably taxa with few raw occurrences exhibit a broad range of intrinsic extinction risk values. Overall great circle distance increases with the number of OBIS occurrences; however, above approximately 5 OBIS occurrences genera exhibit the full range of great circle distance values. Consequently we impose a minimum threshold of 5 OBIS occurrences for all analyses presented in the main text and in the SOM investigate the robustness of our results to varying the minimum number of OBIS records.}
 \label{fig:obis-sampling-vs-predictors}
 \end{center}
 \end{figure}
@@ -165,7 +183,7 @@
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=0.9\textwidth]{pairs-obis-culls}
-\caption{Pairs plots for OBIS culls by province.}
+\caption{Pairs plots of provincial mean intrinsic extinction risk under varying sampling thresholds in the OBIS database. Spearman Rho values are presented in the upper right cells. Provincial extinction risk estimates in provinces are strongly correlated across all thresholds considered.}
 \label{fig:pairs-prov-obis-culls}
 \end{center}
 \end{figure}
@@ -179,5 +197,33 @@
 \label{fig:overall-maps-obis-culls}
 \end{center}
 \end{figure}
+
+\section{Main paper figures}
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=\textwidth]{partial-plot-base.pdf}
+\caption{}
+\label{fig:1}
+\end{center}
+\end{figure}
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=\textwidth]{class-risk-maps-mean-log-ext.pdf}
+\caption{}
+\label{fig:2}
+\end{center}
+\end{figure}
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=0.8\textwidth]{hotspots.pdf}
+\caption{}
+\label{fig:3}
+\end{center}
+\end{figure}
+
+
 
 \end{document}

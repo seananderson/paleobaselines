@@ -1,6 +1,6 @@
 modern <- readRDS("../data/modern-predictions.rds")
 
-# theme_set(theme_gray())
+#theme_set(theme_gray())
 
 load("../data/by.prov.classes.rda")
 er <- maptools::readShapePoly("../data/MEOW2/meow_ecos.shp")
@@ -31,14 +31,15 @@ modern_long <- filter(modern_long, !class %in% c("Mammalia", "Elasmobranchii"))
 
  p1 <- ggplot(filter(modern_long, variable %in% c("richness", "occupancy")), aes(log10(obis_n), value, colour = class)) + facet_wrap(~variable) + geom_point(position = position_jitter(height = 0.1), alpha = 0.15)
 
-p4 <- ggplot(filter(modern_long, variable %in% c("mean_observed")), aes(log10(obis_n), value, colour = class)) + facet_wrap(~variable) + geom_point(position = position_jitter(height = 0.05), alpha = 0.2)
+p4 <- ggplot(filter(modern_long, variable %in% c("mean_observed")), aes(log10(obis_n), value, colour = class)) + facet_wrap(~variable) + geom_point(position = position_jitter(height = 0.05), alpha = 0.4)
 
 p2 <- ggplot(filter(modern_long, variable %in% c("min.lat", "max.lat", "lat.range", "mean.lat")), aes(log10(obis_n), value, colour = class)) + facet_wrap(~variable) + geom_point(position = position_jitter(height = 3), alpha = 0.1)
 
-p3 <- ggplot(filter(modern_long, variable %in% c("great.circle")), aes(log10(obis_n), value, colour = class)) + facet_wrap(~variable) + geom_point(position = position_jitter(height = 600), alpha = 0.2)
+p3 <- ggplot(filter(modern_long, variable %in% c("great.circle")), aes(log10(obis_n), value, colour = class)) + facet_wrap(~variable) + geom_point(position = position_jitter(height = 600), alpha = 0.4)
 
-pdf("obis-samping-vs-predictors.pdf", width = 10, height = 7)
-gridExtra::grid.arrange(p4, p3, p1, p2)
+pdf("../figs/obis-samping-vs-predictors.pdf", width = 8, height = 8)
+#gridExtra::grid.arrange(p4, p3, p1, p2)
+gridExtra::grid.arrange(p4, p3)
 dev.off()
 
 p <- ggplot(modern_long, aes(value, log10(obis_n), colour = class)) + facet_grid(class~variable, scales = "free_x") + geom_point(position = position_jitter(height = 0.1), alpha = 0.09)

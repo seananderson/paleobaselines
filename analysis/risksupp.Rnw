@@ -308,11 +308,16 @@ To calibrate our model, we grouped the predicted extinction probabilities for ea
 INT.DEPTH <- 5 # these constants hold throughout the document
 NTREES <- 2000
 SHRINKAGE <- 0.01
+
+library(doParallel)
+library(foreach)
+registerDoParallel(cores = 2)
+
 if(!file.exists("../data/val_test.rds")) {
-  val_test <- rdply(500, validate_gbm(neog, shrinkage = SHRINKAGE,
-    interaction.depth = INT.DEPTH, n.trees = NTREES,
-    use_weights = TRUE)$bin_validation,
-    .progress = "text")
+  val_test <- ldply(1:500, function(i)
+    validate_gbm(neog, shrinkage = SHRINKAGE,
+      interaction.depth = INT.DEPTH, n.trees = NTREES,
+      use_weights = TRUE)$bin_validation, .parallel = TRUE)
   saveRDS(val_test, file = "../data/val_test.rds")
 } else {
   message(paste("Loading previous GBM cross-validations.",
@@ -325,31 +330,31 @@ if(!file.exists("../data/val_test.rds")) {
 % thresholds: >= 0.5, >=0.75, ==1.00
 % We'll start with >= 0.5 and then go from there
 <<alternative-validations, cache=FALSE>>=
-# only p > 0.25:
-if(!file.exists("../data/val_test_0.25.rds")) {
-  val_test_0.25 <- rdply(500, validate_gbm(neog[neog$prop_comp > 0.25, ],
-    shrinkage = SHRINKAGE,
-    interaction.depth = INT.DEPTH, n.trees = NTREES,
-    use_weights = TRUE)$bin_validation,
-    .progress = "text")
-  saveRDS(val_test_0.25, file = "../data/val_test_0.25.rds")
+# only p == 1.0:
+if(!file.exists("../data/val_test_1.0.rds")) {
+  val_test_1.0 <- ldply(1:300, function(i)
+    validate_gbm(neog[neog$prop_comp == 1, ],
+      shrinkage = SHRINKAGE,
+      interaction.depth = INT.DEPTH, n.trees = NTREES,
+      use_weights = TRUE)$bin_validation, .parallel = TRUE)
+  saveRDS(val_test_1.0, file = "../data/val_test_1.0.rds")
 } else {
   message(paste("Loading previous GBM cross-validations.",
-    "Delete ../data/val_test_0.25.rds to rerun these."))
-  val_test_0.25 <- readRDS("../data/val_test_0.25.rds")
+    "Delete ../data/val_test_1.0.rds to rerun these."))
+  val_test_1.0 <- readRDS("../data/val_test_1.0.rds")
 }
-# only p > 0.5:
-if(!file.exists("../data/val_test_0.50.rds")) {
-  val_test_0.50 <- rdply(500, validate_gbm(neog[neog$prop_comp > 0.50, ],
-    shrinkage = SHRINKAGE,
-    interaction.depth = INT.DEPTH, n.trees = NTREES,
-    use_weights = TRUE)$bin_validation,
-    .progress = "text")
-  saveRDS(val_test_0.50, file = "../data/val_test_0.50.rds")
+# no single observation genera from fossil record:
+if(!file.exists("../data/val_test_sing.rds")) {
+  val_test_sing <- ldply(1:300, function(i)
+    validate_gbm(neog[neog$single_obs == 0, ],
+      shrinkage = SHRINKAGE,
+      interaction.depth = INT.DEPTH, n.trees = NTREES,
+      use_weights = TRUE)$bin_validation, .parallel = TRUE)
+  saveRDS(val_test_sing, file = "../data/val_test_sing.rds")
 } else {
   message(paste("Loading previous GBM cross-validations.",
-    "Delete ../data/val_test_0.50.rds to rerun these."))
-  val_test_0.50 <- readRDS("../data/val_test_0.50.rds")
+    "Delete ../data/val_test_sing.rds to rerun these."))
+  val_test_sing <- readRDS("../data/val_test_sing.rds")
 }
 @
 
@@ -374,9 +379,9 @@ By running the cross validation 1000 times, we calculated a mean bias at the tax
 <<test-gbm1-summary>>=
 val_test_summarized <- ddply(val_test, c("class", "gbm_pred_binned"),
   summarize_val_test)
-val_test_summarized_0.25 <- ddply(val_test_0.25, c("class", "gbm_pred_binned"),
+val_test_summarized_1.0 <- ddply(val_test_1.0, c("class", "gbm_pred_binned"),
   summarize_val_test)
-val_test_summarized_0.50 <- ddply(val_test_0.50, c("class", "gbm_pred_binned"),
+val_test_summarized_sing <- ddply(val_test_sing, c("class", "gbm_pred_binned"),
   summarize_val_test)
 @
 
@@ -395,8 +400,8 @@ ggplot(val_test_summarized,
   ylab("Observed scaled extinction probability") +
   labs(size = "Median sample #")
 
-# val_test_plot <- val_test_0.25[sample(1:nrow(val_test_0.25), size = 10000), ]
-# p <- ggplot(val_test_summarized_0.25,
+# val_test_plot <- val_test_1.0[sample(1:nrow(val_test_1.0), size = 10000), ]
+# p <- ggplot(val_test_summarized_1.0,
 #   aes(gbm_pred_binned, mean_observed)) +
 #   geom_point(data = val_test_plot, aes(gbm_pred_binned, obs_ext_prob),
 #     alpha = 0.08) +
@@ -408,7 +413,6 @@ ggplot(val_test_summarized,
 #   xlab("Out-of-sample GBM-predicted scaled extinction probability") +
 #   ylab("Observed scaled extinction probability") +
 #   labs(size = "Median sample #")
-# ggsave("../figs/test-gbm1-bias-plot-25.pdf", width = 9, height = 5)
 @
 
 We used these observed extinction probabilities (blue dots in the previous figure) to calibrate our predicted extinction probabilities in the contemporary dataset. We started with the predicted extinction probability from our GBM model applied to each contemporary genus, fit that value into our binning scheme, and extracted the empirically-observed mean extinction probability for that bin. This removes the observed out-of-sample non-linear bias in our model \cite{thorson2012}.
@@ -441,7 +445,7 @@ We also identified the relative contribution of each predictor. In particular, w
 if(!file.exists("../data/main_model.rds")) {
   w <- paleorisk::get_weights(neog$Ex)
   weights <- ifelse(neog$Ex == 1, w$ex_weight, w$sur_weight)
-  m <- rlply(20, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
+  m <- rlply(10, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
       max.lat + lat.range + mean.lat + great.circle + group,
     data = neog, n.trees = NTREES, interaction.depth = INT.DEPTH,
     distribution = "bernoulli", shrinkage = SHRINKAGE, weights = weights))
@@ -449,31 +453,34 @@ if(!file.exists("../data/main_model.rds")) {
 } else {
   m <- readRDS("../data/main_model.rds")
 }
-# 0.25 prop complete threshold:
-if(!file.exists("../data/main_model_0.25.rds")) {
-  neog_subset <- neog[neog$prop_comp > 0.25, ]
+######################
+## TODO 20141021
+## return here for culled work:
+# 1.0 prop complete threshold:
+if(!file.exists("../data/main_model_1.0.rds")) {
+  neog_subset <- neog[neog$prop_comp == 1.0, ]
   w <- paleorisk::get_weights(neog_subset$Ex)
   weights <- ifelse(neog_subset$Ex == 1, w$ex_weight, w$sur_weight)
-  m_0.25 <- rlply(10, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
+  m_1.0 <- rlply(10, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
       max.lat + lat.range + mean.lat + great.circle + group,
     data = neog_subset, n.trees = NTREES, interaction.depth = INT.DEPTH,
     distribution = "bernoulli", shrinkage = SHRINKAGE, weights = weights))
-  saveRDS(m_0.25, file = "../data/main_model_0.25.rds")
+  saveRDS(m_1.0, file = "../data/main_model_1.0.rds")
 } else {
-  m_0.25 <- readRDS("../data/main_model_0.25.rds")
+  m_1.0 <- readRDS("../data/main_model_1.0.rds")
 }
-# 0.50 prop complete threshold:
-if(!file.exists("../data/main_model_0.50.rds")) {
-  neog_subset <- neog[neog$prop_comp > 0.50, ]
+# no singletons
+if(!file.exists("../data/main_model_sing.rds")) {
+  neog_subset <- neog[neog$single_obs == 0, ]
   w <- paleorisk::get_weights(neog_subset$Ex)
   weights <- ifelse(neog_subset$Ex == 1, w$ex_weight, w$sur_weight)
-  m_0.50 <- rlply(10, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
+  m_sing <- rlply(10, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
       max.lat + lat.range + mean.lat + great.circle + group,
     data = neog_subset, n.trees = NTREES, interaction.depth = INT.DEPTH,
     distribution = "bernoulli", shrinkage = SHRINKAGE, weights = weights))
-  saveRDS(m_0.50, file = "../data/main_model_0.50.rds")
+  saveRDS(m_sing, file = "../data/main_model_sing.rds")
 } else {
-  m_0.50 <- readRDS("../data/main_model_0.50.rds")
+  m_sing <- readRDS("../data/main_model_sing.rds")
 }
 
 ri <- ldply(m, function(x) {
@@ -482,7 +489,7 @@ ri <- ldply(m, function(x) {
 })
 
 ri_median <- apply(ri, 2, median)
-ri_lq <- apply(ri, 2, function(x) quantile(x, probs = 0.25))
+ri_lq <- apply(ri, 2, function(x) quantile(x, probs = 1.0))
 ri_uq <- apply(ri, 2, function(x) quantile(x, probs = 0.75))
 
 ri_order <- order(ri_median)
@@ -592,31 +599,32 @@ p <- ggplot(paleo_long, aes(value)) +
 predictions <- laply(m, function(x)
   gbm::predict.gbm(x, newdata = modern, type = "response",
     n.trees = NTREES))
-predictions_0.25 <- laply(m_0.25, function(x)
+predictions_1.0 <- laply(m_1.0, function(x)
   gbm::predict.gbm(x, newdata = modern, type = "response",
     n.trees = NTREES))
-predictions_0.50 <- laply(m_0.50, function(x)
+predictions_sing <- laply(m_sing, function(x)
   gbm::predict.gbm(x, newdata = modern, type = "response",
     n.trees = NTREES))
 modern$pred <- apply(predictions, 2, mean)
-modern$pred_0.25 <- apply(predictions_0.25, 2, mean)
-modern$pred_0.50 <- apply(predictions_0.50, 2, mean)
+modern$pred_1.0 <- apply(predictions_1.0, 2, mean)
+modern$pred_sing <- apply(predictions_sing, 2, mean)
 @
 
 % Use our calibration factors on our predictions:
 <<calibrate-risk-modern>>=
-modern$gbm_pred_binned <- assign_bins(modern$pred_0.25)
+modern$gbm_pred_binned <- assign_bins(modern$pred_1.0)
 modern <- plyr::join(modern,
   val_test_summarized[, c("class", "gbm_pred_binned", "mean_observed")],
   by = c("class", "gbm_pred_binned"))
-modern <- plyr::rename(modern, c("mean_observed" = "mean_observed_0.25"))
+modern <- plyr::rename(modern, c("mean_observed" = "mean_observed_1.0"))
 modern$gbm_pred_binned <- NULL
 
-modern$gbm_pred_binned <- assign_bins(modern$pred_0.50)
+modern$gbm_pred_binned <- assign_bins(modern$pred_sing)
 modern <- plyr::join(modern,
   val_test_summarized[, c("class", "gbm_pred_binned", "mean_observed")],
   by = c("class", "gbm_pred_binned"))
-modern <- plyr::rename(modern, c("mean_observed" = "mean_observed_0.50"))
+modern <- plyr::rename(modern, c("mean_observed" =
+   "mean_observed_sing"))
 modern$gbm_pred_binned <- NULL
 
 modern$gbm_pred_binned <- assign_bins(modern$pred)
@@ -767,64 +775,65 @@ mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
 dev.off()
 @
 
-% And make comparison versions with the paleo culls of > 0.25 and 0.5 prop
-% complete:
+% And make comparison versions with the paleo culls of == 1.0 and
+% singletons
 <<plot-paleo-cull-class-maps, results='hide'>>=
 #par(mfrow = c(1, 3))
 #hist(exp(er_dat$mean.ext), xlim = c(0, 0.2))
 #hist(exp(er_dat$mean.ext.25), xlim = c(0, 0.2))
 #hist(exp(er_dat$mean.ext.50), xlim = c(0, 0.2))
 # class maps:
-# 0.25 cull:
-pdf("../figs/class-risk-maps-mean-log-ext-paleo-25.pdf", width = 6.45, height = 5.1)
+# 1.0 cull:
+pdf("../figs/class-risk-maps-mean-log-ext-paleo-1-pp.pdf", width = 6.45, height = 5.1)
 max_range <- map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10),
   min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0034, 0.15),
-  picture_files = picture_files, plot_column = "mean.ext.25",
+  picture_files = picture_files, plot_column = "mean.ext.1.0",
   silhouette_coords = silhouette_coords,
   ylabel = "Intrinsic extinction probability (over ~23 Myr)")
 dev.off()
-# 0.50 cull:
-pdf("../figs/class-risk-maps-mean-log-ext-paleo-50.pdf", width = 6.45, height = 5.1)
+# singletons:
+pdf("../figs/class-risk-maps-mean-log-ext-paleo-sing-pp.pdf", width = 6.45, height = 5.1)
 max_range <- map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10),
   min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0034, 0.15),
-  picture_files = picture_files, plot_column = "mean.ext.50",
+  picture_files = picture_files, plot_column = "mean.ext.sing",
   silhouette_coords = silhouette_coords,
   ylabel = "Intrinsic extinction probability (over ~23 Myr)")
 dev.off()
 
 # and the overall map:
 # 0.00 cull:
-pdf("../figs/hotspots-paleo-00.pdf", width = 7, height = 3.5)
+pdf("../figs/hotspots-paleo-0-pp.pdf", width = 7, height = 3.5)
 par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
-labs <- c(0.010, 0.015, 0.02, 0.025, 0.03)
+#labs <- c(0.010, 0.015, 0.02, 0.025, 0.03)
+labs <- c(0.012, 0.015, 0.02)#, 0.025, 0.03)
 labs_show <- sprintf("%.3f", labs)
 COL_LIMITS <- c(0.010, 0.03)
 map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
-  hotspots = TRUE, at = log(labs), at.labels = labs_show,
-  col_limits = COL_LIMITS)
+  hotspots = TRUE, at = log(labs), at.labels = labs_show)
+#  col_limits = COL_LIMITS)
 par(xpd = NA)
 mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
   line = -1.4, las = 0, col = "grey30", cex = 0.9)
 dev.off()
-# 0.25 cull:
-pdf("../figs/hotspots-paleo-25.pdf", width = 7, height = 3.5)
+# 1.0 cull:
+pdf("../figs/hotspots-paleo-1-pp.pdf", width = 7, height = 3.5)
 par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
 map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
   hotspots = TRUE, at = log(labs), at.labels = labs_show,
-  plot_column = "mean.ext.25", col_limits = COL_LIMITS)
+  plot_column = "mean.ext.1.0")#, col_limits = COL_LIMITS)
 par(xpd = NA)
 mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
   line = -1.4, las = 0, col = "grey30", cex = 0.9)
 dev.off()
-# 0.50 cull:
-pdf("../figs/hotspots-paleo-50.pdf", width = 7, height = 3.5)
+# singular
+pdf("../figs/hotspots-paleo-sing-pp.pdf", width = 7, height = 3.5)
 par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
 map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
   hotspots = TRUE, at = log(labs), at.labels = labs_show,
-  plot_column = "mean.ext.50", col_limits = COL_LIMITS)
+  plot_column = "mean.ext.sing")#, col_limits = COL_LIMITS)
 par(xpd = NA)
 mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
   line = -1.4, las = 0, col = "grey30", cex = 0.9)
@@ -840,14 +849,22 @@ panel.cor <- function(x, y, digits = 2, prefix = "", ...) {
   txt <- paste0(prefix, txt)
   text(0.5, 0.5, txt, cex = 1.2)
 }
+panel.cor.lower <- function(x, y, digits = 2, prefix = "", ...) {
+  usr <- par("usr"); on.exit(par(usr))
+  par(usr = c(0, 1, 0, 1))
+  points(x, y, pch = 21, col = "#00000050", bg = "#00000030")
+  abline(a = 0, b = 1, lty = 2, col = "blue")
+}
+
+
 pdf("../figs/pairs-paleo-culls-genera.pdf", width = 6, height = 6)
-pairs(modern[,c("mean_observed", "mean_observed_0.25", "mean_observed_0.50")],
+pairs(modern[,c("mean_observed", "mean_observed_1.0", "mean_observed_sing")],
   pch = 21, col = "#00000050", bg = "#00000010",
-  upper.panel = panel.cor)
+  upper.panel = panel.cor, lower.panel = panel.cor.lower)
 dev.off()
 
 pdf("../figs/pairs-paleo-culls-provinces.pdf", width = 6, height = 6)
-pairs(by.prov.all[,c("mean.ext", "mean.ext.25", "mean.ext.50")],
+pairs(by.prov.all[,c("mean.ext", "mean.ext.1.0", "mean.ext.sing")],
   pch = 21, col = "#00000050", bg = "#00000010",
   upper.panel = panel.cor)
 dev.off()

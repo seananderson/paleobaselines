@@ -33,12 +33,13 @@ d.eco.filled <- plyr::join(d.eco.filled, temp[,c("genus", "raw_occurrences", "ra
 # no longer needed:
 d.eco.filled$prop_comp <- NULL
 
+# TODO CULL-DATA
 # and calculate mean values by class-province or for the provinces overall:
 by.prov.classes <- plyr::ddply(na.omit(d.eco.filled), c("class", "PROV_CODE"),
   plyr::summarize,
   mean.ext = mean(log(mean_observed)),
-  mean.ext.25 = mean(log(mean_observed_0.25)),
-  mean.ext.50 = mean(log(mean_observed_0.50)),
+  mean.ext.1.0 = mean(log(mean_observed_1.0)),
+  mean.ext.sing = mean(log(mean_observed_sing)),
   median.ext = median(mean_observed),
   N.gen = length(unique(genus)),
   mean.occupancy = mean(occupancy), mean.occurrences = mean(occurrences),
@@ -52,8 +53,8 @@ by.prov.classes <- plyr::ddply(na.omit(d.eco.filled), c("class", "PROV_CODE"),
 by.prov.all <- plyr::ddply(na.omit(d.eco.filled), "PROV_CODE",
   plyr::summarize,
   mean.ext = mean(log(mean_observed)),
-  mean.ext.25 = mean(log(mean_observed_0.25)),
-  mean.ext.50 = mean(log(mean_observed_0.50)),
+  mean.ext.1.0 = mean(log(mean_observed_1.0)),
+  mean.ext.sing = mean(log(mean_observed_sing)),
   median.ext = median(mean_observed), N.gen = length(unique(genus)),
   mean.occupancy = mean(occupancy), mean.occurrences = mean(occurrences),
   mean.min.lat = mean(min.lat), mean.max.lat = mean(max.lat),
