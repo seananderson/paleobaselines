@@ -621,7 +621,7 @@ modern$gbm_pred_binned <- NULL
 
 modern$gbm_pred_binned <- assign_bins(modern$pred_sing)
 modern <- plyr::join(modern,
-  val_test_summarized[, c("class", "gbm_pred_binned", "mean_observed")],
+  val_test_summarized_1.0[, c("class", "gbm_pred_binned", "mean_observed")],
   by = c("class", "gbm_pred_binned"))
 modern <- plyr::rename(modern, c("mean_observed" =
    "mean_observed_sing"))
@@ -629,7 +629,7 @@ modern$gbm_pred_binned <- NULL
 
 modern$gbm_pred_binned <- assign_bins(modern$pred)
 modern <- plyr::join(modern,
-  val_test_summarized[, c("class", "gbm_pred_binned", "mean_observed")],
+  val_test_summarized_sing[, c("class", "gbm_pred_binned", "mean_observed")],
   by = c("class", "gbm_pred_binned"))
 @
 
