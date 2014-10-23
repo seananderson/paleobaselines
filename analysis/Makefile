@@ -36,6 +36,8 @@ deleteranges:
 
 deletecv:
 	rm ../data/val_test.rds
+	rm ../data/val_test_1.0.rds
+	rm ../data/val_test_sing.rds
 
 deleteroc:
 	rm ../data/roc_vals.rds
@@ -49,8 +51,27 @@ deletestagemodels:
 
 deletemainmodel:
 	rm ../data/main_model.rds
+	rm ../data/main_model_1.0.rds
+	rm ../data/main_model_sing.rds
 
-cleanall: clean deleteranges deletecv deleteroc deletecross deletestagemodels deletemainmodel
+deleterest:
+	rm ../data/stand-predictors-cen-obis.rds
+	rm ../data/modern-predictions.rds
+	rm ../data/by.prov.classes.rda
+	rm ../data/by.prov.all.jk.rda
+	rm ../data/by.prov.all.no.singles.rda
+	rm ../data/by.prov.all.obis.culls.rda
+	rm ../data/by.prov.classes.no.singles.rda
+	rm ../data/by.prov.classes.obis.culls.rda
+
+# full
+cleanall: clean deleteranges deletecv deleteroc deletecross deletestagemodels deletemainmodel deleterest
+
+# partial for speed:
+cleanall2: clean deletemainmodel deleterest
+
+# also ../data/obis_prov_obs_no_interp.rds
+# also ../data/interpolated_provs_all_taxa.rda
 
 rtf:
 	latex2rtf -Z2 -d 0 -b risksupp.bbl -E0 -M6 risksupp.tex
