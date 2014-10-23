@@ -434,7 +434,7 @@ stage_order <- c("Lower Miocene", "Middle Miocene", "Upper Miocene",
 
 We evaluated the marginal effect of each predictor on intrinsic extinction risk through partial dependence plots (Fig.~1). This procedure finds the marginal effect of each predictor by integrating across all other predictor values using the method described in Ref.~\cite{friedman2001}. Because there is some stochasticity when running a GBM, we ran models for each interval 20 times and each time recorded the marginal effects. We then took the median and interquartile range of those predictions. The range of these predictions is very small and hardly noticeable in Fig.~1.
 
-<<make-partial-dependence-data, child='make-partial-dependence-data-child.Rnw>>==
+<<make-partial-dependence-data, child="make-partial-dependence-data-child.Rnw", echo=FALSE, results='hide'>>==
 @
 
 % TODO 20140923 adapt this chunk to also create versions with the different culls of paleo data
@@ -458,9 +458,6 @@ if(!file.exists("../data/main_model.rds")) {
 } else {
   m <- readRDS("../data/main_model.rds")
 }
-######################
-## TODO 20141021
-## return here for culled work:
 # 1.0 prop complete threshold:
 if(!file.exists("../data/main_model_1.0.rds")) {
   neog_subset <- neog[neog$prop_comp == 1.0, ]
@@ -784,10 +781,6 @@ dev.off()
 % And make comparison versions with the paleo culls of == 1.0 and
 % singletons
 <<plot-paleo-cull-class-maps, results='hide'>>=
-#par(mfrow = c(1, 3))
-#hist(exp(er_dat$mean.ext), xlim = c(0, 0.2))
-#hist(exp(er_dat$mean.ext.25), xlim = c(0, 0.2))
-#hist(exp(er_dat$mean.ext.50), xlim = c(0, 0.2))
 # class maps:
 # 1.0 cull:
 pdf("../figs/class-risk-maps-mean-log-ext-paleo-1-pp.pdf", width = 6.45, height = 5.1)
