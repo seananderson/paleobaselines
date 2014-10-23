@@ -476,7 +476,7 @@ if(!file.exists("../data/main_model.rds")) {
 # 1.0 prop complete threshold:
 if(!file.exists("../data/main_model_1.0.rds")) {
   neog_subset <- neog[neog$prop_comp == 1.0, ]
-  # neog_subset <- FAKE_NEOG
+#   neog_subset <- FAKE_NEOG
   w <- paleorisk::get_weights(neog_subset$Ex)
   weights <- ifelse(neog_subset$Ex == 1, w$ex_weight, w$sur_weight)
   m_1.0 <- rlply(10, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
@@ -630,6 +630,8 @@ modern$pred_sing <- apply(predictions_sing, 2, mean)
 
 % Use our calibration factors on our predictions:
 <<calibrate-risk-modern>>=
+# Careful here in this chunk, I have spent more time debugging this than
+# anything else. SA 20141023
 modern$gbm_pred_binned <- assign_bins(modern$pred_1.0)
 modern <- plyr::join(modern,
   val_test_summarized_1.0[, c("class", "gbm_pred_binned", "mean_observed")],
@@ -805,7 +807,7 @@ max_range <- map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.05, 0.1
   silhouette_coords = silhouette_coords,
   ylabel = "Intrinsic extinction probability (over ~23 Myr)")
 dev.off()
-# singletons:
+# remove single occurrences in fossil record:
 pdf("../figs/class-risk-maps-mean-log-ext-paleo-sing-pp.pdf", width = 6.45, height = 5.1)
 max_range <- map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10),
   min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0034, 0.15),
@@ -825,7 +827,7 @@ labs_show <- sprintf("%.3f", labs)
 COL_LIMITS <- c(0.010, 0.03)
 map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
   hotspots = TRUE, at = log(labs), at.labels = labs_show)
-#  col_limits = COL_LIMITS)
+  #col_limits = COL_LIMITS)
 par(xpd = NA)
 mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
   line = -1.4, las = 0, col = "grey30", cex = 0.9)
@@ -836,6 +838,7 @@ par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
 map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
   hotspots = TRUE, at = log(labs), at.labels = labs_show,
+  #hotspots = TRUE, at = log(seq(0.15, 0.16, 0.01)), at.labels = seq(0.13, 0.16, 0.01),
   plot_column = "mean.ext.1.0")#, col_limits = COL_LIMITS)
 par(xpd = NA)
 mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
