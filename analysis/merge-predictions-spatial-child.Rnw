@@ -33,7 +33,6 @@ d.eco.filled <- plyr::join(d.eco.filled, temp[,c("genus", "raw_occurrences", "ra
 # no longer needed:
 d.eco.filled$prop_comp <- NULL
 
-# TODO CULL-DATA
 # and calculate mean values by class-province or for the provinces overall:
 by.prov.classes <- plyr::ddply(na.omit(d.eco.filled), c("class", "PROV_CODE"),
   plyr::summarize,
