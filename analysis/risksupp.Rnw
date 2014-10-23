@@ -331,9 +331,13 @@ if(!file.exists("../data/val_test.rds")) {
 % We'll start with >= 0.5 and then go from there
 <<alternative-validations, cache=FALSE>>=
 # only p == 1.0:
+# FAKE_NEOG <- neog
+# set.seed(111)
+# FAKE_NEOG$Ex <- FAKE_NEOG$Ex[sample(seq_len(nrow(FAKE_NEOG)), nrow(FAKE_NEOG))]
 if(!file.exists("../data/val_test_1.0.rds")) {
   val_test_1.0 <- ldply(1:300, function(i)
     validate_gbm(neog[neog$prop_comp == 1, ],
+    # validate_gbm(FAKE_NEOG,
       shrinkage = SHRINKAGE,
       interaction.depth = INT.DEPTH, n.trees = NTREES,
       use_weights = TRUE)$bin_validation, .parallel = TRUE)
@@ -400,7 +404,7 @@ ggplot(val_test_summarized,
   ylab("Observed scaled extinction probability") +
   labs(size = "Median sample #")
 
-# val_test_plot <- val_test_1.0[sample(1:nrow(val_test_1.0), size = 10000), ]
+# val_test_plot <- val_test_1.0[sample(1:nrow(val_test_1.0), size = 1000), ]
 # p <- ggplot(val_test_summarized_1.0,
 #   aes(gbm_pred_binned, mean_observed)) +
 #   geom_point(data = val_test_plot, aes(gbm_pred_binned, obs_ext_prob),
@@ -413,6 +417,7 @@ ggplot(val_test_summarized,
 #   xlab("Out-of-sample GBM-predicted scaled extinction probability") +
 #   ylab("Observed scaled extinction probability") +
 #   labs(size = "Median sample #")
+#  p
 @
 
 We used these observed extinction probabilities (blue dots in the previous figure) to calibrate our predicted extinction probabilities in the contemporary dataset. We started with the predicted extinction probability from our GBM model applied to each contemporary genus, fit that value into our binning scheme, and extracted the empirically-observed mean extinction probability for that bin. This removes the observed out-of-sample non-linear bias in our model \cite{thorson2012}.
@@ -459,6 +464,7 @@ if(!file.exists("../data/main_model.rds")) {
 # 1.0 prop complete threshold:
 if(!file.exists("../data/main_model_1.0.rds")) {
   neog_subset <- neog[neog$prop_comp == 1.0, ]
+  # neog_subset <- FAKE_NEOG
   w <- paleorisk::get_weights(neog_subset$Ex)
   weights <- ifelse(neog_subset$Ex == 1, w$ex_weight, w$sur_weight)
   m_1.0 <- rlply(10, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
