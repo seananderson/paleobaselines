@@ -311,7 +311,11 @@ SHRINKAGE <- 0.01
 
 library(doParallel)
 library(foreach)
-registerDoParallel(cores = 2)
+registerDoParallel(cores = 4)
+
+val_test_example <- validate_gbm(neog, shrinkage = SHRINKAGE,
+      interaction.depth = INT.DEPTH, n.trees = NTREES,
+      use_weights = TRUE)$bin_validation # just to plot
 
 if(!file.exists("../data/val_test.rds")) {
   val_test <- ldply(1:500, function(i)
@@ -332,12 +336,13 @@ if(!file.exists("../data/val_test.rds")) {
 <<alternative-validations, cache=FALSE>>=
 # only p == 1.0:
 # FAKE_NEOG <- neog
-# set.seed(111)
+# set.seed(211)
 # FAKE_NEOG$Ex <- FAKE_NEOG$Ex[sample(seq_len(nrow(FAKE_NEOG)), nrow(FAKE_NEOG))]
+# FAKE_NEOG$Ex <- rbinom(nrow(FAKE_NEOG), 1, 0.5)
 if(!file.exists("../data/val_test_1.0.rds")) {
   val_test_1.0 <- ldply(1:300, function(i)
-    validate_gbm(neog[neog$prop_comp == 1, ],
-    # validate_gbm(FAKE_NEOG,
+     validate_gbm(neog[neog$prop_comp == 1, ],
+#    validate_gbm(FAKE_NEOG,
       shrinkage = SHRINKAGE,
       interaction.depth = INT.DEPTH, n.trees = NTREES,
       use_weights = TRUE)$bin_validation, .parallel = TRUE)
@@ -347,10 +352,10 @@ if(!file.exists("../data/val_test_1.0.rds")) {
     "Delete ../data/val_test_1.0.rds to rerun these."))
   val_test_1.0 <- readRDS("../data/val_test_1.0.rds")
 }
-# no single observation genera from fossil record:
+# no genera with single (or zero) observations in fossil record when we should see them:
 if(!file.exists("../data/val_test_sing.rds")) {
   val_test_sing <- ldply(1:300, function(i)
-    validate_gbm(neog[neog$single_obs == 0, ],
+    validate_gbm(neog[neog$single_obs == 0 & neog$prop_comp == 1, ],
       shrinkage = SHRINKAGE,
       interaction.depth = INT.DEPTH, n.trees = NTREES,
       use_weights = TRUE)$bin_validation, .parallel = TRUE)
@@ -365,7 +370,7 @@ if(!file.exists("../data/val_test_sing.rds")) {
 For example, here are the predicted and observed extinction probabilities for one run of our cross-validation. The model was built on half the data and then used to predict the other half of the data.
 
 <<single-cv-rep, fig.width=8.25, fig.height=5, out.width="4.8in">>=
-ggplot(subset(val_test, .n == 1),
+ggplot(val_test_example,
   aes(gbm_pred_binned, obs_ext_prob)) +
   geom_point(alpha = 0.9) +
   facet_wrap(~class) +
@@ -403,7 +408,7 @@ ggplot(val_test_summarized,
   xlab("Out-of-sample GBM-predicted scaled extinction probability") +
   ylab("Observed scaled extinction probability") +
   labs(size = "Median sample #")
-
+#
 # val_test_plot <- val_test_1.0[sample(1:nrow(val_test_1.0), size = 1000), ]
 # p <- ggplot(val_test_summarized_1.0,
 #   aes(gbm_pred_binned, mean_observed)) +
@@ -417,9 +422,9 @@ ggplot(val_test_summarized,
 #   xlab("Out-of-sample GBM-predicted scaled extinction probability") +
 #   ylab("Observed scaled extinction probability") +
 #   labs(size = "Median sample #")
-#  p
-
-# val_test_plot <- val_test_sing[sample(1:nrow(val_test_1.0), size = 1000), ]
+# p
+#
+# val_test_plot <- val_test_sing[sample(1:nrow(val_test_sing), size = 1000), ]
 # p <- ggplot(val_test_summarized_sing,
 #   aes(gbm_pred_binned, mean_observed)) +
 #   geom_point(data = val_test_plot, aes(gbm_pred_binned, obs_ext_prob),
@@ -432,7 +437,7 @@ ggplot(val_test_summarized,
 #   xlab("Out-of-sample GBM-predicted scaled extinction probability") +
 #   ylab("Observed scaled extinction probability") +
 #   labs(size = "Median sample #")
-#  p
+# p
 @
 
 We used these observed extinction probabilities (blue dots in the previous figure) to calibrate our predicted extinction probabilities in the contemporary dataset. We started with the predicted extinction probability from our GBM model applied to each contemporary genus, fit that value into our binning scheme, and extracted the empirically-observed mean extinction probability for that bin. This removes the observed out-of-sample non-linear bias in our model \cite{thorson2012}.
@@ -476,7 +481,7 @@ if(!file.exists("../data/main_model.rds")) {
 # 1.0 prop complete threshold:
 if(!file.exists("../data/main_model_1.0.rds")) {
   neog_subset <- neog[neog$prop_comp == 1.0, ]
-#   neog_subset <- FAKE_NEOG
+# neog_subset <- FAKE_NEOG
   w <- paleorisk::get_weights(neog_subset$Ex)
   weights <- ifelse(neog_subset$Ex == 1, w$ex_weight, w$sur_weight)
   m_1.0 <- rlply(10, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
@@ -487,9 +492,9 @@ if(!file.exists("../data/main_model_1.0.rds")) {
 } else {
   m_1.0 <- readRDS("../data/main_model_1.0.rds")
 }
-# no single occurrences:
+# no genera with single (or zero) occurrences when they should have been observed:
 if(!file.exists("../data/main_model_sing.rds")) {
-  neog_subset <- neog[neog$single_obs == 0, ]
+  neog_subset <- neog[neog$single_obs == 0 & neog$prop_comp == 1.0, ]
   w <- paleorisk::get_weights(neog_subset$Ex)
   weights <- ifelse(neog_subset$Ex == 1, w$ex_weight, w$sur_weight)
   m_sing <- rlply(10, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
@@ -801,10 +806,12 @@ dev.off()
 # class maps:
 # 1.0 cull:
 pdf("../figs/class-risk-maps-mean-log-ext-paleo-1-pp.pdf", width = 6.45, height = 5.1)
-max_range <- map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10),
+map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10),
+# max_range <- map_class_ext(er_dat_class, yticks = c(0.1, 0.15, 0.2, 0.25),
   min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0034, 0.15),
-  picture_files = picture_files, plot_column = "mean.ext.1.0",
-  silhouette_coords = silhouette_coords,
+ picture_files = NULL, plot_column = "mean.ext.1.0",
+#   picture_files = NULL, plot_column = "mean.ext.1.0",
+  silhouette_coords = silhouette_coords, max_range_given = exp(max_range)+1,
   ylabel = "Intrinsic extinction probability (over ~23 Myr)")
 dev.off()
 # remove single occurrences in fossil record:
@@ -812,34 +819,41 @@ pdf("../figs/class-risk-maps-mean-log-ext-paleo-sing-pp.pdf", width = 6.45, heig
 max_range <- map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10),
   min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0034, 0.15),
   picture_files = picture_files, plot_column = "mean.ext.sing",
-  silhouette_coords = silhouette_coords,
+  silhouette_coords = silhouette_coords, max_range_given = exp(max_range)+1,
   ylabel = "Intrinsic extinction probability (over ~23 Myr)")
 dev.off()
 
 # and the overall map:
-# 0.00 cull:
+# 0.0 cull (i.e. repeat of the main map):
 pdf("../figs/hotspots-paleo-0-pp.pdf", width = 7, height = 3.5)
 par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
 #labs <- c(0.010, 0.015, 0.02, 0.025, 0.03)
-labs <- c(0.012, 0.015, 0.02)#, 0.025, 0.03)
+labs <- seq(0.010, 0.025, 0.005)#, 0.025, 0.03)
 labs_show <- sprintf("%.3f", labs)
-COL_LIMITS <- c(0.010, 0.03)
+COL_LIMITS <- c(0.010, 0.025)
 map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
-  hotspots = TRUE, at = log(labs), at.labels = labs_show)
-  #col_limits = COL_LIMITS)
+  hotspots = TRUE, at = log(labs), at.labels = labs_show,
+  col_limits = COL_LIMITS)
 par(xpd = NA)
 mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
   line = -1.4, las = 0, col = "grey30", cex = 0.9)
 dev.off()
+
+lower_lim <- 0.012
+# 2.5-fold to match the above map in scale (but shifted up)
+COL_LIMITS <- c(lower_lim, lower_lim * 2.5)
+labs <- seq(0.015, 0.030, 0.005)#, 0.025, 0.03)
+labs_show <- sprintf("%.3f", labs)
 # 1.0 cull:
 pdf("../figs/hotspots-paleo-1-pp.pdf", width = 7, height = 3.5)
 par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
 map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
-  hotspots = TRUE, at = log(labs), at.labels = labs_show,
-  #hotspots = TRUE, at = log(seq(0.15, 0.16, 0.01)), at.labels = seq(0.13, 0.16, 0.01),
-  plot_column = "mean.ext.1.0")#, col_limits = COL_LIMITS)
+  hotspots = TRUE, at = log(labs), at.labels = labs_show, col_limits = COL_LIMITS,
+# hotspots = TRUE, at = log(seq(0.075, 0.3, 0.1)), at.labels = seq(0.075, 0.3, 0.1),
+# plot_column = "mean.ext.1.0", col_limits = c(0.075, 0.3))#, col_limits = COL_LIMITS)
+  plot_column = "mean.ext.1.0")
 par(xpd = NA)
 mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
   line = -1.4, las = 0, col = "grey30", cex = 0.9)
@@ -850,7 +864,7 @@ par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
 map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
   hotspots = TRUE, at = log(labs), at.labels = labs_show,
-  plot_column = "mean.ext.sing")#, col_limits = COL_LIMITS)
+  plot_column = "mean.ext.sing", col_limits = COL_LIMITS)
 par(xpd = NA)
 mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
   line = -1.4, las = 0, col = "grey30", cex = 0.9)
@@ -885,6 +899,16 @@ pairs(by.prov.all[,c("mean.ext", "mean.ext.1.0", "mean.ext.sing")],
   pch = 21, col = "#00000050", bg = "#00000010",
   upper.panel = panel.cor)
 dev.off()
+@
+
+% And source() the paleo cull sensitivity plotting code:
+<<investigate-completeness-plots, cache=FALSE, echo=FALSE>>=
+source("investigate-completeness.R")
+@
+
+% And source() the OBIS cull plotting code:
+<<investigate-OBIS-plots, cache=FALSE, echo=FALSE>>=
+source("investigate-modern-sampling.R")
 @
 
 <<plot-n-gen-genera-prov, fig.cap="Spatial distribution of \\textbf{genus richness} in the contemporary dataset. The number of genera occupying each province (following within-realm minimum bounding box interpolation) is plotted. Note that although the low genus richness values of some provinces clearly reflect undersampling, gradients of increasing genus richness from pole to tropics are recognizable in all groups except for mammals, which are known to exhibit an inverse latitudinal gradient \\cite{tittensor2010}.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
@@ -1034,8 +1058,9 @@ for(i in seq_along(obis.culls)) {
     make_plot = FALSE)
 }
 
-pdf("../figs/class-map-obis-culls.pdf", width = 6.45, height = 5.1)
 for(i in seq_along(obis.culls)) {
+  pdf(paste0("../figs/class-map-obis-cull-", obis.culls[i], ".pdf"),
+    width = 6.45, height = 5.1)
   er_dat_class_obis_cull <- plyr::join(er_points, er@data, by = "id")
   er_dat_class_obis_cull <- plyr::join(er_dat_class_obis_cull,
     by.prov.classes.obis.culls[[i]], by = "PROV_CODE")
@@ -1045,10 +1070,10 @@ for(i in seq_along(obis.culls)) {
     picture_files = picture_files,
     silhouette_coords = silhouette_coords,
     min_prov_genera = 10, col_range = TRUE,
-    exact_limits = c(0.0034, 0.15), max_range_given = max(max_ranges),
+    exact_limits = c(0.0034, 0.15), max_range_given = 3.5,
     ylabel = "Intrinsic extinction probability (over ~23 Myr)")
+  dev.off()
 }
-dev.off()
 @
 
 % And the overall map with various OBIS culls:
