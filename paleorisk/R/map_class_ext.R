@@ -78,7 +78,7 @@ map_class_ext <- function(er_dat, min_prov_genera = 20,
     if(is.null(max_range_given)) {
       max_range <- max(er.df$range.val)
     } else {
-      max_range <- max_range_given
+      max_range <- log(max_range_given)
     }
     er.df <- plyr::ddply(er.df, "class", transform, value.to.plot.01.temp =
         range01(value.to.plot))
