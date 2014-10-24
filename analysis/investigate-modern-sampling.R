@@ -44,17 +44,3 @@ dev.off()
 
 p <- ggplot(modern_long, aes(value, log10(obis_n), colour = class)) + facet_grid(class~variable, scales = "free_x") + geom_point(position = position_jitter(height = 0.1), alpha = 0.09)
 ggsave("obis-sampling-vs-predictors-class-facets.pdf", width = 14, height = 7)
-
-# `🐳` <- "whale!"
-
-# single_obs <- filter(modern, n ==1, !class %in% c("Elasmobranchii", "Mammalia")) %>% select(genus)
-
-# x1 <- filter(composite.occ2, genus == single_obs$genus[2])
-# library(maps)
-# map("world", fill=TRUE, col="grey80", border = "grey80")
-# points(x1$longitude, x1$latitude)
-
-# make maps with cutoffs of 5, 10, 10, 50 OBIS observations
-
-
-s
