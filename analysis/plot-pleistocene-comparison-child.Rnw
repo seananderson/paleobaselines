@@ -1,13 +1,15 @@
 <<plot-pleistocene-comparison-child>>=
-Plio.Modern <- readRDS("../data/stand-predictors-cen-obis.rds") 
+Plio.Modern <- readRDS("../data/stand-predictors-cen-obis.rds")
 Plio.Modern$tropical_only <- NULL # not plotting
+Plio.Modern$single_obs <- NULL # not plotting
+Plio.Modern$prop_comp <- NULL # not plotting
 Plio.Modern <- Plio.Modern[Plio.Modern$Interval_Name %in% c("Modern_raw", "Plio-Pleistocene"), ]
 Plio.Modern$Ex <- NULL
 Plio.Modern <- reshape2::melt(Plio.Modern, id = c("Interval_Name","stage","stage_top","class","group","genus"))
-Modern <- Plio.Modern[(Plio.Modern$Interval_Name == "Modern_raw"),] 
+Modern <- Plio.Modern[(Plio.Modern$Interval_Name == "Modern_raw"),]
 Modern$Interval_Name <- NULL
 Modern$stage_top <- NULL
-Plio <- Plio.Modern[(Plio.Modern$Interval_Name == "Plio-Pleistocene"),] 
+Plio <- Plio.Modern[(Plio.Modern$Interval_Name == "Plio-Pleistocene"),]
 Plio$Interval_Name <- NULL
 Plio$stage_top <- NULL
 Plio.Modern2 <- merge(Modern,Plio,by = c("class","group","genus","variable"),all.x=FALSE,all.y=FALSE)
@@ -20,12 +22,12 @@ reg <- reg[(reg$Method=="RMA"),]
 names(reg) <- c("method", "intercept", "slope", "angle", "p-value")
 reg
 }
-RMA <- ddply(Plio.Modern2, "variable", plyr::each(RMA.lines))
+RMA <- plyr::ddply(Plio.Modern2, "variable", plyr::each(RMA.lines))
 
 p <- ggplot(Plio.Modern2,aes(value.x,value.y)) +
 geom_point(alpha=0.1) +
 facet_wrap(~variable,scale="free", ncol=4) +
-geom_abline(data = RMA, 
+geom_abline(data = RMA,
 aes(intercept = intercept, slope = slope, colour = "blue")) +
 geom_abline() +
 xlab("Modern") +
