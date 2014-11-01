@@ -33,7 +33,7 @@ if(!file.exists("../data/stage_models.rds")) {
 cull_cuts <- c(0, sort(unique(neog$prop_comp))) # all possible
 stage_models_culls <- plyr::llply(cull_cuts, function(i) {
   plyr::rlply(1, fit_stage_models(neog[neog$prop_comp >= i, ], stage_name = "all"))
-  })
+  }, .parallel = TRUE)
 
 ####################################
 # And, we will go through the stage-based models and pull out the partial
