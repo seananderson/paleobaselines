@@ -547,6 +547,9 @@ stage_df <- expand.grid(stage_train = unique(neog$stage),
   stage_test = unique(neog$stage))
 if(!file.exists("../data/cross_pred.rds")) {
   cross_pred <- mdply(stage_df, fit_interval_gbm, dat = neog,
+# cross_pred <- mdply(stage_df, fit_interval_gbm, dat = subset(neog, prop_comp == 1),
+# cross_pred <- mdply(stage_df, fit_interval_gbm,
+#   dat = subset(neog, prop_comp == 1 & single_obs == 0),
     n.trees = NTREES, shrinkage = SHRINKAGE, interaction.depth = INT.DEPTH,
     use_weights = TRUE, .parallel = TRUE)
   saveRDS(cross_pred, file = "../data/cross_pred.rds")
