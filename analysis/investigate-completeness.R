@@ -11,8 +11,6 @@ neog <- droplevels(subset(neog, stage_top < 23 & stage_top != 0))
 p1 <- ggplot(neog, aes(prop_comp, fill = class)) + geom_histogram() + xlab("Preservation probability") + ylab("Number of genera")
 ggsave("../figs/hist-preserv-prob.pdf", width = 6, height = 4)
 
-#ne2 <- plyr::join(neog, data.frame(single_obs = c(0, 1)))
-
 ne2 <- neog
 ne2_no_singles <- subset(ne2, single_obs == 0)
 ne2$single_obs_TF <- FALSE
