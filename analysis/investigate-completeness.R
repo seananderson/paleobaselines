@@ -57,7 +57,7 @@ partial_groups_culled <- plyr::join(partial_groups_culled, x)
 p <- ggplot(partial_groups_culled, aes(mean_prop_comp, median, colour = class)) + geom_point() + xlab("Mean preservation probability") + ylab("Partial dependence extinction risk") + theme_bw()
 ggsave("../figs/fossil-cull-partial-groups-vs-completeness.pdf",  width = 7, height = 5)
 
-p1 <- ggplot(partial_continuous_culled, aes(value, median_shifted, colour = preservation_cutoff, group = preservation_cutoff)) + geom_line(lwd = 1.8) + facet_wrap(~predictor, scales = "free_x", nrow = 2) + theme_bw() + ylab("Relative partial dependence") + xlab("Value")
+p1 <- ggplot(partial_continuous_culled, aes(value, median_shifted, colour = preservation_cutoff, group = preservation_cutoff)) + geom_line(lwd = 1.8) + facet_wrap(~predictor, scales = "free_x", nrow = 2) + theme_bw() + ylab("Relative partial dependence") + xlab("Value") + ylim(-0.5, 0.5)
 ggsave("../figs/fossil-cull-comparison-continuous.pdf", width = 12, height = 5)
 
 p2 <- ggplot(partial_groups_culled, aes(median, value, fill = preservation_cutoff, group = preservation_cutoff)) + geom_point(cex = 3, pch = 21, col = "black") + theme_bw() + scale_fill_continuous(name = "Preservation threshold") + xlab("Relative partial dependence") + ylab("")
