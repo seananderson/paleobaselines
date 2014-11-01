@@ -11,7 +11,7 @@ cross_pred$class <- factor(cross_pred$class, levels =c("Gastropoda","Bivalvia","
 
 newclass <- data.frame(c("Gastropoda","Bivalvia","Anthozoa","Echinoidea",
     "Elasmobranchii","Mammalia"),
-  c("Gastropoda","Bivalvia","Scleractinia", 
+  c("Gastropoda","Bivalvia","Scleractinia",
     "Echinoidea", "Sharks", "Mammalia"))
 colnames(newclass) <- c("class","class2")
 cross_pred2 <- merge(cross_pred,newclass,by="class")
@@ -45,7 +45,7 @@ cols_df <- data.frame(
 cross_pred2 <- plyr::join(cross_pred2, cols_df)
 
 pdf("../figs/plot-cross-interval-gbms-base.pdf", width = 4.7, height = 4.8)
-par(mfrow = c(4,4), mar = c(0,0,0,0), cex = 0.5, oma = c(3.8, 4.0, 4, 2), 
+par(mfrow = c(4,4), mar = c(0,0,0,0), cex = 0.5, oma = c(3.8, 4.0, 4, 2),
   mgp = c(2, 0.4, 0), tck = -0.02)
 par(las = 1)
 lim_lower <- min(c(cross_pred$pred_self, cross_pred$pred))
@@ -61,10 +61,10 @@ plyr::d_ply(cross_pred2, c("stage_train", "stage_test"), function(x) {
   if(i %in% seq(13, 16)) axis(1, at = c(0.01, 0.1, 1), col = "grey50", col.axis
     = "grey50", lwd = 0.8)
   if(i %in% seq(1, 4))
-    mtext(unique(x$stage_test), side = 3, cex = 0.6, col = "grey50", 
+    mtext(unique(x$stage_test), side = 3, cex = 0.6, col = "grey50",
       line = 0.3)
   if(i %in% seq(4, 16, 4))
-    mtext(unique(x$stage_train), side = 4, cex = 0.6, col = "grey50", 
+    mtext(unique(x$stage_train), side = 4, cex = 0.6, col = "grey50",
       las = 0, line = 0.3)
   text(0.001, 0.67, labels = unique(x$Rsq_sp), col = "grey50")
   if(i == 1) {
@@ -75,9 +75,9 @@ plyr::d_ply(cross_pred2, c("stage_train", "stage_test"), function(x) {
       par(xpd = FALSE)
   }
     })
-mtext("Scaled extinction probability (stage that model was built on)", 
+mtext("Scaled extinction probability (stage that model was built on)",
   side = 1, outer = TRUE, col = "grey50", cex = 0.6, line = 2.2)
-mtext("Scaled extinction probability (stage that model was tested on)", 
+mtext("Scaled extinction probability (stage that model was tested on)",
   side = 2, outer = TRUE, col = "grey50", cex = 0.6, line = 2.8, las = 0)
 par(xpd = NA)
 dev.off()
