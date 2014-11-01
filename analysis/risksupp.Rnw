@@ -204,6 +204,14 @@ dat <- plyr::rename(dat, c("Interval" = "Interval_Name",
   "group" = "MatchTaxon", "top" = "stage_top",
   "MeanAbsLat" = "mean_lat", "Ex" = "Extinct.in.stage"))
 stcen <- plyr::ddply(dat, "Interval_Name", standardize_data)
+# Recreate the singleton column:
+# sing_test <- filter(stcen, !Interval_Name %in% c("Modern_raw", "Modern_merged", "Plio-Pleistocene")) %>%
+#   sing_test <- stcen %>%
+#   group_by(genus) %>%
+#   mutate(n_stage = n_distinct(Interval_Name),
+#     singleton2 = ifelse(n_stage == 1, 1, 0)) %>% as.data.frame
+# table(sing_test[,c("singleton", "singleton2")])
+# table(sing_test[,c("Ex", "singleton2")])
 saveRDS(stcen, file = "../data/stand-predictors-cen-obis.rds")
 @
 
