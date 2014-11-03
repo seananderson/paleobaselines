@@ -89,9 +89,10 @@ extract_ranges <- function() {
   }
 
   # Apply it to the modern range data:
+  message("Getting modern range estimates")
   byGenus.OBIS <- plyr::ddply(OBIS.grid.2,
-    .(Spalding.version,Interval,class,MatchTaxon,genus),
-    ranges, .progress="text")
+    plyr::.(Spalding.version,Interval,class,MatchTaxon,genus),
+    ranges, .parallel = TRUE)
   colnames(byGenus.OBIS) <- c("Interval", "top", "class", "group", "genus",
     "occurrences", "eac", "gcd", "richness", "MaxAbsLat", "MinAbsLat",
     "MeanAbsLat", "Ex")
@@ -116,43 +117,48 @@ extract_ranges <- function() {
   pbdb <- pbdb[-which(pbdb$FR2_bin == ""), ]
   pbdb <- droplevels(pbdb)
 
+  # bring in PBDB data showing genera present in Paleogene
+  # we will use this to calculate proportion completeness
+  paleogene_genera <- read.csv("../data/PBDB.paleogene.genera.csv",
+    stringsAsFactors = FALSE, strip.white = TRUE)[, "genus"]
+  paleogene_genera <- data.frame(occurrence.genus_name = paleogene_genera,
+    in_paleogene = 1)
+  paleogene_genera <- paleogene_genera[-which(paleogene_genera$occurrence.genus_name == ""), ]
+  pbdb <- plyr::join(pbdb, paleogene_genera, by = "occurrence.genus_name")
+  pbdb$in_paleogene[is.na(pbdb$in_paleogene)] <- 0
+
   lookup_pbdb  <- data.frame(FR2_bin =
     c("Upper Miocene", "Middle Miocene", "Lower Miocene",
       "Pliocene", "Pleistocene"),
     FR2_num = c(1:5), stringsAsFactors = FALSE)
 
-  pbdb <- plyr::join(pbdb, lookup_pbdb)
+  pbdb <- plyr::join(pbdb, lookup_pbdb, by = "FR2_bin")
 
   pres_prob <- function(x) {
-    out <- length(unique(x$FR2_num)) /
-      (max(x$FR2_num) - min(x$FR2_num) + 1)
-     data.frame(prop_comp = out)
+    max_FR2 <- max(x$FR2_num)
+    min_FR2 <- min(x$FR2_num)
+    n_unique_FR2 <- length(unique(x$FR2_num))
+    if(x$in_paleogene[1] == 1) {
+      min_FR2 <- 0
+      n_unique_FR2 <- n_unique_FR2 + 1
+    }
+    if(x$genus_extant[1] == "yes") {
+      max_FR2 <- 6
+      n_unique_FR2 <- n_unique_FR2 + 1
+    }
+    prop_comp <- round(n_unique_FR2 / (max_FR2 - min_FR2 + 1), 2)
+    data.frame(prop_comp, min_FR2, max_FR2, n_unique_FR2)
   }
-# testing:
-#   d <- data.frame(FR2_num = c(1, 2, 3, 5))
-#   pres_prob(d)
-#   d <- data.frame(FR2_num = c(1, 2, 5))
-#   pres_prob(d)
-#   d <- data.frame(FR2_num = c(1, 2, 3, 4, 5))
-#   pres_prob(d)
-#   d <- data.frame(FR2_num = c(2, 3, 4, 5))
-#   pres_prob(d)
-#   d <- data.frame(FR2_num = c(2, 4, 5))
-#   pres_prob(d)
-
-# Estimation of proportional completeness using FR2 bins
-# From Carl on 20140923
-#  int <- length(which(levels(pbdb$FR2_bin)!=""))
-#  times <- function(x) {
-#    y <- unique(x$FR2_bin)
-#    z <- length(which(y != ""))
-#    data.frame(prop_comp_carl = z/int)
-#  }
- # prop_comp <- plyr::ddply(pbdb, "occurrence.genus_name", times)
- # pbdb <- plyr::join(pbdb, prop_comp, by = "occurrence.genus_name")
 
   prop_comp2 <- plyr::ddply(pbdb, "occurrence.genus_name", pres_prob)
   pbdb <- plyr::join(pbdb, prop_comp2, by = "occurrence.genus_name")
+
+  ### singletons:
+  pbdb <- pbdb %>%
+  group_by(occurrence.genus_name) %>%
+  mutate(n_stage = n_distinct(FR2_bin),
+    singleton = ifelse(n_stage == 1, 1, 0)) %>% select(-n_stage) %>%
+  as.data.frame
 
   ### redefine Plio-Pleistocene FR_2 Bin
   pbdb$FR2_bin <- ifelse(pbdb$interval_base <= 5.333 &
@@ -175,13 +181,12 @@ extract_ranges <- function() {
   ### extract apparent origination and extinction dates of genera
   gen.LA <- function(df) min(df$top)
   gen.FA <- function(df) max(df$top)
-  gen.LAs <- plyr::ddply(pbdb, plyr::.(clgen), plyr::each(gen.LA,gen.FA), .progress = "text")
+  gen.LAs <- plyr::ddply(pbdb, plyr::.(clgen), plyr::each(gen.LA,gen.FA))
 
   ### merge back in and add row to indicate extinction in LA bin if the genus is not listed as extant
   pbdb <- merge(pbdb,gen.LAs,by="clgen",all.x=TRUE)
 
-  pbdb$Extinct.in.bin <- ifelse(pbdb$top == pbdb$gen.LA & pbdb$genus_extant != "yes",1,0)
-  pbdb$Singleton <- ifelse(pbdb$gen.LA == pbdb$gen.FA & pbdb$genus_extant != "yes",1,0)
+  pbdb$Extinct.in.bin <- ifelse(pbdb$top == pbdb$gen.LA & pbdb$genus_extant != "yes", 1, 0)
 
   # Okay, this next step is a bit of a kludge.  Automating all of the
   # taxonomic processing that went into the first file is going to take some time.
@@ -239,7 +244,7 @@ extract_ranges <- function() {
   pbdb <- pbdb[!(pbdb$Group =="none"),]
 
   taxa <- strsplit(pbdb$Group, "_")
-  taxa2 <- ldply(taxa)
+  taxa2 <- plyr::ldply(taxa)
   colnames(taxa2) <- c("class", "order")
 
   pbdb <- data.frame(pbdb,taxa2)
@@ -292,8 +297,9 @@ extract_ranges <- function() {
   }
 
   #####  now apply it to the PBDB data
+   message("Getting paleo range estimates")
   byGenus.PBDB <- plyr::ddply(pbdb, plyr::.(stage.name, top, class,
-    Group, occurrence.genus_name), ranges, .progress="text")
+    Group, occurrence.genus_name), ranges, .parallel = TRUE)
   colnames(byGenus.PBDB) <- c("Interval", "top", "class",
     "group", "genus", "occurrences", "eac", "gcd",
     "richness", "MaxAbsLat", "MinAbsLat", "MeanAbsLat", "Ex", "Singleton", "prop_comp")
