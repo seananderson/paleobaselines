@@ -22,47 +22,47 @@ sundia:
 	cp risksupp.pdf ~/Dropbox/sundia/
 
 clean:
-	rm -r ../cache/*
-	rm *.aux
-	rm *.log
-	rm *.bbl
-	rm *.blg
-	rm *.toc
-	rm risksupp.tex
+	rm -rf ../cache/*
+	rm -f *.aux
+	rm -f *.log
+	rm -f *.bbl
+	rm -f *.blg
+	rm -f *.toc
+	rm -f risksupp.tex
 	#mkdir ../cache/
 
 deleteranges:
 	rm ../data/modern_and_paleo_ranges.rds
 
 deletecv:
-	rm ../data/val_test.rds
-	rm ../data/val_test_1.0.rds
-	rm ../data/val_test_sing.rds
+	rm -f ../data/val_test.rds
+	rm -f ../data/val_test_1.0.rds
+	rm -f ../data/val_test_sing.rds
 
 deleteroc:
-	rm ../data/roc_vals.rds
-	rm ../data/pred_oob.rds
+	rm -f ../data/roc_vals.rds
+	rm -f ../data/pred_oob.rds
 
 deletecross:
-	rm ../data/cross_pred.rds
+	rm -f ../data/cross_pred.rds
 
 deletestagemodels:
-	rm ../data/stage_models.rds
+	rm -f ../data/stage_models.rds
 
 deletemainmodel:
-	rm ../data/main_model.rds
-	rm ../data/main_model_1.0.rds
-	rm ../data/main_model_sing.rds
+	rm -f ../data/main_model.rds
+	rm -f ../data/main_model_1.0.rds
+	rm -f ../data/main_model_sing.rds
 
 deleterest:
-	rm ../data/stand-predictors-cen-obis.rds
-	rm ../data/modern-predictions.rds
-	rm ../data/by.prov.classes.rda
-	rm ../data/by.prov.all.jk.rda
-	rm ../data/by.prov.all.no.singles.rda
-	rm ../data/by.prov.all.obis.culls.rda
-	rm ../data/by.prov.classes.no.singles.rda
-	rm ../data/by.prov.classes.obis.culls.rda
+	rm -f ../data/stand-predictors-cen-obis.rds
+	rm -f ../data/modern-predictions.rds
+	rm -f ../data/by.prov.classes.rda
+	rm -f ../data/by.prov.all.jk.rda
+	rm -f ../data/by.prov.all.no.singles.rda
+	rm -f ../data/by.prov.all.obis.culls.rda
+	rm -f ../data/by.prov.classes.no.singles.rda
+	rm -f ../data/by.prov.classes.obis.culls.rda
 
 # full
 cleanall: clean deleteranges deletecv deleteroc deletecross deletestagemodels deletemainmodel deleterest
