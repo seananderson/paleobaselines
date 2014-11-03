@@ -1,0 +1,51 @@
+```{r}
+
+pres_prob <- function(x) {
+  max_FR2 <- max(x$FR2_num)
+  min_FR2 <- min(x$FR2_num)
+  n_unique_FR2 <- length(unique(x$FR2_num))
+  
+  if(x$in_paleogene[1] == 1) {
+    min_FR2 <- 0
+    n_unique_FR2 <- n_unique_FR2 + 1
+    }
+  
+  if(x$genus_extant[1] == "yes") {
+    max_FR2 <- 6
+    n_unique_FR2 <- n_unique_FR2 + 1
+    }
+  
+  prop_comp <- n_unique_FR2 / (max_FR2 - min_FR2 + 1)
+  data.frame(prop_comp, min_FR2, max_FR2, n_unique_FR2)
+  }
+
+# Missing from on Neogene stage:
+d <- data.frame(FR2_num = c(1, 2, 3, 5), in_paleogene = c(1, 1, 1, 1),
+  genus_extant = c("yes", "yes", "yes", "yes"))
+pres_prob(d)
+
+# Missing from 2 Neogene stages:
+d <- data.frame(FR2_num = c(1, 2, 5), in_paleogene = c(1, 1, 1),
+  genus_extant = c("yes", "yes", "yes"))
+pres_prob(d)
+
+# Always present:
+d <- data.frame(FR2_num = c(1, 2, 3, 4, 5), in_paleogene = c(1, 1, 1, 1, 1),
+  genus_extant = c("yes", "yes", "yes", "yes", "yes"))
+pres_prob(d)
+
+# In all of Neoegene and extant but not in Paleogene:
+d <- data.frame(FR2_num = c(1, 2, 3, 4, 5), in_paleogene = c(0, 0, 0, 0, 0),
+  genus_extant = rep("yes", 5))
+pres_prob(d)
+
+# Missing from 1st Neoegene stage, present elsewhere:
+d <- data.frame(FR2_num = c(2, 4, 5), in_paleogene = c(0, 0, 0),
+  genus_extant = c("yes", "yes", "yes"))
+pres_prob(d)
+
+# Present in Paleogene and Neogene but extinct:
+d <- data.frame(FR2_num = c(1, 2, 3, 4, 5), in_paleogene = c(0, 0, 0, 0, 0),
+  genus_extant = rep("no", 5))
+pres_prob(d)
+```
