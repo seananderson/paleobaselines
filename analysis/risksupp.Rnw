@@ -159,6 +159,8 @@ library("lmodel2")
 library("pROC")
 library("rgeos")
 library("dplyr")
+library("doParallel")
+library("foreach")
 @
 
 <<preamble-work, cache=FALSE, echo=FALSE, results=FALSE>>=
@@ -167,6 +169,10 @@ rversion <- capture.output(sessionInfo())[[1]]
 x <- capture.output(sessionInfo())
 other_line <- grep("other attached", x)
 pkgs <- x[(other_line+1):(other_line + 7)]
+@
+
+<<set-multi-core, echo=FALSE, cache=FALSE>>=
+registerDoParallel(cores = 4)
 @
 
 We used \Sexpr{rversion} and the following packages:
@@ -204,14 +210,6 @@ dat <- plyr::rename(dat, c("Interval" = "Interval_Name",
   "group" = "MatchTaxon", "top" = "stage_top",
   "MeanAbsLat" = "mean_lat", "Ex" = "Extinct.in.stage"))
 stcen <- plyr::ddply(dat, "Interval_Name", standardize_data)
-# Recreate the singleton column:
-# sing_test <- filter(stcen, !Interval_Name %in% c("Modern_raw", "Modern_merged", "Plio-Pleistocene")) %>%
-#   sing_test <- stcen %>%
-#   group_by(genus) %>%
-#   mutate(n_stage = n_distinct(Interval_Name),
-#     singleton2 = ifelse(n_stage == 1, 1, 0)) %>% as.data.frame
-# table(sing_test[,c("singleton", "singleton2")])
-# table(sing_test[,c("Ex", "singleton2")])
 saveRDS(stcen, file = "../data/stand-predictors-cen-obis.rds")
 @
 
@@ -316,10 +314,6 @@ To calibrate our model, we grouped the predicted extinction probabilities for ea
 INT.DEPTH <- 5 # these constants hold throughout the document
 NTREES <- 2000
 SHRINKAGE <- 0.01
-
-library(doParallel)
-library(foreach)
-registerDoParallel(cores = 4)
 
 val_test_example <- validate_gbm(neog, shrinkage = SHRINKAGE,
       interaction.depth = INT.DEPTH, n.trees = NTREES,
