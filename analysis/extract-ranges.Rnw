@@ -275,7 +275,7 @@ extract_ranges <- function() {
       MeanAbsLat <- mean(abs(df$paleolatdec))
       occurrences <- length(df$paleolatdec)
       Ex <- min(df$Extinct.in.bin)
-      Singletons <- max(df$Singleton)
+      Singletons <- max(df$singleton)
       prop_comp <- unique(df$prop_comp) # one per genus
     }
     else {
@@ -289,7 +289,7 @@ extract_ranges <- function() {
       MeanAbsLat <- mean(abs(df$paleolatdec))
       occurrences <- length(df$paleolatdec)
       Ex <- min(df$Extinct.in.bin)
-      Singletons <- max(df$Singleton)
+      Singletons <- max(df$singleton)
       prop_comp <- unique(df$prop_comp) # one per genus
     }
     return(data.frame(occurrences, eac, gcd, richness, MaxAbsLat,
