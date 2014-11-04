@@ -1,9 +1,9 @@
-# This file makes a bunch of plots to investigate the role of fossil
-# record completeness in the extinction risk estimates
+# This file makes a number of plots to investigate the role of fossil
+# record completeness in the extinction risk estimates.
 #
 # Run after running
 # "make-partial-dependence-data-child.Rnw"
-# Sean 20140926
+# or from within risksupp.Rnw
 
 neog <- readRDS("../data/stand-predictors-cen-obis.rds")
 neog <- droplevels(subset(neog, stage_top < 23 & stage_top != 0))
@@ -50,7 +50,6 @@ x <- plyr::ddply(neog, c("class", "group"), plyr::summarise, mean_prop_comp = me
 
 partial_groups_culled$group <- partial_groups_culled$value
 partial_groups_culled <- plyr::join(partial_groups_culled, x)
-
 
 ### make plots
 
