@@ -821,7 +821,7 @@ dev.off()
 er_dat_class$mean.ext.sing[er_dat_class$mean.ext.sing < log(0.003201)] <- log(0.003201)
 er_dat_class$mean.ext.sing[er_dat_class$mean.ext.sing > log(0.158)] <- log(0.158)
 pdf("../figs/class-risk-maps-mean-log-ext-paleo-sing-pp.pdf", width = 6.45, height = 5.1)
-max_range <- map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10),
+map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10),
   min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0032, 0.16),
   picture_files = picture_files, plot_column = "mean.ext.sing",
   silhouette_coords = silhouette_coords, max_range_given = exp(max_range)+1.4,
