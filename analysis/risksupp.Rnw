@@ -364,6 +364,20 @@ if(!file.exists("../data/val_test_sing.rds")) {
     "Delete ../data/val_test_sing.rds to rerun these."))
   val_test_sing <- readRDS("../data/val_test_sing.rds")
 }
+# no singleton genera:
+if(!file.exists("../data/val_test_singleton.rds")) {
+  val_test_singleton <- ldply(1:60, function(i)
+    validate_gbm(neog[neog$singleton == 0, ],
+      shrinkage = SHRINKAGE,
+      interaction.depth = INT.DEPTH, n.trees = NTREES,
+      use_weights = TRUE)$bin_validation, .parallel = TRUE)
+  saveRDS(val_test_singleton, file = "../data/val_test_singleton.rds")
+} else {
+  message(paste("Loading previous GBM cross-validations.",
+    "Delete ../data/val_test_singleton.rds to rerun these."))
+  val_test_singleton <- readRDS("../data/val_test_singleton.rds")
+}
+# val_test_sing <- val_test_singleton # for testing
 @
 
 For example, here are the predicted and observed extinction probabilities for one run of our cross-validation. The model was built on half the data and then used to predict the other half of the data.
@@ -494,6 +508,7 @@ if(!file.exists("../data/main_model_1.0.rds")) {
 # no genera with single (or zero) occurrences when they should have been observed:
 if(!file.exists("../data/main_model_sing.rds")) {
   neog_subset <- neog[neog$single_obs == 0 & neog$prop_comp == 1.0, ]
+#   neog_subset <- neog[neog$singleton == 0, ]
   w <- paleorisk::get_weights(neog_subset$Ex)
   weights <- ifelse(neog_subset$Ex == 1, w$ex_weight, w$sur_weight)
   m_sing <- rlply(10, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
