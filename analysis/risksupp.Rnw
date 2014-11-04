@@ -813,7 +813,7 @@ map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10),
   min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0032, 0.16),
  picture_files = NULL, plot_column = "mean.ext.1.0",
 #   picture_files = NULL, plot_column = "mean.ext.1.0",
-  silhouette_coords = silhouette_coords, max_range_given = exp(max_range)+1.5,
+  silhouette_coords = silhouette_coords, max_range_given = exp(max_range)+1.1,
   ylabel = "Intrinsic extinction probability (over ~23 Myr)")
 dev.off()
 # remove single occurrences in fossil record:
@@ -824,7 +824,7 @@ pdf("../figs/class-risk-maps-mean-log-ext-paleo-sing-pp.pdf", width = 6.45, heig
 max_range <- map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10),
   min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0032, 0.16),
   picture_files = picture_files, plot_column = "mean.ext.sing",
-  silhouette_coords = silhouette_coords, max_range_given = exp(max_range)+1.5,
+  silhouette_coords = silhouette_coords, max_range_given = exp(max_range)+1.4,
   ylabel = "Intrinsic extinction probability (over ~23 Myr)")
 dev.off()
 
