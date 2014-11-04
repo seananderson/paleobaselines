@@ -159,8 +159,11 @@ library("lmodel2")
 library("pROC")
 library("rgeos")
 library("dplyr")
-library("doParallel")
-library("foreach")
+if(!grepl("Linux", Sys.info()["sysname"])) { # serial on Bugaboo server
+  library("doParallel")
+  library("foreach")
+  registerDoParallel(cores = 4)
+}
 @
 
 <<preamble-work, cache=FALSE, echo=FALSE, results=FALSE>>=
@@ -169,10 +172,6 @@ rversion <- capture.output(sessionInfo())[[1]]
 x <- capture.output(sessionInfo())
 other_line <- grep("other attached", x)
 pkgs <- x[(other_line+1):(other_line + 7)]
-@
-
-<<set-multi-core, echo=FALSE, cache=FALSE>>=
-registerDoParallel(cores = 4)
 @
 
 We used \Sexpr{rversion} and the following packages:
