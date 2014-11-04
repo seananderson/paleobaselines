@@ -1198,13 +1198,13 @@ d.eco.filled_raw$n_obs <- NULL
 d.eco.filled_raw <- merge(d.eco.filled_raw, modern_raw, by = "genus", all.x = FALSE)
 
 # And calculate mean values by class-province or for the provinces overall:
-by.prov.classes.raw <- ddply(na.omit(d.eco.filled_raw),
+by.prov.classes.raw <- ddply(d.eco.filled_raw,
   c("class", "PROV_CODE"), plyr::summarize,
-  mean.ext = mean(log(mean_observed_raw + 0.001)),
+  mean.ext = mean(log(mean_observed_raw)),
   N.gen = length(unique(genus)))
 
-by.prov.all.raw <- ddply(na.omit(d.eco.filled_raw), "PROV_CODE", plyr::summarize,
-  mean.ext = mean(log(mean_observed_raw + 0.001)),
+by.prov.all.raw <- ddply(d.eco.filled_raw, "PROV_CODE", plyr::summarize,
+  mean.ext = mean(log(mean_observed_raw)),
   N.gen = length(unique(genus)))
 
 # Create some fake columns: (we need these columns for the plotting functions)
