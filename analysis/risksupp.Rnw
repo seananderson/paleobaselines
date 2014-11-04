@@ -308,8 +308,6 @@ GBMs, like other machine learning techniques, can perform poorly in cases where 
 
 To calibrate our model, we grouped the predicted extinction probabilities for each class into bins from 0 to 1 in 0.05 increments. For example, we grouped predicted probabilities of 0.12, 0.11, and 0.14 for three different genera into a bin of 0.10--0.15. We then calculated the mean observed extinction probability for each of those bins. For example, if those three genera had observed extinction probabilities of 0.21, 0.09, and 0.10, the mean observed out-of-sample extinction probability would be 0.133. We then compared the mean of our prediction bin (0.125 in this example) with the mean observed value (0.133). In this example our model is slightly biased. Because we're building and testing the model on independent datasets, this is a good test of how our model might perform on a new but equivalent dataset.
 
-% TODO 20140923 add bit here with alternative culled paleo datasets
-
 <<test-gbm1, results='hide', cache=FALSE>>=
 INT.DEPTH <- 5 # these constants hold throughout the document
 NTREES <- 2000
