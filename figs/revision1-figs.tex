@@ -103,7 +103,7 @@
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=0.9\textwidth]{pairs-paleo-culls-genera}
-\caption{Pairs plots for paleo culls. Each dot is an individual genus.}
+\caption{Comparison of genus-level intrinsic extinction risk estimates from GBM models built on different subsets of the Neogene fossil record. \texttt{mean\_observed} refers to the main GBM model used in the paper. \texttt{mean\_observed\_1.0} refers to a model trained on a dataset containing only genera with a 1.0 preservation probability. \texttt{mean\_observed\_sing} refers to a model containing only genera that were observed at least twice in all stages in which we expected to observe them. Each dot represents a prediction for an individual genus in the modern record based on a model trained in the fossil record. Spearman's rank order correlation coefficients are shown in the upper right triangle of panels.}
 \label{fig:pairs-genus-paleo-culls}
 \end{center}
 \end{figure}
@@ -113,7 +113,7 @@
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=0.9\textwidth]{pairs-paleo-culls-provinces}
-\caption{Pairs plots for paleo culls by province. The values in the upper-right panels are Spearman's rank-order correlation coefficients.}
+\caption{Comparison of province-level log mean intrinsic extinction risk estimates from GBM models built on different subsets of the Neogene fossil record. Description of this figure is the same as the previous figure except these are biogeographic province-level estimates instead of individual genus-level estimates. These are the data that underly the final maps such as Fig.~3.}
 \label{fig:pairs-prov-paleo-culls}
 \end{center}
 \end{figure}
@@ -125,7 +125,7 @@
 \includegraphics[width=0.6\textwidth]{hotspots-paleo-0-pp}
 \includegraphics[width=0.6\textwidth]{hotspots-paleo-1-pp}
 \includegraphics[width=0.6\textwidth]{hotspots-paleo-sing-pp}
-\caption{Global maps with various paleo culls. From top to bottom: all, preservation probability $=$ 1.0, singular occurrence cull.}
+\caption{Global maps from models built with various culls of the Neogene fossil record. From top to bottom: the base model, only genera with a preservation probability of 1.0, and only genera with at least two observations in all stages for which we would expect their to be observations.}
 \label{fig:overall-maps-paleo-culls}
 \end{center}
 \end{figure}
@@ -133,7 +133,7 @@
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=\textwidth]{class-risk-maps-mean-log-ext-paleo-1-pp}
-\caption{Global class-level maps at a paleo cull of preservation probability $= 1.0$. Note that the colour scales shift slightly between the main paper Fig.\ 2, this figure, and the next figure.}
+\caption{Global maps of various taxonomic subgroups from a model built on Neogene data containing only genera with a preservation probability of 1.0. Note that the colour scales shift slightly between the main paper Fig.\ 2, this figure, and the next figure.}
 \label{fig:class-maps-paleo-cull-1-pp}
 \end{center}
 \end{figure}
@@ -141,7 +141,7 @@
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=\textwidth]{class-risk-maps-mean-log-ext-paleo-sing-pp}
-\caption{Global class-level maps culling all paleo genera which are ever observed only once (or not at all) in a stage where they should have been observed.}
+\caption{Global maps of various taxonomic subgroups from a model built on Neogene data containing only genera with at least two observations in all stages in which we would expect to observe them. Note that the colour scales shift slightly between the main paper Fig.\ 2, this figure, and the previous figure.}
 \label{fig:class-maps-paleo-sing-pp}
 \end{center}
 \end{figure}
@@ -257,5 +257,15 @@
 \label{fig:3}
 \end{center}
 \end{figure}
+
+\clearpage
+\section{To do}
+\begin{enumerate}
+
+\item  Switch labels of map colour scales to multiplicative scale (0.5, 1, 1.5, 2.0 instead of (0.06, 0.12, etc.)
+\item Switch main figures to use an OBIS threshold of 5 observations
+\item Make the axes in the pairs plots constant across panels
+
+\end{enumerate}
 
 \end{document}
