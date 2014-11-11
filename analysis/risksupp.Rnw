@@ -4,7 +4,6 @@
 \usepackage{booktabs}
 \usepackage{setspace}
 \usepackage{scicite}
-%\usepackage{cite}
 \usepackage{url}
 \usepackage[nottoc,numbib]{tocbibind} % to add bibliography to TOC
 \textheight 20.5cm
@@ -329,9 +328,6 @@ if(!file.exists("../data/val_test.rds")) {
 }
 @
 
-% Also build alternative models with different preservation potential
-% thresholds: >= 0.5, >=0.75, ==1.00
-% We'll start with >= 0.5 and then go from there
 <<alternative-validations, cache=FALSE>>=
 # only p == 1.0:
 # FAKE_NEOG <- neog
@@ -365,18 +361,18 @@ if(!file.exists("../data/val_test_sing.rds")) {
   val_test_sing <- readRDS("../data/val_test_sing.rds")
 }
 # no singleton genera:
-if(!file.exists("../data/val_test_singleton.rds")) {
-  val_test_singleton <- ldply(1:60, function(i)
-    validate_gbm(neog[neog$singleton == 0, ],
-      shrinkage = SHRINKAGE,
-      interaction.depth = INT.DEPTH, n.trees = NTREES,
-      use_weights = TRUE)$bin_validation, .parallel = TRUE)
-  saveRDS(val_test_singleton, file = "../data/val_test_singleton.rds")
-} else {
-  message(paste("Loading previous GBM cross-validations.",
-    "Delete ../data/val_test_singleton.rds to rerun these."))
-  val_test_singleton <- readRDS("../data/val_test_singleton.rds")
-}
+# if(!file.exists("../data/val_test_singleton.rds")) {
+#   val_test_singleton <- ldply(1:60, function(i)
+#     validate_gbm(neog[neog$singleton == 0, ],
+#       shrinkage = SHRINKAGE,
+#       interaction.depth = INT.DEPTH, n.trees = NTREES,
+#       use_weights = TRUE)$bin_validation, .parallel = TRUE)
+#   saveRDS(val_test_singleton, file = "../data/val_test_singleton.rds")
+# } else {
+#   message(paste("Loading previous GBM cross-validations.",
+#     "Delete ../data/val_test_singleton.rds to rerun these."))
+#   val_test_singleton <- readRDS("../data/val_test_singleton.rds")
+# }
 # val_test_sing <- val_test_singleton # for testing
 @
 
@@ -395,8 +391,6 @@ ggplot(val_test_example,
 @
 
 By running the cross validation 1000 times, we calculated a mean bias at the taxonomic-group level for each prediction bin. We illustrate this in the following figure. The blue dots represent the mean estimate from a binomial logistic generalized linear model (GLM) fit to the black dots (observed mean extinction proportions based on individual cross-validation runs) with weights equal to the sample size in that bin across runs. The vertical lines represent 95\% confidence intervals. The size of the blue dots corresponds to the median number of extinction/survival observations in that bin across replicates. For visualization purposes, we have downsampled the number of black dots by a factor of about 10.
-
-% TODO 20140923 add chunk here with alternative versions of paleo data
 
 <<test-gbm1-summary>>=
 val_test_summarized <- ddply(val_test, c("class", "gbm_pred_binned"),
@@ -421,36 +415,6 @@ ggplot(val_test_summarized,
   xlab("Out-of-sample GBM-predicted scaled extinction probability") +
   ylab("Observed scaled extinction probability") +
   labs(size = "Median sample #")
-#
-# val_test_plot <- val_test_1.0[sample(1:nrow(val_test_1.0), size = 1000), ]
-# p <- ggplot(val_test_summarized_1.0,
-#   aes(gbm_pred_binned, mean_observed)) +
-#   geom_point(data = val_test_plot, aes(gbm_pred_binned, obs_ext_prob),
-#     alpha = 0.08) +
-#   geom_linerange(aes(ymin = l, ymax = u), colour = "#4E9DF0") +
-#   geom_point(aes(size = median_sample_n), colour = "#4E9DF0") +
-#   facet_wrap(~class) +
-#   scale_size(trans = "log10") + coord_fixed(ratio = 1) +
-#   ylim(0, 1) + xlim(0, 1) +
-#   xlab("Out-of-sample GBM-predicted scaled extinction probability") +
-#   ylab("Observed scaled extinction probability") +
-#   labs(size = "Median sample #")
-# p
-#
-# val_test_plot <- val_test_sing[sample(1:nrow(val_test_sing), size = 1000), ]
-# p <- ggplot(val_test_summarized_sing,
-#   aes(gbm_pred_binned, mean_observed)) +
-#   geom_point(data = val_test_plot, aes(gbm_pred_binned, obs_ext_prob),
-#     alpha = 0.08) +
-#   geom_linerange(aes(ymin = l, ymax = u), colour = "#4E9DF0") +
-#   geom_point(aes(size = median_sample_n), colour = "#4E9DF0") +
-#   facet_wrap(~class) +
-#   scale_size(trans = "log10") + coord_fixed(ratio = 1) +
-#   ylim(0, 1) + xlim(0, 1) +
-#   xlab("Out-of-sample GBM-predicted scaled extinction probability") +
-#   ylab("Observed scaled extinction probability") +
-#   labs(size = "Median sample #")
-# p
 @
 
 We used these observed extinction probabilities (blue dots in the previous figure) to calibrate our predicted extinction probabilities in the contemporary dataset. We started with the predicted extinction probability from our GBM model applied to each contemporary genus, fit that value into our binning scheme, and extracted the empirically-observed mean extinction probability for that bin. This removes the observed out-of-sample non-linear bias in our model \cite{thorson2012}.
@@ -470,9 +434,7 @@ We evaluated the marginal effect of each predictor on intrinsic extinction risk 
 <<make-partial-dependence-data, child="make-partial-dependence-data-child.Rnw", echo=FALSE, results='hide'>>==
 @
 
-% TODO 20140923 adapt this chunk to also create versions with the different culls of paleo data
-
-% We can re-create Fig.~1 in the paper by running the code in \texttt{make-partial-dependence-plot.Rnw}. We will suppress the code here to save space. Note that in this plotting code we centre the marginal effects for each geologic stage for visual purposes (so that the mean marginal effect of each variable is 0.5). We need to do this since the base rate of extinction is different in each geologic stage.
+% We can re-create Fig.~1 in the paper by running the code in \texttt{make-partial-dependence-plot.Rnw}. Note that in this plotting code we centre the marginal effects for each geologic stage for visual purposes (so that the mean marginal effect of each variable is 0.5). We need to do this since the base rate of extinction is different in each geologic stage.
 <<partial-plots-base, child='make-partial-dependence-plot.Rnw', echo=FALSE, results='hide'>>=
 @
 
@@ -535,9 +497,6 @@ ri_lq <- ri_lq[ri_order]
 ri_uq <- ri_uq[ri_order]
 @
 
-% TODO 20140923 if we want to get fancy, also add dots on the following relative
-% importance plot that shows the RI for different completeness culls
-
 <<plot-relative-importance, results='hide'>>=
 names(ri_median) <- sub("group", "subgroup", names(ri_median))
 par(xpd = NA, mar = c(4, 8, 1, 1), cex = 0.8)
@@ -561,9 +520,6 @@ stage_df <- expand.grid(stage_train = unique(neog$stage),
   stage_test = unique(neog$stage))
 if(!file.exists("../data/cross_pred.rds")) {
   cross_pred <- mdply(stage_df, fit_interval_gbm, dat = neog,
-# cross_pred <- mdply(stage_df, fit_interval_gbm, dat = subset(neog, prop_comp == 1),
-# cross_pred <- mdply(stage_df, fit_interval_gbm,
-#   dat = subset(neog, prop_comp == 1 & single_obs == 0),
     n.trees = NTREES, shrinkage = SHRINKAGE, interaction.depth = INT.DEPTH,
     use_weights = TRUE, .parallel = TRUE)
   saveRDS(cross_pred, file = "../data/cross_pred.rds")
@@ -573,6 +529,7 @@ if(!file.exists("../data/cross_pred.rds")) {
 @
 
 % Get cross-interval predictions and create plot:
+
 <<plot-cross-interval-gbms, results='hide', child='plot-cross-interval-gbms-child.Rnw'>>=
 @
 
@@ -597,7 +554,6 @@ In the second case, we evaluated the similarity in extinction regimes between di
 \caption{Schematic illustration of the sequence of steps used to build the modern genus range dataset and to make intrinsic risk predictions for modern genera from the Neogene fossil record.}
 \label{fig:didactic}
 \end{figure}
-% TODO talk to Sean about whether part 4 is potentially misleading
 
 % We will use our GBM model built on the entire Neogene period to predict extinction risk in the contemporary dataset. Because of the slight stochasticity from run to run of a GBM, we will run our model a number of times and take the average predictions. First we will read back in the modern data:
 
@@ -630,11 +586,8 @@ p <- ggplot(paleo_long, aes(value)) +
   facet_grid(class~variable, scales = "free")
 @
 
-% TODO 20140923 add code here to also predict from different paleo culls, and in
-% the next chunk to calibrate the predictions, and then again in the next chunk
-% to save the various versions of modern predictions
-
 % Predict contemporary intrinsic extinction risk from the paleontological models:
+
 <<predict-risk-modern>>=
 predictions <- laply(m, function(x)
   gbm::predict.gbm(x, newdata = modern, type = "response",
@@ -651,6 +604,7 @@ modern$pred_sing <- apply(predictions_sing, 2, mean)
 @
 
 % Use our calibration factors on our predictions:
+
 <<calibrate-risk-modern>>=
 # Careful here in this chunk, I have spent more time debugging this than
 # anything else. SA 20141023
@@ -676,6 +630,7 @@ modern <- plyr::join(modern,
 @
 
 % Merge in OBIS observation frequencies for sensitivity analyses:
+
 <<add-obis-sampling-intensities>>=
 load("../data/composite.occ2.rda")
 library(dplyr)
@@ -690,56 +645,8 @@ rm(composite.occ2) # large data frame; save memory
 saveRDS(modern, file = "../data/modern-predictions.rds")
 @
 
-<<plot-genus-predictions-against-gcd2, fig.cap='Predicted intrinsic risk versus geographic range size (great circle distance) for modern genera in each of six taxonomic groups. The points represent individual genera and are colored according to taxonomic subgroups within each major taxonomic group, the black contour lines indicate the density of genera, and the red line represents the mean intrinsic risk of all modern genera.', fig.width=10, fig.height=7.5>>=
-class2 <- data.frame(c("Anthozoa", "Bivalvia", "Echinoidea",
-  "Elasmobranchii", "Gastropoda", "Mammalia"), c("Scleractinia",
-    "Bivalvia", "Echinoidea", "Sharks", "Gastropoda", "Mammalia"))
-colnames(class2) <- c("class", "newclass")
-modern <- merge(modern, class2, by = "class")
-group <- levels(as.factor(modern$group))
-group2 <- data.frame(c("Anthozoa_Acroporidae", "Anthozoa_az",
-  "Anthozoa_Faviidae", "Anthozoa_other", "Bivalvia_Anomalodesmata",
-  "Bivalvia_Arcoida", "Bivalvia_Carditoida", "Bivalvia_Limoida",
-  "Bivalvia_Myoida", "Bivalvia_Pholadomyoida", "Bivalvia_Protobranchia",
-  "Bivalvia_Pterioida", "Bivalvia_Veneroida", "Echinoidea_Carinacea",
-  "Echinoidea_Cidaroida", "Echinoidea_Irregularia", "Elasmobranchii_Elasmobranchii",
-  "Gastropoda_Architaenioglossa", "Gastropoda_Heterobranchia",
-  "Gastropoda_Neogastropoda", "Gastropoda_Neotaenioglossa",
-  "Gastropoda_Neritopsina", "Gastropoda_Patellogastropoda",
-  "Gastropoda_Sorbeoconcha", "Gastropoda_Vetigastropoda",
-  "Mammalia_Carnivora", "Mammalia_Mysticeti", "Mammalia_Odontoceti"),
-  c("Scleractinia_Acroporidae", "Scleractinia_azooxanthellate",
-    "Scleractinia_Faviidae", "Scleractinia_other", "Bivalvia_Anomalodesmata",
-    "Bivalvia_Arcoida", "Bivalvia_Carditoida", "Bivalvia_Limoida",
-    "Bivalvia_Myoida", "Bivalvia_Pholadomyoida", "Bivalvia_Protobranchia",
-    "Bivalvia_Pterioida", "Bivalvia_Veneroida", "Echinoidea_Carinacea",
-    "Echinoidea_Cidaroida", "Echinoidea_Irregularia",
-    "Sharks", "Gastropoda_Architaenioglossa", "Gastropoda_Heterobranchia",
-    "Gastropoda_Neogastropoda", "Gastropoda_Neotaenioglossa",
-    "Gastropoda_Neritopsina", "Gastropoda_Patellogastropoda",
-    "Gastropoda_Sorbeoconcha", "Gastropoda_Vetigastropoda",
-    "Mammalia_Carnivora", "Mammalia_Mysticeti", "Mammalia_Odontoceti"))
-colnames(group2) <- c("group", "group2")
-modern <- merge(modern, group2, by = "group")
-
-d2 <- plyr::ddply(modern, "newclass", transform,
-  group_id = as.numeric(as.factor(as.character(as.numeric(group2)))))
-
-ggplot(d2, aes(y = jitter(gbm_pred_binned, amount = 0.02),
-  x = jitter(great.circle, amount = 800), colour = as.factor(group2))) +
-  geom_hline(yintercept = mean(d2$gbm_pred_binned), colour = "red") +
-  geom_point(alpha = 0.6, pch = 1, size = 3) + facet_wrap(~newclass) +
-  theme_bw() + xlab("Great circle distance") + ylab("Predicted intrinsic risk") +
-  theme(strip.text.x = element_text(size = 8), axis.text = element_text(size = 8)) +
-  theme(legend.text = element_text(size = 9)) + scale_colour_manual(values = c("red",
-    "blue", "green3", "deeppink1", "orange", "cyan", "yellow3",
-    "cornflowerblue", "darkorchid1", "red", "blue", "green3",
-    "red", "blue", "green3", "deeppink1", "orange", "cyan",
-    "yellow3", "cornflowerblue", "red", "blue", "green3",
-    "red", "blue", "green3", "deeppink1", "red")) + theme(legend.title = element_blank()) +
-  theme(strip.text.x = element_text(size = 14)) + stat_density2d(colour = "black",
-    size = 0.25, bins = 16) + coord_cartesian(xlim = c(0,
-      20800), ylim = c(0, 1))
+<<plot-genus-predictions-against-gcd2, fig.cap='Predicted intrinsic risk versus geographic range size (great circle distance) for modern genera in each of six taxonomic groups. The points represent individual genera and are colored according to taxonomic subgroups within each major taxonomic group, the black contour lines indicate the density of genera, and the red line represents the mean intrinsic risk of all modern genera.', fig.width=10, fig.height=7.5, cache=FALSE>>=
+source("plot-genus-predictions-against-gcd.R")
 @
 
 % Merge predictions with contemporary spatial observations and climate/impact hotspots:
@@ -794,8 +701,8 @@ write.table(round(exp(max_range), 3), file = "max_col_range_class_maps.txt",
 <<plot-hotspots, results='hide'>>=
 load("../data/by.prov.all.rda")
 
-# this gets removed anyways
 # (black sea - very low outlier that distorts the colour scheme)
+# this gets removed anyways
 by.prov.all[by.prov.all$PROV_CODE == 7, "mean.ext"] <- mean(by.prov.all$mean.ext)
 
 bpa_order <- by.prov.all
@@ -977,7 +884,6 @@ ggplot(temp, aes(mean_observed + 0.001)) +
 \textbf{TODO fill in this part.}
 
 Look at sensitivity of Figure 1, 2, and 3 as well as plots of potential against estimates.
-
 
 \subsection{Exploring the effects of contemporary sampling intensity on intrinsic risk predictions}
 
@@ -1291,8 +1197,6 @@ for(i in 1:length(classes)) {
 \clearpage
 
 % \section{Main Figures}
-
-% \textit{Temporary; to be removed.}
 %
 % \begin{center}
 %   \includegraphics[width=4.86in]{../figs/partial-plot-base.pdf}\\
