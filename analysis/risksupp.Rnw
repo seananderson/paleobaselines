@@ -376,7 +376,7 @@ if(!file.exists("../data/val_test_sing.rds")) {
 # val_test_sing <- val_test_singleton # for testing
 @
 
-For example, here are the predicted and observed extinction probabilities for one run of our cross-validation. The model was built on half the data and then used to predict the other half of the data.
+For example, here are the predicted and observed extinction probabilities for one run of our cross-validations. The model was built on half the data and then used to predict the other half of the data.
 
 <<single-cv-rep, fig.width=8.25, fig.height=5, out.width="4.8in">>=
 ggplot(val_test_example,
