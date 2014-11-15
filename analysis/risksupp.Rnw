@@ -364,7 +364,6 @@ if(!file.exists("../data/val_test.rds")) {
 if(!file.exists("../data/val_test_1.0.rds")) {
   val_test_1.0 <- ldply(1:300, function(i)
      validate_gbm(neog[neog$prop_comp == 1, ],
-#    validate_gbm(FAKE_NEOG,
       shrinkage = SHRINKAGE,
       interaction.depth = INT.DEPTH, n.trees = NTREES,
       use_weights = TRUE)$bin_validation, .parallel = TRUE)
@@ -417,7 +416,7 @@ ggplot(val_test_example,
   labs(size = "Sample #")
 @
 
-By running the cross validation 1000 times, we calculated a mean bias at the taxonomic-group level for each prediction bin. We illustrate this in the following figure. The blue dots represent the mean estimate from a binomial logistic generalized linear model (GLM) fit to the black dots (observed mean extinction proportions based on individual cross-validation runs) with weights equal to the sample size in that bin across runs. The vertical lines represent 95\% confidence intervals. The size of the blue dots corresponds to the median number of extinction/survival observations in that bin across replicates. For visualization purposes, we have downsampled the number of black dots by a factor of about 10.
+By running the cross validation 500 times, we calculated a mean bias at the taxonomic-group level for each prediction bin. We illustrate this in the following figure. The blue dots represent the mean estimate from a binomial logistic generalized linear model (GLM) fit to the black dots (observed mean extinction proportions based on individual cross-validation runs) with weights equal to the sample size in that bin across runs. The vertical lines represent 95\% confidence intervals. The size of the blue dots corresponds to the median number of extinction/survival observations in that bin across replicates. For visualization purposes, we have downsampled the number of black dots by a factor of about 10.
 
 <<test-gbm1-summary>>=
 val_test_summarized <- ddply(val_test, c("class", "gbm_pred_binned"),
