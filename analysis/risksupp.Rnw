@@ -299,7 +299,10 @@ We fit GBMs with the \pkg{gbm} package \cite{gbm2013} for the \proglang{R} stati
 \subsection{Model building and calibration}
 \label{sec:build-calibrate}
 
-% We will load the standardized data and subset it for the Neogene period. The contemporary data are also contained in this data frame with \texttt{stage\_top = 0}. Therefore, we will also exclude the contemporary dataset from what we call \texttt{neog}.
+% We will load the standardized data and subset it for the Neogene period. The
+% contemporary data are also contained in this data frame with
+% \texttt{stage\_top = 0}. Therefore, we will also exclude the contemporary
+% dataset from what we call \texttt{neog}.
 
 <<load-data>>=
 neog <- readRDS("../data/stand-predictors-cen-obis.rds")
@@ -356,13 +359,15 @@ if(!file.exists("../data/val_test.rds")) {
 @
 
 <<alternative-validations, cache=FALSE>>=
-# only p == 1.0:
+# Some code for testing fake data:
 # FAKE_NEOG <- neog
-# set.seed(211)
+# set.seed(1)
 # FAKE_NEOG$Ex <- FAKE_NEOG$Ex[sample(seq_len(nrow(FAKE_NEOG)), nrow(FAKE_NEOG))]
 # FAKE_NEOG$Ex <- rbinom(nrow(FAKE_NEOG), 1, 0.5)
+#
+# only p == 1.0:
 if(!file.exists("../data/val_test_1.0.rds")) {
-  val_test_1.0 <- ldply(1:300, function(i)
+  val_test_1.0 <- ldply(1:100, function(i)
      validate_gbm(neog[neog$prop_comp == 1, ],
       shrinkage = SHRINKAGE,
       interaction.depth = INT.DEPTH, n.trees = NTREES,
@@ -375,7 +380,7 @@ if(!file.exists("../data/val_test_1.0.rds")) {
 }
 # no genera with single (or zero) observations in fossil record when we should see them:
 if(!file.exists("../data/val_test_sing.rds")) {
-  val_test_sing <- ldply(1:300, function(i)
+  val_test_sing <- ldply(1:100, function(i)
     validate_gbm(neog[neog$single_obs == 0 & neog$prop_comp == 1, ],
       shrinkage = SHRINKAGE,
       interaction.depth = INT.DEPTH, n.trees = NTREES,
@@ -386,20 +391,32 @@ if(!file.exists("../data/val_test_sing.rds")) {
     "Delete ../data/val_test_sing.rds to rerun these."))
   val_test_sing <- readRDS("../data/val_test_sing.rds")
 }
-# no singleton genera:
-# if(!file.exists("../data/val_test_singleton.rds")) {
-#   val_test_singleton <- ldply(1:60, function(i)
-#     validate_gbm(neog[neog$singleton == 0, ],
-#       shrinkage = SHRINKAGE,
-#       interaction.depth = INT.DEPTH, n.trees = NTREES,
-#       use_weights = TRUE)$bin_validation, .parallel = TRUE)
-#   saveRDS(val_test_singleton, file = "../data/val_test_singleton.rds")
-# } else {
-#   message(paste("Loading previous GBM cross-validations.",
-#     "Delete ../data/val_test_singleton.rds to rerun these."))
-#   val_test_singleton <- readRDS("../data/val_test_singleton.rds")
-# }
-# val_test_sing <- val_test_singleton # for testing
+# preservation prob. == 1 *and* no singleton (stage) genera:
+if(!file.exists("../data/val_test_singleton.rds")) {
+  val_test_singleton <- ldply(1:100, function(i)
+    validate_gbm(neog[neog$singleton == 0 & neog$prop_comp == 1, ],
+      shrinkage = SHRINKAGE,
+      interaction.depth = INT.DEPTH, n.trees = NTREES,
+      use_weights = TRUE)$bin_validation, .parallel = TRUE)
+  saveRDS(val_test_singleton, file = "../data/val_test_singleton.rds")
+} else {
+  message(paste("Loading previous GBM cross-validations.",
+    "Delete ../data/val_test_singleton.rds to rerun these."))
+  val_test_singleton <- readRDS("../data/val_test_singleton.rds")
+}
+# only those that occur in more than one locality (eac > 1)
+if(!file.exists("../data/val_test_locality.rds")) {
+  val_test_locality <- ldply(1:100, function(i)
+    validate_gbm(neog_one_eac,
+      shrinkage = SHRINKAGE,
+      interaction.depth = INT.DEPTH, n.trees = NTREES,
+      use_weights = TRUE)$bin_validation, .parallel = TRUE)
+  saveRDS(val_test_locality, file = "../data/val_test_locality.rds")
+} else {
+  message(paste("Loading previous GBM cross-validations.",
+    "Delete ../data/val_test_locality.rds to rerun these."))
+  val_test_locality <- readRDS("../data/val_test_locality.rds")
+}
 @
 
 For example, here are the predicted and observed extinction probabilities for one run of our cross-validations. The model was built on half the data and then used to predict the other half of the data.
@@ -425,13 +442,17 @@ val_test_summarized_1.0 <- ddply(val_test_1.0, c("class", "gbm_pred_binned"),
   summarize_val_test)
 val_test_summarized_sing <- ddply(val_test_sing, c("class", "gbm_pred_binned"),
   summarize_val_test)
+val_test_summarized_singleton <- ddply(val_test_singleton,
+  c("class", "gbm_pred_binned"), summarize_val_test)
+val_test_summarized_locality <- ddply(val_test_locality,
+  c("class", "gbm_pred_binned"), summarize_val_test)
 @
 
 <<test-gbm1-bias-plot, fig.width=9, fig.height=5, echo=FALSE>>=
-val_test_plot <- val_test[sample(1:nrow(val_test), size = 10000), ]
-ggplot(val_test_summarized,
-  aes(gbm_pred_binned, mean_observed)) +
-  geom_point(data = val_test_plot, aes(gbm_pred_binned, obs_ext_prob),
+plot_val <- function(model_dat, pt_dat) {
+  p <- ggplot(model_dat,
+    aes(gbm_pred_binned, mean_observed)) +
+  geom_point(data = pt_dat, aes(gbm_pred_binned, obs_ext_prob),
     alpha = 0.08) +
   geom_linerange(aes(ymin = l, ymax = u), colour = "#4E9DF0") +
   geom_point(aes(size = median_sample_n), colour = "#4E9DF0") +
@@ -441,6 +462,15 @@ ggplot(val_test_summarized,
   xlab("Out-of-sample GBM-predicted scaled extinction probability") +
   ylab("Observed scaled extinction probability") +
   labs(size = "Median sample #")
+  print(p)
+}
+plot_val(val_test_summarized, val_test[sample(1:nrow(val_test), size = 10000L), ])
+pdf("../figs/calibration-illustrations-culls.pdf", width = 9, height = 5)
+plot_val(val_test_summarized_1.0, val_test_1.0)
+plot_val(val_test_summarized_sing, val_test_sing)
+plot_val(val_test_summarized_singleton, val_test_singleton)
+plot_val(val_test_summarized_locality, val_test_singleton)
+dev.off()
 @
 
 We used these observed extinction probabilities (blue dots in the previous figure) to calibrate our predicted extinction probabilities in the contemporary dataset. We started with the predicted extinction probability from our GBM model applied to each contemporary genus, fit that value into our binning scheme, and extracted the empirically-observed mean extinction probability for that bin. This removes the observed out-of-sample non-linear bias in our model \cite{thorson2012}.
@@ -485,7 +515,7 @@ if(!file.exists("../data/main_model_1.0.rds")) {
 # neog_subset <- FAKE_NEOG
   w <- paleorisk::get_weights(neog_subset$Ex)
   weights <- ifelse(neog_subset$Ex == 1, w$ex_weight, w$sur_weight)
-  m_1.0 <- rlply(10, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
+  m_1.0 <- rlply(5, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
       max.lat + lat.range + mean.lat + great.circle + group,
     data = neog_subset, n.trees = NTREES, interaction.depth = INT.DEPTH,
     distribution = "bernoulli", shrinkage = SHRINKAGE, weights = weights))
@@ -495,11 +525,10 @@ if(!file.exists("../data/main_model_1.0.rds")) {
 }
 # no genera with single (or zero) occurrences when they should have been observed:
 if(!file.exists("../data/main_model_sing.rds")) {
-  neog_subset <- neog[neog$single_obs == 0 & neog$prop_comp == 1.0, ]
-#   neog_subset <- neog[neog$singleton == 0, ]
+  neog_subset <- neog[neog$single_obs == 0 & neog$prop_comp == 1, ]
   w <- paleorisk::get_weights(neog_subset$Ex)
   weights <- ifelse(neog_subset$Ex == 1, w$ex_weight, w$sur_weight)
-  m_sing <- rlply(10, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
+  m_sing <- rlply(5, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
       max.lat + lat.range + mean.lat + great.circle + group,
     data = neog_subset, n.trees = NTREES, interaction.depth = INT.DEPTH,
     distribution = "bernoulli", shrinkage = SHRINKAGE, weights = weights))
@@ -507,6 +536,22 @@ if(!file.exists("../data/main_model_sing.rds")) {
 } else {
   m_sing <- readRDS("../data/main_model_sing.rds")
 }
+# combine the preservation probability == 1.0 with removing singletons:
+neog_subset <- neog[neog$singleton == 0 & neog$prop_comp == 1, ]
+w <- paleorisk::get_weights(neog_subset$Ex)
+weights <- ifelse(neog_subset$Ex == 1, w$ex_weight, w$sur_weight)
+m_singleton <- rlply(5, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
+    max.lat + lat.range + mean.lat + great.circle + group,
+  data = neog_subset, n.trees = NTREES, interaction.depth = INT.DEPTH,
+  distribution = "bernoulli", shrinkage = SHRINKAGE, weights = weights))
+# and remove those with <= 1 locality:
+neog_subset <- neog_one_eac
+w <- paleorisk::get_weights(neog_subset$Ex)
+weights <- ifelse(neog_subset$Ex == 1, w$ex_weight, w$sur_weight)
+m_locality <- rlply(5, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
+    max.lat + lat.range + mean.lat + great.circle + group,
+  data = neog_subset, n.trees = NTREES, interaction.depth = INT.DEPTH,
+  distribution = "bernoulli", shrinkage = SHRINKAGE, weights = weights))
 
 ri <- ldply(m, function(x) {
   gbm::relative.influence(x, scale. = TRUE,
@@ -624,9 +669,38 @@ predictions_1.0 <- laply(m_1.0, function(x)
 predictions_sing <- laply(m_sing, function(x)
   gbm::predict.gbm(x, newdata = modern, type = "response",
     n.trees = NTREES))
+predictions_singleton <- laply(m_singleton, function(x)
+  gbm::predict.gbm(x, newdata = modern, type = "response",
+    n.trees = NTREES))
+predictions_locality <- laply(m_locality, function(x)
+  gbm::predict.gbm(x, newdata = modern, type = "response",
+    n.trees = NTREES))
 modern$pred <- apply(predictions, 2, mean)
 modern$pred_1.0 <- apply(predictions_1.0, 2, mean)
 modern$pred_sing <- apply(predictions_sing, 2, mean)
+modern$pred_singleton <- apply(predictions_singleton, 2, mean)
+modern$pred_locality <- apply(predictions_locality, 2, mean)
+
+panel.cor <- function(x, y, digits = 2, prefix = "", ...) {
+  usr <- par("usr"); on.exit(par(usr))
+  par(usr = c(0, 1, 0, 1))
+  r <- cor(x, y, method = "spearman", use = "pairwise.complete.obs")
+  txt <- format(c(r, 0.123456789), digits = digits)[1]
+  txt <- paste0(prefix, txt)
+  text(0.5, 0.5, txt, cex = 1.2)
+}
+
+pairs_labels <- c("Base model", "Preservation\nprobability = 1",
+    ">= 2 observations", "No singletons &\npreserv. prob. = 1",
+    "> 1 locality")
+
+pdf("../figs/pairs-gbm-raw-predictions-culls.pdf", width = 7, height = 7)
+pairs(modern[,
+  c("pred", "pred_1.0", "pred_sing", "pred_singleton", "pred_locality")],
+  col = "#00000020", asp = 1,
+  ylim = c(0, 1), xlim = c(0, 1),
+  labels = pairs_labels, upper.panel = panel.cor)
+dev.off()
 @
 
 % Use our calibration factors on our predictions:
@@ -634,6 +708,8 @@ modern$pred_sing <- apply(predictions_sing, 2, mean)
 <<calibrate-risk-modern>>=
 # Careful here in this chunk, I have spent more time debugging this than
 # anything else. SA 20141023
+
+# Preservation probability == 1.0:
 modern$gbm_pred_binned <- assign_bins(modern$pred_1.0)
 modern <- plyr::join(modern,
   val_test_summarized_1.0[, c("class", "gbm_pred_binned", "mean_observed")],
@@ -641,18 +717,51 @@ modern <- plyr::join(modern,
 modern <- plyr::rename(modern, c("mean_observed" = "mean_observed_1.0"))
 modern$gbm_pred_binned <- NULL
 
+# <= 2 observations:
 modern$gbm_pred_binned <- assign_bins(modern$pred_sing)
 modern <- plyr::join(modern,
   val_test_summarized_sing[, c("class", "gbm_pred_binned", "mean_observed")],
   by = c("class", "gbm_pred_binned"))
-modern <- plyr::rename(modern, c("mean_observed" =
-   "mean_observed_sing"))
+modern <- plyr::rename(modern, c("mean_observed" = "mean_observed_sing"))
 modern$gbm_pred_binned <- NULL
 
+# no singletons plus pres. prob. 1.0:
+modern$gbm_pred_binned <- assign_bins(modern$pred_singleton)
+modern <- plyr::join(modern,
+  val_test_summarized_singleton[, c("class", "gbm_pred_binned", "mean_observed")],
+  by = c("class", "gbm_pred_binned"))
+modern <- plyr::rename(modern, c("mean_observed" = "mean_observed_singleton"))
+modern$gbm_pred_binned <- NULL
+
+# no singletons plus pres. prob. 1.0:
+modern$gbm_pred_binned <- assign_bins(modern$pred_locality)
+modern <- plyr::join(modern,
+  val_test_summarized_singleton[, c("class", "gbm_pred_binned", "mean_observed")],
+  by = c("class", "gbm_pred_binned"))
+modern <- plyr::rename(modern, c("mean_observed" = "mean_observed_locality"))
+modern$gbm_pred_binned <- NULL
+
+# base model, no culling:
 modern$gbm_pred_binned <- assign_bins(modern$pred)
 modern <- plyr::join(modern,
   val_test_summarized[, c("class", "gbm_pred_binned", "mean_observed")],
   by = c("class", "gbm_pred_binned"))
+
+pdf("../figs/pairs-gbm-calibrated-predictions-culls.pdf", width = 7, height = 7)
+pairs(modern[,c("mean_observed", "mean_observed_1.0", "mean_observed_sing",
+    "mean_observed_singleton", "mean_observed_locality")],
+  col = "#00000020",
+ labels = c("Base model", "Preservation\nprobability = 1", ">= 2 observations",
+   "No singletons &\npreserv. prob. = 1", "> 1 location"), upper.panel = panel.cor, asp = 1,
+ ylim = c(0, 1), xlim = c(0, 1))
+dev.off()
+pdf("../figs/pairs-gbm-calibrated-predictions-culls-zoomed.pdf", width = 7, height = 7)
+pairs(modern[,c("mean_observed", "mean_observed_1.0", "mean_observed_sing",
+    "mean_observed_singleton", "mean_observed_locality")],
+  col = "#00000020", labels = c("Base model", "Preservation\nprobability = 1", ">= 2 observations",
+    "No singletons &\npreserv. prob. = 1", "> 1 location"), upper.panel = panel.cor,
+  asp = 1, ylim = c(0, 0.6), xlim = c(0, 0.6))
+dev.off()
 @
 
 % Merge in OBIS observation frequencies for sensitivity analyses:
@@ -661,7 +770,7 @@ modern <- plyr::join(modern,
 load("../data/composite.occ2.rda")
 library(dplyr)
 counts <- composite.occ2 %>% group_by(genus) %>%
-  summarise(obis_n = n())
+  dplyr::summarise(obis_n = n())
 modern <- plyr::join(modern, counts, by = "genus")
 modern[modern$class %in% c("Mammalia", "Elasmobranchii"), "obis_n"] <- 1e5 # range map data
 rm(composite.occ2) # large data frame; save memory
@@ -764,7 +873,7 @@ map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10),
   silhouette_coords = silhouette_coords, max_range_given = exp(max_range)+1.1,
   ylabel = "Intrinsic extinction probability (over ~23 Myr)")
 dev.off()
-# remove single occurrences in fossil record:
+# < 2 observation in fossil record cull:
 # bring down a couple massive outliers:
 er_dat_class$mean.ext.sing[er_dat_class$mean.ext.sing < log(0.003201)] <- log(0.003201)
 er_dat_class$mean.ext.sing[er_dat_class$mean.ext.sing > log(0.158)] <- log(0.158)
@@ -822,35 +931,44 @@ par(xpd = NA)
 mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
   line = -1.4, las = 0, col = "grey30", cex = 0.9)
 dev.off()
+# singletons and preserv. prob. == 1
+pdf("../figs/hotspots-paleo-singleton-plus-pp.pdf", width = 7, height = 3.5)
+par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
+  las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
+map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
+  hotspots = TRUE, at = log(labs), at.labels = labs_show,
+  plot_column = "mean.ext.singleton", col_limits = COL_LIMITS)
+par(xpd = NA)
+mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
+  line = -1.4, las = 0, col = "grey30", cex = 0.9)
+dev.off()
+# locality cull:
+pdf("../figs/hotspots-paleo-locality.pdf", width = 7, height = 3.5)
+par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
+  las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
+map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
+  hotspots = TRUE, at = log(labs), at.labels = labs_show,
+  plot_column = "mean.ext.locality", col_limits = COL_LIMITS)
+par(xpd = NA)
+mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
+  line = -1.4, las = 0, col = "grey30", cex = 0.9)
+dev.off()
 @
 
 <<pairs-paleo-culls>>=
-panel.cor <- function(x, y, digits = 2, prefix = "", ...) {
-  usr <- par("usr"); on.exit(par(usr))
-  par(usr = c(0, 1, 0, 1))
-  r <- cor(x, y, method = "spearman", use = "pairwise.complete.obs")
-  txt <- format(c(r, 0.123456789), digits = digits)[1]
-  txt <- paste0(prefix, txt)
-  text(0.5, 0.5, txt, cex = 1.2)
-}
-panel.cor.lower <- function(x, y, digits = 2, prefix = "", ...) {
-  usr <- par("usr"); on.exit(par(usr))
-  par(usr = c(0, 1, 0, 1))
-  points(x, y, pch = 21, col = "#00000050", bg = "#00000030")
-  abline(a = 0, b = 1, lty = 2, col = "blue")
-}
-
-
-pdf("../figs/pairs-paleo-culls-genera.pdf", width = 6, height = 6)
-pairs(modern[,c("mean_observed", "mean_observed_1.0", "mean_observed_sing")],
-  pch = 21, col = "#00000050", bg = "#00000010",
-  upper.panel = panel.cor, lower.panel = panel.cor.lower)
+pdf("../figs/pairs-paleo-culls-genera.pdf", width = 7, height = 7)
+pairs(modern[,c("mean_observed", "mean_observed_1.0", "mean_observed_sing",
+    "mean_observed_singleton", "mean_observed_locality")],
+  pch = 21, col = "#00000010", bg = "#00000010", cex = 0.8, labels = pairs_labels,
+  upper.panel = panel.cor, asp = 1,
+  ylim = c(0, 1), xlim = c(0, 1))
 dev.off()
 
-pdf("../figs/pairs-paleo-culls-provinces.pdf", width = 6, height = 6)
-pairs(by.prov.all[,c("mean.ext", "mean.ext.1.0", "mean.ext.sing")],
-  pch = 21, col = "#00000050", bg = "#00000010",
-  upper.panel = panel.cor)
+pdf("../figs/pairs-paleo-culls-provinces.pdf", width = 7, height = 7)
+pairs(by.prov.all[,c("mean.ext", "mean.ext.1.0", "mean.ext.sing",
+    "mean.ext.singleton", "mean.ext.locality")],
+  pch = 21, col = "#00000050", bg = "#00000010", labels = pairs_labels,
+  upper.panel = panel.cor, asp = 1, ylim = c(-4.4, -2.5), xlim = c(-4.4, -2.5))
 dev.off()
 @
 
@@ -908,6 +1026,16 @@ ggplot(temp, aes(mean_observed + 0.001)) +
 \subsection{Exploring the effects of preservation potential in the fossil record}
 
 \textbf{TODO fill in this part.}
+
+TODO Values to use in text for the number of genera left after various culls:
+
+\Sexpr{n_genera_all}
+\Sexpr{n_genera_1.0}
+\Sexpr{n_genera_single}
+\Sexpr{n_genera_singleton_1.0}
+\Sexpr{n_genera_singleton}
+\Sexpr{n_genera_locality}
+
 
 Look at sensitivity of Figure 1, 2, and 3 as well as plots of potential against estimates.
 
