@@ -2,9 +2,6 @@
 # read in the modern genus-occupancy data:
 load("../data/interpolated_provs_all_taxa.rda")
 d.eco.filled <- interpolated_provs_all_taxa
-# d.eco.filled <- droplevels(subset(d.eco.filled,
-#     d.eco.filled$Ranges == "Interpolated"))
-# d.eco.filled$Ranges <- NULL
 
 # bring in the modern predictions:
 modern <- readRDS("../data/modern-predictions.rds")
@@ -39,6 +36,8 @@ by.prov.classes <- plyr::ddply(na.omit(d.eco.filled), c("class", "PROV_CODE"),
   mean.ext = mean(log(mean_observed)),
   mean.ext.1.0 = mean(log(mean_observed_1.0)),
   mean.ext.sing = mean(log(mean_observed_sing)),
+  mean.ext.singleton = mean(log(mean_observed_singleton)),
+  mean.ext.locality = mean(log(mean_observed_locality)),
   median.ext = median(mean_observed),
   N.gen = length(unique(genus)),
   mean.occupancy = mean(occupancy), mean.occurrences = mean(occurrences),
@@ -54,6 +53,8 @@ by.prov.all <- plyr::ddply(na.omit(d.eco.filled), "PROV_CODE",
   mean.ext = mean(log(mean_observed)),
   mean.ext.1.0 = mean(log(mean_observed_1.0)),
   mean.ext.sing = mean(log(mean_observed_sing)),
+  mean.ext.singleton = mean(log(mean_observed_singleton)),
+  mean.ext.locality = mean(log(mean_observed_locality)),
   median.ext = median(mean_observed), N.gen = length(unique(genus)),
   mean.occupancy = mean(occupancy), mean.occurrences = mean(occurrences),
   mean.min.lat = mean(min.lat), mean.max.lat = mean(max.lat),
