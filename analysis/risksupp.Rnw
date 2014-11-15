@@ -170,7 +170,7 @@ theme_set(theme_bw())
 rversion <- capture.output(sessionInfo())[[1]]
 x <- capture.output(sessionInfo())
 other_line <- grep("other attached", x)
-pkgs <- x[(other_line+1):(other_line + 7)]
+pkgs <- x[(other_line+1):(other_line + 8)]
 @
 
 We used \Sexpr{rversion} and the following packages:
