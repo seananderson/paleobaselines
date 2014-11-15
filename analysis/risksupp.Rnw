@@ -209,6 +209,15 @@ dat <- plyr::rename(dat, c("Interval" = "Interval_Name",
   "MeanAbsLat" = "mean_lat", "Ex" = "Extinct.in.stage"))
 stcen <- plyr::ddply(dat, "Interval_Name", standardize_data)
 saveRDS(stcen, file = "../data/stand-predictors-cen-obis.rds")
+
+min_eac <- dat %>%
+  filter(Interval_Name != "Modern_raw", Interval_Name != "Modern_merged") %>%
+  group_by(Interval_Name, genus) %>%
+  dplyr::summarise(min_eac = min(eac)) %>% as.data.frame
+stcen_one_eac <- plyr::join(stcen, min_eac) %>%
+  filter(min_eac > 1 | is.na(min_eac)) %>% select(-min_eac) %>%
+  as.data.frame
+saveRDS(stcen_one_eac, file = "../data/stcen_one_eac.rds")
 @
 
 <<genera-occurrences-table, child='genera-occur-table.Rnw', results = "asis">>=
