@@ -304,6 +304,24 @@ We fit GBMs with the \pkg{gbm} package \cite{gbm2013} for the \proglang{R} stati
 <<load-data>>=
 neog <- readRDS("../data/stand-predictors-cen-obis.rds")
 neog <- droplevels(subset(neog, stage_top < 23 & stage_top != 0))
+neog_one_eac <- readRDS("../data/stcen_one_eac.rds")
+neog_one_eac <- droplevels(subset(neog_one_eac,
+    stage_top < 23 & stage_top != 0))
+@
+
+% Get the number of fossil genera in the various culled datasets. We'll use
+% these in the text:
+
+<<get-cull-stats>>=
+neog_temp <- neog %>% group_by(genus) %>%
+  dplyr::summarise(single_obs = single_obs[1], singleton = singleton[1],
+    prop_comp = prop_comp[1])
+n_genera_all <- nrow(neog_temp)
+n_genera_1.0 <- nrow(filter(neog_temp, prop_comp == 1.0))
+n_genera_single <- nrow(filter(neog_temp, prop_comp == 1.0 & single_obs == 0))
+n_genera_singleton_1.0 <- nrow(filter(neog_temp, singleton == 0 & prop_comp == 1.0))
+n_genera_singleton <- row(filter(neog_temp, singleton == 0))
+n_genera_locality <- neog_one_eac %>% group_by(genus) %>% dplyr::summarise(g = genus[1]) %>% nrow
 @
 
 An important component of model building is testing a model's predictive ability on different data than it was built on.
