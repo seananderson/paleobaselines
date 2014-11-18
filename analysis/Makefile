@@ -38,6 +38,7 @@ deletecv:
 	rm -f ../data/val_test.rds
 	rm -f ../data/val_test_1.0.rds
 	rm -f ../data/val_test_sing.rds
+	rm -f ../data/val_test_singleton.rds
 
 deleteroc:
 	rm -f ../data/roc_vals.rds
@@ -56,13 +57,27 @@ deletemainmodel:
 
 deleterest:
 	rm -f ../data/stand-predictors-cen-obis.rds
-	rm -f ../data/modern-predictions.rds
 	rm -f ../data/by.prov.classes.rda
 	rm -f ../data/by.prov.all.jk.rda
 	rm -f ../data/by.prov.all.no.singles.rda
 	rm -f ../data/by.prov.all.obis.culls.rda
 	rm -f ../data/by.prov.classes.no.singles.rda
 	rm -f ../data/by.prov.classes.obis.culls.rda
+
+cachedropbox:
+	cp ../data/val_test.rds ~/Dropbox/riskmaps-cache/
+	cp ../data/val_test_1.0.rds ~/Dropbox/riskmaps-cache/
+	cp ../data/val_test_sing.rds ~/Dropbox/riskmaps-cache/
+	cp ../data/val_test_singleton.rds ~/Dropbox/riskmaps-cache/
+	cp ../data/roc_vals.rds ~/Dropbox/riskmaps-cache/
+	cp ../data/pred_oob.rds ~/Dropbox/riskmaps-cache/
+	cp ../data/cross_pred.rds ~/Dropbox/riskmaps-cache/
+	cp ../data/stage_models.rds ~/Dropbox/riskmaps-cache/
+	cp ../data/main_model.rds ~/Dropbox/riskmaps-cache/
+	cp ../data/main_model_1.0.rds ~/Dropbox/riskmaps-cache/
+	cp ../data/main_model_sing.rds ~/Dropbox/riskmaps-cache/
+	cp ../data/stand-predictors-cen-obis.rds ~/Dropbox/riskmaps-cache/
+	cp ../data/modern_and_paleo_ranges.rds ~/Dropbox/riskmaps-cache/
 
 # full
 cleanall: clean deleteranges deletecv deleteroc deletecross deletestagemodels deletemainmodel deleterest
