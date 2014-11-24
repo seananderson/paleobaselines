@@ -192,7 +192,6 @@ abline(v = g$x.pos, col = "grey88", lwd = .5)
 # the points and lines:
 add.seg <- TRUE
 
-# TODO FIX THIS!!!!!!!!! 20140924
 if("Lower Miocene" %in% names(g)) {
   stage_ord <- c("Lower Miocene", "Middle Miocene",
     "Upper Miocene", "Plio-Pleistocene", "all")
