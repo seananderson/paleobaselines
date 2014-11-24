@@ -569,8 +569,8 @@ ri_uq <- ri_uq[ri_order]
 
 <<plot-relative-importance, results='hide'>>=
 names(ri_median) <- sub("group", "subgroup", names(ri_median))
+pdf("../figs/plot-relative-importance.pdf", width = 3, height = 4)
 par(xpd = NA, mar = c(4, 8, 1, 1), cex = 0.8)
-pdf("plot-relative-importance.pdf", width = 3, height = 4)
 plot(ri_median, 1:length(ri_median), xlab = "Relative influence", ylab = "",
   xlim = c(0, 1), xaxs = "i", pch = 19, yaxt = "n")
 segments(ri_lq, 1:length(ri_median), ri_uq, 1:length(ri_median))
