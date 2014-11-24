@@ -1034,8 +1034,7 @@ TODO Values to use in text for the number of genera left after various culls:
 \Sexpr{n_genera_all}
 \Sexpr{n_genera_1.0}
 \Sexpr{n_genera_single}
-\Sexpr{n_genera_singleton_1.0}
-\Sexpr{n_genera_singleton}
+% \Sexpr{n_genera_singleton} % FIXME - this is a long vector?
 \Sexpr{n_genera_locality}
 
 
