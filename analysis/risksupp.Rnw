@@ -322,7 +322,6 @@ neog_temp <- neog %>% group_by(genus) %>%
 n_genera_all <- nrow(neog_temp)
 n_genera_1.0 <- nrow(filter(neog_temp, prop_comp == 1.0))
 n_genera_single <- nrow(filter(neog_temp, prop_comp == 1.0 & single_obs == 0))
-n_genera_singleton_1.0 <- nrow(filter(neog_temp, singleton == 0 & prop_comp == 1.0))
 n_genera_singleton <- row(filter(neog_temp, singleton == 0))
 n_genera_locality <- neog_one_eac %>% group_by(genus) %>% dplyr::summarise(g = genus[1]) %>% nrow
 @
@@ -391,10 +390,10 @@ if(!file.exists("../data/val_test_sing.rds")) {
     "Delete ../data/val_test_sing.rds to rerun these."))
   val_test_sing <- readRDS("../data/val_test_sing.rds")
 }
-# preservation prob. == 1 *and* no singleton (stage) genera:
+# no singleton (stage) genera:
 if(!file.exists("../data/val_test_singleton.rds")) {
   val_test_singleton <- ldply(1:100, function(i)
-    validate_gbm(neog[neog$singleton == 0 & neog$prop_comp == 1, ],
+    validate_gbm(neog[neog$singleton == 0, ],
       shrinkage = SHRINKAGE,
       interaction.depth = INT.DEPTH, n.trees = NTREES,
       use_weights = TRUE)$bin_validation, .parallel = TRUE)
@@ -536,8 +535,8 @@ if(!file.exists("../data/main_model_sing.rds")) {
 } else {
   m_sing <- readRDS("../data/main_model_sing.rds")
 }
-# combine the preservation probability == 1.0 with removing singletons:
-neog_subset <- neog[neog$singleton == 0 & neog$prop_comp == 1, ]
+# removing singletons:
+neog_subset <- neog[neog$singleton == 0, ]
 w <- paleorisk::get_weights(neog_subset$Ex)
 weights <- ifelse(neog_subset$Ex == 1, w$ex_weight, w$sur_weight)
 m_singleton <- rlply(5, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
