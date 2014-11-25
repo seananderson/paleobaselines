@@ -1407,6 +1407,15 @@ Taxonomic subgroup    & Ordinal to family rank taxonomic assignments for each ge
 
 \begin{figure}[htbp]
 \begin{center}
+\includegraphics[width=\textwidth]{../figs/raw-predictors-proportion-ext.pdf}
+\caption{Proportion genera extinct at various predictor values. TODO FILL THIS
+  IN}
+\label{fig:raw-predictor-ex}
+\end{center}
+\end{figure}
+
+\begin{figure}[htbp]
+\begin{center}
 \includegraphics[width=5in]{../figs/hist-preserv-prob.pdf}
 %\includegraphics[width=5in]{hist-single-occ.pdf}
 \caption{Frequency distribution of preservation probability by genera in the Neogene fossil record. Our preservation probability calculations included the Neogene stages Lower Miocene, Middle Miocene, Upper Miocene, and Pliocene, Pleistocene, along with the Paleogene and contemporary extinction status. A preservation probability of 1.0, for example, means that a genus was observed in all stages between the first and last stages it was observed in.}
