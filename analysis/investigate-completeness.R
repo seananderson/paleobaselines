@@ -42,6 +42,23 @@ ne_sum_sing <- plyr::ddply(ne_long_sing, c("single_obs_TF", "variable", "value")
   plyr::summarize,
   N = length(Ex), N_ex = sum(Ex))
 
+# and find sample sizes by stage (raw version of main Fig 1):
+
+# colours to match fig 1 in main paper:
+pal <- rev(colorspace::rainbow_hcl(4, c = 90, l = 65))
+pal <- c(pal, "#000000")
+
+ne_long_w_neog <- ne_long
+ne_long_w_neog$stage <- "Neogene"
+ne_long_w_neog <- rbind(ne_long, ne_long_w_neog)
+ne_stage_sum <- ne_long_w_neog %>%
+  filter(prop_comp_thresh == 1.0) %>%
+  group_by(stage, prop_comp_thresh, variable, value) %>%
+  dplyr::summarise(N = length(Ex), N_ex = sum(Ex))
+p99 <- ggplot(ne_stage_sum, aes(value, N_ex/N, colour = stage, group = stage, size = stage)) + geom_line() + facet_wrap(~variable, scales = "free_x", nrow = 2) + labs(colour = "Stage") + theme_bw() + scale_colour_manual(values = pal) + scale_size_manual(values = c(1, 1, 1, 1, 2)) +  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + xlab("Predictor value") + ylab("Proportion extinct") + guides(size = FALSE)
+ggsave("../figs/raw-predictors-proportion-ext.pdf", width = 11, height = 4.5)
+
+
 # add predictions:
 neog$pred <- predict(stage_models_culls[[1]][[1]], n.trees = NTREES, type = "response")
 ne$pred <- predict(stage_models_culls[[1]][[1]], n.trees = NTREES, type = "response",newdata = ne)
