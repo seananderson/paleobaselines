@@ -51,7 +51,8 @@ opts_knit$set(out.format = "latex", out.width="\\textwidth")
 opts_knit$set(eval.after = 'fig.cap') # evaluate fig.cap after the chunk
 @
 
-\title{Supporting Online Material for\\Paleontological Baselines for Evaluating Extinction Risk in the Modern Oceans}
+\title{Supporting Online Material for\\
+  Paleontological Baselines for Evaluating Extinction Risk in the Modern Oceans}
 \author{Seth Finnegan\textsuperscript{$\ast$} \and Sean C. Anderson \and Paul
 G. Harnik \and Carl Simpson \and Derek P. Tittensor \and Jarrett E. Byrnes \and
 Zoe V. Finkel \and David R. Lindberg \and Lee Hsiang Liow \and Rowan Lockwood
@@ -124,13 +125,23 @@ Figs.\ S1 to S15
 
 \section{Introduction}
 
-This document contains supplementary information about the sources of data used in our analyses, culls and transformations applied to those data, our analytical methodology, and model exploration and sensitivity analyses.
+This document contains supplementary information about the sources of data used
+in our analyses, culls and transformations applied to those data, our analytical
+methodology, and model exploration and sensitivity analyses.
 
-This document is written with the \pkg{knitr} package \cite{xie2013b,xie2014a,xie2014} for the \proglang{R} statistical environment \cite{r2013}. The entire analysis can be recreated by running \texttt{knitr::knit()} on the underlying source code (or using the \texttt{make} command as outlined below). A number of functions that are used in this analysis have been compiled into an \proglang{R} package \pkg{paleorisk}.
+This document is written with the \pkg{knitr} package
+\cite{xie2013b,xie2014a,xie2014} for the \proglang{R} statistical environment
+\cite{r2013}. The entire analysis can be recreated by running
+\texttt{knitr::knit()} on the underlying source code (or using the \texttt{make}
+command as outlined below). A number of functions that are used in this analysis
+have been compiled into an \proglang{R} package \pkg{paleorisk}.
 
-The \proglang{R} package, analysis files, and data files can be accessed in the Git repository: \url{https://github.com/seananderson/riskmaps/}. \textit{Currently private while in review.}
+The \proglang{R} package, analysis files, and data files can be accessed in the
+Git repository: \url{https://github.com/seananderson/riskmaps/}.
+\textit{Currently private while in review.}
 
-You can recreate the entire analysis by opening the root \texttt{riskmaps} folder on the command line and running:
+You can recreate the entire analysis by opening the root \texttt{riskmaps}
+folder on the command line and running:
 
 \begin{verbatim}
 cd analysis
@@ -227,47 +238,204 @@ saveRDS(stcen_one_eac, file = "../data/stcen_one_eac.rds")
 
 \subsection{Choice of taxa}
 
-Our analysis focuses on skeletonized marine organisms that are common constituents of coastal ecosystems, have high preservation potential as fossils, and that have relatively well-sampled modern and Neogene distributions. After evaluating the available modern and fossil data for candidate groups, we selected bivalves, echinoids, sharks, gastropods, marine mammals, and scleractinian corals as best fitting these criteria. We initially evaluated several other candidate groups. Some groups, such as decapod crustaceans, were omitted because their preservation potential was deemed insufficient to confidently detect extinction selectivity patterns \cite{stempien2005,krause2011}. Other groups were omitted due to the limited taxonomic resolution of existing fossil occurrences. Teleost fish, for example, are diverse and abundant in modern and ancient seas, yet their fossil record consists primarily of isolated otoliths and teeth that often confound attempts to identify remains to the genus or species level \cite{lloyd2013}. Where possible we also consulted taxonomic experts to see if the biogeographic diversity patterns recorded in our raw data sources (described below) were consistent with their knowledge of global diversity patterns in their group of expertise. In select instances this resulted in the exclusion of groups with generally high preservation potential (i.e.,\ foraminifera, brachiopoda, and ostracoda) \cite{foote1999}. With additional targeted sampling and literature compilation, these groups hold promise for inclusion in the types of analyses we present in the main text.
+Our analysis focuses on skeletonized marine organisms that are common
+constituents of coastal ecosystems, have high preservation potential as fossils,
+and that have relatively well-sampled modern and Neogene distributions. After
+evaluating the available modern and fossil data for candidate groups, we
+selected bivalves, echinoids, sharks, gastropods, marine mammals, and
+scleractinian corals as best fitting these criteria. We initially evaluated
+several other candidate groups. Some groups, such as decapod crustaceans, were
+omitted because their preservation potential was deemed insufficient to
+confidently detect extinction selectivity patterns
+\cite{stempien2005,krause2011}. Other groups were omitted due to the limited
+taxonomic resolution of existing fossil occurrences. Teleost fish, for example,
+are diverse and abundant in modern and ancient seas, yet their fossil record
+consists primarily of isolated otoliths and teeth that often confound attempts
+to identify remains to the genus or species level \cite{lloyd2013}. Where
+possible we also consulted taxonomic experts to see if the biogeographic
+diversity patterns recorded in our raw data sources (described below) were
+consistent with their knowledge of global diversity patterns in their group of
+expertise. In select instances this resulted in the exclusion of groups with
+generally high preservation potential (i.e.,\ foraminifera, brachiopoda, and
+ostracoda) \cite{foote1999}. With additional targeted sampling and literature
+compilation, these groups hold promise for inclusion in the types of analyses we
+present in the main text.
 
 \subsection{Sources of contemporary data}
 
-Modern occurrence data for the six target marine groups came from two primary sources. For echinoids, scleractinian corals, bivalves, and gastropods, occurrence data were downloaded from the Ocean Biogeographic Information System (OBIS, \url{http://www.iobis.org/}) \cite{obis}. OBIS is a marine biogeographical database initially developed as part of the Census of Marine Life, currently containing around 37 million geolocated records of marine taxa. Occurrences of the targeted groups were downloaded on September 12, 2012. We culled out open-ocean occurrence records falling outside of the coastal biogeographic provinces defined by Ref.~\cite{spalding2007}. Within these coastal provinces, we selected only records from depths $<$ 200 meters to limit the modern dataset to shelf environments and make it as comparable as possible to the shelf-dominated marine fossil record. Bivalves and gastropods exhibited distinct modes of genera known from only a single record --- we removed these genera to reduce spuriously small geographic ranges, though including them did not have a major effect on observed patterns. Genus names from the OBIS dataset were run through the World Register of Marine Species database (WORMS, \url{http://www.marinespecies.org}) to detect and remove erroneous or invalid taxonomic names and to place genera within a higher taxonomy. The complete OBIS dataset used for our analyses consisted of $\sim$\Sexpr{round(sum(subset(Table.S1, Interval == "Modern")$Occurrences)/1e6, 1)} million occurrences of \Sexpr{sum(subset(Table.S1, Interval == "Modern")$Genera)} genera (Table~\ref{tab:genera}).
+Modern occurrence data for the six target marine groups came from two primary
+sources. For echinoids, scleractinian corals, bivalves, and gastropods,
+occurrence data were downloaded from the Ocean Biogeographic Information System
+(OBIS, \url{http://www.iobis.org/}) \cite{obis}. OBIS is a marine
+biogeographical database initially developed as part of the Census of Marine
+Life, currently containing around 37 million geolocated records of marine taxa.
+Occurrences of the targeted groups were downloaded on September 12, 2012. We
+culled out open-ocean occurrence records falling outside of the coastal
+biogeographic provinces defined by Ref.~\cite{spalding2007}. Within these
+coastal provinces, we selected only records from depths $<$ 200 meters to limit
+the modern dataset to shelf environments and make it as comparable as possible
+to the shelf-dominated marine fossil record. Bivalves and gastropods exhibited
+distinct modes of genera known from only a single record --- we removed these
+genera to reduce spuriously small geographic ranges, though including them did
+not have a major effect on observed patterns. Genus names from the OBIS dataset
+were run through the World Register of Marine Species database (WORMS,
+\url{http://www.marinespecies.org}) to detect and remove erroneous or invalid
+taxonomic names and to place genera within a higher taxonomy. The complete OBIS
+dataset used for our analyses consisted of
+$\sim$\Sexpr{round(sum(subset(Table.S1,
+  Interval == "Modern")$Occurrences)/1e6, 1)}
+million occurrences of
+\Sexpr{sum(subset(Table.S1, Interval == "Modern")$Genera)} genera
+(Table~\ref{tab:genera}).
 
-OBIS is the largest single source of modern-day geolocated marine biological data, synthesising many different data sources and individual databases. However, the sampling is very uneven by taxa, by approach, by region, and by depth \cite{webb2010}, so significant caution is necessary to account for these issues of sampling effort when using the database. The database tends to be best applied to relatively well-studied taxa (e.g.\ mollusks, corals).  Global range maps have recently been compiled for all mammal and shark species \cite{schipper2008, lucifora2011}, providing an alternative to extracting genus ranges and species richnesses from OBIS occurrences. We converted genus range maps to occupancy data by overlaying an equal-area-grid (see Section \ref{sec:grid-overlay}).
+OBIS is the largest single source of modern-day geolocated marine biological
+data, synthesising many different data sources and individual databases.
+However, the sampling is very uneven by taxa, by approach, by region, and by
+depth \cite{webb2010}, so significant caution is necessary to account for these
+issues of sampling effort when using the database. The database tends to be best
+applied to relatively well-studied taxa (e.g.\ mollusks, corals).  Global range
+maps have recently been compiled for all mammal and shark species
+\cite{schipper2008, lucifora2011}, providing an alternative to extracting genus
+ranges and species richnesses from OBIS occurrences. We converted genus range
+maps to occupancy data by overlaying an equal-area-grid (see Section
+\ref{sec:grid-overlay}).
 
 \subsection{Sources of paleontological data}
 
-All of the fossil occurrence data used for this study were downloaded from the Paleobiology Database (PaleoDB, \url{http://paleobiodb.org}), a global compilation of the spatial and temporal occurrences of taxa in the fossil record. The Paleobiology Database has been used in previous investigations of marine extinction rates \cite{harnik2012a, hannisdal2011, alroy2010} and extinction selectivity, particularly involving geographic range size \cite{heim2011, harnik2012a, payne2007}.
+All of the fossil occurrence data used for this study were downloaded from the
+Paleobiology Database (PaleoDB, \url{http://paleobiodb.org}), a global
+compilation of the spatial and temporal occurrences of taxa in the fossil
+record. The Paleobiology Database has been used in previous investigations of
+marine extinction rates \cite{harnik2012a, hannisdal2011, alroy2010} and
+extinction selectivity, particularly involving geographic range size
+\cite{heim2011, harnik2012a, payne2007}.
 
-We downloaded occurrences from the Paleobiology Database on April 6, 2014. We downloaded only occurrences associated with collections from marine environments. We subsetted these data to included only occurrences of the following higher taxa: Echinoidea, Bivalvia, Gastropoda, Scleractinia, Elasmobranchii (Selachii), and Mammalia (Cetacea and Pinnipedia). We then manually checked the data to remove non-marine taxa, such as freshwater mollusks and land snails, that are occasionally preserved in marine sediments.
+We downloaded occurrences from the Paleobiology Database on April 6, 2014. We
+downloaded only occurrences associated with collections from marine
+environments. We subsetted these data to included only occurrences of the
+following higher taxa: Echinoidea, Bivalvia, Gastropoda, Scleractinia,
+Elasmobranchii (Selachii), and Mammalia (Cetacea and Pinnipedia). We then
+manually checked the data to remove non-marine taxa, such as freshwater mollusks
+and land snails, that are occasionally preserved in marine sediments.
 
-We used the following protocol to exclude occurrences that did not meet a minimum level of taxonomic resolution: First, multiple occurrences of a genus within a collection were pooled. Second, we excluded generically indeterminate occurrences but kept specifically indeterminate occurrences if they had a genus name associated with them. Third, we excluded genus names that were informal and qualified by \texttt{aff.}, \texttt{?}, \texttt{cf.}, or quotation marks. In our analyses only genus names were used --- we did not treat subgenera as genera.
+We used the following protocol to exclude occurrences that did not meet a
+minimum level of taxonomic resolution: First, multiple occurrences of a genus
+within a collection were pooled. Second, we excluded generically indeterminate
+occurrences but kept specifically indeterminate occurrences if they had a genus
+name associated with them. Third, we excluded genus names that were informal and
+qualified by \texttt{aff.}, \texttt{?}, \texttt{cf.}, or quotation marks. In our
+analyses only genus names were used --- we did not treat subgenera as genera.
 
-We assigned fossil occurrences to one of four Neogene time intervals: the Early Miocene, Middle Miocene, Upper Miocene, and the Plio-Pleistocene based on the \texttt{FR2\_bin} collections field in the PaleoDB download. Following these culls, the Neogene dataset included $\sim$\Sexpr{round(sum(subset(Table.S1, Interval != "Modern")$Occurrences)/1e5, 1)}$\times 10^5$ occurrences of \Sexpr{num_unique_paleo_genera} unique genera (Table~\ref{tab:genera}).
+We assigned fossil occurrences to one of four Neogene time intervals: the Early
+Miocene, Middle Miocene, Upper Miocene, and the Plio-Pleistocene based on the
+\texttt{FR2\_bin} collections field in the PaleoDB download. Following these
+culls, the Neogene dataset included $\sim$\Sexpr{round(sum(subset(Table.S1,
+  Interval != "Modern")$Occurrences)/1e5, 1)}$\times 10^5$ occurrences of
+\Sexpr{num_unique_paleo_genera} unique genera (Table~\ref{tab:genera}).
 
-The PaleoDB members who contributed most to this dataset were Austin Hendy (27.5\% of occurrence records), Mark Uhen (26.8\%), Wolfgang Kiessling (25.6\%), Arnold Miller (4.4\%), and John Alroy (4.0\%), with additional substantial contributions from Martin Aberhan, Brian Beatty, Anna Behrensmeyer, Nicole Bonuso, Matt Carrano, Matthew Clapham, Will Clyde, Emmanuel Fara, Jason Head, John Hunter, Linda Ivany, Carlos Jaramillo, Matt Kosnik, Elizabeth Kowalski, Juergen Kriwet, Philip Mannion, Johannes Mueller, Shanan Peters, Jack Sepkoski, Jocelyn Sessa, Hallie Sims, Bruce Tiffney, Alan Turner, Loic Villier, Pete Wagner, Oliver Will, and Lars van den Hoek Ostende. The references from which these data were derived are included as a supplemental file.
+The PaleoDB members who contributed most to this dataset were Austin Hendy
+(27.5\% of occurrence records), Mark Uhen (26.8\%), Wolfgang Kiessling (25.6\%),
+Arnold Miller (4.4\%), and John Alroy (4.0\%), with additional substantial
+contributions from Martin Aberhan, Brian Beatty, Anna Behrensmeyer, Nicole
+Bonuso, Matt Carrano, Matthew Clapham, Will Clyde, Emmanuel Fara, Jason Head,
+John Hunter, Linda Ivany, Carlos Jaramillo, Matt Kosnik, Elizabeth Kowalski,
+Juergen Kriwet, Philip Mannion, Johannes Mueller, Shanan Peters, Jack Sepkoski,
+Jocelyn Sessa, Hallie Sims, Bruce Tiffney, Alan Turner, Loic Villier, Pete
+Wagner, Oliver Will, and Lars van den Hoek Ostende. The references from which
+these data were derived are included as a supplemental file.
 
 \subsection{Choice of extinction predictor variables}
 
-Many different traits have been demonstrated or suggested to influence extinction risk in the fossil record. Because the goal of our analysis was to estimate the intrinsic extinction risk of modern genera under a broad range of possible extinction drivers, we focused on quantifying aspects of geographic distribution and phylogeny that have been shown to be among the most consistent predictors of extinction risk \cite{payne2007, wang2008, harnik2012b, jablonski2008} (Table~\ref{tab:predictors}).
+Many different traits have been demonstrated or suggested to influence
+extinction risk in the fossil record. Because the goal of our analysis was to
+estimate the intrinsic extinction risk of modern genera under a broad range of
+possible extinction drivers, we focused on quantifying aspects of geographic
+distribution and phylogeny that have been shown to be among the most consistent
+predictors of extinction risk \cite{payne2007, wang2008, harnik2012b,
+  jablonski2008} (Table~\ref{tab:predictors}).
 
-To quantify geographic distribution, we measured the maximum, minimum, and mean absolute latitude at which each genus was sampled in each interval, the absolute latitudinal range (maximum latitude minus minimum latitude), the maximum distance between occurrences of each genus (great circle distance) and the number of equal-area grid cells in which each genus occurred (occupancy). We also measured the total number of global occurrences of each genus (occurrences) as an imperfect measure of abundance/ecological dominance. Finally because we were analyzing genera rather than species, we also measured the total number of named species assigned to each genus in each interval (species richness, hereafter simply ``richness''). All else being equal, genera comprised of many species are expected to have lower average extinction risk than genera comprised of one or a few species \cite{janevski2009}. Although it is difficult to confidently analyze the temporal ranges of species in the Paleobiology Database, including species richness as a predictor when modeling extinction risk attempts to account for this potential effect.
+To quantify geographic distribution, we measured the maximum, minimum, and mean
+absolute latitude at which each genus was sampled in each interval, the absolute
+latitudinal range (maximum latitude minus minimum latitude), the maximum
+distance between occurrences of each genus (great circle distance) and the
+number of equal-area grid cells in which each genus occurred (occupancy). We
+also measured the total number of global occurrences of each genus (occurrences)
+as an imperfect measure of abundance/ecological dominance. Finally because we
+were analyzing genera rather than species, we also measured the total number of
+named species assigned to each genus in each interval (species richness,
+hereafter simply ``richness''). All else being equal, genera comprised of many
+species are expected to have lower average extinction risk than genera comprised
+of one or a few species \cite{janevski2009}. Although it is difficult to
+confidently analyze the temporal ranges of species in the Paleobiology Database,
+including species richness as a predictor when modeling extinction risk attempts
+to account for this potential effect.
 
-Many additional ecological, physiological, and life-history traits potentially influence extinction risk. Not all of these are easily estimated for all fossil genera, and available information is often incomplete even for living genera. However, many of these traits tend to be phylogenetically correlated --- closely-related genera will tend to share similar ecological, physiological, and life-history traits more than distantly related genera \cite{purvis2005}. It has often been observed \cite{wang2008} that higher taxa exhibit consistently different macroevolutionary rates (origination and extinction) in the fossil record. This reflects the aforementioned ecological, physiological, and life-history differences (as well as, potentially, differences in taxonomic practice). We consequently used taxa of ordinal to family rank (e.g.\ Bivalvia: Veneroida, Mammalia: Mysticeti, Scleractinia: Faviidae) as categorical predictors to function as coarse  proxies for phylogenetic relatedness.
+Many additional ecological, physiological, and life-history traits potentially
+influence extinction risk. Not all of these are easily estimated for all fossil
+genera, and available information is often incomplete even for living genera.
+However, many of these traits tend to be phylogenetically correlated ---
+closely-related genera will tend to share similar ecological, physiological, and
+life-history traits more than distantly related genera \cite{purvis2005}. It has
+often been observed \cite{wang2008} that higher taxa exhibit consistently
+different macroevolutionary rates (origination and extinction) in the fossil
+record. This reflects the aforementioned ecological, physiological, and
+life-history differences (as well as, potentially, differences in taxonomic
+practice). We consequently used taxa of ordinal to family rank (e.g.\ Bivalvia:
+Veneroida, Mammalia: Mysticeti, Scleractinia: Faviidae) as categorical
+predictors to function as coarse  proxies for phylogenetic relatedness.
 
-Taxonomic subgroups are imperfect proxies for phylogenetic relatedness but formal phylogenetic hypotheses are not currently available for the  majority of fossil and living marine invertebrate genera. Wherever possible we chose taxonomic groupings that are thought not to be polyphyletic, although many are paraphyletic. In a few cases (e.g.\ zooxanthellate corals that do not belong to either the Faviidae or the Acroporidae, and hence were classified as ``other'') we included polyphyletic groupings. Wherever possible, we made an effort to choose taxonomic groupings that reflect major ecological, physiological, and life-history differences. Finally, taxonomic groupings were selected to ensure that each group contained a sufficient number of fossil genera to use as a basis for predictions.
+Taxonomic subgroups are imperfect proxies for phylogenetic relatedness but
+formal phylogenetic hypotheses are not currently available for the  majority of
+fossil and living marine invertebrate genera. Wherever possible we chose
+taxonomic groupings that are thought not to be polyphyletic, although many are
+paraphyletic. In a few cases (e.g.\ zooxanthellate corals that do not belong to
+either the Faviidae or the Acroporidae, and hence were classified as ``other'')
+we included polyphyletic groupings. Wherever possible, we made an effort to
+choose taxonomic groupings that reflect major ecological, physiological, and
+life-history differences. Finally, taxonomic groupings were selected to ensure
+that each group contained a sufficient number of fossil genera to use as a basis
+for predictions.
 
 \subsection{Interpolation of OBIS occurrence data}
 
-Sampling of genus geographic distributions in the contemporary OBIS data set is incomplete. Therefore, we used an interpolation algorithm to smooth sampling variation when mapping the contemporary distribution of genera. Within a given ocean biogeographic realm \cite{spalding2007}, we counted each genus as present in every province that intersects or is enclosed by a minimum bounding box drawn around all of the sites at which the genus has been sampled (see image below). A similar minimum-bounding-box approach has been used in the literature before to account for variable sampling \cite{belanger2012}. Whereas these authors used a global-scale minimum bounding box, we used only realm-scale bounding boxes in order to avoid interpolating genus ranges across realms in which they may not in fact be found. We did not interpolate the marine mammals or shark datasets since these were already based on range maps rather than occurrences.
+Sampling of genus geographic distributions in the contemporary OBIS data set is
+incomplete. Therefore, we used an interpolation algorithm to smooth sampling
+variation when mapping the contemporary distribution of genera. Within a given
+ocean biogeographic realm \cite{spalding2007}, we counted each genus as present
+in every province that intersects or is enclosed by a minimum bounding box drawn
+around all of the sites at which the genus has been sampled (see image below). A
+similar minimum-bounding-box approach has been used in the literature before to
+account for variable sampling \cite{belanger2012}. Whereas these authors used a
+global-scale minimum bounding box, we used only realm-scale bounding boxes in
+order to avoid interpolating genus ranges across realms in which they may not in
+fact be found. We did not interpolate the marine mammals or shark datasets since
+these were already based on range maps rather than occurrences.
 
 As one illustrative example, below is a simplified plot of the interpolation process for the genus \textit{Petrophyllia}, a scleractinian coral:
 
 \includegraphics[width=2.5in]{../static-figs/petrophyllia-cropped.pdf}
 
-The above figure shows one biogeographic realm, the Central Indo-Pacific \cite{spalding2007}, in which \textit{Petrophyllia} is sampled. The realm is shaded in light grey and individual provinces within the realm are outlined.  The two red crosses indicate occurrences of \textit{Petrophyllia} recorded in OBIS. We then drew a minimum bounding box around those observations (the rectangle) and shaded with a darker grey all biogeographic provinces that intersect (or, in other cases, were contained within) the bounding box. In the interpolated dataset, therefore, \textit{Petrophyllia} would be counted as occupying all four provinces intersected by the minimum bounding box rather than just the two in which it was actually recorded in OBIS.
+The above figure shows one biogeographic realm, the Central Indo-Pacific
+\cite{spalding2007}, in which \textit{Petrophyllia} is sampled. The realm is
+shaded in light grey and individual provinces within the realm are outlined.
+The two red crosses indicate occurrences of \textit{Petrophyllia} recorded in
+OBIS. We then drew a minimum bounding box around those observations (the
+rectangle) and shaded with a darker grey all biogeographic provinces that
+intersect (or, in other cases, were contained within) the bounding box. In the
+interpolated dataset, therefore, \textit{Petrophyllia} would be counted as
+occupying all four provinces intersected by the minimum bounding box rather than
+just the two in which it was actually recorded in OBIS.
 
-On a larger scale, the following plot shows the result of this within-realm bounding box interpolation procedure for the global distributions of nine genera. The red crosses indicate sampling observations in the OBIS database. The various biogeographic realms are indicated by different shading colors. Provinces shaded dark grey within any realm are those in which the genus is recorded in OBIS. The light grey-shaded provinces are those that the genus is additionally counted as occupying based on the within-realm minimum bounding box interpolation. Outlined provinces that are not shaded are those that are not overlapped by the minimum bounding box. In reading the figure, bear in mind that some realms wrap from one side of the plot to the other.
+On a larger scale, the following plot shows the result of this within-realm
+bounding box interpolation procedure for the global distributions of nine
+genera. The red crosses indicate sampling observations in the OBIS database. The
+various biogeographic realms are indicated by different shading colors.
+Provinces shaded dark grey within any realm are those in which the genus is
+recorded in OBIS. The light grey-shaded provinces are those that the genus is
+additionally counted as occupying based on the within-realm minimum bounding box
+interpolation. Outlined provinces that are not shaded are those that are not
+overlapped by the minimum bounding box. In reading the figure, bear in mind that
+some realms wrap from one side of the plot to the other.
 
 \includegraphics[width=\textwidth]{../figs/province_interpolation_tests.pdf}
 
@@ -277,24 +445,90 @@ On a larger scale, the following plot shows the result of this within-realm boun
 \subsection{Equal-area grid overlay}
 \label{sec:grid-overlay}
 
-To standardize the spatial resolution of contemporary and paleontological datasets, we calculated all range-based predictors using an equal-area grid. For the contemporary dataset, we overlaid an equal-area grid over all provinces in which a genus occurred in OBIS or was inferred to have occurred using our interpolation procedure. We recorded the centre points of that grid for all cells that overlapped a province, and then calculated various measures of genus geographic range based on the centre points from the grid overlay. Our equal-area grid was divided into 45 east-west cells and 14 north-south cells. The longitudes started at $-180\,^{\circ}$ and increased by $8\,^{\circ}$ to $180\,^{\circ}$. The latitude values of the grid line (in degrees) were: \Sexpr{grid_lat}. The longitude midpoints were the arithmetic midpoint between the grid longitudes listed above. The latitude midpoints were chosen to maintain an equal area in the upper and lower halves. These values, in degrees, were \Sexpr{grid_mid_lat}.
+To standardize the spatial resolution of contemporary and paleontological
+datasets, we calculated all range-based predictors using an equal-area grid. For
+the contemporary dataset, we overlaid an equal-area grid over all provinces in
+which a genus occurred in OBIS or was inferred to have occurred using our
+interpolation procedure. We recorded the centre points of that grid for all
+cells that overlapped a province, and then calculated various measures of genus
+geographic range based on the centre points from the grid overlay. Our
+equal-area grid was divided into 45 east-west cells and 14 north-south cells.
+The longitudes started at $-180\,^{\circ}$ and increased by $8\,^{\circ}$ to
+$180\,^{\circ}$. The latitude values of the grid line (in degrees) were:
+\Sexpr{grid_lat}. The longitude midpoints were the arithmetic midpoint between
+the grid longitudes listed above. The latitude midpoints were chosen to maintain
+an equal area in the upper and lower halves. These values, in degrees, were
+\Sexpr{grid_mid_lat}.
 
-We used a similar approach for the paleontological dataset. We overlaid the same equal-area grid on the paleontological observations, identified any grid cells that overlapped fossil occurrences, and recorded the centre points of these overlapping cells.
+We used a similar approach for the paleontological dataset. We overlaid the same
+equal-area grid on the paleontological observations, identified any grid cells
+that overlapped fossil occurrences, and recorded the centre points of these
+overlapping cells.
 
 \subsection{Standardizing predictor variables}
 \label{sec:standardizing-predictors}
 
-All of the geographic range, species richness, and occurrence frequency predictors (Table~\ref{tab:predictors}) are potentially influenced by sampling intensity. Furthermore, the modern dataset is much larger in terms of total number of occurrences than the paleontological datasets (Table~\ref{tab:genera}). Standardizing predictor variables could control for variable sampling over time, focusing our analysis on relative differences among genera in these predictors and their associations with intrinsic extinction risk. Yet metrics that are geographically explicit and have a finite maximum value (maximum latitude, minimum latitude, mean latitude, latitudinal range, great circle) cannot easily be standardized without potentially distorting underlying patterns. Those predictors with no finite limit (richness, occurrences, occupancy) are strongly influenced by sampling intensity and can be more readily standardized. To ameliorate sampling effects on these predictors we first log-transformed them and then divided the value for each genus-interval combination (e.g.\ \textit{Acropora} occurrences in the Plio-Pleistocene) by the maximum log-transformed value of the predictor observed in that interval. Hence, the scale on these standardized predictors ranges from 0 to 1 (Figure 1). The other variables (e.g.\ latitude variables and great circle distance) retain the same absolute scale across all paleontological and contemporary records --- a degree of latitude is still a degree latitude and a kilometre is still a kilometre. To avoid overfitting of models we reduced the dimensionality of all numerical predictor variables. Maximum latitude, minimum latitude, mean latitude, and latitudinal range were grouped into $10\,^{\circ}$ bins. Great circle distances were grouped into 2000 km bins. Following division by the maximum value within each interval, richness, occupancy, and occurrences were rounded to one decimal place so that values ranged from 0 to 1.0 in increments of 0.1.
+All of the geographic range, species richness, and occurrence frequency
+predictors (Table~\ref{tab:predictors}) are potentially influenced by sampling
+intensity. Furthermore, the modern dataset is much larger in terms of total
+number of occurrences than the paleontological datasets
+(Table~\ref{tab:genera}). Standardizing predictor variables could control for
+variable sampling over time, focusing our analysis on relative differences among
+genera in these predictors and their associations with intrinsic extinction
+risk. Yet metrics that are geographically explicit and have a finite maximum
+value (maximum latitude, minimum latitude, mean latitude, latitudinal range,
+great circle) cannot easily be standardized without potentially distorting
+underlying patterns. Those predictors with no finite limit (richness,
+occurrences, occupancy) are strongly influenced by sampling intensity and can be
+more readily standardized. To ameliorate sampling effects on these predictors we
+first log-transformed them and then divided the value for each genus-interval
+combination (e.g.\ \textit{Acropora} occurrences in the Plio-Pleistocene) by the
+maximum log-transformed value of the predictor observed in that interval. Hence,
+the scale on these standardized predictors ranges from 0 to 1 (Figure 1). The
+other variables (e.g.\ latitude variables and great circle distance) retain the
+same absolute scale across all paleontological and contemporary records --- a
+degree of latitude is still a degree latitude and a kilometre is still a
+kilometre. To avoid overfitting of models we reduced the dimensionality of all
+numerical predictor variables. Maximum latitude, minimum latitude, mean
+latitude, and latitudinal range were grouped into $10\,^{\circ}$ bins. Great
+circle distances were grouped into 2000 km bins. Following division by the
+maximum value within each interval, richness, occupancy, and occurrences were
+rounded to one decimal place so that values ranged from 0 to 1.0 in increments
+of 0.1.
 
 \section{Modelling contemporary extinction risk with paleontological data}
 
 \subsection{Choice of modelling framework}
 
-We modelled intrinsic contemporary extinction probability from paleontological data using a form of ensemble learning called generalized boosted regression models (GBMs; \cite{friedman2001}). \textit{Ensemble learning} approaches generate a final model that is the product of many weakly informative models fit in succession. Compared to parametric modelling, GBMs make minimal assumptions about the relationship between predictors and response and prioritize predictive performance over probabilistic inference about the model itself \cite{elith2008}.
+We modelled intrinsic contemporary extinction probability from paleontological
+data using a form of ensemble learning called generalized boosted regression
+models (GBMs; \cite{friedman2001}). \textit{Ensemble learning} approaches
+generate a final model that is the product of many weakly informative models fit
+in succession. Compared to parametric modelling, GBMs make minimal assumptions
+about the relationship between predictors and response and prioritize predictive
+performance over probabilistic inference about the model itself
+\cite{elith2008}.
 
-Boosting models work, in general, by building a sequence of models, each fit to the residuals of the previous model with larger residuals being given stronger weights. This means that each subsequent model focuses more heavily on data which were poorly fit by previous models. In theory, this ensemble of weak models can be combined to produce one strong overall predictive model with reduced bias compared to other machine learning methods, such as random forests \cite{elith2008}. Boosted tree methods have been shown to outperform other machine learning methods in many cases \cite{caruana2006} and are commonly used in applied prediction problems (e.g.\ by Yahoo for website rankings; \cite{cossock2008}).
+Boosting models work, in general, by building a sequence of models, each fit to
+the residuals of the previous model with larger residuals being given stronger
+weights. This means that each subsequent model focuses more heavily on data
+which were poorly fit by previous models. In theory, this ensemble of weak
+models can be combined to produce one strong overall predictive model with
+reduced bias compared to other machine learning methods, such as random forests
+\cite{elith2008}. Boosted tree methods have been shown to outperform other
+machine learning methods in many cases \cite{caruana2006} and are commonly used
+in applied prediction problems (e.g.\ by Yahoo for website rankings;
+\cite{cossock2008}).
 
-We fit GBMs with the \pkg{gbm} package \cite{gbm2013} for the \proglang{R} statistical language and environment \cite{r2013}. The \pkg{gbm} package implements GBMs based on Ref.\ \cite{friedman2001} with some minor modifications \cite{gbm2013}. Further, the \pkg{gbm} package implements the stochastic method proposed in Ref.\ \cite{friedman2001} in which a random subsample of the data is chosen at each model iteration. This random subsample is used to fit the model before computing residuals for that step thereby reducing chances of overfitting the data. Specifically, we chose to leave out 50\% of the data as a random subset on each iteration --- the default in the \texttt{gbm()} function.
+We fit GBMs with the \pkg{gbm} package \cite{gbm2013} for the \proglang{R}
+statistical language and environment \cite{r2013}. The \pkg{gbm} package
+implements GBMs based on Ref.\ \cite{friedman2001} with some minor modifications
+\cite{gbm2013}. Further, the \pkg{gbm} package implements the stochastic method
+proposed in Ref.\ \cite{friedman2001} in which a random subsample of the data is
+chosen at each model iteration. This random subsample is used to fit the model
+before computing residuals for that step thereby reducing chances of overfitting
+the data. Specifically, we chose to leave out 50\% of the data as a random
+subset on each iteration --- the default in the \texttt{gbm()} function.
 
 \subsection{Model building and calibration}
 \label{sec:build-calibrate}
@@ -326,14 +560,49 @@ n_genera_singleton <- row(filter(neog_temp, singleton == 0))
 n_genera_locality <- neog_one_eac %>% group_by(genus) %>% dplyr::summarise(g = genus[1]) %>% nrow
 @
 
-An important component of model building is testing a model's predictive ability on different data than it was built on.
-This is called out-of-sample prediction or cross validation. Out-of-sample data refers to the portion of observations withheld from the model-building process and subsequently used for testing.
+An important component of model building is testing a model's predictive ability
+on different data than it was built on. This is called out-of-sample prediction
+or cross validation. Out-of-sample data refers to the portion of observations
+withheld from the model-building process and subsequently used for testing.
 
-We initially explored out-of-sample predictive performance across a range of argument values for the GBM models. We tried \texttt{shrinkage} argument values (learning rates or how much improvement in model fit the GBM attempts with each tree) ranging from 0.001 to 0.1, interaction depths (\texttt{interaction.depth}) ranging from 1 to 5, and the number of trees (\texttt{n.trees}) ranging from 500 to 5000 (in line with suggestions by Ref.~\cite{elith2008}). Predictions were qualitatively similar, regardless of argument values, as long as a sufficient number of trees were run for the learning rate. Slower learning rates require more trees for the same performance \cite{elith2008}. We settled on a learning rate of 0.01, an interaction depth of 5, and 2000 trees. These settings achieved near-optimal predictive ability while still being computationally feasible to run many times across our analysis.
+We initially explored out-of-sample predictive performance across a range of
+argument values for the GBM models. We tried \texttt{shrinkage} argument values
+(learning rates or how much improvement in model fit the GBM attempts with each
+tree) ranging from 0.001 to 0.1, interaction depths (\texttt{interaction.depth})
+ranging from 1 to 5, and the number of trees (\texttt{n.trees}) ranging from 500
+to 5000 (in line with suggestions by Ref.~\cite{elith2008}). Predictions were
+qualitatively similar, regardless of argument values, as long as a sufficient
+number of trees were run for the learning rate. Slower learning rates require
+more trees for the same performance \cite{elith2008}. We settled on a learning
+rate of 0.01, an interaction depth of 5, and 2000 trees. These settings achieved
+near-optimal predictive ability while still being computationally feasible to
+run many times across our analysis.
 
-GBMs, like other machine learning techniques, can perform poorly in cases where one predictive class (extinctions) is much less common than the other predictive class (survival) \cite{he2009}. One method of improving model performance in this situation is to assign greater weights to the sparser class (described as a ``cost-sensitive'' approach in Ref.~\cite{he2009}). In all our modeling we applied a weight to the extinct genera equal to the ratio of survived and extinct genera and a weight to the survived genera points of 1. This considerably improved predictive performance, but has the trade-off that our final predictions are no longer on the original probability scale. In our projections onto modern taxa we were concerned with producing unbiased predictions for each of the major taxonomic groups. Therefore, we calibrated our model predictions using cross-validation within the paleontological dataset. Our calibration serves as an additional test of the predictive ability of our model.
+GBMs, like other machine learning techniques, can perform poorly in cases where
+one predictive class (extinctions) is much less common than the other predictive
+class (survival) \cite{he2009}. One method of improving model performance in
+this situation is to assign greater weights to the sparser class (described as a
+``cost-sensitive'' approach in Ref.~\cite{he2009}). In all our modeling we
+applied a weight to the extinct genera equal to the ratio of survived and
+extinct genera and a weight to the survived genera points of 1. This
+considerably improved predictive performance, but has the trade-off that our
+final predictions are no longer on the original probability scale. In our
+projections onto modern taxa we were concerned with producing unbiased
+predictions for each of the major taxonomic groups. Therefore, we calibrated our
+model predictions using cross-validation within the paleontological dataset. Our
+calibration serves as an additional test of the predictive ability of our model.
 
-To calibrate our model, we grouped the predicted extinction probabilities for each class into bins from 0 to 1 in 0.05 increments. For example, we grouped predicted probabilities of 0.12, 0.11, and 0.14 for three different genera into a bin of 0.10--0.15. We then calculated the mean observed extinction probability for each of those bins. For example, if those three genera had observed extinction probabilities of 0.21, 0.09, and 0.10, the mean observed out-of-sample extinction probability would be 0.133. We then compared the mean of our prediction bin (0.125 in this example) with the mean observed value (0.133). In this example our model is slightly biased. Because we're building and testing the model on independent datasets, this is a good test of how our model might perform on a new but equivalent dataset.
+To calibrate our model, we grouped the predicted extinction probabilities for
+each class into bins from 0 to 1 in 0.05 increments. For example, we grouped
+predicted probabilities of 0.12, 0.11, and 0.14 for three different genera into
+a bin of 0.10--0.15. We then calculated the mean observed extinction probability
+for each of those bins. For example, if those three genera had observed
+extinction probabilities of 0.21, 0.09, and 0.10, the mean observed
+out-of-sample extinction probability would be 0.133. We then compared the mean
+of our prediction bin (0.125 in this example) with the mean observed value
+(0.133). In this example our model is slightly biased. Because we're building
+and testing the model on independent datasets, this is a good test of how our
+model might perform on a new but equivalent dataset.
 
 <<test-gbm1, results='hide', cache=FALSE>>=
 INT.DEPTH <- 5 # these constants hold throughout the document
@@ -418,7 +687,9 @@ if(!file.exists("../data/val_test_locality.rds")) {
 }
 @
 
-For example, here are the predicted and observed extinction probabilities for one run of our cross-validations. The model was built on half the data and then used to predict the other half of the data.
+For example, here are the predicted and observed extinction probabilities for
+one run of our cross-validations. The model was built on half the data and then
+used to predict the other half of the data.
 
 <<single-cv-rep, fig.width=8.25, fig.height=5, out.width="4.8in">>=
 ggplot(val_test_example,
@@ -432,7 +703,16 @@ ggplot(val_test_example,
   labs(size = "Sample #")
 @
 
-By running the cross validation 500 times, we calculated a mean bias at the taxonomic-group level for each prediction bin. We illustrate this in the following figure. The blue dots represent the mean estimate from a binomial logistic generalized linear model (GLM) fit to the black dots (observed mean extinction proportions based on individual cross-validation runs) with weights equal to the sample size in that bin across runs. The vertical lines represent 95\% confidence intervals. The size of the blue dots corresponds to the median number of extinction/survival observations in that bin across replicates. For visualization purposes, we have downsampled the number of black dots by a factor of about 10.
+By running the cross validation 500 times, we calculated a mean bias at the
+taxonomic-group level for each prediction bin. We illustrate this in the
+following figure. The blue dots represent the mean estimate from a binomial
+logistic generalized linear model (GLM) fit to the black dots (observed mean
+extinction proportions based on individual cross-validation runs) with weights
+equal to the sample size in that bin across runs. The vertical lines represent
+95\% confidence intervals. The size of the blue dots corresponds to the median
+number of extinction/survival observations in that bin across replicates. For
+visualization purposes, we have downsampled the number of black dots by a factor
+of about 10.
 
 <<test-gbm1-summary>>=
 val_test_summarized <- ddply(val_test, c("class", "gbm_pred_binned"),
@@ -475,7 +755,13 @@ plot_val(val_test_summarized_locality, val_test_singleton)
 dev.off()
 @
 
-We used these observed extinction probabilities (blue dots in the previous figure) to calibrate our predicted extinction probabilities in the contemporary dataset. We started with the predicted extinction probability from our GBM model applied to each contemporary genus, fit that value into our binning scheme, and extracted the empirically-observed mean extinction probability for that bin. This removes the observed out-of-sample non-linear bias in our model \cite{thorson2012}.
+We used these observed extinction probabilities (blue dots in the previous
+figure) to calibrate our predicted extinction probabilities in the contemporary
+dataset. We started with the predicted extinction probability from our GBM model
+applied to each contemporary genus, fit that value into our binning scheme, and
+extracted the empirically-observed mean extinction probability for that bin.
+This removes the observed out-of-sample non-linear bias in our model
+\cite{thorson2012}.
 
 <<establish-stage-order>>=
 stage_order <- c("Lower Miocene", "Middle Miocene", "Upper Miocene",
@@ -487,7 +773,14 @@ stage_order <- c("Lower Miocene", "Middle Miocene", "Upper Miocene",
 
 \subsection{Evaluating the marginal effects of predictor variables}
 
-We evaluated the marginal effect of each predictor on intrinsic extinction risk through partial dependence plots (Fig.~1). This procedure finds the marginal effect of each predictor by integrating across all other predictor values using the method described in Ref.~\cite{friedman2001}. Because there is some stochasticity when running a GBM, we ran models for each interval 20 times and each time recorded the marginal effects. We then took the median and interquartile range of those predictions. The range of these predictions is very small and hardly noticeable in Fig.~1.
+We evaluated the marginal effect of each predictor on intrinsic extinction risk
+through partial dependence plots (Fig.~1). This procedure finds the marginal
+effect of each predictor by integrating across all other predictor values using
+the method described in Ref.~\cite{friedman2001}. Because there is some
+stochasticity when running a GBM, we ran models for each interval 20 times and
+each time recorded the marginal effects. We then took the median and
+interquartile range of those predictions. The range of these predictions is very
+small and hardly noticeable in Fig.~1.
 
 <<make-partial-dependence-data, child="make-partial-dependence-data-child.Rnw", echo=FALSE, results='hide'>>==
 @
@@ -496,7 +789,15 @@ We evaluated the marginal effect of each predictor on intrinsic extinction risk 
 <<partial-plots-base, child='make-partial-dependence-plot.Rnw', echo=FALSE, results='hide'>>=
 @
 
-We also identified the relative contribution of each predictor. In particular, we were interested in the relative contribution of taxonomy vs.\ range and occupancy characteristics. To do this, we examined the relative importance of each of the GBM predictors using the \texttt{relative.influence()} function in the \pkg{gbm} package, which uses the algorithm as described in Ref.~\cite{friedman2001} (Fig.~\ref{fig:plot-relative-importance}). The \texttt{subgroup} variable, which refers to the taxonomic subgroupings (primarily order), has the greatest relative importance followed by the great circle distance of range size.
+We also identified the relative contribution of each predictor. In particular,
+we were interested in the relative contribution of taxonomy vs.\ range and
+occupancy characteristics. To do this, we examined the relative importance of
+each of the GBM predictors using the \texttt{relative.influence()} function in
+the \pkg{gbm} package, which uses the algorithm as described in
+Ref.~\cite{friedman2001} (Fig.~\ref{fig:plot-relative-importance}). The
+\texttt{subgroup} variable, which refers to the taxonomic subgroupings
+(primarily order), has the greatest relative importance followed by the great
+circle distance of range size.
 
 % build main models and extract relative importance scores:
 <<get-relative-importance, results='hide'>>=
@@ -584,7 +885,13 @@ dev.off()
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=3in]{../figs/plot-relative-importance.pdf}
-\caption{Relative influence of the predictor variables (Table~\ref{tab:predictors}) on extinction risk in the Neogene-Pleistocene GBM model. The values are scaled so that the variable with the maximum influence on accurate extinction risk prediction has a relative importance of 1. Shown are the median (dots) and interquartile range (line segments) across 20 model runs. There is minimal variation from run to run so the line segments are small.}
+\caption{Relative influence of the predictor variables
+  (Table~\ref{tab:predictors}) on extinction risk in the Neogene-Pleistocene GBM
+  model. The values are scaled so that the variable with the maximum influence
+  on accurate extinction risk prediction has a relative importance of 1. Shown
+  are the median (dots) and interquartile range (line segments) across 20 model
+  runs. There is minimal variation from run to run so the line segments are
+  small.}
 \label{fig:plot-relative-importance}
 \end{figure}
 
@@ -608,23 +915,68 @@ if(!file.exists("../data/cross_pred.rds")) {
 
 \subsection{Testing the predictive performance of the models}
 
-We tested the predictive ability of our models in two ways: (1) on out-of-sample data from the same geologic interval the model was built on and (2) on predictions from models built on a different geologic interval.
+We tested the predictive ability of our models in two ways: (1) on out-of-sample
+data from the same geologic interval the model was built on and (2) on
+predictions from models built on a different geologic interval.
 
-In the first case, we built models on two thirds of the data and then tested on one third of the data and repeated this procedure 150 times. We did this for each of the interval models and for the overall Neogene model. We recorded the predicted extinction probabilities from the model and compared these to the original data (extinct or survived). From this dataset we built out-of-sample ROC (receiver operating characteristic) curves (Fig.~\ref{fig:check-classfication-error-child.Rnw}). The area under these ROC curves is referred to as the AUC (area under the ROC curve) and is a measure of predictive ability of the model. Formally, it represents the probability that a randomly selected extinct genus will be correctly assigned a higher extinction probability than a randomly selected genus that survived. We refer to these AUC values in our paper and in the caption for (Fig.~\ref{fig:check-classfication-error-child.Rnw}).
+In the first case, we built models on two thirds of the data and then tested on
+one third of the data and repeated this procedure 150 times. We did this for
+each of the interval models and for the overall Neogene model. We recorded the
+predicted extinction probabilities from the model and compared these to the
+original data (extinct or survived). From this dataset we built out-of-sample
+ROC (receiver operating characteristic) curves
+(Fig.~\ref{fig:check-classfication-error-child.Rnw}). The area under these ROC
+curves is referred to as the AUC (area under the ROC curve) and is a measure of
+predictive ability of the model. Formally, it represents the probability that a
+randomly selected extinct genus will be correctly assigned a higher extinction
+probability than a randomly selected genus that survived. We refer to these AUC
+values in our paper and in the caption for
+(Fig.~\ref{fig:check-classfication-error-child.Rnw}).
 
-In the second case, we evaluated the similarity in extinction regimes between different time intervals by predicting extinction risk for each genus in a given interval from the model trained on that interval with predicted extinction risk for that genus from a model trained on a different interval. If the relationship between predictors and extinction risk was similar in both intervals then genus risk predictions from the two models would be strongly positively correlated. If the relationship between predictors and extinction risk differed strongly between the two intervals, genus risk estimates would be only weakly correlated. We see that in general there is substantial similarity in per-genus extinction risk predictions across all four intervals, with Spearman's rank-order correlation coefficients for cross-interval predictions ranging from \Sexpr{min(Rsqs$Rsq)} to \Sexpr{max(Rsqs$Rsq)} with a median of \Sexpr{round(median(Rsqs$Rsq), 2)}.
+In the second case, we evaluated the similarity in extinction regimes between
+different time intervals by predicting extinction risk for each genus in a given
+interval from the model trained on that interval with predicted extinction risk
+for that genus from a model trained on a different interval. If the relationship
+between predictors and extinction risk was similar in both intervals then genus
+risk predictions from the two models would be strongly positively correlated. If
+the relationship between predictors and extinction risk differed strongly
+between the two intervals, genus risk estimates would be only weakly correlated.
+We see that in general there is substantial similarity in per-genus extinction
+risk predictions across all four intervals, with Spearman's rank-order
+correlation coefficients for cross-interval predictions ranging from
+\Sexpr{min(Rsqs$Rsq)} to \Sexpr{max(Rsqs$Rsq)} with a median of
+\Sexpr{round(median(Rsqs$Rsq), 2)}.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=4.86in]{../figs/plot-cross-interval-gbms-base.pdf}
-\caption{Consistency of relative extinction risk patterns throughout the Neogene-Pleistocene fossil record. Shown are comparisons of scaled genus extinction probabilities estimated from models built and tested on different geologic subintervals. For example, the upper right-hand panel plots the extinction risk of Plio-Pleistocene genera predicted by the model built on those data (x axis) compared to a predictions by a model built using the Lower Miocene data (y axis). The higher the rank order correlation, as shown by Spearman's Rho values in upper left panel corners (except for within-interval comparisons), the more similar the determinants of extinction risk are between two given subintervals. Note that because extinctions were weighted more heavily in the GBM models (Section~\ref{sec:build-calibrate}), the absolute values shown on the x and y axes here are transformed versions of the real probabilities. We corrected this using a calibration procedure when we applied the Neogene-Pleistocene model to the modern dataset (Section~\ref{sec:build-calibrate}). Genus risk predictions are similar across subinterval-specific models despite subinterval-to-subinterval variation in the environmental drivers of extinction and in the sampling of the fossil record.}
+\caption{Consistency of relative extinction risk patterns throughout the
+  Neogene-Pleistocene fossil record. Shown are comparisons of scaled genus
+  extinction probabilities estimated from models built and tested on different
+  geologic subintervals. For example, the upper right-hand panel plots the
+  extinction risk of Plio-Pleistocene genera predicted by the model built on
+  those data (x axis) compared to a predictions by a model built using the Lower
+  Miocene data (y axis). The higher the rank order correlation, as shown by
+  Spearman's Rho values in upper left panel corners (except for within-interval
+  comparisons), the more similar the determinants of extinction risk are between
+  two given subintervals. Note that because extinctions were weighted more
+  heavily in the GBM models (Section~\ref{sec:build-calibrate}), the absolute
+  values shown on the x and y axes here are transformed versions of the real
+  probabilities. We corrected this using a calibration procedure when we applied
+  the Neogene-Pleistocene model to the modern dataset
+  (Section~\ref{sec:build-calibrate}). Genus risk predictions are similar across
+  subinterval-specific models despite subinterval-to-subinterval variation in
+  the environmental drivers of extinction and in the sampling of the fossil
+  record.}
 \label{fig:plot-cross-interval-gbms}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{../static-figs/didactic_method.pdf}
-\caption{Schematic illustration of the sequence of steps used to build the modern genus range dataset and to make intrinsic risk predictions for modern genera from the Neogene-Pleistocene fossil record.}
+\caption{Schematic illustration of the sequence of steps used to build the
+  modern genus range dataset and to make intrinsic risk predictions for modern
+  genera from the Neogene-Pleistocene fossil record.}
 \label{fig:didactic}
 \end{figure}
 
@@ -792,11 +1144,31 @@ source("plot-genus-predictions-against-gcd.R")
 
 \subsection{Mapping risk predictions using contemporary genus distributions}
 
-As described above, we used GBM models built on the Neogene fossil record to produce intrinsic risk estimates for modern genera.  These estimates are interesting on a genus-by-genus basis but can also be used to examine the distribution of intrinsic risk within major taxonomic groups and across regions, both of which may be useful in thinking about potential interactions between intrinsic risk and modern impacts. To map out the distribution of mean intrinsic risk across coastal biogeographic provinces, we calculated the mean intrinsic risk estimates on a log scale for all genera occupying a given province (following the minimum bounding box interpolation). We first did this separately for each major taxonomic group (Fig.~2) and then for all genera combined (Fig.~3).
+As described above, we used GBM models built on the Neogene fossil record to
+produce intrinsic risk estimates for modern genera.  These estimates are
+interesting on a genus-by-genus basis but can also be used to examine the
+distribution of intrinsic risk within major taxonomic groups and across regions,
+both of which may be useful in thinking about potential interactions between
+intrinsic risk and modern impacts. To map out the distribution of mean intrinsic
+risk across coastal biogeographic provinces, we calculated the mean intrinsic
+risk estimates on a log scale for all genera occupying a given province
+(following the minimum bounding box interpolation). We first did this separately
+for each major taxonomic group (Fig.~2) and then for all genera combined
+(Fig.~3).
 
 \subsection{Comparing geographic distributions of intrinsic risk and contemporary threats}
 
-In order to delineate the geographic distribution of potential interactions between intrinsic risk and contemporary threats, we compared our mean intrinsic risk estimates with recent estimates of the global distribution of anthropogenic impacts on marine ecosystems \cite{halpern2008} and the velocity of climate change \cite{burrows2011}.  We extracted mean anthropogenic impact and velocity of climate change values for each province by overlaying data layers for these two indices on the provincial maps of Ref.~\cite{spalding2007} and taking the mean value for all cells within a given province. To highlight the regions most impacted by these contemporary threats, the outlined and hatched provinces in Fig.~3 indicate areas above the 80th percentile for mean anthropogenic impact and mean velocity of climate change, respectively.
+In order to delineate the geographic distribution of potential interactions
+between intrinsic risk and contemporary threats, we compared our mean intrinsic
+risk estimates with recent estimates of the global distribution of anthropogenic
+impacts on marine ecosystems \cite{halpern2008} and the velocity of climate
+change \cite{burrows2011}.  We extracted mean anthropogenic impact and velocity
+of climate change values for each province by overlaying data layers for these
+two indices on the provincial maps of Ref.~\cite{spalding2007} and taking the
+mean value for all cells within a given province. To highlight the regions most
+impacted by these contemporary threats, the outlined and hatched provinces in
+Fig.~3 indicate areas above the 80th percentile for mean anthropogenic impact
+and mean velocity of climate change, respectively.
 
 % Now, we will create Fig. 2 and Fig. 3 from the paper.
 <<plot-class-maps, results='hide'>>=
@@ -1042,14 +1414,46 @@ Look at sensitivity of Figure 1, 2, and 3 as well as plots of potential against 
 
 \subsection{Exploring the effects of contemporary sampling intensity on intrinsic risk predictions}
 
-Geographic variation in sampling intensity may influence the observed distribution of geographic ranges and consequently the predicted extinction probabilities of contemporary marine genera. We used the number of OBIS records in a given province (Fig.~\ref{fig:plot-n-obis-prov}) as a rough index of sampling intensity and compared these values with mean intrinsic risk estimates for the four taxonomic groups (scleractinian corals, bivalves, echinoids, and gastropods) in which OBIS records were used to calculate genus geographic ranges. The correspondence between the number of OBIS records in a province and the mean intrinsic risk of genera in a province is not strong; however, a positive relationship is observed in each group (Fig.~\ref{fig:relationship-between-mean-risk-and-sampling-intensity}).
+Geographic variation in sampling intensity may influence the observed
+distribution of geographic ranges and consequently the predicted extinction
+probabilities of contemporary marine genera. We used the number of OBIS records
+in a given province (Fig.~\ref{fig:plot-n-obis-prov}) as a rough index of
+sampling intensity and compared these values with mean intrinsic risk estimates
+for the four taxonomic groups (scleractinian corals, bivalves, echinoids, and
+gastropods) in which OBIS records were used to calculate genus geographic
+ranges. The correspondence between the number of OBIS records in a province and
+the mean intrinsic risk of genera in a province is not strong; however, a
+positive relationship is observed in each group
+(Fig.~\ref{fig:relationship-between-mean-risk-and-sampling-intensity}).
 
-To determine whether the broad-scale patterns of mean intrinsic risk (Fig.~2) are robust to geographic variation in sampling intensity, we plotted the residual variation in intrinsic risk remaining after accounting for provincial variation in the number of OBIS records using a linear model (Fig.~\ref{fig:obis-residuals-maps}). These maps are qualitatively similar to those presented in Fig.~2. Echinoids show relatively little change in mean risk estimates. For gastropods, scleractinian corals, and bivalves, hotspots of intrinsic risk in the Indo-Pacific and tropical West Atlantic remain; however, the relative risk of the Caribbean is muted after accounting for the intense sampling that has occurred in the region (Fig.~\ref{fig:plot-n-obis-prov}). Differences in mean intrinsic risk between northern and southern hemisphere extratropics are also preserved (Fig.~\ref{fig:obis-residuals-maps}).
+To determine whether the broad-scale patterns of mean intrinsic risk (Fig.~2)
+are robust to geographic variation in sampling intensity, we plotted the
+residual variation in intrinsic risk remaining after accounting for provincial
+variation in the number of OBIS records using a linear model
+(Fig.~\ref{fig:obis-residuals-maps}). These maps are qualitatively similar to
+those presented in Fig.~2. Echinoids show relatively little change in mean risk
+estimates. For gastropods, scleractinian corals, and bivalves, hotspots of
+intrinsic risk in the Indo-Pacific and tropical West Atlantic remain; however,
+the relative risk of the Caribbean is muted after accounting for the intense
+sampling that has occurred in the region (Fig.~\ref{fig:plot-n-obis-prov}).
+Differences in mean intrinsic risk between northern and southern hemisphere
+extratropics are also preserved (Fig.~\ref{fig:obis-residuals-maps}).
 
 % TODO this section will need to be expanded
-Geographic variation in sampling intensity could result in the observation of ``pseudo-endemics'' --- genera found in a well-sampled provinces but not observed in adjacent provinces that have not been sampled as intensely. To determine the potential effect of ``pseudo-endemics'' on mean intrinsic risk estimates we removed genera that were only reported in one province. For this sensitivity test, we explicitly assumed that these genera were solely the result of variation in sampling intensity, although in reality single province genera are most likely a combination of ``pseudo-endemics'' and true endemics.
-%Culling genera known from only one province reduces the sample size of contemporary genera by \Sexpr{single.genera.provs.removed} to a total of \Sexpr{total.genera} genera.
-Maps of mean intrinsic risk in which single province genera were excluded (Fig.~\ref{fig:remove-single-province-genera}) are congruent with those derived from the full dataset (Figs.~2 and 3), indicating that single-province genera are not responsible for the broad-scale patterns of intrinsic risk.
+Geographic variation in sampling intensity could result in the observation of
+``pseudo-endemics'' --- genera found in a well-sampled provinces but not
+observed in adjacent provinces that have not been sampled as intensely. To
+determine the potential effect of ``pseudo-endemics'' on mean intrinsic risk
+estimates we removed genera that were only reported in one province. For this
+sensitivity test, we explicitly assumed that these genera were solely the result
+of variation in sampling intensity, although in reality single province genera
+are most likely a combination of ``pseudo-endemics'' and true endemics. %Culling
+genera known from only one province reduces the sample size of contemporary
+genera by \Sexpr{single.genera.provs.removed} to a total of \Sexpr{total.genera}
+genera. Maps of mean intrinsic risk in which single province genera were
+excluded (Fig.~\ref{fig:remove-single-province-genera}) are congruent with those
+derived from the full dataset (Figs.~2 and 3), indicating that single-province
+genera are not responsible for the broad-scale patterns of intrinsic risk.
 
 <<plot-n-obis-prov, fig.cap="Number of OBIS occurrence records for each biogeographic province \\cite{spalding2007}. Color scale bars on the right are log-distributed. The number of OBIS occurrence records provides a rough index of sampling effort across regions. Panels for sharks and mammals are not shown because we used range maps instead of OBIS data for the modern distributions.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
 map_class_ext(subset(er_dat_class, !class %in% c("Elasmobranchii", "Mammalia")),
@@ -1083,7 +1487,14 @@ print(p)
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{../figs/obis-residuals-maps-class.pdf}
-\caption{The geographic distribution of \textbf{intrinsic risk residuals} across coastal biogeographic provinces after applying a linear model accounting for the relationship between number of OBIS records and mean intrinsic risk. Panels for sharks and mammals (as in Fig.~2) are not shown because we used range maps instead of OBIS data for the modern distributions. The broad-scale mean intrinsic risk patterns plotted in Fig.~2 remain after accounting for the positive relationship between mean intrinsic risk and number of OBIS records (Fig.~TODO-was-S15).}
+\caption{The geographic distribution of \textbf{intrinsic risk residuals} across
+  coastal biogeographic provinces after applying a linear model accounting for
+  the relationship between number of OBIS records and mean intrinsic risk.
+  Panels for sharks and mammals (as in Fig.~2) are not shown because we used
+  range maps instead of OBIS data for the modern distributions. The broad-scale
+  mean intrinsic risk patterns plotted in Fig.~2 remain after accounting for the
+  positive relationship between mean intrinsic risk and number of OBIS records
+  (Fig.~TODO-was-S15).}
 \label{fig:obis-residuals-maps}
 \end{figure}
 
@@ -1102,7 +1513,26 @@ write.table(diff_in_range, file = "diff_in_range.txt", row.names = FALSE)
 
 \subsection{The effect of sampling thresholds on contemporary risk maps}
 
-The mean intrinsic risk values plotted in Fig.~3 include all genera in a given province.  However, not all provinces are equally sampled and not all provinces are equally diverse.  Some under-sampled provinces have fewer than 100 genera included in mean intrinsic risk estimates.  Extreme values are more likely at such low numbers and tend to visually dominate plots by expanding the range of the color scale, compressing the color variation among better-sampled provinces. Hence, when all provinces with at least 50 genera are included island provinces with low sampled diversity stand out. This is attributable to both low genus richness and differential sampling effects: even poorly-sampled provinces have a complete inventory of mammal and shark genera because the distributions of genera in these groups are based on published range maps rather than OBIS occurrences. Since mammals have very high intrinsic risk relative to most other groups, the high ratio of mammal genera to other genera leads to exceptionally high mean intrinsic risk estimates in poorly sampled provinces. As can be seen below, removing provinces with fewer than 100 sampled genera ameliorates this visual distortion. However, as this minimum sampled genera cutoff is successively raised to 150 and then 200, variation in the distribution of mean intrinsic risk is comparatively minor. At a cutoff of 200, major provinces such as Antarctica are removed from consideration. Therefore, we included all provinces with at least 100 sampled genera in Fig.~3.
+The mean intrinsic risk values plotted in Fig.~3 include all genera in a given
+province.  However, not all provinces are equally sampled and not all provinces
+are equally diverse.  Some under-sampled provinces have fewer than 100 genera
+included in mean intrinsic risk estimates.  Extreme values are more likely at
+such low numbers and tend to visually dominate plots by expanding the range of
+the color scale, compressing the color variation among better-sampled provinces.
+Hence, when all provinces with at least 50 genera are included island provinces
+with low sampled diversity stand out. This is attributable to both low genus
+richness and differential sampling effects: even poorly-sampled provinces have a
+complete inventory of mammal and shark genera because the distributions of
+genera in these groups are based on published range maps rather than OBIS
+occurrences. Since mammals have very high intrinsic risk relative to most other
+groups, the high ratio of mammal genera to other genera leads to exceptionally
+high mean intrinsic risk estimates in poorly sampled provinces. As can be seen
+below, removing provinces with fewer than 100 sampled genera ameliorates this
+visual distortion. However, as this minimum sampled genera cutoff is
+successively raised to 150 and then 200, variation in the distribution of mean
+intrinsic risk is comparatively minor. At a cutoff of 200, major provinces such
+as Antarctica are removed from consideration. Therefore, we included all
+provinces with at least 100 sampled genera in Fig.~3.
 
 <<min-gen-thresh-sensitivity, fig.height=8.5, fig.width=13>>=
 par(mfrow = c(2, 2))
@@ -1232,13 +1662,41 @@ dev.off()
 \centering
 \includegraphics[width=\textwidth]{../figs/remove-single-province-genera-class-map.pdf}
 \includegraphics[width=3.75in]{../figs/remove-single-province-genera-overall-map.pdf}
-\caption{Mean predicted intrinsic risk of genera inhabiting different ocean biogeographic provinces \cite{spalding2007} for each of the six major groups considered (upper six panels) and across all genera (lower centred panel), as in Fig.~2 and 3, but excluding \textbf{genera that occurred in only a single biogeographic province}. Scale bars on the right indicate the range of intrinsic extinction risk values for a given group of taxa. Culling these genera does not substantially alter broad-scale patterns of intrinsic risk (Fig.~2 and 3).}
+\caption{Mean predicted intrinsic risk of genera inhabiting different ocean
+  biogeographic provinces \cite{spalding2007} for each of the six major groups
+  considered (upper six panels) and across all genera (lower centred panel), as
+  in Fig.~2 and 3, but excluding \textbf{genera that occurred in only a single
+    biogeographic province}. Scale bars on the right indicate the range of
+  intrinsic extinction risk values for a given group of taxa. Culling these
+  genera does not substantially alter broad-scale patterns of intrinsic risk
+  (Fig.~2 and 3).}
 \label{fig:remove-single-province-genera}
 \end{figure}
 
 \subsection{The effect of interpolation of OBIS records}
 
-To evaluate the effects of the within-realm bounding box interpolation on geographic distributions of mean intrinsic risk, we created versions of Fig.~2 and 3 that omitted this analytical step (Fig.~\ref{fig:no-bounding-box}). Maps generated without the interpolation procedure show the same broad-scale geographic patterns apparent in Fig.~2 and 3, but with greater variability between provinces. Specifically, geographic risk patterns for echinoids, gastropods, scleractinian corals, and bivalves are generally congruent between these two analyses, with most groups showing elevated mean intrinsic risk in the tropical and subtropical western Atlantic and Indo-Pacific; maps for marine mammals and sharks in Fig.~2 and \ref{fig:no-bounding-box} are identical because analyses for these groups were conducted on range maps instead of OBIS observations. Overall, omitting the within-realm bounding box interpolation has the greatest effect on mean intrinsic risk estimates among provinces within the Indo-Pacific: maps generated using the bounding box interpolation exhibit consistently elevated mean risk patterns across the region whereas maps produced without the bounding box interpolation show greater geographic variability within the region (e.g.,~comparing mean intrinsic risk patterns in gastropods between the central and western Indo-Pacific ). These differences are evident when comparing individual groups and in maps of mean intrinsic risk across all genera. This variability reflects actual differences in intrinsic risk among provinces as well as apparent differences resulting from variation in sampling intensity (Fig.~\ref{fig:plot-n-obis-prov}).
+To evaluate the effects of the within-realm bounding box interpolation on
+geographic distributions of mean intrinsic risk, we created versions of Fig.~2
+and 3 that omitted this analytical step (Fig.~\ref{fig:no-bounding-box}). Maps
+generated without the interpolation procedure show the same broad-scale
+geographic patterns apparent in Fig.~2 and 3, but with greater variability
+between provinces. Specifically, geographic risk patterns for echinoids,
+gastropods, scleractinian corals, and bivalves are generally congruent between
+these two analyses, with most groups showing elevated mean intrinsic risk in the
+tropical and subtropical western Atlantic and Indo-Pacific; maps for marine
+mammals and sharks in Fig.~2 and \ref{fig:no-bounding-box} are identical because
+analyses for these groups were conducted on range maps instead of OBIS
+observations. Overall, omitting the within-realm bounding box interpolation has
+the greatest effect on mean intrinsic risk estimates among provinces within the
+Indo-Pacific: maps generated using the bounding box interpolation exhibit
+consistently elevated mean risk patterns across the region whereas maps produced
+without the bounding box interpolation show greater geographic variability
+within the region (e.g.,~comparing mean intrinsic risk patterns in gastropods
+between the central and western Indo-Pacific ). These differences are evident
+when comparing individual groups and in maps of mean intrinsic risk across all
+genera. This variability reflects actual differences in intrinsic risk among
+provinces as well as apparent differences resulting from variation in sampling
+intensity (Fig.~\ref{fig:plot-n-obis-prov}).
 
 <<predict-no-bounding-box, fig.width=7, fig.height=4, out.width="6.25in">>=
 # Read in raw (not interpolated) contemporary data:
@@ -1321,13 +1779,35 @@ dev.off()
 \centering
 \includegraphics[width=5.65in]{../figs/plot-class-prov-ext-raw-ranges.pdf}
 \includegraphics[width=3.45in]{../figs/no-bounding-box-overall-map.pdf}
-\caption{Mean intrinsic extinction risk of genera inhabiting different ocean biogeographic provinces \cite{spalding2007} for each of the six major groups considered (upper six panels) and across all genera (lower centred panel), as in Fig.~2 and 3, but \textbf{with predictions based on raw ranges in OBIS without the within-realm minimum bounding box interpolation (Fig. TODO-was-S7)}. Scale bars on the right indicate the range of intrinsic extinction risk values for a given group. Note that the modern distribution of sharks and mammals was based on range maps instead of OBIS observations and so panels A and B are the same as in Fig.~2. Omitting the interpolation procedure results in greater heterogeneity in mean intrinsic risk among adjacent provinces but does not substantially alter broad-scale intrinsic risk patterns.}
+\caption{Mean intrinsic extinction risk of genera inhabiting different ocean
+  biogeographic provinces \cite{spalding2007} for each of the six major groups
+  considered (upper six panels) and across all genera (lower centred panel), as
+  in Fig.~2 and 3, but \textbf{with predictions based on raw ranges in OBIS
+    without the within-realm minimum bounding box interpolation (Fig.
+    TODO-was-S7)}. Scale bars on the right indicate the range of intrinsic
+  extinction risk values for a given group. Note that the modern distribution of
+  sharks and mammals was based on range maps instead of OBIS observations and so
+  panels A and B are the same as in Fig.~2. Omitting the interpolation procedure
+  results in greater heterogeneity in mean intrinsic risk among adjacent
+  provinces but does not substantially alter broad-scale intrinsic risk
+  patterns.}
 \label{fig:no-bounding-box}
 \end{figure}
 
 \subsection{Testing the influence of individual taxonomic groups on contemporary risk maps}
 
-To determine the sensitivity of broad-scale intrinsic risk patterns in our aggregate map (Fig.~3) to the inclusion of particular taxonomic groups, we created the map multiple times, each time leaving out one of the six major groups. This procedure is often referred to as a jackknife analysis and can be an effective way to visually present uncertainty \cite{branch2010}. The resulting jackknifed maps illustrate the contributions of individual groups to the aggregate patterns generated by averaging intrinsic risk across all genera that occur in a province (Fig.~\ref{fig:jackknife-map}). The jackknife analysis indicates that gastropods contribute markedly to the hotspots of intrinsic risk in the Caribbean and Antarctica, whereas bivalves contribute to the hotspot in the central and eastern Indo-Pacific. Other hotspots in the Indo-Pacific remain regardless of the removal of any particular taxonomic group.
+To determine the sensitivity of broad-scale intrinsic risk patterns in our
+aggregate map (Fig.~3) to the inclusion of particular taxonomic groups, we
+created the map multiple times, each time leaving out one of the six major
+groups. This procedure is often referred to as a jackknife analysis and can be
+an effective way to visually present uncertainty \cite{branch2010}. The
+resulting jackknifed maps illustrate the contributions of individual groups to
+the aggregate patterns generated by averaging intrinsic risk across all genera
+that occur in a province (Fig.~\ref{fig:jackknife-map}). The jackknife analysis
+indicates that gastropods contribute markedly to the hotspots of intrinsic risk
+in the Caribbean and Antarctica, whereas bivalves contribute to the hotspot in
+the central and eastern Indo-Pacific. Other hotspots in the Indo-Pacific remain
+regardless of the removal of any particular taxonomic group.
 
 <<jackknife-map, fig.cap="Global distribution of mean predicted intrinsic risk (as in Fig.~3) \\textbf{with one taxonomic group removed, or jackknifed, in each panel}. Note that the color scale is adjusted in each panel to display the full range of predictions.", fig.width=7, fig.height=7>>=
 load("../data/by.prov.all.jk.rda")
@@ -1381,7 +1861,9 @@ for(i in 1:length(classes)) {
 
 \begin{table}
 \centering
-\caption{Description of predictors included in the GBM models. We describe how we standardized many of these predictors across time intervals in Section \ref{sec:standardizing-predictors}.}
+\caption{Description of predictors included in the GBM models. We describe how
+  we standardized many of these predictors across time intervals in Section
+  \ref{sec:standardizing-predictors}.}
 \label{tab:predictors}
 \smallskip
 \begin{tabular}{p{4cm}p{8cm}}
@@ -1408,8 +1890,7 @@ Taxonomic subgroup    & Ordinal to family rank taxonomic assignments for each ge
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=\textwidth]{../figs/raw-predictors-proportion-ext.pdf}
-\caption{Proportion genera extinct at various predictor values. TODO FILL THIS
-  IN}
+\caption{Proportion genera extinct at various predictor values. TODO FILL THIS IN}
 \label{fig:raw-predictor-ex}
 \end{center}
 \end{figure}
@@ -1418,7 +1899,12 @@ Taxonomic subgroup    & Ordinal to family rank taxonomic assignments for each ge
 \begin{center}
 \includegraphics[width=5in]{../figs/hist-preserv-prob.pdf}
 %\includegraphics[width=5in]{hist-single-occ.pdf}
-\caption{Frequency distribution of preservation probability by genera in the Neogene fossil record. Our preservation probability calculations included the Neogene stages Lower Miocene, Middle Miocene, Upper Miocene, and Pliocene, Pleistocene, along with the Paleogene and contemporary extinction status. A preservation probability of 1.0, for example, means that a genus was observed in all stages between the first and last stages it was observed in.}
+\caption{Frequency distribution of preservation probability by genera in the
+  Neogene fossil record. Our preservation probability calculations included the
+  Neogene stages Lower Miocene, Middle Miocene, Upper Miocene, and Pliocene,
+  Pleistocene, along with the Paleogene and contemporary extinction status. A
+  preservation probability of 1.0, for example, means that a genus was observed
+  in all stages between the first and last stages it was observed in.}
 \label{fig:hist-preserv-prob}
 \end{center}
 \end{figure}
@@ -1428,7 +1914,10 @@ Taxonomic subgroup    & Ordinal to family rank taxonomic assignments for each ge
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=\textwidth]{../figs/fossil-cull-N.pdf}
-\caption{Effect of different minimum preservation probability culls on the distribution of fossil genera with respect to potential extinction risk predictors. Rows 1--2: total number of genera, rows 3--4: number of extinct genera, rows 5--6: proportion of extinct genera.}
+\caption{Effect of different minimum preservation probability culls on the
+  distribution of fossil genera with respect to potential extinction risk
+  predictors. Rows 1--2: total number of genera, rows 3--4: number of extinct
+  genera, rows 5--6: proportion of extinct genera.}
 %\label{fig:raw-predictor-paleo-culls}
 \end{center}
 \end{figure}
@@ -1436,7 +1925,11 @@ Taxonomic subgroup    & Ordinal to family rank taxonomic assignments for each ge
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=\textwidth]{../figs/fossil-cull-N-sing.pdf}
-\caption{Effect of culling genera with single (or zero) occurrences in the fossil record in any stage in which we would have expected to observe them on the distribution of fossil genera with respect to potential extinction risk predictors. Rows 1--2: total number of genera, rows 3--4: number of extinct genera, rows 5--6: proportion of extinct genera.}
+\caption{Effect of culling genera with single (or zero) occurrences in the
+  fossil record in any stage in which we would have expected to observe them on
+  the distribution of fossil genera with respect to potential extinction risk
+  predictors. Rows 1--2: total number of genera, rows 3--4: number of extinct
+  genera, rows 5--6: proportion of extinct genera.}
 %\label{fig:raw-predictor-paleo-culls}
 \end{center}
 \end{figure}
@@ -1444,7 +1937,16 @@ Taxonomic subgroup    & Ordinal to family rank taxonomic assignments for each ge
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=\textwidth]{../figs/fossil-cull-self-prediction-threshold-distributions.pdf}
-\caption{Distributions of predicted intrinsic risk for genera in each of the six major marine groups, varying the preservation probability threshold above which genera are included in the Neogene GBM model. A threshold of 0.0, for example, includes all genera, whereas a threshold of 0.5 includes only those genera with preservation probabilities of 0.5 or greater. Plotted are raw GBM risk estimates prior to calibration. Median intrinsic risk declines with more stringent preservation thresholds as rare and/or poorly sampled genera are excluded from the data. The boxes show the interquartile range, the whiskers show 1.5 times the interquartile range, and dots show outliers beyond that range. Lines in the middle indicate the median values.}
+\caption{Distributions of predicted intrinsic risk for genera in each of the six
+  major marine groups, varying the preservation probability threshold above
+  which genera are included in the Neogene GBM model. A threshold of 0.0, for
+  example, includes all genera, whereas a threshold of 0.5 includes only those
+  genera with preservation probabilities of 0.5 or greater. Plotted are raw GBM
+  risk estimates prior to calibration. Median intrinsic risk declines with more
+  stringent preservation thresholds as rare and/or poorly sampled genera are
+  excluded from the data. The boxes show the interquartile range, the whiskers
+  show 1.5 times the interquartile range, and dots show outliers beyond that
+  range. Lines in the middle indicate the median values.}
 \label{fig:ext-boxplots-paleo-culls}
 \end{center}
 \end{figure}
@@ -1452,7 +1954,9 @@ Taxonomic subgroup    & Ordinal to family rank taxonomic assignments for each ge
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=0.9\textwidth]{../figs/partial-class-level-median-estimates}
-\caption{The same data as Fig.~\ref{fig:ext-boxplots-paleo-culls} but arranged differently. These are medians with 40\% and 60\% quantiles of the `group'-level partial dependence values aggregated by class.}
+\caption{The same data as Fig.~\ref{fig:ext-boxplots-paleo-culls} but arranged
+  differently. These are medians with 40\% and 60\% quantiles of the
+  `group'-level partial dependence values aggregated by class.}
 \label{fig:class-level-partial-order}
 \end{center}
 \end{figure}
@@ -1461,7 +1965,17 @@ Taxonomic subgroup    & Ordinal to family rank taxonomic assignments for each ge
 \begin{center}
 \includegraphics[width=0.95\textwidth]{../figs/fossil-cull-comparison-continuous.pdf}
 \includegraphics[width=0.65\textwidth]{../figs/fossil-cull-comparison-group.pdf}
-\caption{Predictors of extinction risk in the Neogene to Pleistocene marine fossil record. Partial dependence plots for the full Neogene-Pleistocene model, as in Figure 1, but varying the minimum preservation probability that fossil genera must exhibit to be included in the training data. Darker colors indicate model output when preservation thresholds are relatively lenient (e.g., all genera with preservation probabilities greater than 0), whereas lighter colours indicate model output when preservation thresholds are relatively stringent (e.g., all genera with preservation probabilities equal to 1) and poorly-preserved genera are excluded from the training data. Marginal effects of predictor variables on extinction risk are relatively similar over a wide range of preservation thresholds.}
+\caption{Predictors of extinction risk in the Neogene to Pleistocene marine
+  fossil record. Partial dependence plots for the full Neogene-Pleistocene
+  model, as in Figure 1, but varying the minimum preservation probability that
+  fossil genera must exhibit to be included in the training data. Darker colors
+  indicate model output when preservation thresholds are relatively lenient
+  (e.g., all genera with preservation probabilities greater than 0), whereas
+  lighter colours indicate model output when preservation thresholds are
+  relatively stringent (e.g., all genera with preservation probabilities equal
+  to 1) and poorly-preserved genera are excluded from the training data.
+  Marginal effects of predictor variables on extinction risk are relatively
+  similar over a wide range of preservation thresholds.}
 \label{fig:partial-paleo-culls}
 \end{center}
 \end{figure}
@@ -1469,7 +1983,22 @@ Taxonomic subgroup    & Ordinal to family rank taxonomic assignments for each ge
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=0.9\textwidth]{../figs/pairs-paleo-culls-genera}
-\caption{Comparison of intrinsic risk estimates for modern genera from GBM models trained on different subsets of the Neogene-Pleistocene fossil record. \texttt{mean\_observed} refers to the main GBM model used in the paper. \texttt{mean\_observed\_1.0} refers to a model trained on a dataset containing only fossil genera with a preservation probability equal to one (i.e., excluding all genera that were not sampled in one or more subintervals between their first and last occurrences). \texttt{mean\_observed\_sing} refers to a model containing only fossil genera that were observed at least twice in all subintervals from the subinterval in which they first occurred through the subinterval in which they last occurred (i.e., excluding all genera known from one or fewer occurrences). Points in each panel represent an intrinsic risk prediction for an individual genus in the modern oceans based on a model trained on an specific subset of fossil data. Spearman rank-order correlation values are presented in the upper right cells. Genus instrinsic risk estimates are strongly correlated across models trained on different subsets of fossil data.}
+\caption{Comparison of intrinsic risk estimates for modern genera from GBM
+  models trained on different subsets of the Neogene-Pleistocene fossil record.
+  \texttt{mean\_observed} refers to the main GBM model used in the paper.
+  \texttt{mean\_observed\_1.0} refers to a model trained on a dataset containing
+  only fossil genera with a preservation probability equal to one (i.e.,
+  excluding all genera that were not sampled in one or more subintervals between
+  their first and last occurrences). \texttt{mean\_observed\_sing} refers to a
+  model containing only fossil genera that were observed at least twice in all
+  subintervals from the subinterval in which they first occurred through the
+  subinterval in which they last occurred (i.e., excluding all genera known from
+  one or fewer occurrences). Points in each panel represent an intrinsic risk
+  prediction for an individual genus in the modern oceans based on a model
+  trained on an specific subset of fossil data. Spearman rank-order correlation
+  values are presented in the upper right cells. Genus instrinsic risk estimates
+  are strongly correlated across models trained on different subsets of fossil
+  data.}
 \label{fig:pairs-genus-paleo-culls}
 \end{center}
 \end{figure}
@@ -1477,7 +2006,14 @@ Taxonomic subgroup    & Ordinal to family rank taxonomic assignments for each ge
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=0.9\textwidth]{../figs/pairs-paleo-culls-provinces}
-\caption{Comparison of provincial mean intrinsic risk estimates from GBM models trained on different subsets of the Neogene-Pleistocene fossil record. Description of this figure is the same as in Fig. TODO-was-S21 except that points are are biogeographic province-level estimates instead of individual genus-level estimates. Spearman rank-order correlation values are presented in the upper right cells. Log mean instrinsic risk estimates for provinces are strongly correlated across models trained on different subsets of fossil data.}
+\caption{Comparison of provincial mean intrinsic risk estimates from GBM models
+  trained on different subsets of the Neogene-Pleistocene fossil record.
+  Description of this figure is the same as in Fig. TODO-was-S21 except that
+  points are are biogeographic province-level estimates instead of individual
+  genus-level estimates. Spearman rank-order correlation values are presented in
+  the upper right cells. Log mean instrinsic risk estimates for provinces are
+  strongly correlated across models trained on different subsets of fossil
+  data.}
 \label{fig:pairs-prov-paleo-culls}
 \end{center}
 \end{figure}
@@ -1487,7 +2023,10 @@ Taxonomic subgroup    & Ordinal to family rank taxonomic assignments for each ge
 \includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-0-pp}
 \includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-1-pp}
 \includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-sing-pp}
-\caption{Global maps from models built with various culls of the Neogene fossil record. From top to bottom: the base model, only genera with a preservation probability of 1.0, and only genera with at least two observations in all stages for which we would expect their to be observations.}
+\caption{Global maps from models built with various culls of the Neogene fossil
+  record. From top to bottom: the base model, only genera with a preservation
+  probability of 1.0, and only genera with at least two observations in all
+  stages for which we would expect their to be observations.}
 \label{fig:overall-maps-paleo-culls}
 \end{center}
 \end{figure}
@@ -1511,7 +2050,18 @@ Taxonomic subgroup    & Ordinal to family rank taxonomic assignments for each ge
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=0.7\textwidth]{../figs/obis-samping-vs-predictors}
-\caption{Variation among extant genera in intrinsic extinction risk and great circle distance as a function of the number of OBIS records. Overall intrinsic extinction risk declines as the number of OBIS records increases, as expected biologically and under a model in which poorly sampled genera artificially appear to be at elevated extinction risk. Notably taxa with few raw occurrences exhibit a broad range of intrinsic extinction risk values. Overall great circle distance increases with the number of OBIS occurrences; however, above approximately 5 OBIS occurrences genera exhibit the full range of great circle distance values. Consequently we impose a minimum threshold of 5 OBIS occurrences for all analyses presented in the main text and in the SOM investigate the robustness of our results to varying the minimum number of OBIS records.}
+\caption{Variation among extant genera in intrinsic extinction risk and great
+  circle distance as a function of the number of OBIS records. Overall intrinsic
+  extinction risk declines as the number of OBIS records increases, as expected
+  biologically and under a model in which poorly sampled genera artificially
+  appear to be at elevated extinction risk. Notably taxa with few raw
+  occurrences exhibit a broad range of intrinsic extinction risk values. Overall
+  great circle distance increases with the number of OBIS occurrences; however,
+  above approximately 5 OBIS occurrences genera exhibit the full range of great
+  circle distance values. Consequently we impose a minimum threshold of 5 OBIS
+  occurrences for all analyses presented in the main text and in the SOM
+  investigate the robustness of our results to varying the minimum number of
+  OBIS records.}
 \label{fig:obis-sampling-vs-predictors}
 \end{center}
 \end{figure}
@@ -1519,7 +2069,15 @@ Taxonomic subgroup    & Ordinal to family rank taxonomic assignments for each ge
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=0.9\textwidth]{../figs/pairs-obis-culls}
-\caption{Comparison of provincial mean intrinsic risk estimates under varying sampling thresholds applied to the OBIS database. Values along the diagonal (1, 5, 10, 20, 50) indicate the minimum number of OBIS occurrences necessary for a genus in the modern ocean to be included in the calculation of mean intrinsic risk. Points in each panel are log mean extinction risk values for coastal biogeographic provinces after applying different minimum sampling thresholds to the modern data. Spearman's rank-order correlation values are presented in the upper right cells. Provincial instrinsic risk estimates are strongly correlated across all thresholds considered.}
+\caption{Comparison of provincial mean intrinsic risk estimates under varying
+  sampling thresholds applied to the OBIS database. Values along the diagonal
+  (1, 5, 10, 20, 50) indicate the minimum number of OBIS occurrences necessary
+  for a genus in the modern ocean to be included in the calculation of mean
+  intrinsic risk. Points in each panel are log mean extinction risk values for
+  coastal biogeographic provinces after applying different minimum sampling
+  thresholds to the modern data. Spearman's rank-order correlation values are
+  presented in the upper right cells. Provincial instrinsic risk estimates are
+  strongly correlated across all thresholds considered.}
 \label{fig:pairs-prov-obis-culls}
 \end{center}
 \end{figure}
@@ -1527,7 +2085,10 @@ Taxonomic subgroup    & Ordinal to family rank taxonomic assignments for each ge
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=\textwidth]{../figs/overall-map-obis-culls}
-\caption{Fig.~3 from the main paper recreated with varying sampling thresholds in the OBIS database. Note that the colours are rescaled on each map. The pattern has little qualitative change until we reach a threshold around 50 OBIS records.}
+\caption{Fig.~3 from the main paper recreated with varying sampling thresholds
+  in the OBIS database. Note that the colours are rescaled on each map. The
+  pattern has little qualitative change until we reach a threshold around 50
+  OBIS records.}
 \label{fig:overall-maps-obis-culls}
 \end{center}
 \end{figure}
