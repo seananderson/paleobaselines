@@ -1054,6 +1054,9 @@ pairs(modern[,
   col = "#00000020", asp = 1,
   ylim = c(0, 1), xlim = c(0, 1),
   labels = pairs_labels, upper.panel = panel.cor)
+par(xpd = NA)
+mtext("Uncalibrated extinction risk", side = 1, outer = TRUE, line = -1.5)
+mtext("Uncalibrated extinction risk", side = 2, outer = TRUE, line = -1.5)
 dev.off()
 @
 
@@ -1108,6 +1111,8 @@ pairs(modern[,c("mean_observed", "mean_observed_1.0", "mean_observed_sing",
  labels = c("Base model", "Preservation\nprobability = 1", ">= 2 observations",
    "No singletons &\npreserv. prob. = 1", "> 1 location"), upper.panel = panel.cor, asp = 1,
  ylim = c(0, 1), xlim = c(0, 1))
+mtext("Intrinsic risk", side = 1, outer = TRUE, line = -1.5)
+mtext("Intrinsic risk", side = 2, outer = TRUE, line = -1.5)
 dev.off()
 pdf("../figs/pairs-gbm-calibrated-predictions-culls-zoomed.pdf", width = 7, height = 7)
 pairs(modern[,c("mean_observed", "mean_observed_1.0", "mean_observed_sing",
@@ -1115,6 +1120,8 @@ pairs(modern[,c("mean_observed", "mean_observed_1.0", "mean_observed_sing",
   col = "#00000020", labels = c("Base model", "Preservation\nprobability = 1", ">= 2 observations",
     "No singletons &\npreserv. prob. = 1", "> 1 location"), upper.panel = panel.cor,
   asp = 1, ylim = c(0, 0.6), xlim = c(0, 0.6))
+mtext("Intrinsic risk", side = 1, outer = TRUE, line = -1.5)
+mtext("Intrinsic risk", side = 2, outer = TRUE, line = -1.5)
 dev.off()
 @
 
@@ -1336,6 +1343,8 @@ pairs(modern[,c("mean_observed", "mean_observed_1.0", "mean_observed_sing",
   pch = 21, col = "#00000010", bg = "#00000010", cex = 0.8, labels = pairs_labels,
   upper.panel = panel.cor, asp = 1,
   ylim = c(0, 1), xlim = c(0, 1))
+mtext("Intrinsic risk", side = 1, outer = TRUE, line = -1.5)
+mtext("Intrinsic risk", side = 2, outer = TRUE, line = -1.5)
 dev.off()
 
 pdf("../figs/pairs-paleo-culls-provinces.pdf", width = 7, height = 7)
@@ -1343,6 +1352,8 @@ pairs(by.prov.all[,c("mean.ext", "mean.ext.1.0", "mean.ext.sing",
     "mean.ext.singleton", "mean.ext.locality")],
   pch = 21, col = "#00000050", bg = "#00000010", labels = pairs_labels,
   upper.panel = panel.cor, asp = 1, ylim = c(-4.4, -2.5), xlim = c(-4.4, -2.5))
+mtext("Intrinsic risk", side = 1, outer = TRUE, line = -1.5)
+mtext("Intrinsic risk", side = 2, outer = TRUE, line = -1.5)
 dev.off()
 @
 
@@ -1620,6 +1631,8 @@ dcull <- reshape2::dcast(dcull, PROV_CODE ~ obis_cull, value.var = "mean.ext")
 pdf("../figs/pairs-obis-culls.pdf", width = 6, height = 6)
 pairs(dcull[,-1], pch = 21, col = "#00000050", bg = "#00000010",
   upper.panel = panel.cor)
+mtext("log Intrinsic risk", side = 1, outer = TRUE, line = -1.5)
+mtext("log Intrinsic risk", side = 2, outer = TRUE, line = -1.5)
 dev.off()
 @
 
