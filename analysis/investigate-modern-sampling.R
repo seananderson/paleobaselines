@@ -31,11 +31,11 @@ modern_long <- filter(modern_long, !class %in% c("Mammalia", "Elasmobranchii"))
 
  p1 <- ggplot(filter(modern_long, variable %in% c("richness", "occupancy")), aes(log10(obis_n), value, colour = class)) + facet_wrap(~variable) + geom_point(position = position_jitter(height = 0.1), alpha = 0.15)
 
-p4 <- ggplot(filter(modern_long, variable %in% c("mean_observed")), aes(log10(obis_n), value, colour = class)) + facet_wrap(~variable) + geom_point(position = position_jitter(height = 0.05), alpha = 0.4)
+p4 <- ggplot(filter(modern_long, variable %in% c("mean_observed")), aes(log10(obis_n), value, colour = class)) + facet_wrap(~variable) + geom_point(position = position_jitter(height = 0.05), alpha = 0.4) + labs(colour = "Group")
 
 p2 <- ggplot(filter(modern_long, variable %in% c("min.lat", "max.lat", "lat.range", "mean.lat")), aes(log10(obis_n), value, colour = class)) + facet_wrap(~variable) + geom_point(position = position_jitter(height = 3), alpha = 0.1)
 
-p3 <- ggplot(filter(modern_long, variable %in% c("great.circle")), aes(log10(obis_n), value, colour = class)) + facet_wrap(~variable) + geom_point(position = position_jitter(height = 600), alpha = 0.4)
+p3 <- ggplot(filter(modern_long, variable %in% c("great.circle")), aes(log10(obis_n), value, colour = class)) + facet_wrap(~variable) + geom_point(position = position_jitter(height = 600), alpha = 0.4) + labs(colour = "Group") + ylab("Great circle distance (km)")
 
 pdf("../figs/obis-samping-vs-predictors.pdf", width = 8, height = 8)
 #gridExtra::grid.arrange(p4, p3, p1, p2)

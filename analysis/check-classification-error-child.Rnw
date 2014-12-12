@@ -2,7 +2,7 @@
 gc() # clean memory
 if(!file.exists("../data/pred_oob.rds")) {
   # get predictions for overall model:
-  neog_pred_oob <- rdply(150, validate_gbm(neog, 
+  neog_pred_oob <- rdply(150, validate_gbm(neog,
       interaction.depth = INT.DEPTH, n.trees = NTREES,
       use_weights = TRUE, test_fraction = 0.333)$pred, .progress = "text")
 
@@ -15,7 +15,7 @@ if(!file.exists("../data/pred_oob.rds")) {
 
   for(i in 1:length(stage_order)) {
     this_dat <- subset(neog, stage == stage_order[i])
-    pred_oob <- rdply(150, validate_gbm(this_dat, 
+    pred_oob <- rdply(150, validate_gbm(this_dat,
         interaction.depth = INT.DEPTH, n.trees = NTREES,
         use_weights = TRUE, test_fraction = 0.333)$pred, .progress = "text")
     out_roc[[i]] <- pred_oob
@@ -53,7 +53,7 @@ if(!file.exists("../data/roc_vals.rds")) {
 } else {
   roc_vals <- readRDS("../data/roc_vals.rds")
 }
-auc_vals <- ddply(roc_vals, c("stage", "class"), plyr::summarize, auc = round(unique(auc), 4))
+auc_vals <- plyr::ddply(roc_vals, c("stage", "class"), plyr::summarize, auc = round(unique(auc), 4))
 write.csv(auc_vals, file = "../data/auc_vals.csv")
 
 auc_full <- subset(auc_vals, class == "All")
@@ -67,11 +67,15 @@ roc_vals$class <- as.character(roc_vals$class)
 roc_vals$class[roc_vals$class == "Anthozoa"] <- "Scleractinia"
 roc_vals$class[roc_vals$class == "Elasmobranchii"] <- "Sharks"
 
+roc_vals$stage <- plyr::revalue(roc_vals$stage,
+  c("Entire Neogene" = "Neogene-Pleistocene"))
+
 ggplot(roc_vals, aes(spec, sens)) +
   geom_line(aes(colour = class, size = class)) +
-  xlim(1, 0) + 
-  scale_colour_manual(values = c("#00000080", paste0(RColorBrewer::brewer.pal(6, "Set2"), "80"))) +
-  scale_size_manual(values = c(2, rep(0.8, 6))) +
+  xlim(1, 0) +
+  scale_colour_manual(values = c("#00000080",
+      paste0(RColorBrewer::brewer.pal(6, "Set2"), "80")), name = "Group") +
+  scale_size_manual(values = c(2, rep(0.8, 6)), name = "Group") +
   geom_abline(intercept = 1, slope = 1, lty = 2, col = "darkgrey") +
   xlab("Specificity") + ylab("Sensitivity") +
   coord_equal() + facet_wrap(~stage, nrow = 2)
