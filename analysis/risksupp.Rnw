@@ -1173,6 +1173,45 @@ rm(composite.occ2) # large data frame; save memory
 saveRDS(modern, file = "../data/modern-predictions.rds")
 @
 
+<<plot-obis-sampling-vs-gcd>>=
+modern_long <- reshape2::melt(modern, id.vars = c("class", "group", "genus"),
+  measure.vars = c("richness", "occupancy", "min.lat", "max.lat", "lat.range",
+    "mean.lat", "great.circle", "mean_observed"))
+modern_long <- inner_join(modern_long, modern[,c("genus", "obis_n")])
+modern_long <- dplyr::filter(modern_long,
+  !class %in% c("Mammalia", "Elasmobranchii"))
+p1 <- ggplot(dplyr::filter(modern_long, variable %in% c("great.circle")),
+  aes(log10(obis_n), value, colour = class)) +
+  facet_wrap(~variable) +
+  geom_point(position = position_jitter(height = 600), alpha = 0.4) +
+  labs(colour = "Group") + ylab("Great circle distance (km)")
+p2 <- ggplot(filter(modern_long, variable %in% c("mean_observed")),
+  aes(log10(obis_n), value, colour = class)) + facet_wrap(~variable) +
+  geom_point(position = position_jitter(height = 0.05), alpha = 0.4) +
+  labs(colour = "Group") + ylab("Intrinsic risk")
+pdf("../figs/obis-samping-vs-predictors.pdf", width = 8, height = 8)
+gridExtra::grid.arrange(p1, p2)
+dev.off()
+@
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=0.7\textwidth]{../figs/obis-samping-vs-predictors}
+\caption{Variation among extant genera in intrinsic extinction risk and great
+  circle distance as a function of the number of OBIS records. Overall
+  intrinsic extinction risk declines as the number of OBIS records increases,
+  as expected biologically and under a model in which poorly sampled genera
+  artificially appear to be at elevated extinction risk. Notably taxa with few
+  raw occurrences exhibit a broad range of intrinsic extinction risk values.
+  Overall great circle distance increases with the number of OBIS occurrences;
+  however, above approximately 5 OBIS occurrences genera exhibit the full
+  range of great circle distance values. Consequently we impose a minimum
+  threshold of 5 OBIS occurrences for all analyses presented in the main text
+  and in the SOM investigate the robustness of our results to varying the
+  minimum number of OBIS records.}
+\label{fig:obis-sampling-vs-predictors}
+\end{center}
+\end{figure}
+
 <<plot-genus-predictions-against-gcd2, fig.cap='Predicted intrinsic risk versus geographic range size (great circle distance) for modern genera in each of six taxonomic groups. The points represent individual genera and are colored according to taxonomic subgroups within each major taxonomic group, the black contour lines indicate the density of genera, and the red line represents the mean intrinsic risk of all modern genera in the six taxonomic groups.', fig.width=10, fig.height=7.5, cache=FALSE>>=
 source("plot-genus-predictions-against-gcd.R")
 @
@@ -1277,116 +1316,95 @@ dev.off()
 <<plot-paleo-cull-class-maps, results='hide'>>=
 # class maps:
 # 1.0 cull:
-pdf("../figs/class-risk-maps-mean-log-ext-paleo-1-pp.pdf", width = 6.45, height = 5.1)
-map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10),
-# max_range <- map_class_ext(er_dat_class, yticks = c(0.1, 0.15, 0.2, 0.25),
-  min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0032, 0.16),
- picture_files = NULL, plot_column = "mean.ext.1.0",
-#   picture_files = NULL, plot_column = "mean.ext.1.0",
-  silhouette_coords = silhouette_coords, max_range_given = exp(max_range)+1.1,
-  ylabel = "Intrinsic extinction risk")
-dev.off()
-# < 2 observation in fossil record cull:
-# bring down a couple massive outliers:
-er_dat_class$mean.ext.sing[er_dat_class$mean.ext.sing < log(0.003201)] <- log(0.003201)
-er_dat_class$mean.ext.sing[er_dat_class$mean.ext.sing > log(0.158)] <- log(0.158)
-pdf("../figs/class-risk-maps-mean-log-ext-paleo-sing-pp.pdf", width = 6.45, height = 5.1)
-map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10),
-  min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0032, 0.16),
-  picture_files = picture_files, plot_column = "mean.ext.sing",
-  silhouette_coords = silhouette_coords, max_range_given = exp(max_range)+6,
-  ylabel = "Intrinsic extinction risk")
-dev.off()
-
-# and the overall map:
-# 0.0 cull (i.e. repeat of the main map):
-pdf("../figs/hotspots-paleo-0-pp.pdf", width = 7, height = 3.5)
-par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
-  las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
-#labs <- c(0.010, 0.015, 0.02, 0.025, 0.03)
-labs <- seq(0.010, 0.025, 0.005)#, 0.025, 0.03)
-labs_show <- sprintf("%.3f", labs)
-COL_LIMITS <- c(0.010, 0.025)
-map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
-  hotspots = TRUE, at = log(labs), at.labels = labs_show,
-  col_limits = COL_LIMITS)
-par(xpd = NA)
-mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
-  line = -1.4, las = 0, col = "grey30", cex = 0.9)
-dev.off()
-
-lower_lim <- 0.012
-# 2.5-fold to match the above map in scale (but shifted up)
-COL_LIMITS <- c(lower_lim, lower_lim * 2.5)
-labs <- seq(0.015, 0.030, 0.005)#, 0.025, 0.03)
-labs_show <- sprintf("%.3f", labs)
-# 1.0 cull:
-pdf("../figs/hotspots-paleo-1-pp.pdf", width = 7, height = 3.5)
-par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
-  las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
-map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
-  hotspots = TRUE, at = log(labs), at.labels = labs_show, col_limits = COL_LIMITS,
-# hotspots = TRUE, at = log(seq(0.075, 0.3, 0.1)), at.labels = seq(0.075, 0.3, 0.1),
-# plot_column = "mean.ext.1.0", col_limits = c(0.075, 0.3))#, col_limits = COL_LIMITS)
-  plot_column = "mean.ext.1.0")
-par(xpd = NA)
-mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
-  line = -1.4, las = 0, col = "grey30", cex = 0.9)
-dev.off()
-# singular
-pdf("../figs/hotspots-paleo-sing-pp.pdf", width = 7, height = 3.5)
-par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
-  las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
-map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
-  hotspots = TRUE, at = log(labs), at.labels = labs_show,
-  plot_column = "mean.ext.sing", col_limits = COL_LIMITS)
-par(xpd = NA)
-mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
-  line = -1.4, las = 0, col = "grey30", cex = 0.9)
-dev.off()
-# singletons and preserv. prob. == 1
-pdf("../figs/hotspots-paleo-singleton-plus-pp.pdf", width = 7, height = 3.5)
-par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
-  las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
-map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
-  hotspots = TRUE, at = log(labs), at.labels = labs_show,
-  plot_column = "mean.ext.singleton", col_limits = COL_LIMITS)
-par(xpd = NA)
-mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
-  line = -1.4, las = 0, col = "grey30", cex = 0.9)
-dev.off()
-# locality cull:
-pdf("../figs/hotspots-paleo-locality.pdf", width = 7, height = 3.5)
-par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
-  las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
-map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
-  hotspots = TRUE, at = log(labs), at.labels = labs_show,
-  plot_column = "mean.ext.locality", col_limits = COL_LIMITS)
-par(xpd = NA)
-mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
-  line = -1.4, las = 0, col = "grey30", cex = 0.9)
-dev.off()
-@
-
-<<pairs-paleo-culls>>=
-pdf("../figs/pairs-paleo-culls-genera.pdf", width = 7, height = 7)
-pairs(modern[,c("mean_observed", "mean_observed_1.0", "mean_observed_sing",
-    "mean_observed_singleton", "mean_observed_locality")],
-  pch = 21, col = "#00000010", bg = "#00000010", cex = 0.8, labels = pairs_labels,
-  upper.panel = panel.cor, asp = 1,
-  ylim = c(0, 1), xlim = c(0, 1))
-mtext("Intrinsic risk", side = 1, outer = TRUE, line = -1.5)
-mtext("Intrinsic risk", side = 2, outer = TRUE, line = -1.5)
-dev.off()
-
-pdf("../figs/pairs-paleo-culls-provinces.pdf", width = 7, height = 7)
-pairs(by.prov.all[,c("mean.ext", "mean.ext.1.0", "mean.ext.sing",
-    "mean.ext.singleton", "mean.ext.locality")],
-  pch = 21, col = "#00000050", bg = "#00000010", labels = pairs_labels,
-  upper.panel = panel.cor, asp = 1, ylim = c(-4.4, -2.5), xlim = c(-4.4, -2.5))
-mtext("Intrinsic risk", side = 1, outer = TRUE, line = -1.5)
-mtext("Intrinsic risk", side = 2, outer = TRUE, line = -1.5)
-dev.off()
+## pdf("../figs/class-risk-maps-mean-log-ext-paleo-1-pp.pdf", width = 6.45, height = 5.1)
+## map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10),
+## # max_range <- map_class_ext(er_dat_class, yticks = c(0.1, 0.15, 0.2, 0.25),
+##   min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0032, 0.16),
+##  picture_files = NULL, plot_column = "mean.ext.1.0",
+## #   picture_files = NULL, plot_column = "mean.ext.1.0",
+##   silhouette_coords = silhouette_coords, max_range_given = exp(max_range)+1.1,
+##   ylabel = "Intrinsic extinction risk")
+## dev.off()
+## # < 2 observation in fossil record cull:
+## # bring down a couple massive outliers:
+## er_dat_class$mean.ext.sing[er_dat_class$mean.ext.sing < log(0.003201)] <- log(0.003201)
+## er_dat_class$mean.ext.sing[er_dat_class$mean.ext.sing > log(0.158)] <- log(0.158)
+## pdf("../figs/class-risk-maps-mean-log-ext-paleo-sing-pp.pdf", width = 6.45, height = 5.1)
+## map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10),
+##   min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0032, 0.16),
+##   picture_files = picture_files, plot_column = "mean.ext.sing",
+##   silhouette_coords = silhouette_coords, max_range_given = exp(max_range)+6,
+##   ylabel = "Intrinsic extinction risk")
+## dev.off()
+##
+## # and the overall map:
+## # 0.0 cull (i.e. repeat of the main map):
+## pdf("../figs/hotspots-paleo-0-pp.pdf", width = 7, height = 3.5)
+## par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
+##   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
+## #labs <- c(0.010, 0.015, 0.02, 0.025, 0.03)
+## labs <- seq(0.010, 0.025, 0.005)#, 0.025, 0.03)
+## labs_show <- sprintf("%.3f", labs)
+## COL_LIMITS <- c(0.010, 0.025)
+## map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
+##   hotspots = TRUE, at = log(labs), at.labels = labs_show,
+##   col_limits = COL_LIMITS)
+## par(xpd = NA)
+## mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
+##   line = -1.4, las = 0, col = "grey30", cex = 0.9)
+## dev.off()
+##
+## lower_lim <- 0.012
+## # 2.5-fold to match the above map in scale (but shifted up)
+## COL_LIMITS <- c(lower_lim, lower_lim * 2.5)
+## labs <- seq(0.015, 0.030, 0.005)#, 0.025, 0.03)
+## labs_show <- sprintf("%.3f", labs)
+## # 1.0 cull:
+## pdf("../figs/hotspots-paleo-1-pp.pdf", width = 7, height = 3.5)
+## par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
+##   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
+## map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
+##   hotspots = TRUE, at = log(labs), at.labels = labs_show, col_limits = COL_LIMITS,
+## # hotspots = TRUE, at = log(seq(0.075, 0.3, 0.1)), at.labels = seq(0.075, 0.3, 0.1),
+## # plot_column = "mean.ext.1.0", col_limits = c(0.075, 0.3))#, col_limits = COL_LIMITS)
+##   plot_column = "mean.ext.1.0")
+## par(xpd = NA)
+## mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
+##   line = -1.4, las = 0, col = "grey30", cex = 0.9)
+## dev.off()
+## # singular
+## pdf("../figs/hotspots-paleo-sing-pp.pdf", width = 7, height = 3.5)
+## par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
+##   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
+## map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
+##   hotspots = TRUE, at = log(labs), at.labels = labs_show,
+##   plot_column = "mean.ext.sing", col_limits = COL_LIMITS)
+## par(xpd = NA)
+## mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
+##   line = -1.4, las = 0, col = "grey30", cex = 0.9)
+## dev.off()
+## # singletons and preserv. prob. == 1
+## pdf("../figs/hotspots-paleo-singleton-plus-pp.pdf", width = 7, height = 3.5)
+## par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
+##   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
+## map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
+##   hotspots = TRUE, at = log(labs), at.labels = labs_show,
+##   plot_column = "mean.ext.singleton", col_limits = COL_LIMITS)
+## par(xpd = NA)
+## mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
+##   line = -1.4, las = 0, col = "grey30", cex = 0.9)
+## dev.off()
+## # locality cull:
+## pdf("../figs/hotspots-paleo-locality.pdf", width = 7, height = 3.5)
+## par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
+##   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
+## map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
+##   hotspots = TRUE, at = log(labs), at.labels = labs_show,
+##   plot_column = "mean.ext.locality", col_limits = COL_LIMITS)
+## par(xpd = NA)
+## mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
+##   line = -1.4, las = 0, col = "grey30", cex = 0.9)
+## dev.off()
 @
 
 % And source() the paleo cull sensitivity plotting code:
@@ -1406,6 +1424,8 @@ map_class_ext(er_dat_class, plot_column = "log.N.gen",
   yticks = c(1, 10, 100, 500),
   col_pal = RColorBrewer::brewer.pal(9, "YlGnBu"))
 @
+
+% TODO: Insert Fig 1-like figure with individual predictors here
 
 <<plot-gcd-genera-prov, fig.cap="Spatial distribution of \\textbf{mean geographic range size} in the modern dataset. The mean global geographic range (great circle distance, calculated following within-realm minimum bounding box interpolation) of all genera occupying each province are plotted. Low mean values indicate that the province contains many genera with relatively limited global geographic ranges and high mean values indicate that it contains a relatively cosmopolitan fauna.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
 er_dat_class$log.mean.gcd <- log(er_dat_class$mean.gcd)
@@ -1437,6 +1457,7 @@ ggplot(temp, aes(mean_observed + 0.001)) +
   scale_x_log10() + theme(strip.text.x = element_text(size = 8)) +
   ylab("Number of genera") + xlab("Predicted extinction probabilty") + theme(legend.position="top")
 @
+
 
 \section{Model exploration and sensitivity analyses}
 
@@ -1629,6 +1650,7 @@ for(i in seq_along(obis.culls)) {
 }
 @
 
+
 % And the overall map with various OBIS culls:
 <<overall-map-of-with-obis-sampling-thresholds, results='hide'>>=
 load("../data/by.prov.all.obis.culls.rda")
@@ -1651,23 +1673,6 @@ for(i in seq_along(obis.culls)) {
 }
 dev.off()
 @
-
-% and show crossplots:
-<<pair-obis-culls, results='hide'>>=
-for(i in seq_along(obis.culls)) {
-  by.prov.all.obis.culls[[i]]$obis_cull <- obis.culls[i]
-}
-dcull <- do.call("rbind", by.prov.all.obis.culls)
-dcull <- reshape2::dcast(dcull, PROV_CODE ~ obis_cull, value.var = "mean.ext")
-
-pdf("../figs/pairs-obis-culls.pdf", width = 6, height = 6)
-pairs(dcull[,-1], pch = 21, col = "#00000050", bg = "#00000010",
-  upper.panel = panel.cor)
-mtext("log Intrinsic risk", side = 1, outer = TRUE, line = -1.5)
-mtext("log Intrinsic risk", side = 2, outer = TRUE, line = -1.5)
-dev.off()
-@
-
 
 <<remove-single-province-genera-class-map, results='hide'>>=
 load("../data/by.prov.classes.no.singles.rda")
@@ -1716,6 +1721,7 @@ dev.off()
   (Fig.~2 and 3).}
 \label{fig:remove-single-province-genera}
 \end{figure}
+
 
 \subsection{The effect of interpolation of OBIS records}
 
@@ -1838,6 +1844,154 @@ dev.off()
 \label{fig:no-bounding-box}
 \end{figure}
 
+<<pair-obis-culls, results='hide'>>=
+for(i in seq_along(obis.culls)) {
+  by.prov.all.obis.culls[[i]]$obis_cull <- obis.culls[i]
+}
+dcull <- do.call("rbind", by.prov.all.obis.culls)
+dcull <- reshape2::dcast(dcull, PROV_CODE ~ obis_cull, value.var = "mean.ext")
+
+pdf("../figs/pairs-obis-culls.pdf", width = 6, height = 6)
+pairs(dcull[,-1], pch = 21, col = "#00000050", bg = "#00000010",
+  upper.panel = panel.cor)
+mtext("log Intrinsic risk", side = 1, outer = TRUE, line = -1.5)
+mtext("log Intrinsic risk", side = 2, outer = TRUE, line = -1.5)
+dev.off()
+@
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=0.9\textwidth]{../figs/pairs-obis-culls}
+\caption{Comparison of provincial mean intrinsic risk estimates under varying
+  sampling thresholds applied to the OBIS database. Values along the diagonal
+  (1, 5, 10, 20, 50) indicate the minimum number of OBIS occurrences necessary
+  for a genus in the modern ocean to be included in the calculation of mean
+  intrinsic risk. Points in each panel are log mean extinction risk values for
+  coastal biogeographic provinces after applying different minimum sampling
+  thresholds to the modern data. Spearman's rank-order correlation values are
+  presented in the upper right cells. Provincial instrinsic risk estimates are
+  strongly correlated across all thresholds considered.}
+\label{fig:pairs-prov-obis-culls}
+\end{center}
+\end{figure}
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=\textwidth]{../figs/fossil-cull-N.pdf}
+\caption{Effect of different minimum preservation probability culls on the
+  distribution of fossil genera with respect to potential extinction risk
+  predictors. Rows 1--2: total number of genera, rows 3--4: number of extinct
+  genera, rows 5--6: proportion of extinct genera.}
+%\label{fig:raw-predictor-paleo-culls}
+\end{center}
+\end{figure}
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=\textwidth]{../figs/fossil-cull-N-sing.pdf}
+\caption{Effect of culling genera with single (or zero) occurrences in the
+  fossil record in any stage in which we would have expected to observe them on
+  the distribution of fossil genera with respect to potential extinction risk
+  predictors. Rows 1--2: total number of genera, rows 3--4: number of extinct
+  genera, rows 5--6: proportion of extinct genera.}
+%\label{fig:raw-predictor-paleo-culls}
+\end{center}
+\end{figure}
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=0.9\textwidth]{../figs/partial-class-level-median-estimates}
+\caption{\textbf{TODO re-write this caption} The same data as
+  Fig.~OLD-BOXPLOT-FIG but arranged differently. These are medians with 40\% and
+  60\% quantiles of the `group'-level partial dependence values aggregated by
+  class. TODO - work with this: Distributions of predicted intrinsic risk for
+  genera in each of the six major marine groups, varying the preservation
+  probability threshold above which genera are included in the Neogene GBM
+  model. A threshold of 0.0, for example, includes all genera, whereas a
+  threshold of 0.5 includes only those genera with preservation probabilities of
+  0.5 or greater. Plotted are raw GBM risk estimates prior to calibration.
+  Median intrinsic risk declines with more stringent preservation thresholds as
+  rare and/or poorly sampled genera are excluded from the data.}
+\label{fig:class-level-partial-order}
+\end{center}
+\end{figure}
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=0.95\textwidth]{../figs/fossil-cull-comparison-continuous.pdf}
+\includegraphics[width=0.65\textwidth]{../figs/fossil-cull-comparison-group.pdf}
+\caption{Predictors of extinction risk in the Neogene to Pleistocene marine
+  fossil record. Partial dependence plots for the full Neogene-Pleistocene
+  model, as in Figure 1, but varying the minimum preservation probability that
+  fossil genera must exhibit to be included in the training data. Darker colors
+  indicate model output when preservation thresholds are relatively lenient
+  (e.g., all genera with preservation probabilities greater than 0), whereas
+  lighter colours indicate model output when preservation thresholds are
+  relatively stringent (e.g., all genera with preservation probabilities equal
+  to 1) and poorly-preserved genera are excluded from the training data.
+  Marginal effects of predictor variables on extinction risk are relatively
+  similar over a wide range of preservation thresholds.}
+\label{fig:partial-paleo-culls}
+\end{center}
+\end{figure}
+
+<<pairs-paleo-culls>>=
+pdf("../figs/pairs-paleo-culls-genera.pdf", width = 7, height = 7)
+pairs(modern[,c("mean_observed", "mean_observed_1.0", "mean_observed_sing",
+    "mean_observed_singleton", "mean_observed_locality")],
+  pch = 21, col = "#00000010", bg = "#00000010", cex = 0.8, labels = pairs_labels,
+  upper.panel = panel.cor, asp = 1,
+  ylim = c(0, 1), xlim = c(0, 1))
+mtext("Intrinsic risk", side = 1, outer = TRUE, line = -1.5)
+mtext("Intrinsic risk", side = 2, outer = TRUE, line = -1.5)
+dev.off()
+
+pdf("../figs/pairs-paleo-culls-provinces.pdf", width = 7, height = 7)
+pairs(by.prov.all[,c("mean.ext", "mean.ext.1.0", "mean.ext.sing",
+    "mean.ext.singleton", "mean.ext.locality")],
+  pch = 21, col = "#00000050", bg = "#00000010", labels = pairs_labels,
+  upper.panel = panel.cor, asp = 1, ylim = c(-4.4, -2.5), xlim = c(-4.4, -2.5))
+mtext("Intrinsic risk", side = 1, outer = TRUE, line = -1.5)
+mtext("Intrinsic risk", side = 2, outer = TRUE, line = -1.5)
+dev.off()
+@
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=0.9\textwidth]{../figs/pairs-paleo-culls-genera}
+\caption{Comparison of intrinsic risk estimates for modern genera from GBM
+  models trained on different subsets of the Neogene-Pleistocene fossil record.
+  \texttt{mean\_observed} refers to the main GBM model used in the paper.
+  \texttt{mean\_observed\_1.0} refers to a model trained on a dataset containing
+  only fossil genera with a preservation probability equal to one (i.e.,
+  excluding all genera that were not sampled in one or more subintervals between
+  their first and last occurrences). \texttt{mean\_observed\_sing} refers to a
+  model containing only fossil genera that were observed at least twice in all
+  subintervals from the subinterval in which they first occurred through the
+  subinterval in which they last occurred (i.e., excluding all genera known from
+  one or fewer occurrences). Points in each panel represent an intrinsic risk
+  prediction for an individual genus in the modern oceans based on a model
+  trained on an specific subset of fossil data. Spearman rank-order correlation
+  values are presented in the upper right cells. Genus instrinsic risk estimates
+  are strongly correlated across models trained on different subsets of fossil
+  data.}
+\label{fig:pairs-genus-paleo-culls}
+\end{center}
+\end{figure}
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=0.9\textwidth]{../figs/pairs-paleo-culls-provinces}
+\caption{Comparison of provincial mean intrinsic risk estimates from GBM
+  models trained on different subsets of the Neogene-Pleistocene fossil
+  record. Description of this figure is the same as in Fig. TODO-was-S21
+  except that points are are biogeographic province-level estimates instead
+  of individual genus-level estimates. Spearman rank-order correlation values
+  are presented in the upper right cells. Log mean instrinsic risk estimates
+  for provinces are strongly correlated across models trained on different
+  subsets of fossil data.}
+\label{fig:pairs-prov-paleo-culls}
+\end{center}
+\end{figure}
+
 \subsection{Testing the influence of individual taxonomic groups on contemporary risk maps}
 
 To determine the sensitivity of broad-scale intrinsic risk patterns in our
@@ -1938,19 +2092,20 @@ source("risk-pres-prob-scatter.R")
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=\textwidth]{../figs/risk-vs-preservation.pdf}
-\caption{Comparison between mean intrinsic risk and two indices of preservation
-  probability. Variation in mean intrinsic risk among taxonomic subgroups is not
-  associated with variation in mean preservation probability or variation in the
-  proportion of false extinctions (Fig.~TODO-was-S1). False extinctions were
-  calculated as the fraction of genera that appear to go extinct in the PaleoDB
-  but are extant according to modern occurrences in OBIS. Groups such as
-  architaenioglossid snails, elasmobranchs (sharks), and pholadomyoid bivalves
-  exhibit for example similar preservation potentials and similar proportions of
-  false extinctions yet differ in their mean intrinsic risk. Note that in
-  estimating the extinction risk of fossil genera, genera were only considered
-  ``extinct'' in a given geologic subinterval if that subinterval was the youngest
-  interval in which the genus was recorded in the PaleoDB and that genus did not
-  have modern occurrences in OBIS.}
+\caption{TODO: this figure is out of order. Comparison between mean intrinsic
+  risk and two indices of preservation probability. Variation in mean intrinsic
+  risk among taxonomic subgroups is not associated with variation in mean
+  preservation probability or variation in the proportion of false extinctions
+  (Fig.~TODO-was-S1). False extinctions were calculated as the fraction of
+  genera that appear to go extinct in the PaleoDB but are extant according to
+  modern occurrences in OBIS. Groups such as architaenioglossid snails,
+  elasmobranchs (sharks), and pholadomyoid bivalves exhibit for example similar
+  preservation potentials and similar proportions of false extinctions yet
+  differ in their mean intrinsic risk. Note that in estimating the extinction
+  risk of fossil genera, genera were only considered ``extinct'' in a given
+  geologic subinterval if that subinterval was the youngest interval in which
+  the genus was recorded in the PaleoDB and that genus did not have modern
+  occurrences in OBIS.}
 \label{fig:raw-predictor-ex}
 \end{center}
 \end{figure}
@@ -1958,117 +2113,28 @@ source("risk-pres-prob-scatter.R")
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=\textwidth]{../figs/raw-predictors-proportion-ext.pdf}
-\caption{Proportion genera extinct at various predictor values. TODO FILL THIS IN}
+\caption{TODO: this figure is out of order. Proportion genera extinct at various
+  predictor values. TODO FILL THIS IN}
 \label{fig:raw-predictor-ex}
 \end{center}
 \end{figure}
 
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[width=\textwidth]{../figs/fossil-cull-N.pdf}
-\caption{Effect of different minimum preservation probability culls on the
-  distribution of fossil genera with respect to potential extinction risk
-  predictors. Rows 1--2: total number of genera, rows 3--4: number of extinct
-  genera, rows 5--6: proportion of extinct genera.}
-%\label{fig:raw-predictor-paleo-culls}
-\end{center}
-\end{figure}
-
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[width=\textwidth]{../figs/fossil-cull-N-sing.pdf}
-\caption{Effect of culling genera with single (or zero) occurrences in the
-  fossil record in any stage in which we would have expected to observe them on
-  the distribution of fossil genera with respect to potential extinction risk
-  predictors. Rows 1--2: total number of genera, rows 3--4: number of extinct
-  genera, rows 5--6: proportion of extinct genera.}
-%\label{fig:raw-predictor-paleo-culls}
-\end{center}
-\end{figure}
-
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[width=\textwidth]{../figs/fossil-cull-self-prediction-threshold-distributions.pdf}
-\caption{Distributions of predicted intrinsic risk for genera in each of the six
-  major marine groups, varying the preservation probability threshold above
-  which genera are included in the Neogene GBM model. A threshold of 0.0, for
-  example, includes all genera, whereas a threshold of 0.5 includes only those
-  genera with preservation probabilities of 0.5 or greater. Plotted are raw GBM
-  risk estimates prior to calibration. Median intrinsic risk declines with more
-  stringent preservation thresholds as rare and/or poorly sampled genera are
-  excluded from the data. The boxes show the interquartile range, the whiskers
-  show 1.5 times the interquartile range, and dots show outliers beyond that
-  range. Lines in the middle indicate the median values.}
-\label{fig:ext-boxplots-paleo-culls}
-\end{center}
-\end{figure}
-
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[width=0.9\textwidth]{../figs/partial-class-level-median-estimates}
-\caption{The same data as Fig.~\ref{fig:ext-boxplots-paleo-culls} but arranged
-  differently. These are medians with 40\% and 60\% quantiles of the
-  `group'-level partial dependence values aggregated by class.}
-\label{fig:class-level-partial-order}
-\end{center}
-\end{figure}
-
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[width=0.95\textwidth]{../figs/fossil-cull-comparison-continuous.pdf}
-\includegraphics[width=0.65\textwidth]{../figs/fossil-cull-comparison-group.pdf}
-\caption{Predictors of extinction risk in the Neogene to Pleistocene marine
-  fossil record. Partial dependence plots for the full Neogene-Pleistocene
-  model, as in Figure 1, but varying the minimum preservation probability that
-  fossil genera must exhibit to be included in the training data. Darker colors
-  indicate model output when preservation thresholds are relatively lenient
-  (e.g., all genera with preservation probabilities greater than 0), whereas
-  lighter colours indicate model output when preservation thresholds are
-  relatively stringent (e.g., all genera with preservation probabilities equal
-  to 1) and poorly-preserved genera are excluded from the training data.
-  Marginal effects of predictor variables on extinction risk are relatively
-  similar over a wide range of preservation thresholds.}
-\label{fig:partial-paleo-culls}
-\end{center}
-\end{figure}
-
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[width=0.9\textwidth]{../figs/pairs-paleo-culls-genera}
-\caption{Comparison of intrinsic risk estimates for modern genera from GBM
-  models trained on different subsets of the Neogene-Pleistocene fossil record.
-  \texttt{mean\_observed} refers to the main GBM model used in the paper.
-  \texttt{mean\_observed\_1.0} refers to a model trained on a dataset containing
-  only fossil genera with a preservation probability equal to one (i.e.,
-  excluding all genera that were not sampled in one or more subintervals between
-  their first and last occurrences). \texttt{mean\_observed\_sing} refers to a
-  model containing only fossil genera that were observed at least twice in all
-  subintervals from the subinterval in which they first occurred through the
-  subinterval in which they last occurred (i.e., excluding all genera known from
-  one or fewer occurrences). Points in each panel represent an intrinsic risk
-  prediction for an individual genus in the modern oceans based on a model
-  trained on an specific subset of fossil data. Spearman rank-order correlation
-  values are presented in the upper right cells. Genus instrinsic risk estimates
-  are strongly correlated across models trained on different subsets of fossil
-  data.}
-\label{fig:pairs-genus-paleo-culls}
-\end{center}
-\end{figure}
-
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[width=0.9\textwidth]{../figs/pairs-paleo-culls-provinces}
-\caption{Comparison of provincial mean intrinsic risk estimates from GBM models
-  trained on different subsets of the Neogene-Pleistocene fossil record.
-  Description of this figure is the same as in Fig. TODO-was-S21 except that
-  points are are biogeographic province-level estimates instead of individual
-  genus-level estimates. Spearman rank-order correlation values are presented in
-  the upper right cells. Log mean instrinsic risk estimates for provinces are
-  strongly correlated across models trained on different subsets of fossil
-  data.}
-\label{fig:pairs-prov-paleo-culls}
-\end{center}
-\end{figure}
+% \begin{figure}[htbp]
+% \begin{center}
+% \includegraphics[width=\textwidth]{../figs/fossil-cull-self-prediction-threshold-distributions.pdf}
+% \caption{Distributions of predicted intrinsic risk for genera in each of the six
+%   major marine groups, varying the preservation probability threshold above
+%   which genera are included in the Neogene GBM model. A threshold of 0.0, for
+%   example, includes all genera, whereas a threshold of 0.5 includes only those
+%   genera with preservation probabilities of 0.5 or greater. Plotted are raw GBM
+%   risk estimates prior to calibration. Median intrinsic risk declines with more
+%   stringent preservation thresholds as rare and/or poorly sampled genera are
+%   excluded from the data. The boxes show the interquartile range, the whiskers
+%   show 1.5 times the interquartile range, and dots show outliers beyond that
+%   range. Lines in the middle indicate the median values.}
+% \label{fig:ext-boxplots-paleo-culls}
+% \end{center}
+% \end{figure}
 
 \begin{figure}[htbp]
 \begin{center}
@@ -2099,51 +2165,17 @@ source("risk-pres-prob-scatter.R")
 % \end{center}
 % \end{figure}
 
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[width=0.7\textwidth]{../figs/obis-samping-vs-predictors}
-\caption{Variation among extant genera in intrinsic extinction risk and great
-  circle distance as a function of the number of OBIS records. Overall intrinsic
-  extinction risk declines as the number of OBIS records increases, as expected
-  biologically and under a model in which poorly sampled genera artificially
-  appear to be at elevated extinction risk. Notably taxa with few raw
-  occurrences exhibit a broad range of intrinsic extinction risk values. Overall
-  great circle distance increases with the number of OBIS occurrences; however,
-  above approximately 5 OBIS occurrences genera exhibit the full range of great
-  circle distance values. Consequently we impose a minimum threshold of 5 OBIS
-  occurrences for all analyses presented in the main text and in the SOM
-  investigate the robustness of our results to varying the minimum number of
-  OBIS records.}
-\label{fig:obis-sampling-vs-predictors}
-\end{center}
-\end{figure}
 
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[width=0.9\textwidth]{../figs/pairs-obis-culls}
-\caption{Comparison of provincial mean intrinsic risk estimates under varying
-  sampling thresholds applied to the OBIS database. Values along the diagonal
-  (1, 5, 10, 20, 50) indicate the minimum number of OBIS occurrences necessary
-  for a genus in the modern ocean to be included in the calculation of mean
-  intrinsic risk. Points in each panel are log mean extinction risk values for
-  coastal biogeographic provinces after applying different minimum sampling
-  thresholds to the modern data. Spearman's rank-order correlation values are
-  presented in the upper right cells. Provincial instrinsic risk estimates are
-  strongly correlated across all thresholds considered.}
-\label{fig:pairs-prov-obis-culls}
-\end{center}
-\end{figure}
-
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[width=\textwidth]{../figs/overall-map-obis-culls}
-\caption{Fig.~3 from the main paper recreated with varying sampling thresholds
-  in the OBIS database. Note that the colours are rescaled on each map. The
-  pattern has little qualitative change until we reach a threshold around 50
-  OBIS records.}
-\label{fig:overall-maps-obis-culls}
-\end{center}
-\end{figure}
+% \begin{figure}[htbp]
+% \begin{center}
+% \includegraphics[width=\textwidth]{../figs/overall-map-obis-culls}
+% \caption{Fig.~3 from the main paper recreated with varying sampling thresholds
+%   in the OBIS database. Note that the colours are rescaled on each map. The
+%   pattern has little qualitative change until we reach a threshold around 50
+%   OBIS records.}
+% \label{fig:overall-maps-obis-culls}
+% \end{center}
+% \end{figure}
 
 % \begin{figure}[htbp]
 % \begin{center}
@@ -2153,29 +2185,29 @@ source("risk-pres-prob-scatter.R")
 % \end{center}
 % \end{figure}
 
-\begin{figure}[htbp]
-\begin{center}
-  \includegraphics[width=\textwidth]{../figs/class-map-obis-cull-10.pdf}
-\caption{Fig.~2 from the main paper recreated excluding all genera with $<$ 10 OBIS records.}
-\label{fig:class-map-obis-cull-10}
-\end{center}
-\end{figure}
-
-\begin{figure}[htbp]
-\begin{center}
-  \includegraphics[width=\textwidth]{../figs/class-map-obis-cull-20.pdf}
-\caption{Fig.~2 from the main paper recreated excluding all genera with $<$ 20 OBIS records.}
-\label{fig:class-map-obis-cull-20}
-\end{center}
-\end{figure}
-
-\begin{figure}[htbp]
-\begin{center}
-  \includegraphics[width=\textwidth]{../figs/class-map-obis-cull-50.pdf}
-\caption{Fig.~2 from the main paper recreated excluding all genera with $<$ 50 OBIS records.}
-\label{fig:class-map-obis-cull-50}
-\end{center}
-\end{figure}
+% \begin{figure}[htbp]
+% \begin{center}
+%   \includegraphics[width=\textwidth]{../figs/class-map-obis-cull-10.pdf}
+% \caption{Fig.~2 from the main paper recreated excluding all genera with $<$ 10 OBIS records.}
+% \label{fig:class-map-obis-cull-10}
+% \end{center}
+% \end{figure}
+%
+% \begin{figure}[htbp]
+% \begin{center}
+%   \includegraphics[width=\textwidth]{../figs/class-map-obis-cull-20.pdf}
+% \caption{Fig.~2 from the main paper recreated excluding all genera with $<$ 20 OBIS records.}
+% \label{fig:class-map-obis-cull-20}
+% \end{center}
+% \end{figure}
+%
+% \begin{figure}[htbp]
+% \begin{center}
+%   \includegraphics[width=\textwidth]{../figs/class-map-obis-cull-50.pdf}
+% \caption{Fig.~2 from the main paper recreated excluding all genera with $<$ 50 OBIS records.}
+% \label{fig:class-map-obis-cull-50}
+% \end{center}
+% \end{figure}
 
 \section{Supplementary tables and figures}
 \end{document}
