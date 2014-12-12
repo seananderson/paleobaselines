@@ -75,9 +75,9 @@ plyr::d_ply(cross_pred2, c("stage_train", "stage_test"), function(x) {
       par(xpd = FALSE)
   }
     })
-mtext("Scaled extinction probability (stage that model was built on)",
+mtext("Uncalibrated extinction risk (subinterval that model was built on)",
   side = 1, outer = TRUE, col = "grey50", cex = 0.6, line = 2.2)
-mtext("Scaled extinction probability (stage that model was tested on)",
+mtext("Uncalibrated extinction risk (subinterval that model was tested on)",
   side = 2, outer = TRUE, col = "grey50", cex = 0.6, line = 2.8, las = 0)
 par(xpd = NA)
 dev.off()

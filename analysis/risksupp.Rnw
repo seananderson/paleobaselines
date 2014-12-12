@@ -1208,7 +1208,7 @@ max_range <- map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.05, 0.1
   min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0034, 0.15),
   picture_files = picture_files,
   silhouette_coords = silhouette_coords,
-  ylabel = "Intrinsic extinction probability (over ~23 Myr)")
+  ylabel = "Intrinsic extinction risk")
 dev.off()
 write.table(round(exp(max_range), 3), file = "max_col_range_class_maps.txt",
   row.names = FALSE)
@@ -1235,7 +1235,7 @@ labs_show <- sprintf("%.3f", labs)
 map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
   hotspots = TRUE, at = log(labs), at.labels = labs_show)
 par(xpd = NA)
-mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
+mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
   line = -1.4, las = 0, col = "grey30", cex = 0.9)
 dev.off()
 @
@@ -1252,7 +1252,7 @@ map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10),
  picture_files = NULL, plot_column = "mean.ext.1.0",
 #   picture_files = NULL, plot_column = "mean.ext.1.0",
   silhouette_coords = silhouette_coords, max_range_given = exp(max_range)+1.1,
-  ylabel = "Intrinsic extinction probability (over ~23 Myr)")
+  ylabel = "Intrinsic extinction risk")
 dev.off()
 # < 2 observation in fossil record cull:
 # bring down a couple massive outliers:
@@ -1263,7 +1263,7 @@ map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10),
   min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0032, 0.16),
   picture_files = picture_files, plot_column = "mean.ext.sing",
   silhouette_coords = silhouette_coords, max_range_given = exp(max_range)+6,
-  ylabel = "Intrinsic extinction probability (over ~23 Myr)")
+  ylabel = "Intrinsic extinction risk")
 dev.off()
 
 # and the overall map:
@@ -1279,7 +1279,7 @@ map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
   hotspots = TRUE, at = log(labs), at.labels = labs_show,
   col_limits = COL_LIMITS)
 par(xpd = NA)
-mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
+mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
   line = -1.4, las = 0, col = "grey30", cex = 0.9)
 dev.off()
 
@@ -1298,7 +1298,7 @@ map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
 # plot_column = "mean.ext.1.0", col_limits = c(0.075, 0.3))#, col_limits = COL_LIMITS)
   plot_column = "mean.ext.1.0")
 par(xpd = NA)
-mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
+mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
   line = -1.4, las = 0, col = "grey30", cex = 0.9)
 dev.off()
 # singular
@@ -1309,7 +1309,7 @@ map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
   hotspots = TRUE, at = log(labs), at.labels = labs_show,
   plot_column = "mean.ext.sing", col_limits = COL_LIMITS)
 par(xpd = NA)
-mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
+mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
   line = -1.4, las = 0, col = "grey30", cex = 0.9)
 dev.off()
 # singletons and preserv. prob. == 1
@@ -1320,7 +1320,7 @@ map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
   hotspots = TRUE, at = log(labs), at.labels = labs_show,
   plot_column = "mean.ext.singleton", col_limits = COL_LIMITS)
 par(xpd = NA)
-mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
+mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
   line = -1.4, las = 0, col = "grey30", cex = 0.9)
 dev.off()
 # locality cull:
@@ -1331,7 +1331,7 @@ map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
   hotspots = TRUE, at = log(labs), at.labels = labs_show,
   plot_column = "mean.ext.locality", col_limits = COL_LIMITS)
 par(xpd = NA)
-mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
+mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
   line = -1.4, las = 0, col = "grey30", cex = 0.9)
 dev.off()
 @
@@ -1378,7 +1378,7 @@ map_class_ext(er_dat_class, plot_column = "log.N.gen",
 <<plot-gcd-genera-prov, fig.cap="Spatial distribution of \\textbf{mean geographic range size} in the modern dataset. The mean global geographic range (great circle distance, calculated following within-realm minimum bounding box interpolation) of all genera occupying each province are plotted. Low mean values indicate that the province contains many genera with relatively limited global geographic ranges and high mean values indicate that it contains a relatively cosmopolitan fauna.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
 er_dat_class$log.mean.gcd <- log(er_dat_class$mean.gcd)
 map_class_ext(er_dat_class, plot_column = "log.mean.gcd",
-  min_prov_genera = 0, ylab = "Mean great circle distance",
+  min_prov_genera = 0, ylab = "Mean great circle distance (km)",
   yticks = c(14000, 17000, 20000), exact_limits = c(14000, 20000),
   col_pal = RColorBrewer::brewer.pal(9, "YlGnBu"), limit_pad = 0.05,
   fixed_range = TRUE)
@@ -1401,7 +1401,7 @@ temp$class[temp$class == "Elasmobranchii"] <- "Sharks"
 ggplot(temp, aes(mean_observed + 0.001)) +
   geom_histogram(aes(fill = class, colour = class),
     position = "stack", alpha = 0.5, binwidth = 0.4) +
-  facet_wrap(~ PROV_pretty,ncol=5) +
+  facet_wrap(~ PROV_pretty,ncol=5) + labs(fill = "Group", colour = "Group")
   scale_x_log10() + theme(strip.text.x = element_text(size = 8)) +
   ylab("Number of genera") + xlab("Predicted extinction probabilty") + theme(legend.position="top")
 @
@@ -1592,7 +1592,7 @@ for(i in seq_along(obis.culls)) {
     silhouette_coords = silhouette_coords,
     min_prov_genera = 10, col_range = TRUE,
     exact_limits = c(0.0034, 0.15), max_range_given = 3.5,
-    ylabel = "Intrinsic extinction probability (over ~23 Myr)")
+    ylabel = "Intrinsic extinction risk")
   dev.off()
 }
 @
@@ -1614,7 +1614,7 @@ for(i in seq_along(obis.culls)) {
     hotspots = FALSE, at = log(labs.ns), at.labels = labs.ns)
   mtext(paste("Exclude genera with <", obis.culls[i], "OBIS records"), line = -0.5)
   #par(xpd = NA)
-  #mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
+  #mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
   #  line = -1.2, las = 0, col = "grey30", cex = 0.9)
 }
 dev.off()
@@ -1650,7 +1650,7 @@ map_class_ext(er_dat_class_no_single, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10),
   silhouette_coords = silhouette_coords,
   min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0034,
     0.15),
-  ylabel = "Intrinsic extinction probability (over ~23 Myr)")
+  ylabel = "Intrinsic extinction risk")
 dev.off()
 @
 
@@ -1665,7 +1665,7 @@ labs.ns <- seq(0.012, 0.022, 0.004)
 map_hotspots(er_dat_no_single, min_prov_genera = 100, add_legend = TRUE,
   hotspots = FALSE, at = log(labs.ns), at.labels = labs.ns)
 par(xpd = NA)
-mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
+mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
   line = -1.2, las = 0, col = "grey30", cex = 0.9)
 dev.off()
 @
@@ -1782,7 +1782,7 @@ par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
 labs.nbb <- seq(0.020, 0.032, 0.004)
 map_hotspots(er_dat_raw, min_prov_genera = 100, hotspots = FALSE,
   add_legend = TRUE, at = log(labs.nbb), at.labels = labs.nbb)
-mtext("Intrinsic extinction probability", side = 4, outer = TRUE,
+mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
   line = -1.2, las = 0, col = "grey30", cex = 0.9)
 dev.off()
 @

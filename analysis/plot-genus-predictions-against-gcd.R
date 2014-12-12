@@ -36,7 +36,7 @@ ggplot(d2, aes(y = jitter(gbm_pred_binned, amount = 0.02),
   x = jitter(great.circle, amount = 800), colour = as.factor(group2))) +
   geom_hline(yintercept = mean(d2$gbm_pred_binned), colour = "red") +
   geom_point(alpha = 0.6, pch = 1, size = 3) + facet_wrap(~newclass) +
-  theme_bw() + xlab("Great circle distance") + ylab("Predicted intrinsic risk") +
+  theme_bw() + xlab("Great circle distance (km)") + ylab("Intrinsic risk") +
   theme(strip.text.x = element_text(size = 8), axis.text = element_text(size = 8)) +
   theme(legend.text = element_text(size = 9)) + scale_colour_manual(values = c("red",
     "blue", "green3", "deeppink1", "orange", "cyan", "yellow3",
