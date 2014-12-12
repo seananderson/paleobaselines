@@ -634,7 +634,8 @@ and testing the model on independent datasets, this is a good test of how our
 model might perform on a new but equivalent dataset.
 
 <<test-gbm1, results='hide', cache=FALSE>>=
-INT.DEPTH <- 5 # these constants hold throughout the document
+# These constants (indicated by all caps) hold throughout the document.
+INT.DEPTH <- 5
 NTREES <- 2000
 SHRINKAGE <- 0.01
 
