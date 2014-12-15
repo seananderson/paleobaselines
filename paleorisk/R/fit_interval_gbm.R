@@ -48,5 +48,5 @@ fit_interval_gbm <- function(dat, stage_train, stage_test, interaction.depth = 1
     n.trees = n.trees)
   pred_self <- gbm::predict.gbm(m_self, type = "response", n.trees = n.trees)
   data.frame(stage_train, stage_test, pred, pred_self,
-    class = dat_test$class)
+    class = dat_test$class, group = dat_test$group)
 }
