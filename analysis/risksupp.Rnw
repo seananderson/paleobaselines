@@ -1575,7 +1575,7 @@ print(p)
   range maps instead of OBIS data for the modern distributions. The broad-scale
   mean intrinsic risk patterns plotted in Fig.~2 remain after accounting for the
   positive relationship between mean intrinsic risk and number of OBIS records
-  (Fig.~TODO-was-S15).}
+  (Fig.~\ref{fig:relationship-between-mean-risk-and-sampling-intensity}).}
 \label{fig:obis-residuals-maps}
 \end{figure}
 
