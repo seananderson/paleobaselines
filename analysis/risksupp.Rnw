@@ -2000,12 +2000,12 @@ dev.off()
 \includegraphics[width=0.9\textwidth]{../figs/pairs-paleo-culls-provinces}
 \caption{Comparison of provincial mean intrinsic risk estimates from GBM
   models trained on different subsets of the Neogene-Pleistocene fossil
-  record. Description of this figure is the same as in Fig. TODO-was-S21
-  except that points are are biogeographic province-level estimates instead
-  of individual genus-level estimates. Spearman rank-order correlation values
-  are presented in the upper right cells. Log mean instrinsic risk estimates
-  for provinces are strongly correlated across models trained on different
-  subsets of fossil data.}
+  record. Description of this figure is the same as in
+  Fig.~\ref{fig:pairs-genus-paleo-culls} except that points are are
+  biogeographic province-level estimates instead of individual genus-level
+  estimates. Spearman's rank-order correlation values are presented in the upper
+  right cells. Log mean intrinsic risk estimates for provinces are strongly
+  correlated across models trained on different subsets of fossil data.}
 \label{fig:pairs-prov-paleo-culls}
 \end{center}
 \end{figure}
