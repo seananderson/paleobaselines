@@ -13,6 +13,17 @@
 \let\pkg=\textbf
 \let\fn=\texttt
 
+% Linux Libertine:
+\usepackage{textcomp}
+\usepackage[sb]{libertine}
+\usepackage[varqu,varl]{inconsolata}% sans serif typewriter
+\usepackage[libertine,bigdelims,vvarbb]{newtxmath} % bb from STIX
+\usepackage[cal=boondoxo]{mathalfa} % mathcal
+\useosf % osf for text, not math
+\usepackage[supstfm=libertinesups,%
+  supscaled=1.2,%
+  raised=-.13em]{superiors}
+
 \usepackage{lineno}
 \renewcommand\linenumberfont{\normalfont\tiny\sffamily\color{gray}}
 
