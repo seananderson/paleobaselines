@@ -1453,7 +1453,7 @@ temp$class[temp$class == "Elasmobranchii"] <- "Sharks"
 ggplot(temp, aes(mean_observed + 0.001)) +
   geom_histogram(aes(fill = class, colour = class),
     position = "stack", alpha = 0.5, binwidth = 0.4) +
-  facet_wrap(~ PROV_pretty,ncol=5) + labs(fill = "Group", colour = "Group")
+  facet_wrap(~ PROV_pretty,ncol=5) + labs(fill = "Group", colour = "Group") +
   scale_x_log10() + theme(strip.text.x = element_text(size = 8)) +
   ylab("Number of genera") + xlab("Predicted extinction probabilty") + theme(legend.position="top")
 @
