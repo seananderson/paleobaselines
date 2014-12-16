@@ -116,7 +116,7 @@ p1 <- ggplot(class_medians_culls, aes(prop_comp_thresh, m, group = class, colour
   geom_line(lwd = 1.5) +
   scale_y_log10(breaks = c(0.05, 0.1, 0.2, 0.5, 1)) +
   ylab("Partial dependence component aggregated by class") +
-  xlab("Preservation probability threshold") + theme_bw()
+  xlab("Preservation probability threshold") + theme_bw() + labs(colour = "Group")
 ggsave("../figs/partial-class-level-median-estimates.pdf", width = 8, height = 5)
 
 p1 <- ggplot(ne, aes(prop_comp_thresh, pred, fill = class, colour = class)) + geom_violin(aes(group = prop_comp_thresh), scale = "width") + facet_wrap(~class)+ theme_bw() + xlab("Preservation probability threshold") + ylab("Predicted relative extinction risk")
