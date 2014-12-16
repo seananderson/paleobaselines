@@ -43,7 +43,7 @@
 <<set-knitr-options, cache=FALSE, echo=FALSE>>=
 library("knitr")
 opts_chunk$set(fig.align='center', fig.pos="htpb", cache=TRUE, echo=FALSE,
-  message=FALSE, autodep=FALSE, fig.path='../figs/', fig.width=6, par=TRUE)
+  message=FALSE, autodep=FALSE, results='hide', fig.path='../figs/', fig.width=6, par=TRUE)
 opts_chunk$set(warning=FALSE, message=FALSE, tidy=FALSE, refresh=TRUE,
   cache.path="../cache/", cache.lazy=TRUE, size="small", cache.comments=FALSE)
 opts_chunk$set(dev = 'pdf')
