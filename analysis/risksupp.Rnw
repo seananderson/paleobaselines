@@ -1436,7 +1436,14 @@ map_class_ext(er_dat_class, plot_column = "log.N.gen",
   col_pal = RColorBrewer::brewer.pal(9, "YlGnBu"))
 @
 
-% TODO: Insert Fig 1-like figure with individual predictors here
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=\textwidth]{../figs/raw-predictors-proportion-ext.pdf}
+\includegraphics[width=0.7\textwidth]{../figs/raw-taxonomy-predictors-proportion-ext.pdf}
+\caption{Proportion genera extinct at various predictor values. TODO FILL THIS IN}
+\label{fig:raw-predictor-ex}
+\end{center}
+\end{figure}
 
 <<plot-gcd-genera-prov, fig.cap="Spatial distribution of \\textbf{mean geographic range size} in the modern dataset. The mean global geographic range (great circle distance, calculated following within-realm minimum bounding box interpolation) of all genera occupying each province are plotted. Low mean values indicate that the province contains many genera with relatively limited global geographic ranges and high mean values indicate that it contains a relatively cosmopolitan fauna.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
 er_dat_class$log.mean.gcd <- log(er_dat_class$mean.gcd)
@@ -2117,16 +2124,6 @@ source("risk-pres-prob-scatter.R")
   geologic subinterval if that subinterval was the youngest interval in which
   the genus was recorded in the PaleoDB and that genus did not have modern
   occurrences in OBIS.}
-\label{fig:raw-predictor-ex}
-\end{center}
-\end{figure}
-
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[width=\textwidth]{../figs/raw-predictors-proportion-ext.pdf}
-\includegraphics[width=0.7\textwidth]{../figs/raw-taxonomy-predictors-proportion-ext.pdf}
-\caption{TODO: this figure is out of order. Proportion genera extinct at various
-  predictor values. TODO FILL THIS IN}
 \label{fig:raw-predictor-ex}
 \end{center}
 \end{figure}
