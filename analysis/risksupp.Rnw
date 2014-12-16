@@ -2124,6 +2124,7 @@ source("risk-pres-prob-scatter.R")
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=\textwidth]{../figs/raw-predictors-proportion-ext.pdf}
+\includegraphics[width=0.7\textwidth]{../figs/raw-taxonomy-predictors-proportion-ext.pdf}
 \caption{TODO: this figure is out of order. Proportion genera extinct at various
   predictor values. TODO FILL THIS IN}
 \label{fig:raw-predictor-ex}
