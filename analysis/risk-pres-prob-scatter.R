@@ -40,6 +40,6 @@ p2 <- ggplot(plot.dat, aes(mean.pseudo.ex, mean.risk, colour = class, label = gr
   ylab("Mean predicted intrinsic risk") +
   coord_cartesian(xlim = c(-.08, .5)) + labs(colour = "Group")
 
-pdf("../figs/risk-vs-preservation.pdf",  width = 10,  height = 5.1)
+pdf("../figs/risk-vs-preservation.pdf",  width = 12,  height = 5.1)
 gridExtra::grid.arrange(p1, p2, ncol = 2)
 dev.off()
