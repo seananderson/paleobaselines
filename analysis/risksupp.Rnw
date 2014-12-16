@@ -1143,8 +1143,8 @@ pairs(modern[,c("mean_observed", "mean_observed_1.0", "mean_observed_sing",
  labels = c("Base model", "Preservation\nprobability = 1", ">= 2 observations",
    "No singletons &\npreserv. prob. = 1", "> 1 location"), upper.panel = panel.cor, asp = 1,
  ylim = c(0, 1), xlim = c(0, 1))
-mtext("Intrinsic risk", side = 1, outer = TRUE, line = -1.5)
-mtext("Intrinsic risk", side = 2, outer = TRUE, line = -1.5)
+mtext("log intrinsic risk", side = 1, outer = TRUE, line = -1.5)
+mtext("log intrinsic risk", side = 2, outer = TRUE, line = -1.5)
 dev.off()
 pdf("../figs/pairs-gbm-calibrated-predictions-culls-zoomed.pdf", width = 7, height = 7)
 pairs(modern[,c("mean_observed", "mean_observed_1.0", "mean_observed_sing",
