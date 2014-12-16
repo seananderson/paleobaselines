@@ -1851,14 +1851,13 @@ dev.off()
   biogeographic provinces \cite{spalding2007} for each of the six major groups
   considered (upper six panels) and across all genera (lower centred panel), as
   in Fig.~2 and 3, but \textbf{with predictions based on raw ranges in OBIS
-    without the within-realm minimum bounding box interpolation (Fig.
-    TODO-was-S7)}. Scale bars on the right indicate the range of intrinsic
-  extinction risk values for a given group. Note that the modern distribution of
-  sharks and mammals was based on range maps instead of OBIS observations and so
-  panels A and B are the same as in Fig.~2. Omitting the interpolation procedure
-  results in greater heterogeneity in mean intrinsic risk among adjacent
-  provinces but does not substantially alter broad-scale intrinsic risk
-  patterns.}
+    without the within-realm minimum bounding box interpolation}. Scale bars on
+  the right indicate the range of intrinsic extinction risk values for a given
+  group. Note that the modern distribution of sharks and mammals was based on
+  range maps instead of OBIS observations and so panels A and B are the same as
+  in Fig.~2. Omitting the interpolation procedure results in greater
+  heterogeneity in mean intrinsic risk among adjacent provinces but does not
+  substantially alter broad-scale intrinsic risk patterns.}
 \label{fig:no-bounding-box}
 \end{figure}
 
@@ -1987,8 +1986,8 @@ dev.off()
   subinterval in which they last occurred (i.e., excluding all genera known from
   one or fewer occurrences). Points in each panel represent an intrinsic risk
   prediction for an individual genus in the modern oceans based on a model
-  trained on an specific subset of fossil data. Spearman rank-order correlation
-  values are presented in the upper right cells. Genus instrinsic risk estimates
+  trained on an specific subset of fossil data. Spearman's rank-order correlation
+  values are presented in the upper right cells. Genus intrinsic risk estimates
   are strongly correlated across models trained on different subsets of fossil
   data.}
 \label{fig:pairs-genus-paleo-culls}
