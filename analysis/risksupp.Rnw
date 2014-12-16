@@ -1628,8 +1628,6 @@ map_hotspots(er_dat, min_prov_genera = 200, hotspots = FALSE)
 mtext("Min. genera = 200", cex = 2)
 @
 
-% TODO 20140923 follow this framework below to build fossil sensitivity maps
-
 <<maps-of-with-obis-sampling-thresholds, results='hide'>>=
 load("../data/by.prov.classes.obis.culls.rda")
 er <- maptools::readShapePoly("../data/MEOW2/meow_ecos.shp")
