@@ -2011,15 +2011,18 @@ dev.off()
 \includegraphics[width=0.9\textwidth]{../figs/pairs-paleo-culls-genera}
 \caption{Comparison of intrinsic risk estimates for modern genera from GBM
   models trained on different subsets of the Neogene-Pleistocene fossil record.
-  \texttt{mean\_observed} refers to the main GBM model used in the paper.
-  \texttt{mean\_observed\_1.0} refers to a model trained on a dataset containing
+  ``Base model'' refers to the main GBM model used in the paper.
+  ``Preservation probability = 1'' refers to a model trained on a dataset containing
   only fossil genera with a preservation probability equal to one (i.e.,
   excluding all genera that were not sampled in one or more subintervals between
-  their first and last occurrences). \texttt{mean\_observed\_sing} refers to a
+  their first and last occurrences). ``$>=$ 2 observations'' refers to a
   model containing only fossil genera that were observed at least twice in all
   subintervals from the subinterval in which they first occurred through the
   subinterval in which they last occurred (i.e., excluding all genera known from
-  one or fewer occurrences). Points in each panel represent an intrinsic risk
+  one or fewer occurrences).
+  ``No singletons \& preserv.\ prob.\ = 1'' refers to TODO.
+  ``$>$ 1 locality'' refers to TODO.
+  Points in each panel represent an intrinsic risk
   prediction for an individual genus in the modern oceans based on a model
   trained on an specific subset of fossil data. Spearman's rank-order correlation
   values are presented in the upper right cells. Genus intrinsic risk estimates
