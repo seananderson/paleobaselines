@@ -1934,6 +1934,17 @@ dev.off()
 
 \begin{figure}[htbp]
 \begin{center}
+\includegraphics[width=\textwidth]{../figs/overall-map-obis-culls}
+\caption{TODO tweak caption: Fig.~3 from the main paper recreated with varying sampling thresholds
+  in the OBIS database. Note that the colours are rescaled on each map. The
+  pattern has little qualitative change until we reach a threshold around 50
+  OBIS records.}
+\label{fig:overall-maps-obis-culls}
+\end{center}
+\end{figure}
+
+\begin{figure}[htbp]
+\begin{center}
 \includegraphics[width=\textwidth]{../figs/fossil-cull-N.pdf}
 \caption{Effect of different minimum preservation probability culls on the
   distribution of fossil genera with respect to potential extinction risk
@@ -2053,6 +2064,18 @@ dev.off()
 \end{center}
 \end{figure}
 
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-0-pp}
+%\includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-1-pp}
+\includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-sing-pp}
+\caption{TODO Tweak caption? Global maps from models built with various culls of the Neogene fossil
+  record. From top to bottom: the base model, and only genera with at least two observations in all
+  stages for which we would expect there to be observations.}
+\label{fig:overall-maps-paleo-culls}
+\end{center}
+\end{figure}
+
 \subsection{Testing the influence of individual taxonomic groups on contemporary risk maps}
 
 To determine the sensitivity of broad-scale intrinsic risk patterns in our
@@ -2163,18 +2186,6 @@ Taxonomic subgroup    & Ordinal to family rank taxonomic assignments for each ge
 % \end{center}
 % \end{figure}
 
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-0-pp}
-%\includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-1-pp}
-\includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-sing-pp}
-\caption{Global maps from models built with various culls of the Neogene fossil
-  record. From top to bottom: the base model, and only genera with at least two observations in all
-  stages for which we would expect there to be observations.}
-\label{fig:overall-maps-paleo-culls}
-\end{center}
-\end{figure}
-
 % \begin{figure}[htbp]
 % \begin{center}
 % \includegraphics[width=\textwidth]{../figs/class-risk-maps-mean-log-ext-paleo-1-pp}
@@ -2191,17 +2202,16 @@ Taxonomic subgroup    & Ordinal to family rank taxonomic assignments for each ge
 % \end{center}
 % \end{figure}
 
-
-% \begin{figure}[htbp]
-% \begin{center}
-% \includegraphics[width=\textwidth]{../figs/overall-map-obis-culls}
-% \caption{Fig.~3 from the main paper recreated with varying sampling thresholds
-%   in the OBIS database. Note that the colours are rescaled on each map. The
-%   pattern has little qualitative change until we reach a threshold around 50
-%   OBIS records.}
-% \label{fig:overall-maps-obis-culls}
-% \end{center}
-% \end{figure}
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=\textwidth]{../figs/overall-map-obis-culls}
+\caption{TODO tweak caption: Fig.~3 from the main paper recreated with varying sampling thresholds
+  in the OBIS database. Note that the colours are rescaled on each map. The
+  pattern has little qualitative change until we reach a threshold around 50
+  OBIS records.}
+\label{fig:overall-maps-obis-culls}
+\end{center}
+\end{figure}
 
 % \begin{figure}[htbp]
 % \begin{center}
