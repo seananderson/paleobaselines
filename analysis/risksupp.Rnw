@@ -2002,8 +2002,8 @@ pairs(by.prov.all[,c("mean.ext", "mean.ext.1.0", "mean.ext.sing",
     "mean.ext.singleton", "mean.ext.locality")],
   pch = 21, col = "#00000050", bg = "#00000010", labels = pairs_labels,
   upper.panel = panel.cor, asp = 1, ylim = c(-4.4, -2.5), xlim = c(-4.4, -2.5))
-mtext("Intrinsic risk", side = 1, outer = TRUE, line = -1.5)
-mtext("Intrinsic risk", side = 2, outer = TRUE, line = -1.5)
+mtext("log Intrinsic risk", side = 1, outer = TRUE, line = -1.5)
+mtext("log Intrinsic risk", side = 2, outer = TRUE, line = -1.5)
 dev.off()
 @
 \begin{figure}[htbp]
