@@ -45,7 +45,7 @@ map_class_ext <- function(er_dat, min_prov_genera = 20,
   plot_column = "mean.ext", plot_order = c("Mammalia", "Elasmobranchii",
     "Echinoidea", "Gastropoda", "Anthozoa", "Bivalvia"),
   yticks = c(0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1),
-  ylabel = "Intrinsic extinction probability", col_range = FALSE,
+  ylabel = "Intrinsic extinction risk", col_range = FALSE,
   exact_limits = NULL, log_yticks = FALSE, fixed_range = FALSE,
   picture_files = NULL, silhouette_coords = list(c(-2.2, -0.75, -1.9, -0,86)),
   max_range_given = NULL, make_plot = TRUE, ...) {

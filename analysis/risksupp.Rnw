@@ -142,7 +142,7 @@ methodology, and model exploration and sensitivity analyses.
 
 This document is written with the \pkg{knitr} package
 \cite{xie2013b,xie2014a,xie2014} for the \proglang{R} statistical environment
-\cite{r2013}. The entire analysis can be recreated by running
+\cite{r2014}. The entire analysis can be recreated by running
 \texttt{knitr::knit()} on the underlying source code (or using the \texttt{make}
 command as outlined below). A number of functions that are used in this analysis
 have been compiled into an \proglang{R} package \pkg{paleorisk}.
@@ -542,7 +542,7 @@ of 0.1.
 
 \subsection{Choice of modelling framework}
 
-We modelled intrinsic contemporary extinction probability from paleontological
+We modelled intrinsic contemporary extinction risk from paleontological
 data using a form of ensemble learning called generalized boosted regression
 models (GBMs; \cite{friedman2001}). \textit{Ensemble learning} approaches
 generate a final model that is the product of many weakly informative models fit
@@ -562,8 +562,10 @@ machine learning methods in many cases \cite{caruana2006} and are commonly used
 in applied prediction problems (e.g.\ by Yahoo for website rankings;
 \cite{cossock2008}).
 
+\textbf{TODO add about how GBMs work well with non linearities}
+
 We fit GBMs with the \pkg{gbm} package \cite{gbm2013} for the \proglang{R}
-statistical language and environment \cite{r2013}. The \pkg{gbm} package
+statistical language and environment \cite{r2014}. The \pkg{gbm} package
 implements GBMs based on Ref.\ \cite{friedman2001} with some minor modifications
 \cite{gbm2013}. Further, the \pkg{gbm} package implements the stochastic method
 proposed in Ref.\ \cite{friedman2001} in which a random subsample of the data is
@@ -637,10 +639,10 @@ calibration serves as an additional test of the predictive ability of our model.
 To calibrate our model, we grouped the predicted extinction probabilities for
 each class into bins from 0 to 1 in 0.05 increments. For example, we grouped
 predicted probabilities of 0.12, 0.11, and 0.14 for three different genera into
-a bin of 0.10--0.15. We then calculated the mean observed extinction probability
+a bin of 0.10--0.15. We then calculated the mean observed extinction risk
 for each of those bins. For example, if those three genera had observed
 extinction probabilities of 0.21, 0.09, and 0.10, the mean observed
-out-of-sample extinction probability would be 0.133. We then compared the mean
+out-of-sample extinction risk would be 0.133. We then compared the mean
 of our prediction bin (0.125 in this example) with the mean observed value
 (0.133). In this example our model is slightly biased. Because we're building
 and testing the model on independent datasets, this is a good test of how our
@@ -741,8 +743,8 @@ ggplot(val_test_example,
   facet_wrap(~class) +
   scale_size(trans = "log10") + coord_fixed(ratio = 1) +
   ylim(0, 1) + xlim(0, 1) +
-  xlab("Out-of-sample GBM-predicted scaled extinction probability") +
-  ylab("Observed scaled extinction probability (one iteration)") +
+  xlab("Out-of-sample GBM-predicted scaled extinction risk") +
+  ylab("Observed scaled extinction risk (one iteration)") +
   labs(size = "Sample #")
 @
 
@@ -781,8 +783,8 @@ plot_val <- function(model_dat, pt_dat) {
   facet_wrap(~class) +
   scale_size(trans = "log10") + coord_fixed(ratio = 1) +
   ylim(0, 1) + xlim(0, 1) +
-  xlab("Out-of-sample GBM-predicted scaled extinction probability") +
-  ylab("Observed scaled extinction probability") +
+  xlab("Out-of-sample GBM-predicted scaled extinction risk") +
+  ylab("Observed scaled extinction risk") +
   labs(size = "Median sample #")
   print(p)
 }
@@ -800,9 +802,9 @@ dev.off()
 
 We used these observed extinction probabilities (blue dots in the previous
 figure) to calibrate our predicted extinction probabilities in the contemporary
-dataset. We started with the predicted extinction probability from our GBM model
+dataset. We started with the predicted extinction risk from our GBM model
 applied to each contemporary genus, fit that value into our binning scheme, and
-extracted the empirically-observed mean extinction probability for that bin.
+extracted the empirically-observed mean extinction risk for that bin.
 This removes the observed out-of-sample non-linear bias in our model
 \cite{thorson2012}.
 
@@ -997,7 +999,7 @@ ROC (receiver operating characteristic) curves
 curves is referred to as the AUC (area under the ROC curve) and is a measure of
 predictive ability of the model. Formally, it represents the probability that a
 randomly selected extinct genus will be correctly assigned a higher extinction
-probability than a randomly selected genus that survived. We refer to these AUC
+risk than a randomly selected genus that survived. We refer to these AUC
 values in our paper and in the caption for
 (Fig.~\ref{fig:check-classfication-error-child.Rnw}).
 
@@ -1113,7 +1115,7 @@ panel.cor <- function(x, y, digits = 2, prefix = "", ...) {
 }
 
 pairs_labels <- c("Base model", "Preservation\nprobability = 1",
-    ">= 2 observations", "No singletons &\npreserv. prob. = 1",
+    "> 1 observation", "No stratigraphic\nsingletons",
     "> 1 locality")
 
 pdf("../figs/pairs-gbm-raw-predictions-culls.pdf", width = 7, height = 7)
@@ -1176,8 +1178,8 @@ pdf("../figs/pairs-gbm-calibrated-predictions-culls.pdf", width = 7, height = 7)
 pairs(modern[,c("mean_observed", "mean_observed_1.0", "mean_observed_sing",
     "mean_observed_singleton", "mean_observed_locality")],
   col = "#00000020",
- labels = c("Base model", "Preservation\nprobability = 1", ">= 2 observations",
-   "No singletons &\npreserv. prob. = 1", "> 1 location"), upper.panel = panel.cor, asp = 1,
+ labels = c("Base model", "Preservation\nprobability = 1", "> 1 observation",
+   "No stratigraphic\nsingletons", "> 1 location"), upper.panel = panel.cor, asp = 1,
  ylim = c(0, 1), xlim = c(0, 1))
 mtext("log intrinsic risk", side = 1, outer = TRUE, line = -1.5)
 mtext("log intrinsic risk", side = 2, outer = TRUE, line = -1.5)
@@ -1185,8 +1187,8 @@ dev.off()
 pdf("../figs/pairs-gbm-calibrated-predictions-culls-zoomed.pdf", width = 7, height = 7)
 pairs(modern[,c("mean_observed", "mean_observed_1.0", "mean_observed_sing",
     "mean_observed_singleton", "mean_observed_locality")],
-  col = "#00000020", labels = c("Base model", "Preservation\nprobability = 1", ">= 2 observations",
-    "No singletons &\npreserv. prob. = 1", "> 1 location"), upper.panel = panel.cor,
+  col = "#00000020", labels = c("Base model", "Preservation\nprobability = 1", "> 1 observation",
+    "No stratigraphic\nsingletons", "> 1 location"), upper.panel = panel.cor,
   asp = 1, ylim = c(0, 0.6), xlim = c(0, 0.6))
 mtext("log Intrinsic risk", side = 1, outer = TRUE, line = -1.5)
 mtext("log Intrinsic risk", side = 2, outer = TRUE, line = -1.5)
@@ -1386,63 +1388,63 @@ dev.off()
 ## dev.off()
 ##
 ## # and the overall map:
-## # 0.0 cull (i.e. repeat of the main map):
-## pdf("../figs/hotspots-paleo-0-pp.pdf", width = 7, height = 3.5)
-## par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
-##   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
-## #labs <- c(0.010, 0.015, 0.02, 0.025, 0.03)
-## labs <- seq(0.010, 0.025, 0.005)#, 0.025, 0.03)
-## labs_show <- sprintf("%.3f", labs)
-## COL_LIMITS <- c(0.010, 0.025)
-## map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
-##   hotspots = TRUE, at = log(labs), at.labels = labs_show,
-##   col_limits = COL_LIMITS)
-## par(xpd = NA)
-## mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
-##   line = -1.4, las = 0, col = "grey30", cex = 0.9)
-## dev.off()
-##
-## lower_lim <- 0.012
-## # 2.5-fold to match the above map in scale (but shifted up)
-## COL_LIMITS <- c(lower_lim, lower_lim * 2.5)
-## labs <- seq(0.015, 0.030, 0.005)#, 0.025, 0.03)
-## labs_show <- sprintf("%.3f", labs)
-## # 1.0 cull:
-## pdf("../figs/hotspots-paleo-1-pp.pdf", width = 7, height = 3.5)
-## par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
-##   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
-## map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
-##   hotspots = TRUE, at = log(labs), at.labels = labs_show, col_limits = COL_LIMITS,
-## # hotspots = TRUE, at = log(seq(0.075, 0.3, 0.1)), at.labels = seq(0.075, 0.3, 0.1),
-## # plot_column = "mean.ext.1.0", col_limits = c(0.075, 0.3))#, col_limits = COL_LIMITS)
-##   plot_column = "mean.ext.1.0")
-## par(xpd = NA)
-## mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
-##   line = -1.4, las = 0, col = "grey30", cex = 0.9)
-## dev.off()
-## # singular
-## pdf("../figs/hotspots-paleo-sing-pp.pdf", width = 7, height = 3.5)
-## par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
-##   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
-## map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
-##   hotspots = TRUE, at = log(labs), at.labels = labs_show,
-##   plot_column = "mean.ext.sing", col_limits = COL_LIMITS)
-## par(xpd = NA)
-## mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
-##   line = -1.4, las = 0, col = "grey30", cex = 0.9)
-## dev.off()
-## # singletons and preserv. prob. == 1
-## pdf("../figs/hotspots-paleo-singleton-plus-pp.pdf", width = 7, height = 3.5)
-## par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
-##   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
-## map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
-##   hotspots = TRUE, at = log(labs), at.labels = labs_show,
-##   plot_column = "mean.ext.singleton", col_limits = COL_LIMITS)
-## par(xpd = NA)
-## mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
-##   line = -1.4, las = 0, col = "grey30", cex = 0.9)
-## dev.off()
-## # locality cull:
+# 0.0 cull (i.e. repeat of the main map):
+pdf("../figs/hotspots-paleo-0-pp.pdf", width = 7, height = 3.5)
+par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
+  las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
+#labs <- c(0.010, 0.015, 0.02, 0.025, 0.03)
+labs <- seq(0.010, 0.025, 0.005)#, 0.025, 0.03)
+labs_show <- sprintf("%.3f", labs)
+COL_LIMITS <- c(0.010, 0.025)
+map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
+  hotspots = TRUE, at = log(labs), at.labels = labs_show,
+  col_limits = COL_LIMITS)
+par(xpd = NA)
+mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
+  line = -1.4, las = 0, col = "grey30", cex = 0.9)
+dev.off()
+
+lower_lim <- 0.012
+# 2.5-fold to match the above map in scale (but shifted up)
+COL_LIMITS <- c(lower_lim, lower_lim * 2.5)
+labs <- seq(0.015, 0.030, 0.005)#, 0.025, 0.03)
+labs_show <- sprintf("%.3f", labs)
+# 1.0 cull:
+pdf("../figs/hotspots-paleo-1-pp.pdf", width = 7, height = 3.5)
+par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
+  las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
+map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
+  hotspots = TRUE, at = log(labs), at.labels = labs_show, col_limits = COL_LIMITS,
+# hotspots = TRUE, at = log(seq(0.075, 0.3, 0.1)), at.labels = seq(0.075, 0.3, 0.1),
+# plot_column = "mean.ext.1.0", col_limits = c(0.075, 0.3))#, col_limits = COL_LIMITS)
+  plot_column = "mean.ext.1.0")
+par(xpd = NA)
+mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
+  line = -1.4, las = 0, col = "grey30", cex = 0.9)
+dev.off()
+# singular
+pdf("../figs/hotspots-paleo-sing-pp.pdf", width = 7, height = 3.5)
+par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
+  las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
+map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
+  hotspots = TRUE, at = log(labs), at.labels = labs_show,
+  plot_column = "mean.ext.sing", col_limits = COL_LIMITS)
+par(xpd = NA)
+mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
+  line = -1.4, las = 0, col = "grey30", cex = 0.9)
+dev.off()
+# singletons and preserv. prob. == 1
+pdf("../figs/hotspots-paleo-singleton-plus-pp.pdf", width = 7, height = 3.5)
+par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
+  las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
+map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
+  hotspots = TRUE, at = log(labs), at.labels = labs_show,
+  plot_column = "mean.ext.singleton", col_limits = COL_LIMITS)
+par(xpd = NA)
+mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
+  line = -1.4, las = 0, col = "grey30", cex = 0.9)
+dev.off()
+### locality cull:
 ## pdf("../figs/hotspots-paleo-locality.pdf", width = 7, height = 3.5)
 ## par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
 ##   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
@@ -1510,7 +1512,7 @@ ggplot(temp, aes(mean_observed + 0.001)) +
     position = "stack", alpha = 0.5, binwidth = 0.4) +
   facet_wrap(~ PROV_pretty,ncol=5) + labs(fill = "Group", colour = "Group") +
   scale_x_log10() + theme(strip.text.x = element_text(size = 8)) +
-  ylab("Number of genera") + xlab("Predicted extinction probabilty") + theme(legend.position="top")
+  ylab("Number of genera") + xlab("Intrinsic risk") + theme(legend.position="top")
 @
 
 
@@ -1519,6 +1521,8 @@ ggplot(temp, aes(mean_observed + 0.001)) +
 \subsection{Exploring the effects of preservation potential in the fossil record}
 
 \textbf{TODO fill in this part.}
+
+Some text justifying each cull
 
 TODO Values to use in text for the number of genera left after various culls:
 
@@ -1573,6 +1577,8 @@ genera. Maps of mean intrinsic risk in which single province genera were
 excluded (Fig.~\ref{fig:remove-single-province-genera}) are congruent with those
 derived from the full dataset (Figs.~2 and 3), indicating that single-province
 genera are not responsible for the broad-scale patterns of intrinsic risk.
+
+\textbf{TODO add a bit on the sensitivity culls}
 
 <<plot-n-obis-prov, fig.cap="Number of OBIS occurrence records for each biogeographic province \\cite{spalding2007}. Color scale bars on the right are log-distributed. The number of OBIS occurrence records provides a rough index of sampling effort across regions. Panels for sharks and mammals are not shown because we used range maps instead of OBIS data for the modern distributions.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
 map_class_ext(subset(er_dat_class, !class %in% c("Elasmobranchii", "Mammalia")),
@@ -1962,7 +1968,7 @@ dev.off()
   threshold of 0.5 includes only those genera with preservation probabilities of
   0.5 or greater. Plotted are raw GBM risk estimates prior to calibration.
   Median intrinsic risk declines with more stringent preservation thresholds as
-  rare and/or poorly sampled genera are excluded from the data.}
+  rare and/or poorly sampled genera are excluded from the data. TODO get rid of CLASS LABEL!}
 \label{fig:class-level-partial-order}
 \end{center}
 \end{figure}
@@ -2015,12 +2021,12 @@ dev.off()
   ``Preservation probability = 1'' refers to a model trained on a dataset containing
   only fossil genera with a preservation probability equal to one (i.e.,
   excluding all genera that were not sampled in one or more subintervals between
-  their first and last occurrences). ``$>=$ 2 observations'' refers to a
+  their first and last occurrences). ``$>$ 1 observation'' refers to a
   model containing only fossil genera that were observed at least twice in all
   subintervals from the subinterval in which they first occurred through the
   subinterval in which they last occurred (i.e., excluding all genera known from
   one or fewer occurrences).
-  ``No singletons \& preserv.\ prob.\ = 1'' refers to TODO.
+  ``No stratographic singletons'' refers to TODO.
   ``$>$ 1 locality'' refers to TODO.
   Points in each panel represent an intrinsic risk
   prediction for an individual genus in the modern oceans based on a model
@@ -2160,12 +2166,11 @@ Taxonomic subgroup    & Ordinal to family rank taxonomic assignments for each ge
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-0-pp}
-\includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-1-pp}
+%\includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-1-pp}
 \includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-sing-pp}
 \caption{Global maps from models built with various culls of the Neogene fossil
-  record. From top to bottom: the base model, only genera with a preservation
-  probability of 1.0, and only genera with at least two observations in all
-  stages for which we would expect their to be observations.}
+  record. From top to bottom: the base model, and only genera with at least two observations in all
+  stages for which we would expect there to be observations.}
 \label{fig:overall-maps-paleo-culls}
 \end{center}
 \end{figure}
@@ -2201,7 +2206,7 @@ Taxonomic subgroup    & Ordinal to family rank taxonomic assignments for each ge
 % \begin{figure}[htbp]
 % \begin{center}
 %   \includegraphics[width=\textwidth]{../figs/class-map-obis-cull-5.pdf}
-% \caption{Fig.~2 from the main paper recreated excluding all genera with $<$ 5 OBIS records. (TODO note, this will be the new main figure).}
+% \caption{Fig.~2 from the main paper recreated excluding all genera with $<$ 5 OBIS records.}
 % \label{fig:class-map-obis-cull-5}
 % \end{center}
 % \end{figure}

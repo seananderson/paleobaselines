@@ -44,7 +44,7 @@ Plio.Modern3$labels <- paste(Plio.Modern3$variable,", rho = ",round(Plio.Modern3
 p <- ggplot(Plio.Modern3,aes(value.x,value.y)) +
   geom_point(alpha=0.025,size=5,colour="red") +
   facet_wrap(~labels,scale="free", ncol=4) +
-  geom_smooth(method="lm") + xlab("Modern") +
+  xlab("Modern") +
   ylab("Plio-Pleistocene") + coord_equal() +
   theme_bw()
 print(p)
