@@ -20,11 +20,10 @@ Plio <- Plio.Modern[(Plio.Modern$Interval_Name == "Plio-Pleistocene"),]
 Plio$Interval_Name <- NULL
 Plio$stage_top <- NULL
 Plio.Modern2 <- merge(Modern,Plio,by = c("class","group","genus","variable"),all.x=FALSE,all.y=FALSE)
-n_plio_common_genera <- length(unique(Plio.Modern2$genus))                                                             
+n_plio_common_genera <- length(unique(Plio.Modern2$genus))
 
 ### extract stats
 stats <- function(df){
-<<<<<<< HEAD
 mod <- lmodel2::lmodel2(value.y ~ value.x, data=df,"interval", "interval", 99)
 reg <- mod$regression.results
 conf <- mod$confidence.intervals
@@ -35,35 +34,12 @@ rho <- spear$estimate
 spear.p <- spear$p.value
 names(reg) <- c("method", "intercept", "slope", "angle", "p-value")
 reg <- cbind(reg,rsq,rho,spear.p)
-=======
-  mod <- lmodel2::lmodel2(value.y ~ value.x, data=df,"interval", "interval", 99)
-  reg <- mod$regression.results
-  conf <- mod$confidence.intervals
-  rsq <- data.frame(mod$rsq)
-  reg <- reg[(reg$Method=="MA"),]
-  spear <- cor.test(df$value.x, df$value.y, method="spearman")
-  rho <- spear$estimate
-  spear.p <- spear$p.value
-  names(reg) <- c("method", "intercept", "slope", "angle", "p-value")
-  reg <- cbind(reg,rsq,rho,spear.p)
->>>>>>> FETCH_HEAD
 }
 Stats <- plyr::ddply(Plio.Modern2, "variable", plyr::each(stats))
 Plio.Modern3 <- merge(Plio.Modern2,Stats,by="variable")
 Plio.Modern3$labels <- paste(Plio.Modern3$variable,", rho = ",round(Plio.Modern3$rho,2),", p << .001",sep='')
 
 ### make plot
-<<<<<<< HEAD
-pdf("../figs/Plio.Pleis vs.Modern.pdf", width = 10, height = 5.1)
-p <- ggplot(Plio.Modern3,aes(value.x,value.y)) +
-geom_point(alpha=0.025,size=5,colour="red") +
-facet_wrap(~labels,scale="free", ncol=4) + 
-geom_smooth(method="lm") + xlab("Modern") +
-ylab("Plio-Pleistocene") + coord_equal() + 
-theme_bw()
-print(p)
-dev.off()
-=======
 # pdf("../figs/plio-pleis-vs-modern.pdf", width = 10, height = 5.1)
 p <- ggplot(Plio.Modern3,aes(value.x,value.y)) +
   geom_point(alpha=0.025,size=5,colour="red") +
@@ -73,5 +49,4 @@ p <- ggplot(Plio.Modern3,aes(value.x,value.y)) +
   theme_bw()
 print(p)
 # dev.off()
->>>>>>> FETCH_HEAD
 @
