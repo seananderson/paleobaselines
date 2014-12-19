@@ -78,7 +78,7 @@ This PDF file includes:\\
 Supporting methods\\
 References\\
 Tables S1 to S2\\
-Figs.\ S1 to S15
+Figs.\ S1 to S28
 
 \clearpage
 \setlength\parskip{0in}
