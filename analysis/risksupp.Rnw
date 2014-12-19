@@ -1864,7 +1864,7 @@ er_dat_class_raw <- plyr::join(er_dat_class_raw, by.prov.classes.raw, by = "PROV
 pdf("../figs/plot-class-prov-ext-raw-ranges.pdf", width = 6.45, height = 5.1)
 map_class_ext(er_dat_class_raw,
   yticks = c(0.005, 0.01, 0.02, 0.05, 0.10),
-  picture_files = picture_files,
+  picture_files = picture_files, ylabel = "Intrinsic extinction risk",
   silhouette_coords = silhouette_coords,
   min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0034, 0.15))
 dev.off()
