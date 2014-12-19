@@ -961,20 +961,7 @@ source("risk-pres-prob-scatter.R")
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=\textwidth]{../figs/risk-vs-preservation.pdf}
-\caption{Comparison between mean intrinsic
-  risk and two indices of preservation probability. Variation in mean intrinsic
-  risk among taxonomic subgroups is not associated with variation in mean
-  preservation probability or variation in the proportion of false extinctions
-  (Fig.~\ref{fig:hist-preserv-prob}). False extinctions were calculated as the fraction of
-  genera that appear to go extinct in the PaleoDB but are extant according to
-  modern occurrences in OBIS. Groups such as architaenioglossid snails,
-  elasmobranchs (sharks), and pholadomyoid bivalves exhibit for example similar
-  preservation potentials and similar proportions of false extinctions yet
-  differ in their mean intrinsic risk. Note that in estimating the extinction
-  risk of fossil genera, genera were only considered ``extinct'' in a given
-  geologic subinterval if that subinterval was the youngest interval in which
-  the genus was recorded in the PaleoDB and that genus did not have modern
-  occurrences in OBIS.}
+\caption{Comparison between mean extinction risk and two indices of preservation probability. Variation in mean extinction risk among taxonomic subgroups is not associated with variation in mean preservation probability (Fig.~\ref{fig:hist-preserv-prob}) or variation in the proportion of false extinctions. False extinctions were calculated as the fraction of genera that appear to go extinct in the PaleoDB (have a last occurrence prior to the Pleistocene, the most recent stage that is reliably recorded) but are in fact extant according to the PaleoDB and/or OBIS records. Preservation probability was calculated as the proportion of subintervals in a genus’ stratigraphic range in which it was sampled in the PaleoDB.  Seven subintervals are included in this analysis (pre-Neogene, Early Miocene, Middle Miocene, Late Miocene, Pliocene, Pleistocene, Recent) and, by definition, preservation probabilities could be calculated only for genera spanning at least three subintervals. There is no clear relationship between preservation potential or proportion of false extinctions and predicted extinction risk.}
 \label{fig:raw-predictor-ex}
 \end{center}
 \end{figure}
