@@ -1969,17 +1969,7 @@ dev.off()
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=0.9\textwidth]{../figs/partial-class-level-median-estimates}
-\caption{\textbf{TODO re-write this caption} The same data as
-  Fig.~OLD-BOXPLOT-FIG but arranged differently. These are medians with 40\% and
-  60\% quantiles of the `group'-level partial dependence values aggregated by
-  class. TODO - work with this: Distributions of predicted intrinsic risk for
-  genera in each of the six major marine groups, varying the preservation
-  probability threshold above which genera are included in the Neogene GBM
-  model. A threshold of 0.0, for example, includes all genera, whereas a
-  threshold of 0.5 includes only those genera with preservation probabilities of
-  0.5 or greater. Plotted are raw GBM risk estimates prior to calibration.
-  Median intrinsic risk declines with more stringent preservation thresholds as
-  rare and/or poorly sampled genera are excluded from the data. TODO get rid of CLASS LABEL!}
+\caption{Effect of progressively more stringent preservation probability culls of the fossil training data on group intrinsic risk estimates. A threshold of 0.0, for example, includes all genera, whereas a threshold of 0.5 includes only those genera with preservation probabilities of 0.5 or greater (e.g., genera the are sampled in the PaleoDB in more than half of the stages within their stratigraphic range). Median intrinsic risk declines with more stringent preservation thresholds as rare and/or poorly sampled genera are excluded from the data, but differences between groups remain relatively stable. Plotted values are raw GBM risk estimates prior to calibration. Lines represent the median risk estimate for all genera within the group, and the shaded areas indicate the region between the 40th and 60th percentile.}
 \label{fig:class-level-partial-order}
 \end{center}
 \end{figure}
