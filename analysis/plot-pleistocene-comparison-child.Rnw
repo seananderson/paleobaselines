@@ -1,9 +1,15 @@
 <<plot-pleistocene-comparison-child>>=
 Plio.Modern <- readRDS("../data/stand-predictors-cen-obis.rds")
 Plio.Modern$tropical_only <- NULL # not plotting
-Plio.Modern$single_obs <- NULL # not plotting
 Plio.Modern$prop_comp <- NULL # not plotting
 Plio.Modern$singleton <- NULL
+
+##exclude single-occurrence genera if desired
+#Plio.Modern <- Plio.Modern[(Plio.Modern$single_obs == 0),]
+
+Plio.Modern$single_obs <- NULL # not plotting
+
+## combine Plio-Pleistocene and Modern
 Plio.Modern <- Plio.Modern[Plio.Modern$Interval_Name %in% c("Modern_raw", "Plio-Pleistocene"), ]
 Plio.Modern$Ex <- NULL
 Plio.Modern <- reshape2::melt(Plio.Modern, id = c("Interval_Name","stage","stage_top","class","group","genus"))
@@ -14,25 +20,33 @@ Plio <- Plio.Modern[(Plio.Modern$Interval_Name == "Plio-Pleistocene"),]
 Plio$Interval_Name <- NULL
 Plio$stage_top <- NULL
 Plio.Modern2 <- merge(Modern,Plio,by = c("class","group","genus","variable"),all.x=FALSE,all.y=FALSE)
-n_plio_common_genera <- length(unique(Plio.Modern2$genus))
+n_plio_common_genera <- length(unique(Plio.Modern2$genus))                                                             
 
-RMA.lines <- function(df){
+### extract stats
+stats <- function(df){
 mod <- lmodel2::lmodel2(value.y ~ value.x, data=df,"interval", "interval", 99)
 reg <- mod$regression.results
-reg <- reg[(reg$Method=="RMA"),]
+conf <- mod$confidence.intervals
+rsq <- data.frame(mod$rsq)
+reg <- reg[(reg$Method=="MA"),]
+spear <- cor.test(df$value.x, df$value.y, method="spearman")
+rho <- spear$estimate
+spear.p <- spear$p.value
 names(reg) <- c("method", "intercept", "slope", "angle", "p-value")
-reg
+reg <- cbind(reg,rsq,rho,spear.p)
 }
-RMA <- plyr::ddply(Plio.Modern2, "variable", plyr::each(RMA.lines))
+Stats <- plyr::ddply(Plio.Modern2, "variable", plyr::each(stats))
+Plio.Modern3 <- merge(Plio.Modern2,Stats,by="variable")
+Plio.Modern3$labels <- paste(Plio.Modern3$variable,", rho = ",round(Plio.Modern3$rho,2),", p << .001",sep='')
 
-p <- ggplot(Plio.Modern2,aes(value.x,value.y)) +
-geom_point(alpha=0.1) +
-facet_wrap(~variable,scale="free", ncol=4) +
-geom_abline(data = RMA,
-aes(intercept = intercept, slope = slope, colour = "blue")) +
-geom_abline() +
-xlab("Modern") +
-ylab("Plio-Pleistocene") +
-coord_equal()
+### make plot
+pdf("../figs/Plio.Pleis vs.Modern.pdf", width = 10, height = 5.1)
+p <- ggplot(Plio.Modern3,aes(value.x,value.y)) +
+geom_point(alpha=0.025,size=5,colour="red") +
+facet_wrap(~labels,scale="free", ncol=4) + 
+geom_smooth(method="lm") + xlab("Modern") +
+ylab("Plio-Pleistocene") + coord_equal() + 
+theme_bw()
 print(p)
+dev.off()
 @
