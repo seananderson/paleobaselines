@@ -952,6 +952,31 @@ if(!file.exists("../data/cross_pred.rds")) {
 @
 
 % Get cross-interval predictions and create plot:
+<<risk-vs-pres-prob-scatterplots, cache=FALSE>>=
+source("risk-pres-prob-scatter.R")
+@
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=\textwidth]{../figs/risk-vs-preservation.pdf}
+\caption{TODO: this figure is out of order. Comparison between mean intrinsic
+  risk and two indices of preservation probability. Variation in mean intrinsic
+  risk among taxonomic subgroups is not associated with variation in mean
+  preservation probability or variation in the proportion of false extinctions
+  (Fig.~TODO-was-S1). False extinctions were calculated as the fraction of
+  genera that appear to go extinct in the PaleoDB but are extant according to
+  modern occurrences in OBIS. Groups such as architaenioglossid snails,
+  elasmobranchs (sharks), and pholadomyoid bivalves exhibit for example similar
+  preservation potentials and similar proportions of false extinctions yet
+  differ in their mean intrinsic risk. Note that in estimating the extinction
+  risk of fossil genera, genera were only considered ``extinct'' in a given
+  geologic subinterval if that subinterval was the youngest interval in which
+  the genus was recorded in the PaleoDB and that genus did not have modern
+  occurrences in OBIS.}
+\label{fig:raw-predictor-ex}
+\end{center}
+\end{figure}
+
 
 <<plot-cross-interval-gbms, results='hide', child='plot-cross-interval-gbms-child.Rnw'>>=
 @
@@ -2099,31 +2124,6 @@ Taxonomic subgroup    & Ordinal to family rank taxonomic assignments for each ge
 % ----------------------------------------------------
 % New revision figures (tacked onto end for now)
 % ----------------------------------------------------
-
-<<risk-vs-pres-prob-scatterplots, cache=FALSE>>=
-source("risk-pres-prob-scatter.R")
-@
-
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[width=\textwidth]{../figs/risk-vs-preservation.pdf}
-\caption{TODO: this figure is out of order. Comparison between mean intrinsic
-  risk and two indices of preservation probability. Variation in mean intrinsic
-  risk among taxonomic subgroups is not associated with variation in mean
-  preservation probability or variation in the proportion of false extinctions
-  (Fig.~TODO-was-S1). False extinctions were calculated as the fraction of
-  genera that appear to go extinct in the PaleoDB but are extant according to
-  modern occurrences in OBIS. Groups such as architaenioglossid snails,
-  elasmobranchs (sharks), and pholadomyoid bivalves exhibit for example similar
-  preservation potentials and similar proportions of false extinctions yet
-  differ in their mean intrinsic risk. Note that in estimating the extinction
-  risk of fossil genera, genera were only considered ``extinct'' in a given
-  geologic subinterval if that subinterval was the youngest interval in which
-  the genus was recorded in the PaleoDB and that genus did not have modern
-  occurrences in OBIS.}
-\label{fig:raw-predictor-ex}
-\end{center}
-\end{figure}
 
 % \begin{figure}[htbp]
 % \begin{center}
