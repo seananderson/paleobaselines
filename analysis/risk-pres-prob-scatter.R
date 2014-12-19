@@ -27,10 +27,16 @@ plot.dat <- merge(preservation, preds)
 plot.dat$group <- data.frame(t(do.call("cbind",
       strsplit(as.character(plot.dat$group), "_"))))[, 2]
 
-p1 <- ggplot(plot.dat,aes(mean.prop,mean.risk,colour=class,label=group)) + geom_point(size=3) + geom_text(size=3,hjust=.5, vjust=-.6) + theme_bw() + xlab("Mean preservation probability") + ylab("Mean extinction risk prediction") + coord_cartesian(xlim=c(.65,1.03))
-# + theme(legend.position="none")
+p1 <- ggplot(plot.dat,aes(mean.prop,mean.risk,colour=class,label=group)) +
+  geom_point(size=3) + geom_text(size=3,hjust=.5, vjust=-.6) + theme_bw() +
+  xlab("Mean preservation probability") + ylab("Mean extinction risk prediction") +
+  coord_cartesian(xlim=c(.65,1.03)) + labs(colour = "Group")
 
-p2 <- ggplot(plot.dat,aes(mean.pseudo.ex,mean.risk,colour=class,label=group)) +  geom_point(size=3) + geom_text(size=3,hjust=.5, vjust=-.6) + theme_bw() + xlab("Proportion of false extinctions") + ylab("Mean extinction risk prediction") + coord_cartesian(xlim=c(-.08,.5))+ theme(legend.title=element_blank())
+p2 <- ggplot(plot.dat,aes(mean.pseudo.ex,mean.risk,colour=class,label=group)) +
+  geom_point(size=3) + geom_text(size=3,hjust=.5, vjust=-.6) + theme_bw() +
+  xlab("Proportion of false extinctions") +
+  ylab("Mean extinction risk prediction") + coord_cartesian(xlim=c(-.08, .5))+
+  theme(legend.title=element_blank()) + labs(colour = "Group")
 
 pdf("../figs/risk-vs-preservation.pdf",  width = 12,  height = 5.1)
 gridExtra::grid.arrange(p1, p2, ncol = 2)
