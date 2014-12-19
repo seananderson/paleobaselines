@@ -959,11 +959,11 @@ source("risk-pres-prob-scatter.R")
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=\textwidth]{../figs/risk-vs-preservation.pdf}
-\caption{TODO: this figure is out of order. Comparison between mean intrinsic
+\caption{Comparison between mean intrinsic
   risk and two indices of preservation probability. Variation in mean intrinsic
   risk among taxonomic subgroups is not associated with variation in mean
   preservation probability or variation in the proportion of false extinctions
-  (Fig.~TODO-was-S1). False extinctions were calculated as the fraction of
+  (Fig.~\ref{fig:hist-preserv-prob}). False extinctions were calculated as the fraction of
   genera that appear to go extinct in the PaleoDB but are extant according to
   modern occurrences in OBIS. Groups such as architaenioglossid snails,
   elasmobranchs (sharks), and pholadomyoid bivalves exhibit for example similar
