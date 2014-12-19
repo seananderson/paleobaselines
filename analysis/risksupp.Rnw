@@ -13,6 +13,17 @@
 \let\pkg=\textbf
 \let\fn=\texttt
 
+% Linux Libertine:
+\usepackage{textcomp}
+\usepackage[sb]{libertine}
+\usepackage[varqu,varl]{inconsolata}% sans serif typewriter
+\usepackage[libertine,bigdelims,vvarbb]{newtxmath} % bb from STIX
+\usepackage[cal=boondoxo]{mathalfa} % mathcal
+\useosf % osf for text, not math
+\usepackage[supstfm=libertinesups,%
+  supscaled=1.2,%
+  raised=-.13em]{superiors}
+
 \usepackage{lineno}
 \renewcommand\linenumberfont{\normalfont\tiny\sffamily\color{gray}}
 
@@ -43,7 +54,7 @@
 <<set-knitr-options, cache=FALSE, echo=FALSE>>=
 library("knitr")
 opts_chunk$set(fig.align='center', fig.pos="htpb", cache=TRUE, echo=FALSE,
-  message=FALSE, autodep=FALSE, fig.path='../figs/', fig.width=6, par=TRUE)
+  message=FALSE, autodep=FALSE, results='hide', fig.path='../figs/', fig.width=6, par=TRUE)
 opts_chunk$set(warning=FALSE, message=FALSE, tidy=FALSE, refresh=TRUE,
   cache.path="../cache/", cache.lazy=TRUE, size="small", cache.comments=FALSE)
 opts_chunk$set(dev = 'pdf')
@@ -470,7 +481,7 @@ some realms wrap from one side of the plot to the other.
 
 \includegraphics[width=\textwidth]{../figs/province_interpolation_tests.pdf}
 
-<<plot-comparison-modern-plio-pleistocene-ranges, child='plot-pleistocene-comparison-child.Rnw', fig.height=5, fig.width=8, fig.cap=paste("Comparison of predictors for the", n_plio_common_genera, "genera that are sampled in both the modern dataset and in the Plio-Pleistocene subset of the paleontological dataset. Richness, occupancy, and occurrences are standardized by dividing by the maximum observed value within each interval. Points are overplotted and hence relative tranparancy of a given point indicates the number of genera. Black lines are lines of unity and red lines are reduced major axis regression lines. Strong positive correlations between predictors for genera sampled in both the Plio-Pleistocene fossil record and modern biogeographic databases suggest that relative differences among genera in these characteristics are preserved with significant fidelity in the fossil record."), echo=FALSE>>=
+<<plot-comparison-modern-plio-pleistocene-ranges, child='plot-pleistocene-comparison-child.Rnw', fig.height=5, fig.width=10, fig.cap=paste("Comparison of predictors for the", n_plio_common_genera, "genera that are sampled in both the modern dataset and in the Plio-Pleistocene subset of the paleontological dataset. Richness, occupancy, and occurrences are standardized by dividing by the maximum observed value within each interval. Points are overplotted and hence relative tranparancy of a given point indicates the number of genera. Black lines are lines of unity and red lines are reduced major axis regression lines. Strong positive correlations between predictors for genera sampled in both the Plio-Pleistocene fossil record and modern biogeographic databases suggest that relative differences among genera in these characteristics are preserved with significant fidelity in the fossil record."), echo=FALSE>>=
 @
 
 \subsection{Equal-area grid overlay}
@@ -905,7 +916,7 @@ ri_uq <- ri_uq[ri_order]
 
 <<plot-relative-importance, results='hide'>>=
 names(ri_median) <- sub("group", "subgroup", names(ri_median))
-pdf("../figs/plot-relative-importance.pdf", width = 3, height = 4)
+pdf("../figs/plot-relative-importance.pdf", width = 4, height = 4)
 par(xpd = NA, mar = c(4, 8, 1, 1), cex = 0.8)
 plot(ri_median, 1:length(ri_median), xlab = "Relative influence", ylab = "",
   xlim = c(0, 1), xaxs = "i", pch = 19, yaxt = "n")
@@ -941,6 +952,31 @@ if(!file.exists("../data/cross_pred.rds")) {
 @
 
 % Get cross-interval predictions and create plot:
+<<risk-vs-pres-prob-scatterplots, cache=FALSE>>=
+source("risk-pres-prob-scatter.R")
+@
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=\textwidth]{../figs/risk-vs-preservation.pdf}
+\caption{Comparison between mean intrinsic
+  risk and two indices of preservation probability. Variation in mean intrinsic
+  risk among taxonomic subgroups is not associated with variation in mean
+  preservation probability or variation in the proportion of false extinctions
+  (Fig.~\ref{fig:hist-preserv-prob}). False extinctions were calculated as the fraction of
+  genera that appear to go extinct in the PaleoDB but are extant according to
+  modern occurrences in OBIS. Groups such as architaenioglossid snails,
+  elasmobranchs (sharks), and pholadomyoid bivalves exhibit for example similar
+  preservation potentials and similar proportions of false extinctions yet
+  differ in their mean intrinsic risk. Note that in estimating the extinction
+  risk of fossil genera, genera were only considered ``extinct'' in a given
+  geologic subinterval if that subinterval was the youngest interval in which
+  the genus was recorded in the PaleoDB and that genus did not have modern
+  occurrences in OBIS.}
+\label{fig:raw-predictor-ex}
+\end{center}
+\end{figure}
+
 
 <<plot-cross-interval-gbms, results='hide', child='plot-cross-interval-gbms-child.Rnw'>>=
 @
@@ -1143,8 +1179,8 @@ pairs(modern[,c("mean_observed", "mean_observed_1.0", "mean_observed_sing",
  labels = c("Base model", "Preservation\nprobability = 1", ">= 2 observations",
    "No singletons &\npreserv. prob. = 1", "> 1 location"), upper.panel = panel.cor, asp = 1,
  ylim = c(0, 1), xlim = c(0, 1))
-mtext("Intrinsic risk", side = 1, outer = TRUE, line = -1.5)
-mtext("Intrinsic risk", side = 2, outer = TRUE, line = -1.5)
+mtext("log intrinsic risk", side = 1, outer = TRUE, line = -1.5)
+mtext("log intrinsic risk", side = 2, outer = TRUE, line = -1.5)
 dev.off()
 pdf("../figs/pairs-gbm-calibrated-predictions-culls-zoomed.pdf", width = 7, height = 7)
 pairs(modern[,c("mean_observed", "mean_observed_1.0", "mean_observed_sing",
@@ -1152,8 +1188,8 @@ pairs(modern[,c("mean_observed", "mean_observed_1.0", "mean_observed_sing",
   col = "#00000020", labels = c("Base model", "Preservation\nprobability = 1", ">= 2 observations",
     "No singletons &\npreserv. prob. = 1", "> 1 location"), upper.panel = panel.cor,
   asp = 1, ylim = c(0, 0.6), xlim = c(0, 0.6))
-mtext("Intrinsic risk", side = 1, outer = TRUE, line = -1.5)
-mtext("Intrinsic risk", side = 2, outer = TRUE, line = -1.5)
+mtext("log Intrinsic risk", side = 1, outer = TRUE, line = -1.5)
+mtext("log Intrinsic risk", side = 2, outer = TRUE, line = -1.5)
 dev.off()
 @
 
@@ -1212,9 +1248,21 @@ dev.off()
 \end{center}
 \end{figure}
 
-<<plot-genus-predictions-against-gcd2, fig.cap='Predicted intrinsic risk versus geographic range size (great circle distance) for modern genera in each of six taxonomic groups. The points represent individual genera and are colored according to taxonomic subgroups within each major taxonomic group, the black contour lines indicate the density of genera, and the red line represents the mean intrinsic risk of all modern genera in the six taxonomic groups.', fig.width=10, fig.height=7.5, cache=FALSE>>=
+<<plot-genus-predictions-against-gcd, fig.cap='Predicted intrinsic risk versus geographic range size (great circle distance) for modern genera in each of six taxonomic groups. The points represent individual genera and are colored according to taxonomic subgroups within each major taxonomic group, the black contour lines indicate the density of genera, and the red line represents the mean intrinsic risk of all modern genera in the six taxonomic groups.', fig.width=10, fig.height=7.5, cache=FALSE, message=TRUE, warning=TRUE>>=
 source("plot-genus-predictions-against-gcd.R")
 @
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=\textwidth]{../figs/plot-genus-predictions-against-gcd.pdf}
+\caption{Predicted intrinsic risk versus geographic range size (great circle
+  distance) for modern genera in each of six taxonomic groups. The points
+  represent individual genera and are colored according to taxonomic subgroups
+  within each major taxonomic group, the black contour lines indicate the
+  density of genera, and the red line represents the mean intrinsic risk of all
+  modern genera in the six taxonomic groups.}
+\label{fig:plot-genus-predictions-against-gcd}
+\end{center}
+\end{figure}
 
 % Merge predictions with contemporary spatial observations and climate/impact hotspots:
 <<merge-predictions-spatial, child='merge-predictions-spatial-child.Rnw', echo=FALSE>>=
@@ -1425,7 +1473,14 @@ map_class_ext(er_dat_class, plot_column = "log.N.gen",
   col_pal = RColorBrewer::brewer.pal(9, "YlGnBu"))
 @
 
-% TODO: Insert Fig 1-like figure with individual predictors here
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=\textwidth]{../figs/raw-predictors-proportion-ext.pdf}
+\includegraphics[width=0.7\textwidth]{../figs/raw-taxonomy-predictors-proportion-ext.pdf}
+\caption{Proportion genera extinct at various predictor values. TODO FILL THIS IN}
+\label{fig:raw-predictor-ex}
+\end{center}
+\end{figure}
 
 <<plot-gcd-genera-prov, fig.cap="Spatial distribution of \\textbf{mean geographic range size} in the modern dataset. The mean global geographic range (great circle distance, calculated following within-realm minimum bounding box interpolation) of all genera occupying each province are plotted. Low mean values indicate that the province contains many genera with relatively limited global geographic ranges and high mean values indicate that it contains a relatively cosmopolitan fauna.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
 er_dat_class$log.mean.gcd <- log(er_dat_class$mean.gcd)
@@ -1453,7 +1508,7 @@ temp$class[temp$class == "Elasmobranchii"] <- "Sharks"
 ggplot(temp, aes(mean_observed + 0.001)) +
   geom_histogram(aes(fill = class, colour = class),
     position = "stack", alpha = 0.5, binwidth = 0.4) +
-  facet_wrap(~ PROV_pretty,ncol=5) + labs(fill = "Group", colour = "Group")
+  facet_wrap(~ PROV_pretty,ncol=5) + labs(fill = "Group", colour = "Group") +
   scale_x_log10() + theme(strip.text.x = element_text(size = 8)) +
   ylab("Number of genera") + xlab("Predicted extinction probabilty") + theme(legend.position="top")
 @
@@ -1528,7 +1583,7 @@ map_class_ext(subset(er_dat_class, !class %in% c("Elasmobranchii", "Mammalia")),
   fixed_range = TRUE)
 @
 
-<<relationship-between-mean-risk-and-sampling-intensity, fig.width=9, fig.height=5.5, out.width="5in", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus number of OBIS records (of the indicated taxonomic group) from that province. Each point represents a single biogeographic province; colours indicate latitudinal zone of province. Lines and gray-shaded regions indicate linear regressions and 95\\% confidence intervals. Positive correlations between mean intrinsic risk and number of OBIS records (as a rough index of sampling effort) suggest that heavily sampled provinces may contain a greater proportion of ``pseudoendemic'' genera that have not been sampled in other provinces in which they actually occur. The minimum bounding box interpolation  (Fig. TODO-was-S7) we used reduces this sampling bias.", cache=TRUE>>=
+<<relationship-between-mean-risk-and-sampling-intensity, fig.width=9, fig.height=5.5, out.width="5in", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus number of OBIS records (of the indicated taxonomic group) from that province. Each point represents a single biogeographic province; colours indicate latitudinal zone of province. Lines and gray-shaded regions indicate linear regressions and 95\\% confidence intervals. Positive correlations between mean intrinsic risk and number of OBIS records (as a rough index of sampling effort) suggest that heavily sampled provinces may contain a greater proportion of ``pseudoendemic'' genera that have not been sampled in other provinces in which they actually occur. A minimum bounding box interpolation (Fig.~\\ref{fig:didactic}) was used reduces this sampling bias.", cache=TRUE>>=
 temp_dat <- droplevels(subset(by.prov.classes,
   !class %in% c("Elasmobranchii", "Mammalia")))
 temp_dat$class <- as.character(temp_dat$class)
@@ -1557,7 +1612,7 @@ print(p)
   range maps instead of OBIS data for the modern distributions. The broad-scale
   mean intrinsic risk patterns plotted in Fig.~2 remain after accounting for the
   positive relationship between mean intrinsic risk and number of OBIS records
-  (Fig.~TODO-was-S15).}
+  (Fig.~\ref{fig:relationship-between-mean-risk-and-sampling-intensity}).}
 \label{fig:obis-residuals-maps}
 \end{figure}
 
@@ -1609,8 +1664,6 @@ mtext("Min. genera = 100", cex = 2)
 map_hotspots(er_dat, min_prov_genera = 200, hotspots = FALSE)
 mtext("Min. genera = 200", cex = 2)
 @
-
-% TODO 20140923 follow this framework below to build fossil sensitivity maps
 
 <<maps-of-with-obis-sampling-thresholds, results='hide'>>=
 load("../data/by.prov.classes.obis.culls.rda")
@@ -1833,14 +1886,13 @@ dev.off()
   biogeographic provinces \cite{spalding2007} for each of the six major groups
   considered (upper six panels) and across all genera (lower centred panel), as
   in Fig.~2 and 3, but \textbf{with predictions based on raw ranges in OBIS
-    without the within-realm minimum bounding box interpolation (Fig.
-    TODO-was-S7)}. Scale bars on the right indicate the range of intrinsic
-  extinction risk values for a given group. Note that the modern distribution of
-  sharks and mammals was based on range maps instead of OBIS observations and so
-  panels A and B are the same as in Fig.~2. Omitting the interpolation procedure
-  results in greater heterogeneity in mean intrinsic risk among adjacent
-  provinces but does not substantially alter broad-scale intrinsic risk
-  patterns.}
+    without the within-realm minimum bounding box interpolation}. Scale bars on
+  the right indicate the range of intrinsic extinction risk values for a given
+  group. Note that the modern distribution of sharks and mammals was based on
+  range maps instead of OBIS observations and so panels A and B are the same as
+  in Fig.~2. Omitting the interpolation procedure results in greater
+  heterogeneity in mean intrinsic risk among adjacent provinces but does not
+  substantially alter broad-scale intrinsic risk patterns.}
 \label{fig:no-bounding-box}
 \end{figure}
 
@@ -1959,18 +2011,21 @@ dev.off()
 \includegraphics[width=0.9\textwidth]{../figs/pairs-paleo-culls-genera}
 \caption{Comparison of intrinsic risk estimates for modern genera from GBM
   models trained on different subsets of the Neogene-Pleistocene fossil record.
-  \texttt{mean\_observed} refers to the main GBM model used in the paper.
-  \texttt{mean\_observed\_1.0} refers to a model trained on a dataset containing
+  ``Base model'' refers to the main GBM model used in the paper.
+  ``Preservation probability = 1'' refers to a model trained on a dataset containing
   only fossil genera with a preservation probability equal to one (i.e.,
   excluding all genera that were not sampled in one or more subintervals between
-  their first and last occurrences). \texttt{mean\_observed\_sing} refers to a
+  their first and last occurrences). ``$>=$ 2 observations'' refers to a
   model containing only fossil genera that were observed at least twice in all
   subintervals from the subinterval in which they first occurred through the
   subinterval in which they last occurred (i.e., excluding all genera known from
-  one or fewer occurrences). Points in each panel represent an intrinsic risk
+  one or fewer occurrences).
+  ``No singletons \& preserv.\ prob.\ = 1'' refers to TODO.
+  ``$>$ 1 locality'' refers to TODO.
+  Points in each panel represent an intrinsic risk
   prediction for an individual genus in the modern oceans based on a model
-  trained on an specific subset of fossil data. Spearman rank-order correlation
-  values are presented in the upper right cells. Genus instrinsic risk estimates
+  trained on an specific subset of fossil data. Spearman's rank-order correlation
+  values are presented in the upper right cells. Genus intrinsic risk estimates
   are strongly correlated across models trained on different subsets of fossil
   data.}
 \label{fig:pairs-genus-paleo-culls}
@@ -1982,12 +2037,12 @@ dev.off()
 \includegraphics[width=0.9\textwidth]{../figs/pairs-paleo-culls-provinces}
 \caption{Comparison of provincial mean intrinsic risk estimates from GBM
   models trained on different subsets of the Neogene-Pleistocene fossil
-  record. Description of this figure is the same as in Fig. TODO-was-S21
-  except that points are are biogeographic province-level estimates instead
-  of individual genus-level estimates. Spearman rank-order correlation values
-  are presented in the upper right cells. Log mean instrinsic risk estimates
-  for provinces are strongly correlated across models trained on different
-  subsets of fossil data.}
+  record. Description of this figure is the same as in
+  Fig.~\ref{fig:pairs-genus-paleo-culls} except that points are are
+  biogeographic province-level estimates instead of individual genus-level
+  estimates. Spearman's rank-order correlation values are presented in the upper
+  right cells. Log mean intrinsic risk estimates for provinces are strongly
+  correlated across models trained on different subsets of fossil data.}
 \label{fig:pairs-prov-paleo-culls}
 \end{center}
 \end{figure}
@@ -2084,40 +2139,6 @@ Taxonomic subgroup    & Ordinal to family rank taxonomic assignments for each ge
 % ----------------------------------------------------
 % New revision figures (tacked onto end for now)
 % ----------------------------------------------------
-
-<<risk-vs-pres-prob-scatterplots, cache=FALSE>>=
-source("risk-pres-prob-scatter.R")
-@
-
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[width=\textwidth]{../figs/risk-vs-preservation.pdf}
-\caption{TODO: this figure is out of order. Comparison between mean intrinsic
-  risk and two indices of preservation probability. Variation in mean intrinsic
-  risk among taxonomic subgroups is not associated with variation in mean
-  preservation probability or variation in the proportion of false extinctions
-  (Fig.~TODO-was-S1). False extinctions were calculated as the fraction of
-  genera that appear to go extinct in the PaleoDB but are extant according to
-  modern occurrences in OBIS. Groups such as architaenioglossid snails,
-  elasmobranchs (sharks), and pholadomyoid bivalves exhibit for example similar
-  preservation potentials and similar proportions of false extinctions yet
-  differ in their mean intrinsic risk. Note that in estimating the extinction
-  risk of fossil genera, genera were only considered ``extinct'' in a given
-  geologic subinterval if that subinterval was the youngest interval in which
-  the genus was recorded in the PaleoDB and that genus did not have modern
-  occurrences in OBIS.}
-\label{fig:raw-predictor-ex}
-\end{center}
-\end{figure}
-
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[width=\textwidth]{../figs/raw-predictors-proportion-ext.pdf}
-\caption{TODO: this figure is out of order. Proportion genera extinct at various
-  predictor values. TODO FILL THIS IN}
-\label{fig:raw-predictor-ex}
-\end{center}
-\end{figure}
 
 % \begin{figure}[htbp]
 % \begin{center}

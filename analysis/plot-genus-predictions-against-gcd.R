@@ -32,7 +32,7 @@ modern <- merge(modern, group2, by = "group")
 d2 <- plyr::ddply(modern, "newclass", transform,
   group_id = as.numeric(as.factor(as.character(as.numeric(group2)))))
 
-ggplot(d2, aes(y = jitter(gbm_pred_binned, amount = 0.02),
+p <- ggplot(d2, aes(y = jitter(gbm_pred_binned, amount = 0.02),
   x = jitter(great.circle, amount = 800), colour = as.factor(group2))) +
   geom_hline(yintercept = mean(d2$gbm_pred_binned), colour = "red") +
   geom_point(alpha = 0.6, pch = 1, size = 3) + facet_wrap(~newclass) +
@@ -47,3 +47,6 @@ ggplot(d2, aes(y = jitter(gbm_pred_binned, amount = 0.02),
   theme(strip.text.x = element_text(size = 14)) + stat_density2d(colour = "black",
     size = 0.25, bins = 16) + coord_cartesian(xlim = c(0,
       20800), ylim = c(0, 1))
+pdf("../figs/plot-genus-predictions-against-gcd.pdf", width = 10, height = 7.5)
+print(p)
+dev.off()

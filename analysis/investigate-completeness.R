@@ -28,6 +28,8 @@ for(i in cull_cuts) {
 }
 ne_long <- reshape2::melt(ne, id.vars = c("stage", "prop_comp_thresh", "genus", "Ex"), measure.vars = c("richness", "occupancy", "occurrences", "min.lat", "max.lat", "lat.range", "mean.lat", "great.circle"))
 
+ne_long_tax <- reshape2::melt(ne, id.vars = c("stage", "prop_comp_thresh", "genus", "Ex"), measure.vars = c("group"))
+
 ne_long_sing <- reshape2::melt(ne2, id.vars = c("stage", "single_obs_TF", "genus", "Ex"), measure.vars = c("richness", "occupancy", "occurrences", "min.lat", "max.lat", "lat.range", "mean.lat", "great.circle"))
 
 # find sample sizes:
@@ -54,6 +56,17 @@ ne_stage_sum <- ne_long_w_neog %>%
   dplyr::summarise(N = length(Ex), N_ex = sum(Ex))
 p99 <- ggplot(ne_stage_sum, aes(value, N_ex/N, colour = stage, group = stage, size = stage)) + geom_line() + facet_wrap(~variable, scales = "free_x", nrow = 2) + labs(colour = "Stage") + theme_bw() + scale_colour_manual(values = pal) + scale_size_manual(values = c(1, 1, 1, 1, 2)) +  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + xlab("Predictor value") + ylab("Proportion extinct") + guides(size = FALSE)
 ggsave("../figs/raw-predictors-proportion-ext.pdf", width = 11, height = 4.5)
+
+# and with taxonomy:
+ne_long_tax_w_neog <- ne_long_tax
+ne_long_tax_w_neog$stage <- "Neogene"
+ne_long_tax_w_neog <- rbind(ne_long_tax, ne_long_tax_w_neog)
+ne_stage_sum <- ne_long_tax_w_neog %>%
+  filter(prop_comp_thresh == 1.0) %>%
+  group_by(stage, prop_comp_thresh, variable, value) %>%
+  dplyr::summarise(N = length(Ex), N_ex = sum(Ex))
+p99 <- ggplot(ne_stage_sum, aes(N_ex/N, value, colour = stage, group = stage, size = stage)) + geom_point() + labs(colour = "Stage") + theme_bw() + scale_colour_manual(values = pal) + scale_size_manual(values = c(1.4, 1.4, 1.4, 1.4, 2)) +  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + ylab("") + xlab("Proportion extinct") + guides(size = FALSE)
+ggsave("../figs/raw-taxonomy-predictors-proportion-ext.pdf", width = 6, height = 5.0)
 
 
 # add predictions:
@@ -116,7 +129,7 @@ p1 <- ggplot(class_medians_culls, aes(prop_comp_thresh, m, group = class, colour
   geom_line(lwd = 1.5) +
   scale_y_log10(breaks = c(0.05, 0.1, 0.2, 0.5, 1)) +
   ylab("Partial dependence component aggregated by class") +
-  xlab("Preservation probability threshold") + theme_bw()
+  xlab("Preservation probability threshold") + theme_bw() + labs(colour = "Group")
 ggsave("../figs/partial-class-level-median-estimates.pdf", width = 8, height = 5)
 
 p1 <- ggplot(ne, aes(prop_comp_thresh, pred, fill = class, colour = class)) + geom_violin(aes(group = prop_comp_thresh), scale = "width") + facet_wrap(~class)+ theme_bw() + xlab("Preservation probability threshold") + ylab("Predicted relative extinction risk")
