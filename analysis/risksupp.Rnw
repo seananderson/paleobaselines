@@ -1479,7 +1479,7 @@ map_class_ext(er_dat_class, plot_column = "log.N.gen",
 \begin{center}
 \includegraphics[width=\textwidth]{../figs/raw-predictors-proportion-ext.pdf}
 \includegraphics[width=0.7\textwidth]{../figs/raw-taxonomy-predictors-proportion-ext.pdf}
-\caption{Proportion genera extinct at various predictor values. TODO FILL THIS IN}
+\caption{Changes in the proportion of extinct (versus surviving) genera with different predictor values as increasingly strict proportional completeness culls are applied to the fossil data. Although overall proportional extinction decreases when genera that have gaps in their stratigraphic ranges are excluded, relative proportional extinction patterns across different predictor values are fairly stable. This analysis suggests that, while differnces in preservation potential may introduce noise to our extinction risk analyses, they do not introduce systematic biases.}
 \label{fig:raw-predictor-ex}
 \end{center}
 \end{figure}
