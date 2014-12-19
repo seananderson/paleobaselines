@@ -1248,9 +1248,21 @@ dev.off()
 \end{center}
 \end{figure}
 
-<<plot-genus-predictions-against-gcd2, fig.cap='Predicted intrinsic risk versus geographic range size (great circle distance) for modern genera in each of six taxonomic groups. The points represent individual genera and are colored according to taxonomic subgroups within each major taxonomic group, the black contour lines indicate the density of genera, and the red line represents the mean intrinsic risk of all modern genera in the six taxonomic groups.', fig.width=10, fig.height=7.5, cache=FALSE>>=
+<<plot-genus-predictions-against-gcd, fig.cap='Predicted intrinsic risk versus geographic range size (great circle distance) for modern genera in each of six taxonomic groups. The points represent individual genera and are colored according to taxonomic subgroups within each major taxonomic group, the black contour lines indicate the density of genera, and the red line represents the mean intrinsic risk of all modern genera in the six taxonomic groups.', fig.width=10, fig.height=7.5, cache=FALSE, message=TRUE, warning=TRUE>>=
 source("plot-genus-predictions-against-gcd.R")
 @
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=\textwidth]{../figs/plot-genus-predictions-against-gcd.pdf}
+\caption{Predicted intrinsic risk versus geographic range size (great circle
+  distance) for modern genera in each of six taxonomic groups. The points
+  represent individual genera and are colored according to taxonomic subgroups
+  within each major taxonomic group, the black contour lines indicate the
+  density of genera, and the red line represents the mean intrinsic risk of all
+  modern genera in the six taxonomic groups.}
+\label{fig:plot-genus-predictions-against-gcd}
+\end{center}
+\end{figure}
 
 % Merge predictions with contemporary spatial observations and climate/impact hotspots:
 <<merge-predictions-spatial, child='merge-predictions-spatial-child.Rnw', echo=FALSE>>=
