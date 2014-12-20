@@ -1850,6 +1850,36 @@ dev.off()
 \label{fig:no-bounding-box}
 \end{figure}
 
+<<pair-obis-culls, results='hide'>>=
+for(i in seq_along(obis.culls)) {
+  by.prov.all.obis.culls[[i]]$obis_cull <- obis.culls[i]
+}
+dcull <- do.call("rbind", by.prov.all.obis.culls)
+dcull <- reshape2::dcast(dcull, PROV_CODE ~ obis_cull, value.var = "mean.ext")
+
+pdf("../figs/pairs-obis-culls.pdf", width = 6, height = 6)
+pairs(dcull[,-1], pch = 21, col = "#00000050", bg = "#00000010",
+  upper.panel = panel.cor)
+mtext("log Intrinsic risk", side = 1, outer = TRUE, line = -1.5)
+mtext("log Intrinsic risk", side = 2, outer = TRUE, line = -1.5)
+dev.off()
+@
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=0.9\textwidth]{../figs/pairs-obis-culls}
+\caption{Comparison of provincial mean intrinsic risk estimates under varying
+  sampling thresholds applied to the OBIS database. Values along the diagonal
+  (1, 5, 10, 20, 50) indicate the minimum number of OBIS occurrences necessary
+  for a genus in the modern ocean to be included in the calculation of mean
+  intrinsic risk. Points in each panel are log mean extinction risk values for
+  coastal biogeographic provinces after applying different minimum sampling
+  thresholds to the modern data. Spearman's rank-order correlation values are
+  presented in the upper right cells. Provincial instrinsic risk estimates are
+  strongly correlated across all thresholds considered.}
+\label{fig:pairs-prov-obis-culls}
+\end{center}
+\end{figure}
+
 <<plot-obis-sampling-vs-gcd>>=
 modern_long <- reshape2::melt(modern, id.vars = c("class", "group", "genus"),
   measure.vars = c("richness", "occupancy", "min.lat", "max.lat", "lat.range",
@@ -1883,36 +1913,6 @@ dev.off()
   however, above approximately 5 OBIS occurrences genera exhibit the full
   range of great circle distance values.}
 \label{fig:obis-sampling-vs-predictors}
-\end{center}
-\end{figure}
-
-<<pair-obis-culls, results='hide'>>=
-for(i in seq_along(obis.culls)) {
-  by.prov.all.obis.culls[[i]]$obis_cull <- obis.culls[i]
-}
-dcull <- do.call("rbind", by.prov.all.obis.culls)
-dcull <- reshape2::dcast(dcull, PROV_CODE ~ obis_cull, value.var = "mean.ext")
-
-pdf("../figs/pairs-obis-culls.pdf", width = 6, height = 6)
-pairs(dcull[,-1], pch = 21, col = "#00000050", bg = "#00000010",
-  upper.panel = panel.cor)
-mtext("log Intrinsic risk", side = 1, outer = TRUE, line = -1.5)
-mtext("log Intrinsic risk", side = 2, outer = TRUE, line = -1.5)
-dev.off()
-@
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[width=0.9\textwidth]{../figs/pairs-obis-culls}
-\caption{Comparison of provincial mean intrinsic risk estimates under varying
-  sampling thresholds applied to the OBIS database. Values along the diagonal
-  (1, 5, 10, 20, 50) indicate the minimum number of OBIS occurrences necessary
-  for a genus in the modern ocean to be included in the calculation of mean
-  intrinsic risk. Points in each panel are log mean extinction risk values for
-  coastal biogeographic provinces after applying different minimum sampling
-  thresholds to the modern data. Spearman's rank-order correlation values are
-  presented in the upper right cells. Provincial instrinsic risk estimates are
-  strongly correlated across all thresholds considered.}
-\label{fig:pairs-prov-obis-culls}
 \end{center}
 \end{figure}
 
