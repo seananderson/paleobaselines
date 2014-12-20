@@ -1919,10 +1919,7 @@ dev.off()
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=\textwidth]{../figs/overall-map-obis-culls}
-\caption{TODO tweak caption: Fig.~3 from the main paper recreated with varying sampling thresholds
-  in the OBIS database. Note that the colours are rescaled on each map. The
-  pattern has little qualitative change until we reach a threshold around 50
-  OBIS records.}
+\caption{Maps of mean provincial intrinsic risk (as in Fig. 3) based on different OBIS occurrence number threshold cutoffs for including modern genera. Note that the colours are rescaled on each map. There is little qualitative change in the overall geographic pattern until a threshold cutoff of 50 occurrences is imposed; at this point more than half of the genera in the original dataset have been exluded.}
 \label{fig:overall-maps-obis-culls}
 \end{center}
 \end{figure}
