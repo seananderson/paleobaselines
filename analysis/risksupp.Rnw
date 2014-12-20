@@ -1198,42 +1198,6 @@ rm(composite.occ2) # large data frame; save memory
 saveRDS(modern, file = "../data/modern-predictions.rds")
 @
 
-<<plot-obis-sampling-vs-gcd>>=
-modern_long <- reshape2::melt(modern, id.vars = c("class", "group", "genus"),
-  measure.vars = c("richness", "occupancy", "min.lat", "max.lat", "lat.range",
-    "mean.lat", "great.circle", "mean_observed"))
-modern_long <- inner_join(modern_long, modern[,c("genus", "obis_n")])
-modern_long <- dplyr::filter(modern_long,
-  !class %in% c("Mammalia", "Elasmobranchii"))
-p1 <- ggplot(dplyr::filter(modern_long, variable %in% c("great.circle")),
-  aes(log10(obis_n), value, colour = class)) +
-  facet_wrap(~variable) +
-  geom_point(position = position_jitter(height = 600), alpha = 0.4) +
-  labs(colour = "Group") + ylab("Great circle distance (km)")
-p2 <- ggplot(filter(modern_long, variable %in% c("mean_observed")),
-  aes(log10(obis_n), value, colour = class)) + facet_wrap(~variable) +
-  geom_point(position = position_jitter(height = 0.05), alpha = 0.4) +
-  labs(colour = "Group") + ylab("Intrinsic risk")
-pdf("../figs/obis-samping-vs-predictors.pdf", width = 8, height = 8)
-gridExtra::grid.arrange(p1, p2)
-dev.off()
-@
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[width=0.7\textwidth]{../figs/obis-samping-vs-predictors}
-\caption{Variation among extant genera in intrinsic extinction risk and great
-  circle distance as a function of the number of OBIS records. Overall
-  intrinsic extinction risk declines as the number of OBIS records increases,
-  as expected biologically and under a model in which poorly sampled genera
-  artificially appear to be at elevated extinction risk. Notably taxa with few
-  raw occurrences exhibit a broad range of intrinsic extinction risk values.
-  Overall great circle distance increases with the number of OBIS occurrences;
-  however, above approximately 5 OBIS occurrences genera exhibit the full
-  range of great circle distance values.}
-\label{fig:obis-sampling-vs-predictors}
-\end{center}
-\end{figure}
-
 <<plot-genus-predictions-against-gcd, cache=FALSE>>=
 source("plot-genus-predictions-against-gcd.R")
 @
@@ -1884,6 +1848,42 @@ dev.off()
   heterogeneity in mean intrinsic risk among adjacent provinces but does not
   substantially alter broad-scale intrinsic risk patterns.}
 \label{fig:no-bounding-box}
+\end{figure}
+
+<<plot-obis-sampling-vs-gcd>>=
+modern_long <- reshape2::melt(modern, id.vars = c("class", "group", "genus"),
+  measure.vars = c("richness", "occupancy", "min.lat", "max.lat", "lat.range",
+    "mean.lat", "great.circle", "mean_observed"))
+modern_long <- inner_join(modern_long, modern[,c("genus", "obis_n")])
+modern_long <- dplyr::filter(modern_long,
+  !class %in% c("Mammalia", "Elasmobranchii"))
+p1 <- ggplot(dplyr::filter(modern_long, variable %in% c("great.circle")),
+  aes(log10(obis_n), value, colour = class)) +
+  facet_wrap(~variable) +
+  geom_point(position = position_jitter(height = 600), alpha = 0.4) +
+  labs(colour = "Group") + ylab("Great circle distance (km)")
+p2 <- ggplot(filter(modern_long, variable %in% c("mean_observed")),
+  aes(log10(obis_n), value, colour = class)) + facet_wrap(~variable) +
+  geom_point(position = position_jitter(height = 0.05), alpha = 0.4) +
+  labs(colour = "Group") + ylab("Intrinsic risk")
+pdf("../figs/obis-samping-vs-predictors.pdf", width = 8, height = 8)
+gridExtra::grid.arrange(p1, p2)
+dev.off()
+@
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=0.7\textwidth]{../figs/obis-samping-vs-predictors}
+\caption{Variation among extant genera in intrinsic extinction risk and great
+  circle distance as a function of the number of OBIS records. Overall
+  intrinsic extinction risk declines as the number of OBIS records increases,
+  as expected biologically and under a model in which poorly sampled genera
+  artificially appear to be at elevated extinction risk. Notably taxa with few
+  raw occurrences exhibit a broad range of intrinsic extinction risk values.
+  Overall great circle distance increases with the number of OBIS occurrences;
+  however, above approximately 5 OBIS occurrences genera exhibit the full
+  range of great circle distance values.}
+\label{fig:obis-sampling-vs-predictors}
+\end{center}
 \end{figure}
 
 <<pair-obis-culls, results='hide'>>=
