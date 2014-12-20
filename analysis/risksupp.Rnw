@@ -1229,10 +1229,7 @@ dev.off()
   raw occurrences exhibit a broad range of intrinsic extinction risk values.
   Overall great circle distance increases with the number of OBIS occurrences;
   however, above approximately 5 OBIS occurrences genera exhibit the full
-  range of great circle distance values. Consequently we impose a minimum
-  threshold of 5 OBIS occurrences for all analyses presented in the main text
-  and in the SOM investigate the robustness of our results to varying the
-  minimum number of OBIS records.}
+  range of great circle distance values.}
 \label{fig:obis-sampling-vs-predictors}
 \end{center}
 \end{figure}
