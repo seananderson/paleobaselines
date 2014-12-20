@@ -152,9 +152,9 @@ plyr::d_ply(o, "predictor", function(x) {
     par(xpd = NA)
 
     legend_stages <- col_df$stage
-    legend_stages <- sub("all", "Pleistocene-Neogene", legend_stages)
+    legend_stages <- sub("all", "Pleist.-Neogene", legend_stages)
 
-    legend(-2.11, par("usr")[4] * 1.45, legend = legend_stages, bty = "n",
+    legend(-2.15, par("usr")[4] * 1.45, legend = legend_stages, bty = "n",
       cex = 0.8, text.col = "grey40", fill = pal, border = pal, horiz =
       TRUE)
     par(xpd = FALSE)
