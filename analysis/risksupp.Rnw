@@ -324,10 +324,9 @@ were run through the World Register of Marine Species database (WORMS,
 \url{http://www.marinespecies.org}) to detect and remove erroneous or invalid
 taxonomic names and to place genera within a higher taxonomy. The complete OBIS
 dataset used for our analyses consisted of
-$\sim$\Sexpr{round(sum(subset(Table.S1,
-  Interval == "Modern")$Occurrences)/1e6, 1)}
-million occurrences of
-\Sexpr{sum(subset(Table.S1, Interval == "Modern")$Genera)} genera
+$\sim$\Sexpr{round(sum(subset(Table.S1, Interval == "Modern")$Occurrences)/1e6, 1)}
+million occurrences
+%of \Sexpr{sum(subset(Table.S1, Interval == "Modern")$Genera)} genera
 (Table~\ref{tab:genera}).
 
 OBIS is the largest single source of modern-day geolocated marine biological
