@@ -41,3 +41,5 @@ p2 <- ggplot(plot.dat,aes(mean.pseudo.ex,mean.risk,colour=class,label=group)) +
 pdf("../figs/risk-vs-preservation.pdf",  width = 12,  height = 5.1)
 gridExtra::grid.arrange(p1, p2, ncol = 2)
 dev.off()
+
+
