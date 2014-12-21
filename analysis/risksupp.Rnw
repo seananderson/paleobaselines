@@ -257,7 +257,7 @@ ggsave("../figs/hist-preserv-prob.pdf", width = 6, height = 4)
   Neogene-Pleistocene fossil record. Preservation probabilities are the
   proportion of subintervals in which a genus was sampled from the subinterval
   in which it was first observed through the subinterval in which it was last
-  observed. Subintervals considered include the Paleogene, four Neogene stages
+  observed. Subintervals considered include the Paleogene, four Neogene-Pleistocene stages
   (Lower Miocene, Middle Miocene, Upper Miocene, and Pliocene), the Pleistocene,
   and modern (based on contemporary extinction status); including the Paleogene
   and Modern subintervals removes edge effects thereby allowing preservation
@@ -282,7 +282,7 @@ ggsave("../figs/hist-preserv-prob.pdf", width = 6, height = 4)
 
 Our analysis focuses on skeletonized marine organisms that are common
 constituents of coastal ecosystems, have high preservation potential as fossils,
-and that have relatively well-sampled modern and Neogene distributions. After
+and that have relatively well-sampled modern and Neogene-Pleistocene distributions. After
 evaluating the available modern and fossil data for candidate groups, we
 selected bivalves, echinoids, sharks, gastropods, marine mammals, and
 scleractinian corals as best fitting these criteria. We initially evaluated
@@ -368,10 +368,10 @@ name associated with them. Third, we excluded genus names that were informal and
 qualified by \texttt{aff.}, \texttt{?}, \texttt{cf.}, or quotation marks. In our
 analyses only genus names were used --- we did not treat subgenera as genera.
 
-We assigned fossil occurrences to one of four Neogene time intervals: the Early
+We assigned fossil occurrences to one of four Neogene-Pleistocene time intervals: the Early
 Miocene, Middle Miocene, Upper Miocene, and the Plio-Pleistocene based on the
 \texttt{FR2\_bin} collections field in the PaleoDB download. Following these
-culls, the Neogene dataset included $\sim$\Sexpr{round(sum(subset(Table.S1,
+culls, the Neogene-Pleistocene dataset included $\sim$\Sexpr{round(sum(subset(Table.S1,
   Interval != "Modern")$Occurrences)/1e5, 1)}$\times 10^5$ occurrences of
 \Sexpr{num_unique_paleo_genera} unique genera (Table~\ref{tab:genera}).
 
@@ -978,7 +978,7 @@ predictions from models built on a different geologic interval.
 
 In the first case, we built models on two thirds of the data and then tested on
 one third of the data and repeated this procedure 150 times. We did this for
-each of the interval models and for the overall Neogene model. We recorded the
+each of the interval models and for the overall Neogene-Pleistocene model. We recorded the
 predicted extinction probabilities from the model and compared these to the
 original data (extinct or survived). From this dataset we built out-of-sample
 ROC (receiver operating characteristic) curves
@@ -1480,9 +1480,6 @@ TODO Values to use in text for the number of genera left after various culls:
 % \Sexpr{n_genera_singleton} % FIXME - this is a long vector?
 \Sexpr{n_genera_locality}
 
-
-Look at sensitivity of Figure 1, 2, and 3 as well as plots of potential against estimates.
-
 \subsection{Exploring the effects of contemporary sampling intensity on intrinsic risk predictions}
 
 Geographic variation in sampling intensity may influence the observed
@@ -1518,7 +1515,7 @@ determine the potential effect of ``pseudo-endemics'' on mean intrinsic risk
 estimates we removed genera that were only reported in one province. For this
 sensitivity test, we explicitly assumed that these genera were solely the result
 of variation in sampling intensity, although in reality single province genera
-are most likely a combination of ``pseudo-endemics'' and true endemics. %Culling
+are most likely a combination of ``pseudo-endemics'' and true endemics. Culling
 genera known from only one province reduces the sample size of contemporary
 genera by \Sexpr{single.genera.provs.removed} to a total of \Sexpr{total.genera}
 genera. Maps of mean intrinsic risk in which single province genera were
@@ -2040,7 +2037,7 @@ dev.off()
 \includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-0-pp}
 %\includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-1-pp}
 \includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-sing-pp}
-\caption{Global maps from models built with different culls of the Neogene
+\caption{Global maps from models built with different culls of the Neogene-Pleistocene
   fossil record. Top: the base model displayed in main text Figure 3. Bottom: a
   model trained on fossil data including only genera that occurr in the PaleoDB
   at least twice in every subinterval within their stratigraphic range. This is
