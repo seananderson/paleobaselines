@@ -1,4 +1,4 @@
-all: knit pdf rnwdrop
+all: knit pdf rnwdrop mainfigsdropbox
 
 rnwdrop:
 	cp risksupp.Rnw ~/Dropbox/nescent_extinction_map/risksupp.Rnw
@@ -100,3 +100,8 @@ png:
 	awk -v n=2 -v s="\\\DeclareGraphicsExtensions{.png,.pdf}" 'NR == n {print s} {print}' risksupp.tex > risksupp2.tex
 	mv risksupp2.tex risksupp.tex
 	pdflatex risksupp
+
+mainfigsdropbox:
+	cp ../figs/partial-plot-base.pdf ~/Dropbox/nescent_extinction_map/fig1.pdf
+	cp ../figs/class-risk-maps-mean-log-ext.pdf ~/Dropbox/nescent_extinction_map/fig2.pdf
+	cp ../figs/hotspots.pdf ~/Dropbox/nescent_extinction_map/fig3.pdf
