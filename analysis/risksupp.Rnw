@@ -639,7 +639,7 @@ one predictive class (extinctions) is much less common than the other predictive
 class (survival) \cite{he2009}. One method of improving model performance in
 this situation is to assign greater weights to the sparser class (described as a
 ``cost-sensitive'' approach in Ref.~\cite{he2009}). In all our modeling we
-applied a weight to the extinct genera equal to the ratio of survived and
+applied a weight to the extinct genera equal to the ratio of survived to
 extinct genera and a weight to the survived genera points of 1. This
 considerably improved predictive performance, but has the trade-off that our
 final predictions are no longer on the original probability scale. In our
@@ -649,12 +649,12 @@ model predictions using cross-validation within the paleontological dataset. Our
 calibration serves as an additional test of the predictive ability of our model.
 
 To calibrate our model, we grouped the predicted extinction probabilities for
-each class into bins from 0 to 1 in 0.05 increments. For example, we grouped
-predicted probabilities of 0.12, 0.11, and 0.14 for three different genera into
+each taxonomic group into bins from 0 to 1 in 0.05 increments. For example, we grouped
+predictions of 0.12, 0.11, and 0.14 for three different genera into
 a bin of 0.10--0.15. We then calculated the mean observed extinction risk
-for each of those bins. For example, if those three genera had observed
+probabilities for each of those bins. For example, if those three genera had observed
 extinction probabilities of 0.21, 0.09, and 0.10, the mean observed
-out-of-sample extinction risk would be 0.133. We then compared the mean
+out-of-sample extinction probability would be 0.133. We then compared the mean
 of our prediction bin (0.125 in this example) with the mean observed value
 (0.133). In this example our model is slightly biased. Because we're building
 and testing the model on independent datasets, this is a good test of how our
