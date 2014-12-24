@@ -2053,7 +2053,7 @@ dev.off()
   fossil record. Top: the base model displayed in main text Figure 3. Bottom: a
   model trained on fossil data including only genera that occurr in the PaleoDB
   at least twice in every subinterval within their stratigraphic range. This is
-  the same model indicated as ``> 1 observation'' in Figures
+  the same model indicated as ``$>$ 1 observation'' in Figures
   \ref{fig:pairs-genus-paleo-culls} and \ref{fig:pairs-prov-paleo-culls}.}
 \label{fig:overall-maps-paleo-culls}
 \end{center}
