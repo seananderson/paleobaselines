@@ -65,9 +65,9 @@ opts_knit$set(eval.after = 'fig.cap') # evaluate fig.cap after the chunk
 \title{Supporting Online Material for\\
   Paleontological Baselines for Evaluating Extinction Risk in the Modern Oceans}
 \author{
-  Seth Finnegan\footnotemark[1]\textsuperscript{$\ast$}
-  \and Sean C. Anderson\footnotemark[1]
-  \and Paul G. Harnik\footnotemark[1]
+  Seth Finnegan\textsuperscript{$\ast$} \textsuperscript{$\dagger$}
+  \and Sean C. Anderson\textsuperscript{$\dagger$}
+  \and Paul G. Harnik\textsuperscript{$\dagger$}
   \and Carl Simpson
   \and Derek P. Tittensor
   \and Jarrett E. Byrnes
@@ -84,8 +84,8 @@ opts_knit$set(eval.after = 'fig.cap') # evaluate fig.cap after the chunk
 \date{}
 \maketitle
 
-\textsuperscript{$\ast$}Corresponding author. E-mail sethf@berkeley.edu
-\footnotetext[1]{Authors contributed equally to this work}
+\textsuperscript{$\ast$}Corresponding author. E-mail sethf@berkeley.edu\\
+\textsuperscript{$\dagger$}Authors contributed equally to this work
 
 This PDF file includes:\\
 Supporting methods\\
