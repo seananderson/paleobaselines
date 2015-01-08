@@ -270,16 +270,16 @@ ggsave("../figs/hist-preserv-prob.pdf", width = 6, height = 4)
   Neogene-Pleistocene fossil record. Preservation probabilities are the
   proportion of subintervals in which a genus was sampled from the subinterval
   in which it was first observed through the subinterval in which it was last
-  observed. Subintervals considered include the Paleogene, four Neogene-Pleistocene stages
+  observed. Subintervals considered include the Paleogene, four Neogene stages
   (Lower Miocene, Middle Miocene, Upper Miocene, and Pliocene), the Pleistocene,
-  and modern (based on contemporary extinction status); including the Paleogene
-  and Modern subintervals removes edge effects thereby allowing preservation
-  probabilities to cover the entire (Neogene-Pleistocene) time span of our
+  and Recent (based on contemporary extinction status); including the Paleogene
+  and Recent subintervals removes edge effects thereby allowing preservation
+  probabilities to cover the entire Neogene-Pleistocene time span of our
   study. A preservation probability of 1.0 indicates that a genus was observed
   in all subintervals from the subinterval in which it was first observed
   through the subinterval in which it was last observed. Fossil occurrence data
-  are from the Paleobiology Database (PaleobioDB) and modern occurrence data are
-  from the Ocean Biogeographic Information System (OBIS). Preservation
+  are from the Paleobiology Database (PaleoDB) and contemporary extinction status is
+  based on the ``genus extant'' field in the PaleoDB. Preservation
   probabilities are generally high in each of the six major groups of marine
   animals considered in our study.}
 \label{fig:hist-preserv-prob}
@@ -496,7 +496,7 @@ some realms wrap from one side of the plot to the other.
 
 \includegraphics[width=\textwidth]{../figs/province_interpolation_tests.pdf}
 
-<<plot-comparison-modern-plio-pleistocene-ranges, child='plot-pleistocene-comparison-child.Rnw', fig.height=5, fig.width=10, fig.cap=paste("Comparison of predictors for the", n_plio_common_genera, "genera that are sampled in both the modern dataset and in the Plio-Pleistocene subset of the paleontological dataset. Richness, occupancy, and occurrences are standardized by dividing by the maximum observed value within each interval. Red points are overplotted and hence relative tranparancy of a given point indicates the number of genera. There is significant uncertainty in both the fossil and modern predictor values, and the genuine predictor values for many genera are expected to have changed somewhat between the Plio-Pleistocene and the Recent. Hence, we assessed the rank-order correlation between the two datasets for each predictor. Spearman's rank correlation coefficients (rho) and p values for each comparison are given in the panel headings. Strong positive correlations between predictors for genera sampled in both the Plio-Pleistocene fossil record and modern biogeographic databases suggest that relative differences among genera in these characteristics are preserved with substantial fidelity in the fossil record."), echo=FALSE>>=
+<<plot-comparison-modern-plio-pleistocene-ranges, child='plot-pleistocene-comparison-child.Rnw', fig.height=5, fig.width=10, fig.cap=paste("Comparison of predictors for the", n_plio_common_genera, "genera that are sampled in both the modern dataset and in the Plio-Pleistocene subset of the paleontological dataset. Richness, occupancy, and occurrences are standardized by dividing by the maximum observed value within each interval. Red points are overplotted and hence relative transparency of a given point indicates the number of genera. We assessed the rank-order correlation between the two datasets for each predictor. Spearman's rank correlation coefficients (rho) and p values for each comparison are given in the panel headings. Strong positive correlations between predictors for genera sampled in both the Plio-Pleistocene fossil record and modern biogeographic databases are observed despite substantial uncertainty in both the fossil and modern predictor values. Furthermore, the genuine predictor values for many predictor variables are expected to have changed somewhat between the Plio-Pleistocene and the Recent. These correlations suggest that relative differences among genera in these characteristics are preserved with substantial fidelity in the fossil record."), echo=FALSE>>=
 @
 
 \subsection{Equal-area grid overlay}
@@ -537,7 +537,7 @@ value (maximum latitude, minimum latitude, mean latitude, latitudinal range,
 great circle distance) cannot easily be standardized without potentially distorting
 underlying patterns. Those predictors with no finite limit (richness,
 occurrences, occupancy) are strongly influenced by sampling intensity and can be
-more readily standardized. To ameliorate sampling effects on these predictors we
+more readily standardized. To mitigate sampling effects on these predictors we
 first log-transformed them and then divided the value for each genus-interval
 combination (e.g.\ \textit{Acropora} occurrences in the Plio-Pleistocene) by the
 maximum log-transformed value of the predictor observed in that interval. Hence,
@@ -545,8 +545,17 @@ the scale on these standardized predictors ranges from 0 to 1 (Figure 1). The
 other variables (e.g.\ latitude variables and great circle distance) retain the
 same absolute scale across all paleontological and contemporary records --- a
 degree of latitude is still a degree latitude and a kilometre is still a
-kilometre. To avoid overfitting of models we reduced the dimensionality of all
-numerical predictor variables. Maximum latitude, minimum latitude, mean
+kilometre.
+
+TODO - sean fix this:
+We standardized the approximate resolution of the predictor variables
+reduced the to assess their relative importance .
+bias in machine learning variable importance...
+C. Strobl, A.-L. Boulesteix, A. Zeileis, and T. Hothorn. Bias in random forest variable importance mea- sures: Illustrations, sources and a solution. BMC Bioinformatics, 8:25, 2007b.
+TODO can be a problem with machine learning
+carolin stroble...
+
+Maximum latitude, minimum latitude, mean
 latitude, and latitudinal range were grouped into $10\,^{\circ}$ bins. Great
 circle distances were grouped into 2000 km bins. Following division by the
 maximum value within each interval, richness, occupancy, and occurrences were
@@ -618,7 +627,7 @@ neog_temp <- neog %>% group_by(genus) %>%
 n_genera_all <- nrow(neog_temp)
 n_genera_1.0 <- nrow(filter(neog_temp, prop_comp == 1.0))
 n_genera_single <- nrow(filter(neog_temp, prop_comp == 1.0 & single_obs == 0))
-n_genera_singleton <- row(filter(neog_temp, singleton == 0))
+n_genera_singleton <- nrow(filter(neog_temp, singleton == 0))
 n_genera_locality <- neog_one_eac %>% group_by(genus) %>% dplyr::summarise(g = genus[1]) %>% nrow
 @
 
@@ -981,11 +990,29 @@ source("risk-pres-prob-scatter.R")
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=\textwidth]{../figs/risk-vs-preservation.pdf}
-\caption{Comparison between mean extinction risk and two indices of preservation probability. Variation in mean extinction risk among taxonomic subgroups is not associated with variation in mean preservation probability (Fig.~\ref{fig:hist-preserv-prob}) or variation in the proportion of false extinctions. False extinctions were calculated as the fraction of genera that appear to go extinct in the PaleoDB (have a last occurrence prior to the Pleistocene, the most recent stage that is reliably recorded) but are in fact extant according to the PaleoDB and/or OBIS records. Preservation probability was calculated as the proportion of subintervals in a genus's stratigraphic range in which it was sampled in the PaleoDB.  Seven subintervals are included in this analysis (pre-Neogene, Early Miocene, Middle Miocene, Late Miocene, Pliocene, Pleistocene, Recent) and, by definition, preservation probabilities could be calculated only for genera spanning at least three subintervals. There is no clear relationship between preservation potential or proportion of false extinctions and predicted extinction risk.}
+\caption{Comparison between mean extinction risk (here the mean taxonomic
+  marginal effect from the GBM models) and two indices of preservation
+  probability. Variation in mean extinction risk among taxonomic subgroups is
+  not associated with variation in mean preservation probability
+  (Fig.~\ref{fig:hist-preserv-prob}) or variation in the proportion of false
+  extinctions. False extinctions were calculated as the fraction of genera that
+  appear to go extinct in the PaleoDB (have a last occurrence prior to the
+  Pleistocene, the most recent stage that is reliably recorded) but are in fact
+  extant according to the PaleoDB ``genus extant'' field. Preservation
+  probability was calculated as the proportion of subintervals in a genus's
+  stratigraphic range in which it was sampled in the PaleoDB.  Seven
+  subintervals are included in this analysis (pre-Neogene, Early Miocene, Middle
+  Miocene, Late Miocene, Pliocene, Pleistocene, Recent). There is no clear
+  relationship between preservation
+  potential or proportion of false extinctions and predicted extinction risk.
+  However, if mammals are excluded, these relationships strengthen but still
+  only explain
+  \Sexpr{Sprintf{"%.2f", round(m.pres.prob.no.mamm$estimate[[1]]^2, 2))}\% and
+  \Sexpr{Sprintf("%.2f", round(m.false.ext.no.mamm$estimate[[1]]^2, 2))}\% of
+    the ranked variables, respectively.}
 \label{fig:raw-predictor-ex}
 \end{center}
 \end{figure}
-
 
 <<plot-cross-interval-gbms, results='hide', child='plot-cross-interval-gbms-child.Rnw'>>=
 @
@@ -1029,7 +1056,7 @@ with a median of
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=4.86in]{../figs/plot-cross-interval-gbms-base.pdf}
-\caption{Consistency of relative extinction risk patterns throughout the
+\caption{Consistency of relative extinction risk patterns (here uncalibrated GBM estimates) throughout the
   Neogene-Pleistocene fossil record. Shown are comparisons of scaled genus
   extinction probabilities estimated from models built and tested on different
   geologic subintervals. For example, the upper-right panel plots the
@@ -1226,7 +1253,7 @@ source("plot-genus-predictions-against-gcd.R")
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=\textwidth]{../figs/plot-genus-predictions-against-gcd.pdf}
-\caption{Predicted intrinsic risk versus geographic range size (great circle
+\caption{Predicted intrinsic risk (here uncalibrated GBM predictions for modern genera) versus geographic range size (great circle
   distance) for modern genera in each of six taxonomic groups. The points
   represent individual genera and are colored according to taxonomic subgroups
   within each major taxonomic group, the black contour lines indicate the
@@ -1463,6 +1490,7 @@ map_class_ext(er_dat_class, plot_column = "log.mean.gcd",
   fixed_range = TRUE)
 @
 
+%TODO - sean- make this fold
 % We can also look at the distribution of our predictions by biogeographic province \cite{spalding2007} and class (Fig.~\ref{fig:plot-density-risk-by-province}).
 <<plot-density-risk-by-province, fig.width=12.5, fig.height=15, fig.cap="Histograms showing the distribution of intrinsic extinction risk predictions for contemporary genera in each coastal biogeographic province \\cite{spalding2007} (panels) and taxonomic group (colors). Note that the x-axis is log-distributed.", echo=FALSE>>=
 # merge in province names:
@@ -1488,47 +1516,152 @@ ggplot(temp, aes(mean_observed + 0.001)) +
 
 \section{Model exploration and sensitivity analyses}
 
-\subsection{Exploring the effects of preservation potential in the fossil record}
+\subsection{Exploring the effects of preservation and sampling in the fossil record}
 
-Taxonomic variability in preservation potential is a major concern for any analysis of extinction risk patterns in the fossil record.  Given the importance of taxonomic identity as a predictor of apparent extinction risk (Fig.~1), it is necessary to determine if differences between groups in apparent extinction risk reflect variation in preservation potential rather than true differences in extinction risk.  To investigate this possibility, we compared the mean extinction risk of genera in each group with two metrics of preservation potential. Here we use the term ``preservation potential'' to refer to all factors that influence the likelihood that a genus that existed during a given interval was preserved and sampled in that interval.  These factors include variation in fossilization potential due to differences in skeletal structure and mineralogy, variation in collection effort due to differences in degree of scientific interest, and variation in the proportion of published occurrences records that have been entered into the PaleoDB.  The two metrics of preservation potential we considered were:
-
-\begin{enumerate}
-
-\item The mean sampling probability of genera in the taxonomic group, where the (per-interval) sampling probability of each genus was calculated as the number of intervals in which the genus was sampled in the PaleoDB divided by the total number of intervals during which that genus can be inferred to have existed based on its observed first and last occurrences. Seven subintervals were used for this analysis (pre-Neogene, Early Miocene, Middle Miocene, Late Miocene, Pliocene, Pleistocene, Recent) and, by definition, preservation probabilities could only be calculated for genera that spanned at least three subintervals.
-
-\item The proportion of ``false extinctions'' among genera in the taxonomic group, where a ``false extinction'' is defined as a genus that appears to go extinct in the fossil record (i.e., has an observed last appearance in the PaleoDB prior to the Plio-Pleistocene) but is in fact extant as determined from either records in OBIS or from the “genus extant” field in the PaleoDB.
-
-\end{enumerate}
-
-Although there is substantial variation among taxonomic groups and subgroups in mean sampling probability and in mean proportion of false extinctions (TODO Fig.~S5), there is no significant correlation between mean sampling probability and mean extinction risk (TODO Spearman's Rho = 0.008 , p = 0.968) or between proportion of false extinction and mean extinction risk (TODO Spearman's Rho = 0.026, p = 0.896).  In addition, consistent differences in mean extinction risk between groups remain (even as overall mean risk declines) as the minimum sampling probability required for a genus to be included in the fossil dataset is raised to progressively higher values (TODO Fig.~23). Hence, the differences in extinction risk we observe between groups and subgroups do not appear to be driven by differences in preservation potential.
-
-There are a variety of additional biases that are not closely correlated with taxonomic identity that potentially affect the fidelity of the fossil record. These biases could have a strong effect on the other potential predictors of extinction risk that we consider if genera with low sampling probability are nonrandomly distributed with respect to predictor values (if, for example, genera with low sampling probability tend to have lower-than-average great circle distances).  However, as the minimum sampling probability threshold required for including genera in the fossil dataset is raised to progressively higher values, there is little change in the frequency distribution of the number of genera, the number of extinct genera, or the proportion of extinct genera across the range of predictor values (TODO Fig.~S21). Similarly, there is little change in the shapes of these distributions if genera that are represented by fewer than two occurrences in any interval within their stratigraphic ranges are excluded (Fig.~S22).  Marginal effects of predictor values on estimated extinction risk (as presented in Fig.~1) also remain relatively constant as the minimum sampling probability threshold required for including genera in the fossil dataset is raised to progressively higher values (TODO Fig.~S24).
-
-Preservational and sampling biases cannot be entirely eliminated; however, their influence on intrinsic risk estimates for the modern biota can be evaluated by using models trained on subsets of the fossil data that have been culled to remove the genera that are most likely to be affected by different biases. As in the modern, it is very difficult to differentiate between taxa in the fossil record that are genuinely rare and/or narrowly distributed and taxa that are merely poorly preserved and/or under sampled. Consequently, the sensitivity tests that follow consider the robustness of our results to culls of the fossil data that are intended to exclude poorly preserved/sampled genera but undoubtedly also exclude some genuinely rare genera.
-
-We trained models on each of four culled versions of the fossil dataset described below and then used these models to make intrinsic risk estimates for the genera in the modern dataset.  Each cull was intended to assess the effects of a different potential source of bias on our extinction risk estimates. The culls were as follows:
+Taxonomic variability in sampling probability is a major concern for any
+analysis of extinction risk patterns in the fossil record.  Given the importance
+of taxonomic identity as a predictor of apparent extinction risk (Fig.~1), it is
+necessary to determine if differences between groups in apparent extinction risk
+reflect variation in sampling probability rather than true differences in
+extinction risk.  To investigate this possibility, we compared the mean
+extinction risk of genera in each group with two metrics of sampling
+probability. Here we use the term ``sampling probability'' to refer to all
+factors that influence the likelihood that a genus that existed during a given
+interval was preserved and sampled in that interval.  These factors include
+variation in fossilization potential due to differences in skeletal structure
+and mineralogy, variation in collection effort due to differences in degree of
+scientific interest, and variation in the proportion of published occurrences
+records that have been entered into the PaleoDB.  The two metrics of
+sampling probability we considered were:
 
 \begin{enumerate}
 
-\item We removed all genera that are unsampled in any interval within their observed stratigraphic range (``sampling probability = 1.0''). To deal with edge effects arising from the relatively small number of discrete time intervals in the Neogene-Pleistocene dataset, we included a Paleogene presence field (i.e., does the genus occur in the PaleoDB prior to the Neogene?) and an Extant field (i.e., is the genus extant today as recorded by either OBIS records or by the ``genus extant'' field in the PaleoDB?).  Thus a genus that was present in the Paleogene, was last sampled in the Middle Miocene, and is not extant today would be included only if it was sampled in the Early Miocene.  A genus that was first sampled in the Middle Miocene and is extant today would be included only if was sampled in the Late Miocene, the Pliocene, and the Pleistocene. This cull is intended to reduce the impact of differences among genera in preservation potential by removing the most problematic genera.
+\item The mean preservation probability of genera in the taxonomic group, where
+  the (per-interval) preservation probability of each genus was calculated as
+  the number of intervals in which the genus was sampled in the PaleoDB divided
+  by the total number of intervals during which that genus can be inferred to
+  have existed based on its observed first and last occurrences. Seven
+  subintervals were used for this analysis (pre-Neogene, Early Miocene, Middle
+  Miocene, Late Miocene, Pliocene, Pleistocene, Recent).
 
-\item We removed all genera that are sampled in only one time interval (``no stratigraphic singletons'') regardless of the number of times they were sampled within that time interval.  This cull is intended to reduce the number of genera with stratigraphic ranges that may be artificially truncated by differential sampling of time intervals (a particularly well-sampled interval may include many stratigraphic singletons, genera that in fact had longer temporal ranges but that were not sampled in preceding and/or succeeding intervals because those intervals are represented by less sedimentary rock or have been less intensively studied).
-
-\item We removed all genera that are not represented by at least two occurrences in every time interval within their observed stratigraphic range (``$> 1$ observation'').  This reduces the likelihood that a genus may be erroneously reported (due to misidentification) in an interval during which it did not in fact exist.
-
-\item Within each stage, we removed all genera that are sampled in only a single equal-area grid cell (``$> 1$ locality'').  This cull is intended to reduce the influence of differential geographic sampling of the fossil record, which can artificially truncate both the geographic ranges and the stratigraphic ranges of genera.
+\item The proportion of ``false extinctions'' among genera in the taxonomic
+  group, where a ``false extinction'' is defined as a genus that appears to go
+  extinct in the fossil record (i.e., has an observed last appearance in the
+  PaleoDB prior to the Plio-Pleistocene) but is in fact extant as determined
+  from either records in OBIS or from the ``genus extant'' field in the PaleoDB.
 
 \end{enumerate}
 
-We trained gbm models on each of the culled fossil datasets and then used the resulting models to generate intrinsic risk estimates for genera in the modern dataset.  We compared intrinsic risk estimates from these different culled fossil datasets and from the unculled fossil dataset using scatterplot matrices. Cross-correlations are high for both the intrinsic risk of individual modern genera (TODO Fig.~S25) and for the mean intrinsic risk of modern genera in biogeographic provinces (TODO Fig.~S26), suggesting that none of the potential biases addressed by these fossil culls play an important role in producing the overall patterns that we report in the main text. When the model based on the most stringent of these culls (``>1 observation'') is plotted as in Fig.~3, geographic patterns of estimated mean intrinsic risk are similar to those observed in Fig.~3 (TODO Fig.~S27).  Therefore we conclude that, although the incompleteness of the fossil record may influence our intrinsic risk estimates, the first-order taxonomic and geographic patterns we observed are robust to these potential biases.
+Although there is substantial variation among taxonomic groups and subgroups in
+mean preservation probability and in mean proportion of false extinctions (TODO
+Fig.~S5), there is no clear correlation between mean preservation probability
+and mean extinction risk (Spearman's Rho =
+\Sexpr{Sprintf("%.2f", round(m.pres.prob$estimate[[1]], 2))}) or between
+proportion of false extinctions and mean extinction risk (Spearman's Rho =
+\Sexpr{Sprintf("%.2f", round(m.false.ext$estimate[[1]], 2))}.
+In addition, consistent differences in mean extinction risk
+between groups remain (even as overall mean risk declines) as the minimum
+preservation probability required for a genus to be included in the fossil dataset
+is raised to progressively higher values (TODO Fig.~23). Hence, the differences
+in extinction risk we observe between groups and subgroups do not appear to be
+driven by differences in sampling probability.
 
-TODO Values to use in text for the number of genera left after various culls:
+There are a variety of additional biases that are not closely correlated with
+taxonomic identity that potentially affect the fidelity of the fossil record.
+These biases could have a strong effect on the other potential predictors of
+extinction risk that we consider if genera with low sampling probability are
+non-randomly distributed with respect to predictor values (if, for example,
+genera with low sampling probability tend to have lower-than-average great
+circle distances).  However, as the minimum preservation probability threshold
+required for including genera in the fossil dataset is raised to progressively
+higher values, there is little change in the frequency distribution of the
+number of genera, the number of extinct genera, or the proportion of extinct
+genera across the range of predictor values (TODO Fig.~S21). Similarly, there is
+little change in the shapes of these distributions if genera that are
+represented by fewer than two occurrences in any interval within their
+stratigraphic ranges are excluded (Fig.~S22). Marginal effects of predictor
+values on estimated extinction risk (as presented in Fig.~1) also remain
+relatively constant as the minimum preservation probability threshold required
+for including genera in the fossil dataset is raised to progressively higher
+values (TODO Fig.~S24).
 
-\Sexpr{n_genera_all}
-\Sexpr{n_genera_1.0}
-\Sexpr{n_genera_single}
-% \Sexpr{n_genera_singleton} % FIXME - this is a long vector?
-\Sexpr{n_genera_locality}
+Preservational and sampling biases cannot be entirely eliminated; however, their
+influence on intrinsic risk estimates for the modern biota can be evaluated by
+using models trained on subsets of the fossil data that have been culled to
+remove the genera that are most likely to be affected by different biases. As in
+the modern, it is difficult to differentiate between taxa in the fossil record
+that are genuinely rare and/or narrowly distributed and taxa that are merely
+poorly preserved and/or under sampled. Consequently, the sensitivity tests that
+follow consider the robustness of our results to culls of the fossil data that
+are intended to exclude poorly preserved/sampled genera but undoubtedly also
+exclude some genuinely rare genera.
+
+We trained models on each of four culled versions of the fossil dataset
+described below and then used these models to make intrinsic risk estimates for
+the genera in the modern dataset.  Each cull was intended to assess the effects
+of a different potential source of bias on our extinction risk estimates. The
+culls were as follows:
+
+\begin{enumerate}
+
+\item We removed all genera that are unsampled in any interval within their
+  observed stratigraphic range (``preservation probability = 1.0''). To deal
+  with edge effects arising from the relatively small number of discrete time
+  intervals in the Neogene-Pleistocene dataset, we included a Paleogene presence
+  field (i.e., does the genus occur in the PaleoDB prior to the Neogene?) and an
+  Extant field (i.e., is the genus extant today as recorded by the ``genus
+  extant'' field in the PaleoDB?).  Thus a genus that was present in the
+  Paleogene, was last sampled in the Middle Miocene, and is not extant today
+  would be included only if it was sampled in the Early Miocene.  A genus that
+  was first sampled in the Middle Miocene and is extant today would be included
+  only if was sampled in the Late Miocene, the Pliocene, and the Pleistocene.
+  This cull is intended to reduce the influence of variation in sampling
+  probability by removing the most problematic genera and retains
+  \Sexpr{n_genera_1.0} of \Sexpr{n_genera_all} genera.
+
+\item We removed all genera that are sampled in only one time interval (``no
+  stratigraphic singletons'') regardless of the number of times they were
+  sampled within that time interval.  This cull is intended to reduce the number
+  of genera with stratigraphic ranges that may be artificially truncated by
+  differential sampling of time intervals (a particularly well-sampled interval
+  may include many stratigraphic singletons, genera that in fact had longer
+  temporal ranges but that were not sampled in preceding and/or succeeding
+  intervals because those intervals are represented by less sedimentary rock or
+  have been less intensively studied). This cull retains
+  \Sexpr{n_genera_singleton} of the original \Sexpr{n_genera_all} genera.
+
+\item We removed all genera that are not represented by at least two occurrences
+  in every time interval within their observed stratigraphic range (``$> 1$
+  observation'').  This reduces the likelihood that a genus may be erroneously
+  reported (due to misidentification) in an interval during which it did not in
+  fact exist. This also removes genera that are not consistently well sampled
+  throughout their stratigraphic ranges. This cull retains
+  \Sexpr{n_genera_single} of the original \Sexpr{n_genera_all} genera.
+
+\item Within each stage, we removed all genera that are sampled in only a single
+  equal-area grid cell (``$> 1$ locality'').  This cull is intended to reduce
+  the influence of differential geographic sampling of the fossil record, which
+  can artificially truncate both the geographic ranges and the stratigraphic
+  ranges of genera. This cull retains \Sexpr{n_genera_locality} of the original
+  \Sexpr{n_genera_all} genera.
+
+\end{enumerate}
+
+We trained GBM models on each of the culled fossil datasets and then used the
+resulting models to generate intrinsic risk estimates for genera in the modern
+dataset.  We compared intrinsic risk estimates from these different culled
+fossil datasets and from the unculled fossil dataset using scatterplot matrices.
+Cross-correlations are high for both the intrinsic risk of individual modern
+genera (TODO Fig.~S25) and for the mean intrinsic risk of modern genera in
+biogeographic provinces (TODO Fig.~S26), suggesting that none of the potential
+biases addressed by these fossil culls play an important role in producing the
+overall patterns that we report in the main text. When the model based on the
+most stringent of these culls (``>1 observation'') is plotted as in Fig.~3,
+geographic patterns of estimated mean intrinsic risk are similar to those
+observed in Fig.~3 (TODO Fig.~S27).  Therefore we conclude that, although the
+incompleteness of the fossil record may influence our intrinsic risk estimates,
+the first-order taxonomic and geographic patterns we observed are robust to
+these potential biases.
 
 \subsection{Exploring the effects of contemporary sampling intensity on intrinsic risk predictions}
 
@@ -1608,6 +1741,7 @@ map_class_ext(subset(er_dat_class, !class %in% c("Elasmobranchii", "Mammalia")),
   fixed_range = TRUE)
 @
 
+% TODO - sean - make those a fold y axis
 <<relationship-between-mean-risk-and-sampling-intensity, fig.width=9, fig.height=5.5, out.width="5in", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus number of OBIS records (of the indicated taxonomic group) from that province. Each point represents a single biogeographic province; colors indicate latitudinal zone of province. Lines and gray-shaded regions indicate linear regressions and 95\\% confidence intervals. Positive correlations between mean intrinsic risk and number of OBIS records (as a rough index of sampling effort) suggest that heavily sampled provinces may contain a greater proportion of ``pseudoendemic'' genera that have not been sampled in other provinces in which they actually occur. A minimum bounding box interpolation (Fig.~\\ref{fig:didactic}) was used in an attempt to reduce this sampling bias.", cache=TRUE>>=
 temp_dat <- droplevels(subset(by.prov.classes,
   !class %in% c("Elasmobranchii", "Mammalia")))
@@ -1625,6 +1759,7 @@ p <- ggplot(temp_dat,
 print(p)
 @
 
+%TODO - sean- use + and - on these axes:
 <<obis-residuals-maps, results='hide', child='obis-residuals-maps-child.Rnw'>>=
 @
 \begin{figure}[htbp]
@@ -1637,7 +1772,8 @@ print(p)
   range maps instead of OBIS data for the modern distributions. The broad-scale
   mean intrinsic risk patterns plotted in Fig.~2 remain after accounting for the
   positive relationship between mean intrinsic risk and number of OBIS records
-  (Fig.~\ref{fig:relationship-between-mean-risk-and-sampling-intensity}).}
+  (Fig.~\ref{fig:relationship-between-mean-risk-and-sampling-intensity}).
+  Because raw residuals are used, the colour scale is relative.}
 \label{fig:obis-residuals-maps}
 \end{figure}
 
@@ -1921,6 +2057,7 @@ dev.off()
 \label{fig:no-bounding-box}
 \end{figure}
 
+%TODO - why are the intrinsic risk going below 0? - sean
 <<plot-obis-sampling-vs-gcd>>=
 modern_long <- reshape2::melt(modern, id.vars = c("class", "group", "genus"),
   measure.vars = c("richness", "occupancy", "min.lat", "max.lat", "lat.range",
@@ -1951,7 +2088,7 @@ dev.off()
   artificially appear to be at elevated extinction risk. Notably taxa with few
   raw occurrences exhibit a broad range of intrinsic extinction risk values.
   Overall great circle distance increases with the number of OBIS occurrences;
-  however, above approximately 5 OBIS occurrences genera exhibit the full
+  however, above approximately 5 OBIS occurrences, genera exhibit the full
   range of great circle distance values.}
 \label{fig:obis-sampling-vs-predictors}
 \end{center}
@@ -2199,7 +2336,7 @@ Predictor             & Description\\
 \midrule
 Species richness      & Number of congeneric species in each genus in each interval\\
 Occupancy             & Number of equal-area grid cells in which each genus occurred in each interval\\
-Occurrences           & Total number of occurrences of each genus globally in each interval\\
+Occurrences           & Total number of observations of each genus globally in each interval\\
 Minimum latitude      & Minimum absolute latitude at which each genus was sampled in each interval\\
 Maximum latitude      & Maximum absolute latitude at which each genus was sampled in each interval\\
 Latitudinal range     & Maximum minus minimum latitude of each genus in each interval\\

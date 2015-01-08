@@ -35,11 +35,28 @@ p1 <- ggplot(plot.dat,aes(mean.prop,mean.risk,colour=class,label=group)) +
 p2 <- ggplot(plot.dat,aes(mean.pseudo.ex,mean.risk,colour=class,label=group)) +
   geom_point(size=3) + geom_text(size=3,hjust=.5, vjust=-.6) + theme_bw() +
   xlab("Proportion of false extinctions") +
-  ylab("Mean extinction risk prediction") + coord_cartesian(xlim=c(-.08, .5))+
-  theme(legend.title=element_blank()) + labs(colour = "Group")
+  ylab("Mean extinction risk prediction") + coord_cartesian(xlim=c(-.08, .5)) +
+  labs(colour = "Group")
 
 pdf("../figs/risk-vs-preservation.pdf",  width = 12,  height = 5.1)
 gridExtra::grid.arrange(p1, p2, ncol = 2)
 dev.off()
 
+# get stats:
+m.pres.prob <- cor.test(plot.dat$mean.prop, plot.dat$mean.risk, method = "spearman")
+m.false.ext <- cor.test(plot.dat$mean.pseudo.ex, plot.dat$mean.risk, method = "spearman")
+
+# m.pres.prob$p.value
+# m.false.ext$p.value
+# m.pres.prob$estimate[[1]]
+# m.false.ext$estimate[[1]]
+
+plot.dat.no.mamm <- subset(plot.dat, !class %in% "Mammalia")
+m.pres.prob.no.mamm <- cor.test(plot.dat.no.mamm$mean.prop, plot.dat.no.mamm$mean.risk, method = "spearman")
+m.false.ext.no.mamm <- cor.test(plot.dat.no.mamm$mean.pseudo.ex, plot.dat.no.mamm$mean.risk, method = "spearman")
+
+# m.pres.prob.no.mamm$p.value
+# m.false.ext.no.mamm$p.value
+# m.pres.prob.no.mamm$estimate[[1]]
+# m.false.ext.no.mamm$estimate[[1]]
 
