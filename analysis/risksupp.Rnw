@@ -375,7 +375,9 @@ and land snails, that are occasionally preserved in marine sediments.
 We used the following protocol to exclude occurrences that did not meet a
 minimum level of taxonomic resolution: First, multiple occurrences of a genus
 within a collection were pooled. Second, we excluded generically indeterminate
-occurrences but kept specifically indeterminate occurrences if they had a genus
+occurrences (e.g.~\texttt{Arca? sp.})
+but kept specifically indeterminate occurrences (e.g.~\texttt{Arca zebra?})
+if they had a genus
 name associated with them. Third, we excluded genus names that were informal and
 qualified by \texttt{aff.}, \texttt{?}, \texttt{cf.}, or quotation marks. In our
 analyses only genus names were used --- we did not treat subgenera as genera.
