@@ -1007,8 +1007,8 @@ source("risk-pres-prob-scatter.R")
   potential or proportion of false extinctions and predicted extinction risk.
   However, if mammals are excluded, these relationships strengthen but still
   only explain
-  \Sexpr{Sprintf{"%.2f", round(m.pres.prob.no.mamm$estimate[[1]]^2, 2))}\% and
-  \Sexpr{Sprintf("%.2f", round(m.false.ext.no.mamm$estimate[[1]]^2, 2))}\% of
+  \Sexpr{sprintf("%.2f", round(m.pres.prob.no.mamm$estimate[[1]]^2, 2))}\% and
+  \Sexpr{sprintf("%.2f", round(m.false.ext.no.mamm$estimate[[1]]^2, 2))}\% of
     the ranked variables, respectively.}
 \label{fig:raw-predictor-ex}
 \end{center}
@@ -1556,9 +1556,9 @@ Although there is substantial variation among taxonomic groups and subgroups in
 mean preservation probability and in mean proportion of false extinctions (TODO
 Fig.~S5), there is no clear correlation between mean preservation probability
 and mean extinction risk (Spearman's Rho =
-\Sexpr{Sprintf("%.2f", round(m.pres.prob$estimate[[1]], 2))}) or between
+\Sexpr{sprintf("%.2f", round(m.pres.prob$estimate[[1]], 2))}) or between
 proportion of false extinctions and mean extinction risk (Spearman's Rho =
-\Sexpr{Sprintf("%.2f", round(m.false.ext$estimate[[1]], 2))}.
+\Sexpr{sprintf("%.2f", round(m.false.ext$estimate[[1]], 2))}.
 In addition, consistent differences in mean extinction risk
 between groups remain (even as overall mean risk declines) as the minimum
 preservation probability required for a genus to be included in the fossil dataset
