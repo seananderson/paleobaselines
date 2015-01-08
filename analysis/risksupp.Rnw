@@ -580,8 +580,6 @@ machine learning methods in many cases \cite{caruana2006} and are commonly used
 in applied prediction problems (e.g.\ by Yahoo for website rankings;
 \cite{cossock2008}).
 
-\textbf{TODO add about how GBMs work well with non linearities}
-
 We fit GBMs with the \pkg{gbm} package \cite{gbm2013} for the \proglang{R}
 statistical language and environment \cite{r2014}. The \pkg{gbm} package
 implements GBMs based on Ref.\ \cite{friedman2001} with some minor modifications
@@ -1545,7 +1543,6 @@ excluded (Fig.~\ref{fig:remove-single-province-genera}) are congruent with those
 derived from the full dataset (Figs.~2 and 3), indicating that single-province
 genera are not responsible for the broad-scale patterns of intrinsic risk.
 
-\textbf{TODO add a bit on the sensitivity culls}
 
 <<plot-n-obis-prov, fig.cap="Number of OBIS occurrence records for each biogeographic province \\cite{spalding2007}. Color scale bars on the right are log-distributed. The number of OBIS occurrence records provides a rough index of sampling effort across regions. Panels for sharks and mammals are not shown because we used range maps instead of OBIS data for the modern distributions.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
 map_class_ext(subset(er_dat_class, !class %in% c("Elasmobranchii", "Mammalia")),
