@@ -94,7 +94,7 @@ g.u$x.pos <- g.u$x.pos + cumsum(c(0, diffs))
 o.names <- data.frame(predictor = c("occupancy", "occurrences",
     "richness", "great.circle", "max.lat", "min.lat", "mean.lat",
     "lat.range"),
-  predictor.clean = c("Occupancy", "Occurrences", "Richness",
+  predictor.clean = c("Occupancy", "Occurrences", "Number of species",
     "Great circle distance", "Maximum latitude", "Minimum latitude",
     "Mean latitude", "Latitude range"), axis.1 = c(rep("c(0, 0.5)", 3),
     "c(5000, 15000)", rep("c(0, 30, 60)", 3), "c(0, 30, 60)"),
