@@ -1543,6 +1543,31 @@ excluded (Fig.~\ref{fig:remove-single-province-genera}) are congruent with those
 derived from the full dataset (Figs.~2 and 3), indicating that single-province
 genera are not responsible for the broad-scale patterns of intrinsic risk.
 
+To investigate the association between sampling intensity and geographic range
+size among extant genera, we plot great circle distance as a function of the
+total number of OBIS records for each genus (TODO - reference figs18); shark
+and mammal genera were not included in this analysis because their geographic
+range sizes were based on synoptic range maps rather than OBIS occurrences.
+Overall, as the number of OBIS occurrences increases, great circle distance
+increases and intrinsic risk estimates decline. Although these associations are
+expected biologically, they could also be explained by a model in which poorly
+sampled genera artificially appear to be at elevated extinction risk.
+
+To determine the sensitivity of provincial mean intrinsic risk patterns to
+variation among genera in sampling intensity, we varied the minimum number of
+OBIS occurrences globally that were required for inclusion of a modern genus in
+our provincial mean intrinsic risk estimates. We tried minimum thresholds of 1,
+5, 10, 20, and 50 OBIS occurrences; note that above approximately 5 OBIS
+occurrences modern genera exhibit the full range of great circle distance values
+(TODO - reference fig s18). Fig. (TODO: insert fig ref here to maps) plots the
+maps of provincial mean intrinsic risk based on these different culls and Fig.
+(TODO: insert fig ref here to pairs plots) plots the cross-correlation between
+provincial mean intrinsic risk based on these different culls. Correlations are
+high and provincial mean intrinsic risk estimates only begin to depart
+substantially from those based on the full dataset when the occurrence threshold
+is set $\ge50$. At this level of culling, many genera whose ranges are likely
+well defined by OBIS occurrences are excluded and only 1235-TODO-knitr of the
+2615-TODO-knitr genera in the full modern dataset remain.
 
 <<plot-n-obis-prov, fig.cap="Number of OBIS occurrence records for each biogeographic province \\cite{spalding2007}. Color scale bars on the right are log-distributed. The number of OBIS occurrence records provides a rough index of sampling effort across regions. Panels for sharks and mammals are not shown because we used range maps instead of OBIS data for the modern distributions.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
 map_class_ext(subset(er_dat_class, !class %in% c("Elasmobranchii", "Mammalia")),
