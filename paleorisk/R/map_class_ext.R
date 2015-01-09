@@ -45,6 +45,7 @@ map_class_ext <- function(er_dat, min_prov_genera = 20,
   plot_column = "mean.ext", plot_order = c("Mammalia", "Elasmobranchii",
     "Echinoidea", "Gastropoda", "Anthozoa", "Bivalvia"),
   yticks = c(0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1),
+  ytick_labels = NULL,
   ylabel = "Intrinsic extinction risk", col_range = FALSE,
   exact_limits = NULL, log_yticks = FALSE, fixed_range = FALSE,
   picture_files = NULL, silhouette_coords = list(c(-2.2, -0.75, -1.9, -0,86)),
@@ -219,6 +220,8 @@ map_class_ext <- function(er_dat, min_prov_genera = 20,
 
       if(log_yticks) yrange_show <- log(yrange)
       if(!log_yticks) yrange_show <- yrange
+
+      if(!is.null(ytick_labels)) yrange_show <- ytick_labels
 
       col_box_key(col.pal = col_pal, limits = limits, width = .3, col.regions =
           col.regions, bg = "grey85", border.col = "grey60", at =
