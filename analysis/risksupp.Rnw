@@ -547,20 +547,14 @@ same absolute scale across all paleontological and contemporary records --- a
 degree of latitude is still a degree latitude and a kilometre is still a
 kilometre.
 
-TODO - sean fix this:
-We standardized the approximate resolution of the predictor variables
-reduced the to assess their relative importance .
-bias in machine learning variable importance...
-C. Strobl, A.-L. Boulesteix, A. Zeileis, and T. Hothorn. Bias in random forest variable importance mea- sures: Illustrations, sources and a solution. BMC Bioinformatics, 8:25, 2007b.
-TODO can be a problem with machine learning
-carolin stroble...
-
-Maximum latitude, minimum latitude, mean
-latitude, and latitudinal range were grouped into $10\,^{\circ}$ bins. Great
-circle distances were grouped into 2000 km bins. Following division by the
-maximum value within each interval, number of species, occupancy, and occurrences were
-rounded to one decimal place so that values ranged from 0 to 1.0 in increments
-of 0.1.
+Furthermore, we standardized the approximate resolution of the predictor variables
+since vastly different resolutions (number of possible splits) in machine learning
+predictors are known to generate bias in variable importance measures \cite{strobl2007}.
+Maximum latitude, minimum latitude, mean latitude, and latitudinal range were grouped
+into $10\,^{\circ}$ bins. Great circle distances were grouped into 2000 km bins.
+Following division by the maximum value within each interval, number of species,
+occupancy, and occurrences were rounded to one decimal place so that values
+ranged from 0 to 1.0 in increments of 0.1.
 
 \section{Modelling contemporary extinction risk with paleontological data}
 
