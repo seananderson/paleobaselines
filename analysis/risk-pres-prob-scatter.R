@@ -43,8 +43,8 @@ gridExtra::grid.arrange(p1, p2, ncol = 2)
 dev.off()
 
 # get stats:
-m.pres.prob <- cor.test(plot.dat$mean.prop, plot.dat$mean.risk, method = "spearman")
-m.false.ext <- cor.test(plot.dat$mean.pseudo.ex, plot.dat$mean.risk, method = "spearman")
+m.pres.prob <- suppressWarnings(cor.test(plot.dat$mean.prop, plot.dat$mean.risk, method = "spearman"))
+m.false.ext <- suppressWarnings(cor.test(plot.dat$mean.pseudo.ex, plot.dat$mean.risk, method = "spearman"))
 
 # m.pres.prob$p.value
 # m.false.ext$p.value
@@ -52,11 +52,10 @@ m.false.ext <- cor.test(plot.dat$mean.pseudo.ex, plot.dat$mean.risk, method = "s
 # m.false.ext$estimate[[1]]
 
 plot.dat.no.mamm <- subset(plot.dat, !class %in% "Mammalia")
-m.pres.prob.no.mamm <- cor.test(plot.dat.no.mamm$mean.prop, plot.dat.no.mamm$mean.risk, method = "spearman")
-m.false.ext.no.mamm <- cor.test(plot.dat.no.mamm$mean.pseudo.ex, plot.dat.no.mamm$mean.risk, method = "spearman")
+m.pres.prob.no.mamm <- suppressWarnings(cor.test(plot.dat.no.mamm$mean.prop, plot.dat.no.mamm$mean.risk, method = "spearman"))
+m.false.ext.no.mamm <- suppressWarnings(cor.test(plot.dat.no.mamm$mean.pseudo.ex, plot.dat.no.mamm$mean.risk, method = "spearman"))
 
 # m.pres.prob.no.mamm$p.value
 # m.false.ext.no.mamm$p.value
 # m.pres.prob.no.mamm$estimate[[1]]
 # m.false.ext.no.mamm$estimate[[1]]
-
