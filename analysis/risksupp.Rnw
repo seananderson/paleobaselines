@@ -957,7 +957,7 @@ dev.off()
   (Table~\ref{tab:predictors}) on extinction risk in the Neogene-Pleistocene GBM
   model. The values are scaled so that the variable with the maximum influence
   on accurate extinction risk prediction has a relative importance of 1. Shown
-  are the median (dots) and interquartile range (line segments) across 20 model
+  are the median (dots) and interquartile range (line segments) across 10 model
   runs. Some line segments are smaller than the dots overlayed on top where
   there is little variability across model runs.}
 \label{fig:plot-relative-importance}
