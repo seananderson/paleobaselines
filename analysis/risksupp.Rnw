@@ -1793,7 +1793,7 @@ print(p)
   range maps instead of OBIS data for the modern distributions. The broad-scale
   mean intrinsic risk patterns plotted in Fig.~2 remain after accounting for the
   positive relationship between mean intrinsic risk and number of OBIS records
-  (Fig.~\ref{fig:relationship-between-mean-risk-and-sampling-intensity}). $+$ refers to positive residuals and $-$ refers to negative residuals.}
+  (Fig.~\ref{fig:relationship-between-mean-risk-and-sampling-intensity}). ``$+$'' refers to positive residuals and ``$-$'' refers to negative residuals.}
 \label{fig:obis-residuals-maps}
 \end{figure}
 
