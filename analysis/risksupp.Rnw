@@ -1498,7 +1498,6 @@ map_class_ext(er_dat_class, plot_column = "log.mean.gcd",
   fixed_range = TRUE)
 @
 
-%TODO - sean- make this fold 2015-01-09 - Sean - I was here.
 % We can also look at the distribution of our predictions by biogeographic province \cite{spalding2007} and class (Fig.~\ref{fig:plot-density-risk-by-province}).
 <<plot-density-risk-by-province, fig.width=12.5, fig.height=15, fig.cap="Histograms showing the distribution of intrinsic extinction risk predictions for contemporary genera in each coastal biogeographic province \\cite{spalding2007} (panels) and taxonomic group (colors). Note that the x-axis is log-distributed and intrinsic risk is represented here as multiples of the overall geometric mean value.", echo=FALSE>>=
 # merge in province names:
@@ -1566,17 +1565,19 @@ sampling probability we considered were:
 \end{enumerate}
 
 Although there is substantial variation among taxonomic groups and subgroups in
-mean preservation probability and in mean proportion of false extinctions (TODO
-Fig.~S5), there is no clear correlation between mean preservation probability
+mean preservation probability and in mean proportion of false extinctions
+(Fig.~\ref{fig:raw-predictor-ex}), there is no clear correlation between mean
+preservation probability
 and mean extinction risk (Spearman's Rho =
 \Sexpr{sprintf("%.2f", round(m.pres.prob$estimate[[1]], 2))}) or between
 proportion of false extinctions and mean extinction risk (Spearman's Rho =
 \Sexpr{sprintf("%.2f", round(m.false.ext$estimate[[1]], 2))}.
 In addition, consistent differences in mean extinction risk
 between groups remain (even as overall mean risk declines) as the minimum
-preservation probability required for a genus to be included in the fossil dataset
-is raised to progressively higher values (TODO Fig.~23). Hence, the differences
-in extinction risk we observe between groups and subgroups do not appear to be
+preservation probability required for a genus to be included in the fossil
+dataset is raised to progressively higher values
+(Fig.~\ref{fig:class-level-partial-order}). Hence, the differences in
+extinction risk we observe between groups and subgroups do not appear to be
 driven by differences in sampling probability.
 
 There are a variety of additional biases that are not closely correlated with
@@ -1589,14 +1590,15 @@ circle distances).  However, as the minimum preservation probability threshold
 required for including genera in the fossil dataset is raised to progressively
 higher values, there is little change in the frequency distribution of the
 number of genera, the number of extinct genera, or the proportion of extinct
-genera across the range of predictor values (TODO Fig.~S21). Similarly, there is
+genera across the range of predictor values
+(Fig.~\ref{fig:ext-ratios-preserv-prob}). Similarly, there is
 little change in the shapes of these distributions if genera that are
 represented by fewer than two occurrences in any interval within their
-stratigraphic ranges are excluded (Fig.~S22). Marginal effects of predictor
-values on estimated extinction risk (as presented in Fig.~1) also remain
-relatively constant as the minimum preservation probability threshold required
-for including genera in the fossil dataset is raised to progressively higher
-values (TODO Fig.~S24).
+stratigraphic ranges are excluded (Fig.~\ref{fig:ext-ratios-zero-occ-cull}).
+Marginal effects of predictor values on estimated extinction risk (as presented
+in Fig.~1) also remain relatively constant as the minimum preservation
+probability threshold required for including genera in the fossil dataset is
+raised to progressively higher values (Fig.~\ref{fig:partial-paleo-culls}).
 
 Preservational and sampling biases cannot be entirely eliminated; however, their
 influence on intrinsic risk estimates for the modern biota can be evaluated by
@@ -1663,18 +1665,19 @@ culls were as follows:
 We trained GBM models on each of the culled fossil datasets and then used the
 resulting models to generate intrinsic risk estimates for genera in the modern
 dataset.  We compared intrinsic risk estimates from these different culled
-fossil datasets and from the unculled fossil dataset using scatterplot matrices.
-Cross-correlations are high for both the intrinsic risk of individual modern
-genera (TODO Fig.~S25) and for the mean intrinsic risk of modern genera in
-biogeographic provinces (TODO Fig.~S26), suggesting that none of the potential
+fossil datasets and from the unculled fossil dataset using scatterplot
+matrices. Cross-correlations are high for both the intrinsic risk of individual
+modern genera (Fig.~\ref{fig:pairs-genus-paleo-culls}) and for the mean
+intrinsic risk of modern genera in biogeographic provinces
+(Fig.~\ref{fig:pairs-prov-paleo-culls}), suggesting that none of the potential
 biases addressed by these fossil culls play an important role in producing the
 overall patterns that we report in the main text. When the model based on the
 most stringent of these culls (``>1 observation'') is plotted as in Fig.~3,
 geographic patterns of estimated mean intrinsic risk are similar to those
-observed in Fig.~3 (TODO Fig.~S27).  Therefore we conclude that, although the
-incompleteness of the fossil record may influence our intrinsic risk estimates,
-the first-order taxonomic and geographic patterns we observed are robust to
-these potential biases.
+observed in Fig.~3 (Fig.~\ref{fig:overall-maps-paleo-culls}).  Therefore we
+conclude that, although the incompleteness of the fossil record may influence
+our intrinsic risk estimates, the first-order taxonomic and geographic patterns
+we observed are robust to these potential biases.
 
 \subsection{Exploring the effects of contemporary sampling intensity on intrinsic risk predictions}
 
@@ -1703,7 +1706,6 @@ sampling that has occurred in the region (Fig.~\ref{fig:plot-n-obis-prov}).
 Differences in mean intrinsic risk between northern and southern hemisphere
 extratropics are also preserved (Fig.~\ref{fig:obis-residuals-maps}).
 
-% TODO this section will need to be expanded
 Geographic variation in sampling intensity could result in the observation of
 ``pseudo-endemics'' --- genera found in a well-sampled provinces but not
 observed in adjacent provinces that have not been sampled as intensely. To
@@ -1721,29 +1723,33 @@ genera are not responsible for the broad-scale patterns of intrinsic risk.
 
 To investigate the association between sampling intensity and geographic range
 size among extant genera, we plot great circle distance as a function of the
-total number of OBIS records for each genus (TODO - reference figs18); shark
-and mammal genera were not included in this analysis because their geographic
-range sizes were based on synoptic range maps rather than OBIS occurrences.
-Overall, as the number of OBIS occurrences increases, great circle distance
-increases and intrinsic risk estimates decline. Although these associations are
-expected biologically, they could also be explained by a model in which poorly
-sampled genera artificially appear to be at elevated extinction risk.
+total number of OBIS records for each genus
+(Figs~\ref{fig:obis-sampling-vs-predictors}); shark and mammal genera were not
+included in this analysis because their geographic range sizes were based on
+synoptic range maps rather than OBIS occurrences. Overall, as the number of
+OBIS occurrences increases, great circle distance increases and intrinsic risk
+estimates decline. Although these associations are expected biologically, they
+could also be explained by a model in which poorly sampled genera artificially
+appear to be at elevated extinction risk.
 
 To determine the sensitivity of provincial mean intrinsic risk patterns to
 variation among genera in sampling intensity, we varied the minimum number of
 OBIS occurrences globally that were required for inclusion of a modern genus in
 our provincial mean intrinsic risk estimates. We tried minimum thresholds of 1,
 5, 10, 20, and 50 OBIS occurrences; note that above approximately 5 OBIS
-occurrences modern genera exhibit the full range of great circle distance values
-(TODO - reference fig s18). Fig. (TODO: insert fig ref here to maps) plots the
-maps of provincial mean intrinsic risk based on these different culls and Fig.
-(TODO: insert fig ref here to pairs plots) plots the cross-correlation between
-provincial mean intrinsic risk based on these different culls. Correlations are
-high and provincial mean intrinsic risk estimates only begin to depart
-substantially from those based on the full dataset when the occurrence threshold
-is set $\ge50$. At this level of culling, many genera whose ranges are likely
-well defined by OBIS occurrences are excluded and only 1235-TODO-knitr of the
-2615-TODO-knitr genera in the full modern dataset remain.
+occurrences modern genera exhibit the full range of great circle distance
+values (Fig~\ref{fig:obis-sampling-vs-predictors}). Fig.~\ref{fig:overall-maps-obis-culls} plots the maps of provincial mean intrinsic risk based on these
+different culls and Fig.~\ref{fig:pairs-prov-obis-culls} plots the
+cross-correlation between provincial mean intrinsic risk based on these
+different culls. Correlations are high and provincial mean intrinsic risk
+estimates only begin to depart substantially from those based on the full
+dataset when the occurrence threshold is set $\ge50$. At this level of culling,
+many genera whose ranges are likely well defined by OBIS occurrences are
+excluded and only
+\Sexpr{length(unique(dplyr::filter(d.eco.filled, obis_n >= 50)$genus))}
+of the
+\Sexpr{length(unique(dplyr::filter(d.eco.filled, obis_n >= 1)$genus))}
+genera in the full modern dataset remain.
 
 <<plot-n-obis-prov, fig.cap="Number of OBIS occurrence records for each biogeographic province \\cite{spalding2007}. Color scale bars on the right are log-distributed. The number of OBIS occurrence records provides a rough index of sampling effort across regions. Panels for sharks and mammals are not shown because we used range maps instead of OBIS data for the modern distributions.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
 map_class_ext(subset(er_dat_class, !class %in% c("Elasmobranchii", "Mammalia")),
@@ -2167,7 +2173,7 @@ dev.off()
   distribution of fossil genera with respect to potential extinction risk
   predictors. Rows 1--2: total number of genera, rows 3--4: number of extinct
   genera, rows 5--6: proportion of extinct genera.}
-%\label{fig:raw-predictor-paleo-culls}
+\label{fig:ext-ratios-preserv-prob}
 \end{center}
 \end{figure}
 
@@ -2181,7 +2187,7 @@ dev.off()
   genera, rows 5--6: proportion of extinct genera. \texttt{TRUE} and \texttt{FALSE}
   in the colour legend refers to whether single occurrences were culled or not,
   respectively.}
-%\label{fig:raw-predictor-paleo-culls}
+\label{fig:ext-ratios-zero-occ-cull}
 \end{center}
 \end{figure}
 
