@@ -217,13 +217,12 @@ pkgs
 In particular, our work would not have been possible without:
 \pkg{PBSmapping} \cite{pbsmapping},
 \pkg{maptools} \cite{maptools},
+\pkg{sp} \cite{sp1, sp2},
+\pkg{gbm} \cite{gbm2013},
 \pkg{dplyr} \cite{dplyr},
 \pkg{plyr} \cite{plyr},
-\pkg{ggplot2} \cite{ggplot2},
-\pkg{gbm} \cite{gbm2013},
-\pkg{knitr} \cite{xie2013b, xie2014, xie2014a},
-\pkg{maptools} \cite{maptools}, and
-\pkg{sp} \cite{sp1, sp2}.
+\pkg{ggplot2} \cite{ggplot2}, and
+\pkg{knitr} \cite{xie2013b, xie2014, xie2014a}.
 
 <<get-grid-values, echo=FALSE>>=
 load("../data/global_45x14.rda")
