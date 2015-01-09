@@ -345,7 +345,8 @@ genera to reduce spuriously small geographic ranges, though including them did
 not have a major effect on observed patterns. Genus names from the OBIS dataset
 were run through the World Register of Marine Species database (WORMS,
 \url{http://www.marinespecies.org}) to detect and remove erroneous or invalid
-taxonomic names and to place genera within a higher taxonomy. The complete OBIS
+taxonomic names and to place genera within higher taxonomic groups of
+super-familial to ordinal rank. The complete OBIS
 dataset used for our analyses consisted of
 $\sim$\Sexpr{round(sum(subset(Table.S1, Interval == "Modern")$Occurrences)/1e6, 1)}
 million occurrences
@@ -368,7 +369,7 @@ maps to occupancy data by overlaying an equal-area-grid (see Section
 
 All of the fossil occurrence data used for this study were downloaded from the
 Paleobiology Database (PaleoDB, \url{http://paleobiodb.org}), a global
-compilation of the spatial and temporal occurrences of taxa in the fossil
+compilation of the spatial and temporal observations of taxa in the fossil
 record. The Paleobiology Database has been used in previous investigations of
 marine extinction rates \cite{harnik2012a, hannisdal2011, alroy2010} and
 extinction selectivity, particularly involving geographic range size
@@ -423,9 +424,9 @@ predictors of extinction risk \cite{payne2007, wang2008, harnik2012b,
 To quantify geographic distribution, we measured the maximum, minimum, and mean
 absolute latitude at which each genus was sampled in each interval, the absolute
 latitudinal range (maximum latitude minus minimum latitude), the maximum
-distance between occurrences of each genus (great circle distance), and the
+distance between observations of each genus (great circle distance), and the
 number of equal-area grid cells in which each genus occurred (occupancy). We
-also measured the total number of global occurrences of each genus (occurrences)
+also measured the total number of global observations of each genus (occurrences)
 as an imperfect measure of abundance/ecological dominance. Finally because we
 were analyzing genera rather than species, we also measured the total number of
 named species assigned to each genus in each interval. All else being equal,
@@ -462,12 +463,12 @@ life-history differences. Finally, taxonomic groupings were selected to ensure
 that each group contained a sufficient number of fossil genera to use as a basis
 for predictions.
 
-\subsection{Interpolation of OBIS occurrence data}
+\subsection{Interpolation of OBIS observation data}
 
 Sampling of genus geographic distributions in the contemporary OBIS data set is
 incomplete. Therefore, we used an interpolation algorithm to smooth sampling
 variation when mapping the contemporary distribution of genera. Within a given
-ocean biogeographic realm \cite{spalding2007}, we counted each genus as present
+ocean biogeographic realm \cite{spalding2007}, we inferred each genus as present
 in every province that intersects or is enclosed by a minimum bounding box drawn
 around all of the sites at which the genus has been sampled (see image below). A
 similar minimum-bounding-box approach has been used in the literature before to
@@ -1006,7 +1007,7 @@ source("risk-pres-prob-scatter.R")
   probability was calculated as the proportion of subintervals in a genus's
   stratigraphic range in which it was sampled in the PaleoDB.  Seven
   subintervals are included in this analysis (pre-Neogene, Early Miocene, Middle
-  Miocene, Late Miocene, Pliocene, Pleistocene, Recent). There is no clear
+  Miocene, Late Miocene, Pliocene, Pleistocene, Recent). There is no discernible
   relationship between preservation
   potential or proportion of false extinctions and predicted extinction risk.
   However, if mammals are excluded, these relationships strengthen but still
@@ -1482,7 +1483,7 @@ source("investigate-completeness.R")
 source("investigate-modern-sampling.R")
 @
 
-<<plot-n-gen-genera-prov, fig.cap="Spatial distribution of \\textbf{genus richness} in the modern dataset. The number of genera occupying each province (following within-realm minimum bounding box interpolation) is plotted. Note that although the low genus richness values of some provinces reflects undersampling, gradients of increasing genus richness from pole to tropics are recognizable in all groups except for mammals, which are known to exhibit an inverse latitudinal gradient \\cite{tittensor2010}.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
+<<plot-n-gen-genera-prov, fig.cap="Spatial distribution of \\textbf{genus richness} in the modern dataset. The number of genera occupying each province (following within-realm minimum bounding box interpolation) is plotted. Note that although the low genus richness values of some provinces reflects undersampling, gradients of increasing genus richness from pole to tropics are recognizable in all groups except for marine mammals, which are known to exhibit an inverse latitudinal gradient \\cite{tittensor2010}.", fig.width=6.25, fig.height=4.8, out.width="6in">>=
 er_dat_class$log.N.gen <- log(er_dat_class$N.gen)
 map_class_ext(er_dat_class, plot_column = "log.N.gen",
   min_prov_genera = 0, ylab = "Number of genera",
@@ -2182,7 +2183,8 @@ dev.off()
 \caption{Effect of different minimum preservation probability culls on the
   distribution of fossil genera with respect to potential extinction risk
   predictors. Rows 1--2: total number of genera, rows 3--4: number of extinct
-  genera, rows 5--6: proportion of extinct genera.}
+  genera, rows 5--6: proportion of extinct genera. See Fig.~1 in the main text
+  for x-axis units.}
 \label{fig:ext-ratios-preserv-prob}
 \end{center}
 \end{figure}
@@ -2196,7 +2198,7 @@ dev.off()
   predictors. Rows 1--2: total number of genera, rows 3--4: number of extinct
   genera, rows 5--6: proportion of extinct genera. \texttt{TRUE} and \texttt{FALSE}
   in the colour legend refers to whether single occurrences were culled or not,
-  respectively.}
+  respectively. See Fig.~1 in the main text for x-axis units.}
 \label{fig:ext-ratios-zero-occ-cull}
 \end{center}
 \end{figure}
