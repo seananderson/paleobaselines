@@ -1314,11 +1314,18 @@ silhouette_coords[[6]] <- silhouette_coords[[6]] + c(0, 0, -0.05, -0.05)
 picture_files <- paste0("../silhouettes/", c("Mammalia", "Sharks",
   "Echinoidea", "Gastropoda", "Scleractinia", "Bivalvia"), ".eps.xml")
 
+get_fold_locations <- function(x, folds = c(0.5, 1, 2)) {
+  avg <- mean(x)
+  folds * avg
+}
+
+f <- c(0.25, 0.5, 1, 2)
 # make the figure:
 pdf("../figs/class-risk-maps-mean-log-ext.pdf", width = 6.45, height = 5.1)
-max_range <- map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10),
+max_range <- map_class_ext(er_dat_class,
+  yticks = get_fold_locations(exp(er_dat_class$mean.ext), folds = f),
   min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0034, 0.15),
-  picture_files = picture_files,
+  picture_files = picture_files, ytick_labels = f,
   silhouette_coords = silhouette_coords,
   ylabel = "Intrinsic extinction risk")
 dev.off()
