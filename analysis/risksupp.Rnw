@@ -260,7 +260,7 @@ neog <- readRDS("../data/stand-predictors-cen-obis.rds")
 neog <- droplevels(subset(neog, stage_top < 23 & stage_top != 0))
 p1 <- ggplot(neog, aes(prop_comp, fill = class)) + geom_histogram() +
   xlab("Preservation probability") + ylab("Number of genera") +
-  labs(fill = "Group")
+  labs(fill = "Group") + theme_bw()
 ggsave("../figs/hist-preserv-prob.pdf", width = 6, height = 4)
 @
 \begin{figure}[htbp]
@@ -1149,11 +1149,11 @@ pairs_labels <- c("Base model", "Preservation\nprobability = 1",
     "> 1 locality")
 
 pdf("../figs/pairs-gbm-raw-predictions-culls.pdf", width = 7, height = 7)
-pairs(modern[,
-  c("pred", "pred_1.0", "pred_sing", "pred_singleton", "pred_locality")],
+pairs(log(modern[,
+  c("pred", "pred_1.0", "pred_sing", "pred_singleton", "pred_locality")]),
   col = "#00000020", asp = 1,
-  ylim = c(0, 1), xlim = c(0, 1),
-  labels = pairs_labels, upper.panel = panel.cor)
+  ylim = log(c(0.002, 1)), xlim = log(c(0.002, 1)),
+  labels = pairs_labels, upper.panel = panel.cor, xaxt = "s", yaxt = "s")
 par(xpd = NA)
 mtext("Uncalibrated extinction risk", side = 1, outer = TRUE, line = -1.5)
 mtext("Uncalibrated extinction risk", side = 2, outer = TRUE, line = -1.5)
@@ -1314,18 +1314,18 @@ silhouette_coords[[6]] <- silhouette_coords[[6]] + c(0, 0, -0.05, -0.05)
 picture_files <- paste0("../silhouettes/", c("Mammalia", "Sharks",
   "Echinoidea", "Gastropoda", "Scleractinia", "Bivalvia"), ".eps.xml")
 
-get_fold_locations <- function(x, folds = c(0.5, 1, 2)) {
-  avg <- mean(x)
-  folds * avg
+get_fold_locations <- function(x, f = c(0.5, 1, 2)) {
+  avg <- exp(mean(log(x)))
+  f * avg
 }
 
-f <- c(0.25, 0.5, 1, 2)
+folds <- c(0.25, 0.5, 1, 2, 4)
 # make the figure:
 pdf("../figs/class-risk-maps-mean-log-ext.pdf", width = 6.45, height = 5.1)
 max_range <- map_class_ext(er_dat_class,
-  yticks = get_fold_locations(exp(er_dat_class$mean.ext), folds = f),
+  yticks = get_fold_locations(exp(er_dat_class$mean.ext), folds),
   min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0034, 0.15),
-  picture_files = picture_files, ytick_labels = f,
+  picture_files = picture_files, ytick_labels = folds,
   silhouette_coords = silhouette_coords,
   ylabel = "Intrinsic extinction risk")
 dev.off()
@@ -1351,8 +1351,11 @@ par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
 labs <- c(0.012, 0.016, 0.02)
 labs_show <- sprintf("%.3f", labs)
+folds <- c(0.8, 1, 1.2, 1.4)
 map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
-  hotspots = TRUE, at = log(labs), at.labels = labs_show)
+  hotspots = TRUE,
+  at = log(get_fold_locations(exp(er_dat$mean.ext), folds)),
+  at.labels = sprintf("%.1f", folds))
 par(xpd = NA)
 mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
   line = -1.4, las = 0, col = "grey30", cex = 0.9)
@@ -1394,9 +1397,10 @@ par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
 labs <- seq(0.010, 0.025, 0.005)#, 0.025, 0.03)
 labs_show <- sprintf("%.3f", labs)
 COL_LIMITS <- c(0.010, 0.025)
+folds <- c(0.6, 1, 1.3)
 map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
-  hotspots = TRUE, at = log(labs), at.labels = labs_show,
-  col_limits = COL_LIMITS)
+  hotspots = TRUE, at = log(get_fold_locations(exp(er_dat$mean.ext), folds)),
+  at.labels = sprintf("%.1f", folds), col_limits = COL_LIMITS)
 par(xpd = NA)
 mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
   line = -1.4, las = 0, col = "grey30", cex = 0.9)
@@ -1412,7 +1416,8 @@ pdf("../figs/hotspots-paleo-1-pp.pdf", width = 7, height = 3.5)
 par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
 map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
-  hotspots = TRUE, at = log(labs), at.labels = labs_show, col_limits = COL_LIMITS,
+  hotspots = TRUE, at = log(get_fold_locations(exp(er_dat$mean.ext), folds)),
+  at.labels = sprintf("%.1f", folds), col_limits = COL_LIMITS,
 # hotspots = TRUE, at = log(seq(0.075, 0.3, 0.1)), at.labels = seq(0.075, 0.3, 0.1),
 # plot_column = "mean.ext.1.0", col_limits = c(0.075, 0.3))#, col_limits = COL_LIMITS)
   plot_column = "mean.ext.1.0")
@@ -1425,7 +1430,8 @@ pdf("../figs/hotspots-paleo-sing-pp.pdf", width = 7, height = 3.5)
 par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
 map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
-  hotspots = TRUE, at = log(labs), at.labels = labs_show,
+  hotspots = TRUE, at = log(get_fold_locations(exp(er_dat$mean.ext), folds)),
+  at.labels = sprintf("%.1f", folds),
   plot_column = "mean.ext.sing", col_limits = COL_LIMITS)
 par(xpd = NA)
 mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
@@ -1436,7 +1442,8 @@ pdf("../figs/hotspots-paleo-singleton-plus-pp.pdf", width = 7, height = 3.5)
 par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
 map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
-  hotspots = TRUE, at = log(labs), at.labels = labs_show,
+  hotspots = TRUE, at = log(get_fold_locations(exp(er_dat$mean.ext), folds)),
+  at.labels = sprintf("%.1f", folds),
   plot_column = "mean.ext.singleton", col_limits = COL_LIMITS)
 par(xpd = NA)
 mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
@@ -1491,9 +1498,9 @@ map_class_ext(er_dat_class, plot_column = "log.mean.gcd",
   fixed_range = TRUE)
 @
 
-%TODO - sean- make this fold
+%TODO - sean- make this fold 2015-01-09 - Sean - I was here.
 % We can also look at the distribution of our predictions by biogeographic province \cite{spalding2007} and class (Fig.~\ref{fig:plot-density-risk-by-province}).
-<<plot-density-risk-by-province, fig.width=12.5, fig.height=15, fig.cap="Histograms showing the distribution of intrinsic extinction risk predictions for contemporary genera in each coastal biogeographic province \\cite{spalding2007} (panels) and taxonomic group (colors). Note that the x-axis is log-distributed.", echo=FALSE>>=
+<<plot-density-risk-by-province, fig.width=12.5, fig.height=15, fig.cap="Histograms showing the distribution of intrinsic extinction risk predictions for contemporary genera in each coastal biogeographic province \\cite{spalding2007} (panels) and taxonomic group (colors). Note that the x-axis is log-distributed and intrinsic risk is represented here as multiples of the overall geometric mean value.", echo=FALSE>>=
 # merge in province names:
 er <- readShapePoly("../data/MEOW2/meow_ecos.shp")
 prov_names <- er@data[,c("PROVINCE", "PROV_CODE")]
@@ -1506,11 +1513,16 @@ temp <- transform(temp, PROV_pretty = paste(PROV_CODE, PROVINCE))
 temp$class <- as.character(temp$class)
 temp$class[temp$class == "Anthozoa"] <- "Scleractinia"
 temp$class[temp$class == "Elasmobranchii"] <- "Sharks"
+folds <- c(0.1, 1, 25)
 ggplot(temp, aes(mean_observed + 0.001)) +
   geom_histogram(aes(fill = class, colour = class),
     position = "stack", alpha = 0.5, binwidth = 0.4) +
   facet_wrap(~ PROV_pretty,ncol=5) + labs(fill = "Group", colour = "Group") +
-  scale_x_log10() + theme(strip.text.x = element_text(size = 8)) +
+  scale_x_log10(
+    labels = folds,
+    breaks = get_fold_locations(temp$mean_observed, f = c(0.1, 1, 30))) +
+  # scale_x_log10(breaks = c(0.016, 0.0315)) +
+  theme(strip.text.x = element_text(size = 8)) +
   ylab("Number of genera") + xlab("Intrinsic risk") + theme(legend.position="top")
 @
 
@@ -1742,25 +1754,27 @@ map_class_ext(subset(er_dat_class, !class %in% c("Elasmobranchii", "Mammalia")),
   fixed_range = TRUE)
 @
 
-% TODO - sean - make those a fold y axis
-<<relationship-between-mean-risk-and-sampling-intensity, fig.width=9, fig.height=5.5, out.width="5in", fig.cap="Log-transformed mean intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus number of OBIS records (of the indicated taxonomic group) from that province. Each point represents a single biogeographic province; colors indicate latitudinal zone of province. Lines and gray-shaded regions indicate linear regressions and 95\\% confidence intervals. Positive correlations between mean intrinsic risk and number of OBIS records (as a rough index of sampling effort) suggest that heavily sampled provinces may contain a greater proportion of ``pseudoendemic'' genera that have not been sampled in other provinces in which they actually occur. A minimum bounding box interpolation (Fig.~\\ref{fig:didactic}) was used in an attempt to reduce this sampling bias.", cache=TRUE>>=
+<<relationship-between-mean-risk-and-sampling-intensity, fig.width=9, fig.height=5.5, out.width="5in", fig.cap="Intrinsic risk of genera in a biogeographic province \\cite{spalding2007} versus number of OBIS records (of the indicated taxonomic group) from that province. Each point represents a single biogeographic province; colors indicate latitudinal zone of province. Lines and gray-shaded regions indicate linear regressions and 95\\% confidence intervals. Positive correlations between mean intrinsic risk and number of OBIS records (as a rough index of sampling effort) suggest that heavily sampled provinces may contain a greater proportion of ``pseudoendemic'' genera that have not been sampled in other provinces in which they actually occur. A minimum bounding box interpolation (Fig.~\\ref{fig:didactic}) was used in an attempt to reduce this sampling bias. Here, intrinsic risk is represented as multiples of the overall geometric mean value.", cache=TRUE>>=
 temp_dat <- droplevels(subset(by.prov.classes,
   !class %in% c("Elasmobranchii", "Mammalia")))
 temp_dat$class <- as.character(temp_dat$class)
 temp_dat$class[temp_dat$class == "Anthozoa"] <- "Scleractinia"
+folds <- c(0.25, 0.5, 0.75, 1, 1.5, 2, 4)
 p <- ggplot(temp_dat,
   aes(log_OBIS_records, mean.ext)) +
-  facet_wrap(~class,scales="free",ncol=2) +
+  facet_wrap(~class,scales="fixed",ncol=2) +
   stat_smooth(method = "lm", se = TRUE, size = .5,colour="black") +
-  ylab("log(Mean intrinsic extinction risk)") +
+  ylab("Intrinsic risk)") +
   xlab("log(Number of OBIS records)") +
   geom_point(data=temp_dat,
     aes(log_OBIS_records, mean.ext,colour=Zone), alpha = 0.6) +
-  scale_colour_manual(values=c("blue","green3","red"))
+  scale_colour_manual(values=c("blue","green3","red")) +
+  scale_y_continuous(
+    breaks = log(get_fold_locations(exp(temp_dat$mean.ext), folds)),
+    labels = folds)
 print(p)
 @
 
-%TODO - sean- use + and - on these axes:
 <<obis-residuals-maps, results='hide', child='obis-residuals-maps-child.Rnw'>>=
 @
 \begin{figure}[htbp]
@@ -1773,8 +1787,7 @@ print(p)
   range maps instead of OBIS data for the modern distributions. The broad-scale
   mean intrinsic risk patterns plotted in Fig.~2 remain after accounting for the
   positive relationship between mean intrinsic risk and number of OBIS records
-  (Fig.~\ref{fig:relationship-between-mean-risk-and-sampling-intensity}).
-  Because raw residuals are used, the colour scale is relative.}
+  (Fig.~\ref{fig:relationship-between-mean-risk-and-sampling-intensity}). $+$ refers to positive residuals and $-$ refers to negative residuals.}
 \label{fig:obis-residuals-maps}
 \end{figure}
 
@@ -1895,10 +1908,14 @@ er <- maptools::readShapePoly("../data/MEOW2/meow_ecos.shp")
 er@data$id = rownames(er@data)
 er_points = ggplot2::fortify(er, region = "id")
 er_dat_class_no_single <- plyr::join(er_points, er@data, by = "id")
-er_dat_class_no_single <- plyr::join(er_dat_class_no_single, by.prov.classes.no.singles, by = "PROV_CODE")
-pdf("../figs/remove-single-province-genera-class-map.pdf", width = 6.45, height = 5.1)
-map_class_ext(er_dat_class_no_single, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10),
-  picture_files = picture_files,
+er_dat_class_no_single <- plyr::join(er_dat_class_no_single,
+  by.prov.classes.no.singles, by = "PROV_CODE")
+folds <- c(0.25, 0.5, 1, 2, 4)
+pdf("../figs/remove-single-province-genera-class-map.pdf", width = 6.45,
+  height = 5.1)
+map_class_ext(er_dat_class_no_single,
+  yticks = get_fold_locations(exp(er_dat_class_no_single$mean.ext), folds),
+  picture_files = picture_files, ytick_labels = folds,
   silhouette_coords = silhouette_coords,
   min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0034,
     0.15),
@@ -1910,12 +1927,15 @@ dev.off()
 load("../data/by.prov.all.no.singles.rda")
 er_dat_no_single <- plyr::join(er_points, er@data, by = "id")
 er_dat_no_single <- plyr::join(er_dat_no_single, by.prov.all.no.singles, by = "PROV_CODE")
+folds <- c(0.8, 1, 1.2, 1.4)
 pdf("../figs/remove-single-province-genera-overall-map.pdf", width = 7, height = 3.5)
 par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
 labs.ns <- seq(0.012, 0.022, 0.004)
 map_hotspots(er_dat_no_single, min_prov_genera = 100, add_legend = TRUE,
-  hotspots = FALSE, at = log(labs.ns), at.labels = labs.ns)
+  hotspots = FALSE,
+  at = log(get_fold_locations(exp(er_dat_no_single$mean.ext), folds)),
+  at.labels = folds)
 par(xpd = NA)
 mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
   line = -1.2, las = 0, col = "grey30", cex = 0.9)
@@ -1933,7 +1953,8 @@ dev.off()
     biogeographic province}. Scale bars on the right indicate the range of
   intrinsic extinction risk values for a given group of taxa. Culling these
   genera does not substantially alter broad-scale patterns of intrinsic risk
-  (Fig.~2 and 3).}
+  (Fig.~2 and 3). Here, intrinsic risk is represented as multiples of the
+  geometric mean value.}
 \label{fig:remove-single-province-genera}
 \end{figure}
 
@@ -2018,10 +2039,12 @@ er_dat_class_raw <- plyr::join(er_dat_class_raw, by.prov.classes.raw, by = "PROV
 <<plot-class-prov-ext-raw-ranges", results='hide'>>=
 # Make the class figure:
 pdf("../figs/plot-class-prov-ext-raw-ranges.pdf", width = 6.45, height = 5.1)
+folds <- c(0.25, 0.5, 1, 2, 4)
 map_class_ext(er_dat_class_raw,
-  yticks = c(0.005, 0.01, 0.02, 0.05, 0.10),
+  yticks = get_fold_locations(exp(er_dat_class$mean.ext), folds),
   picture_files = picture_files, ylabel = "Intrinsic extinction risk",
   silhouette_coords = silhouette_coords,
+  ytick_labels = folds,
   min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0034, 0.15))
 dev.off()
 @
@@ -2029,12 +2052,15 @@ dev.off()
 <<no-bounding-box-overall-map, results='hide'>>=
 er_dat_raw <- plyr::join(er_points, er@data, by = "id")
 er_dat_raw <- plyr::join(er_dat_raw, by.prov.all.raw, by = "PROV_CODE")
+folds <- c(0.6, 0.8, 1, 1.2)
 pdf("../figs/no-bounding-box-overall-map.pdf", width = 7, height = 3.5)
 par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
 labs.nbb <- seq(0.020, 0.032, 0.004)
 map_hotspots(er_dat_raw, min_prov_genera = 100, hotspots = FALSE,
-  add_legend = TRUE, at = log(labs.nbb), at.labels = labs.nbb)
+  add_legend = TRUE, at = log(get_fold_locations(labs.nbb, folds)),
+  at.labels = sprintf("%.1f", folds))
+
 mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
   line = -1.2, las = 0, col = "grey30", cex = 0.9)
 dev.off()
@@ -2058,7 +2084,6 @@ dev.off()
 \label{fig:no-bounding-box}
 \end{figure}
 
-%TODO - why are the intrinsic risk going below 0? - sean
 <<plot-obis-sampling-vs-gcd>>=
 modern_long <- reshape2::melt(modern, id.vars = c("class", "group", "genus"),
   measure.vars = c("richness", "occupancy", "min.lat", "max.lat", "lat.range",
@@ -2068,13 +2093,14 @@ modern_long <- dplyr::filter(modern_long,
   !class %in% c("Mammalia", "Elasmobranchii"))
 p1 <- ggplot(dplyr::filter(modern_long, variable %in% c("great.circle")),
   aes(log10(obis_n), value, colour = class)) +
-  facet_wrap(~variable) +
+  facet_wrap(~variable) + xlab("log10(Number of OBIS records)") +
   geom_point(position = position_jitter(height = 600), alpha = 0.4) +
   labs(colour = "Group") + ylab("Great circle distance (km)")
 p2 <- ggplot(filter(modern_long, variable %in% c("mean_observed")),
   aes(log10(obis_n), value, colour = class)) + facet_wrap(~variable) +
-  geom_point(position = position_jitter(height = 0.05), alpha = 0.4) +
-  labs(colour = "Group") + ylab("Intrinsic risk")
+  geom_point(position = position_jitter(height = 0.02), alpha = 0.4) +
+  labs(colour = "Group") + ylab("Intrinsic risk") +
+  xlab("log10(Number of OBIS records)")
 pdf("../figs/obis-samping-vs-predictors.pdf", width = 8, height = 8)
 gridExtra::grid.arrange(p1, p2)
 dev.off()
@@ -2090,7 +2116,8 @@ dev.off()
   raw occurrences exhibit a broad range of intrinsic extinction risk values.
   Overall great circle distance increases with the number of OBIS occurrences;
   however, above approximately 5 OBIS occurrences, genera exhibit the full
-  range of great circle distance values.}
+  range of great circle distance values. Note that there is some vertical jittering
+  added in both panels to make individual dots easier to see.}
 \label{fig:obis-sampling-vs-predictors}
 \end{center}
 \end{figure}
@@ -2104,7 +2131,7 @@ dcull <- reshape2::dcast(dcull, PROV_CODE ~ obis_cull, value.var = "mean.ext")
 
 pdf("../figs/pairs-obis-culls.pdf", width = 6, height = 6)
 pairs(dcull[,-1], pch = 21, col = "#00000050", bg = "#00000010",
-  upper.panel = panel.cor)
+  upper.panel = panel.cor, xaxt = "n", yaxt = "n")
 mtext("log Intrinsic risk", side = 1, outer = TRUE, line = -1.5)
 mtext("log Intrinsic risk", side = 2, outer = TRUE, line = -1.5)
 dev.off()
@@ -2151,7 +2178,9 @@ dev.off()
   fossil record in any stage in which we would have expected to observe them on
   the distribution of fossil genera with respect to potential extinction risk
   predictors. Rows 1--2: total number of genera, rows 3--4: number of extinct
-  genera, rows 5--6: proportion of extinct genera.}
+  genera, rows 5--6: proportion of extinct genera. \texttt{TRUE} and \texttt{FALSE}
+  in the colour legend refers to whether single occurrences were culled or not,
+  respectively.}
 %\label{fig:raw-predictor-paleo-culls}
 \end{center}
 \end{figure}
@@ -2185,11 +2214,11 @@ dev.off()
 
 <<pairs-paleo-culls>>=
 pdf("../figs/pairs-paleo-culls-genera.pdf", width = 7, height = 7)
-pairs(modern[,c("mean_observed", "mean_observed_1.0", "mean_observed_sing",
-    "mean_observed_singleton", "mean_observed_locality")],
+pairs(log(modern[,c("mean_observed", "mean_observed_1.0", "mean_observed_sing",
+    "mean_observed_singleton", "mean_observed_locality")]),
   pch = 21, col = "#00000010", bg = "#00000010", cex = 0.8, labels = pairs_labels,
   upper.panel = panel.cor, asp = 1,
-  ylim = c(0, 1), xlim = c(0, 1))
+  ylim = log(c(0.002, 1)), xlim = log(c(0.002, 1)), yaxt = "n", xaxt = "n")
 mtext("Intrinsic risk", side = 1, outer = TRUE, line = -1.5)
 mtext("Intrinsic risk", side = 2, outer = TRUE, line = -1.5)
 dev.off()
@@ -2198,9 +2227,10 @@ pdf("../figs/pairs-paleo-culls-provinces.pdf", width = 7, height = 7)
 pairs(by.prov.all[,c("mean.ext", "mean.ext.1.0", "mean.ext.sing",
     "mean.ext.singleton", "mean.ext.locality")],
   pch = 21, col = "#00000050", bg = "#00000010", labels = pairs_labels,
-  upper.panel = panel.cor, asp = 1, ylim = c(-4.4, -2.5), xlim = c(-4.4, -2.5))
-mtext("log Intrinsic risk", side = 1, outer = TRUE, line = -1.5)
-mtext("log Intrinsic risk", side = 2, outer = TRUE, line = -1.5)
+  upper.panel = panel.cor, asp = 1, ylim = c(-4.4, -2.5), xlim = c(-4.4, -2.5),
+  xaxt = "n", yaxt = "n")
+mtext("Intrinsic risk", side = 1, outer = TRUE, line = -1.5)
+mtext("Intrinsic risk", side = 2, outer = TRUE, line = -1.5)
 dev.off()
 @
 \begin{figure}[htbp]
@@ -2217,14 +2247,17 @@ dev.off()
   subintervals from the subinterval in which they first occurred through the
   subinterval in which they last occurred (i.e., excluding all genera known from
   one or fewer occurrences).
-  ``No stratographic singletons'' refers to TODO.
-  ``$>$ 1 locality'' refers to TODO.
+  ``No stratographic singletons'' refers to a model containg only genera that are
+  sampled in more than one time interval.
+  ``$>$ 1 locality'' refers to a model containing only genera that are sampled
+  in more than one  equal-area grid cell.
   Points in each panel represent an intrinsic risk
   prediction for an individual genus in the modern oceans based on a model
   trained on an specific subset of fossil data. Spearman's rank-order correlation
   values are presented in the upper-right cells. Genus intrinsic risk estimates
   are strongly correlated across models trained on different subsets of fossil
-  data.}
+  data. Axis ticks are omitted but are represented on a multiplicative scale as
+  in all map color scales.}
 \label{fig:pairs-genus-paleo-culls}
 \end{center}
 \end{figure}
@@ -2239,7 +2272,9 @@ dev.off()
   biogeographic province-level estimates instead of individual genus-level
   estimates. Spearman's rank-order correlation values are presented in the upper
   right cells. Log mean intrinsic risk estimates for provinces are strongly
-  correlated across models trained on different subsets of fossil data.}
+  correlated across models trained on different subsets of fossil data. Axis
+  ticks are omitted but are represented on a multiplicative scale as
+  in all map color scales.}
 \label{fig:pairs-prov-paleo-culls}
 \end{center}
 \end{figure}
@@ -2254,7 +2289,8 @@ dev.off()
   model trained on fossil data including only genera that occurr in the PaleoDB
   at least twice in every subinterval within their stratigraphic range. This is
   the same model indicated as ``$>$ 1 observation'' in Figures
-  \ref{fig:pairs-genus-paleo-culls} and \ref{fig:pairs-prov-paleo-culls}.}
+  \ref{fig:pairs-genus-paleo-culls} and \ref{fig:pairs-prov-paleo-culls}. Here,
+  intrinsic risk indicates multiples of the geometric mean value.}
 \label{fig:overall-maps-paleo-culls}
 \end{center}
 \end{figure}
