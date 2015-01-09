@@ -2338,31 +2338,31 @@ for(i in 1:length(classes)) {
 \bibliography{jshort,risksupp}
 \clearpage
 
-\section{Main Figures}
+% \section{Main Figures}
 
-\textbf{TO BE REMOVED}
-
-\begin{center}
-  \includegraphics[width=4.86in]{../figs/partial-plot-base.pdf}\\
-  \smallskip
-  Figure 1
-\end{center}
-
-\begin{center}
-  \includegraphics[width=4.86in]{../figs/class-risk-maps-mean-log-ext.pdf}\\
-  \smallskip
-  Figure 2
-\end{center}
-
-\clearpage
-
-\begin{center}
-  \includegraphics[width=4.86in]{../figs/hotspots.pdf}\\
-  \smallskip
-  Figure 3
-\end{center}
-
-\clearpage
+% \textbf{TO BE REMOVED}
+%
+% \begin{center}
+%   \includegraphics[width=4.86in]{../figs/partial-plot-base.pdf}\\
+%   \smallskip
+%   Figure 1
+% \end{center}
+%
+% \begin{center}
+%   \includegraphics[width=4.86in]{../figs/class-risk-maps-mean-log-ext.pdf}\\
+%   \smallskip
+%   Figure 2
+% \end{center}
+%
+% \clearpage
+%
+% \begin{center}
+%   \includegraphics[width=4.86in]{../figs/hotspots.pdf}\\
+%   \smallskip
+%   Figure 3
+% \end{center}
+%
+% \clearpage
 
 \end{spacing}
 
