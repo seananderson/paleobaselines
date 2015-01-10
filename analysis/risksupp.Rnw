@@ -1687,7 +1687,7 @@ intrinsic risk of modern genera in biogeographic provinces
 (fig.~\ref{fig:pairs-prov-paleo-culls}), suggesting that none of the potential
 biases addressed by these fossil culls play an important role in producing the
 overall patterns that we report in the main text. When the model based on the
-most stringent of these culls (``>1 observation'') is plotted as in Fig.~3,
+most stringent of these culls (``$>1$ observation'') is plotted as in Fig.~3,
 geographic patterns of estimated mean intrinsic risk are similar to those
 observed in Fig.~3 (fig.~\ref{fig:overall-maps-paleo-culls}).  Therefore we
 conclude that, although the incompleteness of the fossil record may influence
