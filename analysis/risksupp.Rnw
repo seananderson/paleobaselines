@@ -556,7 +556,7 @@ more readily standardized. To mitigate sampling effects on these predictors we
 first log-transformed them and then divided the value for each genus-interval
 combination (e.g.\ \textit{Acropora} occurrences in the Plio-Pleistocene) by the
 maximum log-transformed value of the predictor observed in that interval. Hence,
-the scale on these standardized predictors ranges from 0 to 1 (Figure 1). The
+the scale on these standardized predictors ranges from 0 to 1 (Fig.~1). The
 other variables (e.g.\ latitude variables and great circle distance) retain the
 same absolute scale across all paleontological and contemporary records --- a
 degree of latitude is still a degree latitude and a kilometre is still a
@@ -2221,7 +2221,7 @@ dev.off()
 \includegraphics[width=0.65\textwidth]{../figs/fossil-cull-comparison-group.pdf}
 \caption{Predictors of extinction risk in the Neogene to Pleistocene marine
   fossil record. Partial dependence plots for the full Neogene-Pleistocene
-  model, as in Figure 1, but varying the minimum preservation probability that
+  model, as in Fig.~1, but varying the minimum preservation probability that
   fossil genera must exhibit to be included in the training data. Darker colors
   indicate model output when preservation thresholds are relatively lenient
   (e.g., all genera with preservation probabilities greater than 0), whereas
@@ -2307,7 +2307,7 @@ dev.off()
 %\includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-1-pp}
 \includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-sing-pp}
 \caption{Global maps from models built with different culls of the Neogene-Pleistocene
-  fossil record. Top: the base model displayed in main text Figure 3. Bottom: a
+  fossil record. Top: the base model displayed in main text Fig.~3. Bottom: a
   model trained on fossil data including only genera that occurr in the PaleoDB
   at least twice in every subinterval within their stratigraphic range. This is
   the same model indicated as ``$>$ 1 observation'' in Figures
