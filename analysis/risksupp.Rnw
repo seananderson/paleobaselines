@@ -851,68 +851,6 @@ stage_order <- c("Lower Miocene", "Middle Miocene", "Upper Miocene",
   "Plio-Pleistocene")
 @
 
-% Get in-sample AUC to get a confidence interval to refer to in text
-% using the method from:
-% Elisabeth R. DeLong, David M. DeLong and Daniel L. Clarke-Pearson (1988)
-% "Comparing the areas under two or more correlated receiver operating
-% characteristic curves: a nonparametric approach". Biometrics 44, 837–845.
-<<get-auc-ci>>=
-m_aucs <- plyr::ldply(m, function(x) {
-  y <- pROC::roc(
-    response = neog$Ex,
-    predictor = predict.gbm(x, n.trees = NTREES, type = "response"))
-  as.numeric(pROC::ci.auc(y, method = "delong"))
-  })
-names(m_aucs) <- c("lower", "auc", "upper")
-m_aucs <- as.data.frame(t(round(apply(m_aucs, 2, mean), 2)))
-m_aucs$interval <- "Neogene-Pleistocene"
-m_aucs$taxa <- "All"
-col_names <- c("interval", "taxa", "lower", "auc", "upper")
-m_aucs <- m_aucs[, col_names]
-
-# get stats by taxonomic class:
-m_taxa_aucs <- plyr::ldply(unique(neog$class), function(x) {
-  class_dat <- neog[neog$class == x, ]
-  y <- pROC::roc(
-    response = class_dat$Ex,
-    predictor = predict.gbm(m[[1]], n.trees = NTREES, type = "response",
-      newdata = class_dat))
-  auc_ <- round(as.numeric(pROC::ci.auc(y, method = "delong")), 2)
-  data.frame(taxa = as.character(x), lower = auc_[1], auc = auc_[2], upper =
-    auc_[3])
-  })
-m_taxa_aucs$interval <- "Neogene-Pleistocene"
-m_taxa_aucs <- m_taxa_aucs[, col_names]
-
-m_stage_aucs <- plyr::ldply(stage_order, function(x) {
-  subinterval_dat <- neog[neog$stage == x, ]
-  w <- paleorisk::get_weights(subinterval_dat$Ex)
-  weights <- ifelse(subinterval_dat$Ex == 1, w$ex_weight, w$sur_weight)
-  m_temp <- gbm(Ex ~ richness + occupancy + occurrences + min.lat +
-      max.lat + lat.range + mean.lat + great.circle + group,
-    data = subinterval_dat, n.trees = NTREES, interaction.depth = INT.DEPTH,
-    distribution = "bernoulli", shrinkage = SHRINKAGE, weights = weights)
-  y <- pROC::roc(m_temp,
-    response = subinterval_dat$Ex,
-    predictor = predict.gbm(m_temp, n.trees = NTREES, type = "response"))
-  auc_ <- round(as.numeric(pROC::ci.auc(y, method = "delong")), 2)
-  data.frame(taxa = "All", interval = x, lower = auc_[1], auc = auc_[2],
-    upper = auc_[3])
-  })
-m_stage_aucs <- m_stage_aucs[, col_names]
-
-aucs <- rbind(m_aucs, m_taxa_aucs) %>% rbind(m_stage_aucs)
-names(aucs) <- c("Interval", "Taxa", "Lower CI", "AUC", "Upper CI")
-xtable::print.xtable(xtable::xtable(aucs, digits = c(0, 0, 0, 2, 2, 2),
-    caption = "Area under receiver operating characteristic curves (AUC) for
-    various GBM models predicting extinction risk in the Neogene-Pleistocene
-    fossil record. These test models were built and tested on the interval or
-    subinterval indicated in the first column. Rows with taxa indicated as ``All''
-    were tested on all taxonomic groups combined. Rows with specific taxa listed
-    were tested on only that taxonomic group. Lower and upper CI columns refer
-    to lower and upper 95\\% confidence intervals."),
-  booktabs = TRUE, caption.placement = "top", include.rownames = FALSE)
-@
 
 <<check-classification-error, child='check-classification-error-child.Rnw', results='hide', fig.height=7, fig.width=11.5, fig.cap= paste0("Receiver operating characteristic (ROC) curves show sensitivity (true positive rate) plotted against specificity (true negative rate) across all possible probability thresholds. These ROC curves represent out-of-sample performance --- models were built on two thirds of the data and tested on the remaining third. This procedure was repeated 150 times. The area under the curves (AUC) represents the probability that a randomly chosen extinct genus will be correctly ranked as more at risk than a randomly chosen genus that survives. The dashed line represents the 50\\% line --- predictions on this line would be no better than tossing a coin.  We show predictions for models built on the entire Neogene-Pleistocene interval (as used in Fig.~2 and Fig.~3) and for models built on subintervals within the Neogene-Pleistocene. The colored lines represent ROC curves from the same models but split out by major taxonomic groups to indicate which groups are well predicted and which are poorly predicted by a given model. Subinterval AUC values for the full model (black lines) built on the entire Neogene-Pleistocene interval range from ", min(auc_range), " to ", max(auc_range), ". The AUC of the full model based on the entire Neogene-Pleistocene is ", auc_neog, ".")>>=
 @
@@ -1052,6 +990,73 @@ if(!file.exists("../data/cross_pred.rds")) {
 } else {
   cross_pred <- readRDS("../data/cross_pred.rds")
 }
+@
+
+% Get in-sample AUC to get a confidence interval to refer to in text
+% using the method from:
+% Elisabeth R. DeLong, David M. DeLong and Daniel L. Clarke-Pearson (1988)
+% "Comparing the areas under two or more correlated receiver operating
+% characteristic curves: a nonparametric approach". Biometrics 44, 837–845.
+<<get-auc-ci>>=
+m_aucs <- plyr::ldply(m, function(x) {
+  y <- pROC::roc(
+    response = neog$Ex,
+    predictor = predict.gbm(x, n.trees = NTREES, type = "response"))
+  as.numeric(pROC::ci.auc(y, method = "delong"))
+  })
+names(m_aucs) <- c("lower", "auc", "upper")
+m_aucs <- as.data.frame(t(round(apply(m_aucs, 2, mean), 2)))
+m_aucs$interval <- "Neogene-Pleistocene"
+m_aucs$taxa <- "All"
+col_names <- c("interval", "taxa", "lower", "auc", "upper")
+m_aucs <- m_aucs[, col_names]
+
+# get stats by taxonomic class:
+m_taxa_aucs <- plyr::ldply(unique(neog$class), function(x) {
+  class_dat <- neog[neog$class == x, ]
+  y <- pROC::roc(
+    response = class_dat$Ex,
+    predictor = predict.gbm(m[[1]], n.trees = NTREES, type = "response",
+      newdata = class_dat))
+  auc_ <- round(as.numeric(pROC::ci.auc(y, method = "delong")), 2)
+  data.frame(taxa = as.character(x),
+    lower = auc_[1], auc = auc_[2], upper = auc_[3])
+  })
+m_taxa_aucs$interval <- "Neogene-Pleistocene"
+m_taxa_aucs <- m_taxa_aucs[, col_names]
+
+m_stage_aucs <- plyr::ldply(stage_order, function(x) {
+  subinterval_dat <- neog[neog$stage == x, ]
+  w <- paleorisk::get_weights(subinterval_dat$Ex)
+  weights <- ifelse(subinterval_dat$Ex == 1, w$ex_weight, w$sur_weight)
+  m_temp <- gbm(Ex ~ richness + occupancy + occurrences + min.lat +
+      max.lat + lat.range + mean.lat + great.circle + group,
+    data = subinterval_dat, n.trees = NTREES, interaction.depth = INT.DEPTH,
+    distribution = "bernoulli", shrinkage = SHRINKAGE, weights = weights)
+  y <- pROC::roc(m_temp,
+    response = subinterval_dat$Ex,
+    predictor = predict.gbm(m_temp, n.trees = NTREES, type = "response"))
+  auc_ <- round(as.numeric(pROC::ci.auc(y, method = "delong")), 2)
+  data.frame(taxa = "All", interval = x, lower = auc_[1], auc = auc_[2],
+    upper = auc_[3])
+  })
+m_stage_aucs <- m_stage_aucs[, col_names]
+
+aucs <- rbind(m_aucs, m_taxa_aucs)
+aucs <- rbind(m_aucs, m_stage_aucs)
+names(aucs) <- c("Interval", "Taxa", "Lower CI", "AUC", "Upper CI")
+@
+
+<<make-auc-table, results='asis'>>=
+xtable::print.xtable(xtable::xtable(aucs, digits = c(0, 0, 0, 2, 2, 2),
+    caption = "Area under receiver operating characteristic curves (AUC) for
+    various GBM models predicting extinction risk in the Neogene-Pleistocene
+    fossil record. These test models were built and tested on the interval or
+    subinterval indicated in the first column. Rows with taxa indicated as ``All''
+    were tested on all taxonomic groups combined. Rows with specific taxa listed
+    were tested on only that taxonomic group. Lower and upper CI columns refer
+    to lower and upper 95\\% confidence intervals. \\label{tab:auc}"),
+  booktabs = TRUE, caption.placement = "top", include.rownames = FALSE)
 @
 
 % Get cross-interval predictions and create plot:
