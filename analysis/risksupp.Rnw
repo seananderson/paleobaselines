@@ -1094,25 +1094,32 @@ source("risk-pres-prob-scatter.R")
 
 \subsection{Testing the predictive performance of the models}
 
-We tested the predictive ability of our models in two ways: (1) on out-of-sample
-data from the same geologic interval the model was built on and (2) on
+We tested the predictive ability of our models in three ways: (1) on the same
+data used to build the models, (2) on out-of-sample
+data from the same geologic interval the models were built on and (2) on
 predictions from models built on a different geologic interval.
 
-In the first case, we built models on two thirds of the data and then tested on
+In the first case, we calculated area under receiver operating characteristic
+curves (AUC) for predictions on the same data used to build the models
+(table~\ref{tab:auc}). AUC is a measure of predictive ability of a model.
+Here, it represents the probability that a randomly selected extinct genus
+will be correctly assigned a higher extinction risk than a randomly selected
+genus that survived. Additionally, we calculated 95\% confidence intervals on
+the AUC values using the method described in \cite{delong1988} and implemented in the
+\pkg{pROC} R package. These AUC values are reported in Table~\ref{tab:auc}.
+
+In the second case, we built models on two thirds of the data and then tested on
 one third of the data and repeated this procedure 150 times. We did this for
 each of the interval models and for the overall Neogene-Pleistocene model. We recorded the
 predicted extinction probabilities from the model and compared these to the
 original data (extinct or survived). From this dataset we built out-of-sample
 ROC (receiver operating characteristic) curves
 (fig.~\ref{fig:check-classfication-error-child.Rnw}). The area under these ROC
-curves is referred to as the AUC (area under the ROC curve) and is a measure of
-predictive ability of the model. Formally, it represents the probability that a
-randomly selected extinct genus will be correctly assigned a higher extinction
-risk than a randomly selected genus that survived. We refer to these AUC
+curves is the out-of-sample AUC. We refer to these AUC
 values in our paper and in the caption for
 fig.~\ref{fig:check-classfication-error-child.Rnw}.
 
-In the second case, we evaluated the similarity in extinction regimes between
+In the third case, we evaluated the similarity in extinction regimes between
 different time intervals by predicting extinction risk for each genus in a given
 interval from the model trained on that interval with predicted extinction risk
 for that genus from a model trained on a different interval. If the relationship
