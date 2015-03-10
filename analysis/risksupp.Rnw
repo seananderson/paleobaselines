@@ -998,6 +998,7 @@ if(!file.exists("../data/cross_pred.rds")) {
 % "Comparing the areas under two or more correlated receiver operating
 % characteristic curves: a nonparametric approach". Biometrics 44, 837–845.
 <<get-auc-ci>>=
+m <- readRDS("../data/main_model.rds")
 m_aucs <- plyr::ldply(m, function(x) {
   y <- pROC::roc(
     response = neog$Ex,
