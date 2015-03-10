@@ -1044,7 +1044,7 @@ m_stage_aucs <- plyr::ldply(stage_order, function(x) {
 m_stage_aucs <- m_stage_aucs[, col_names]
 
 aucs <- rbind(m_aucs, m_taxa_aucs)
-aucs <- rbind(m_aucs, m_stage_aucs)
+aucs <- rbind(aucs, m_stage_aucs)
 names(aucs) <- c("Interval", "Taxa", "Lower CI", "AUC", "Upper CI")
 xtable::print.xtable(xtable::xtable(aucs, digits = c(0, 0, 0, 2, 2, 2),
     caption = "Area under receiver operating characteristic curves (AUC) for
