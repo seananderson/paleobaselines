@@ -997,7 +997,7 @@ if(!file.exists("../data/cross_pred.rds")) {
 % Elisabeth R. DeLong, David M. DeLong and Daniel L. Clarke-Pearson (1988)
 % "Comparing the areas under two or more correlated receiver operating
 % characteristic curves: a nonparametric approach". Biometrics 44, 837–845.
-<<get-auc-ci>>=
+<<get-auc-ci, results='asis'>>=
 m <- readRDS("../data/main_model.rds")
 m_aucs <- plyr::ldply(m, function(x) {
   y <- pROC::roc(
@@ -1046,9 +1046,6 @@ m_stage_aucs <- m_stage_aucs[, col_names]
 aucs <- rbind(m_aucs, m_taxa_aucs)
 aucs <- rbind(m_aucs, m_stage_aucs)
 names(aucs) <- c("Interval", "Taxa", "Lower CI", "AUC", "Upper CI")
-@
-
-<<make-auc-table, results='asis'>>=
 xtable::print.xtable(xtable::xtable(aucs, digits = c(0, 0, 0, 2, 2, 2),
     caption = "Area under receiver operating characteristic curves (AUC) for
     various GBM models predicting extinction risk in the Neogene-Pleistocene
