@@ -883,6 +883,32 @@ Ref.~\cite{friedman2001} (fig.~\ref{fig:plot-relative-importance}). The
 (primarily order), has the greatest relative importance followed by the great
 circle distance of range size.
 
+\begin{table}
+\centering
+\caption{Description of predictors included in the GBM models. We describe how
+  we standardized many of these predictors across time intervals in Section
+  \ref{sec:standardizing-predictors}.}
+\label{tab:predictors}
+\smallskip
+\begin{tabular}{p{4cm}p{8cm}}
+\toprule
+Predictor             & Description\\
+\midrule
+Number of species     & Number of congeneric species in each genus in each interval\\
+Occupancy             & Number of equal-area grid cells in which each genus occurred in each interval\\
+Occurrences           & Total number of observations of each genus globally in each interval\\
+Minimum latitude      & Minimum absolute latitude at which each genus was sampled in each interval\\
+Maximum latitude      & Maximum absolute latitude at which each genus was sampled in each interval\\
+Latitudinal range     & Maximum minus minimum latitude of each genus in each interval\\
+Mean latitude         & Mean absolute latitude at which each genus was sampled in each interval\\
+Great circle distance & Maximum distance between occurrences of each genus in each interval\\
+Taxonomic subgroup    & Ordinal to family rank taxonomic assignments for each genus\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+
 % build main models and extract relative importance scores:
 <<get-relative-importance, results='hide'>>=
 if(!file.exists("../data/main_model.rds")) {
@@ -2454,30 +2480,6 @@ for(i in 1:length(classes)) {
 % \clearpage
 
 \end{spacing}
-
-\begin{table}
-\centering
-\caption{Description of predictors included in the GBM models. We describe how
-  we standardized many of these predictors across time intervals in Section
-  \ref{sec:standardizing-predictors}.}
-\label{tab:predictors}
-\smallskip
-\begin{tabular}{p{4cm}p{8cm}}
-\toprule
-Predictor             & Description\\
-\midrule
-Number of species     & Number of congeneric species in each genus in each interval\\
-Occupancy             & Number of equal-area grid cells in which each genus occurred in each interval\\
-Occurrences           & Total number of observations of each genus globally in each interval\\
-Minimum latitude      & Minimum absolute latitude at which each genus was sampled in each interval\\
-Maximum latitude      & Maximum absolute latitude at which each genus was sampled in each interval\\
-Latitudinal range     & Maximum minus minimum latitude of each genus in each interval\\
-Mean latitude         & Mean absolute latitude at which each genus was sampled in each interval\\
-Great circle distance & Maximum distance between occurrences of each genus in each interval\\
-Taxonomic subgroup    & Ordinal to family rank taxonomic assignments for each genus\\
-\bottomrule
-\end{tabular}
-\end{table}
 
 \section{Supplementary tables and figures}
 \end{document}
