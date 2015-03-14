@@ -116,6 +116,8 @@ Figs.\ S1 to S28
 \nocite{mcclenachan2012}
 \nocite{hughes2003}
 \nocite{dulvy2003}
+\nocite{webb2015}
+\nocite{mccauley2015}
 \nocite{jones2003}
 \nocite{cardillo2006}
 \nocite{owens2000}
