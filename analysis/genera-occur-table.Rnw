@@ -20,8 +20,8 @@ Table.S1 <- Table.S1[(Table.S1$Interval_Name != "Modern_merged" &
     Table.S1$class != "Testudines"), ]
 Table.S1$Interval_Name <- plyr::revalue(Table.S1$Interval_Name, c("Modern_raw" = "Modern"))
 Table.S1$Interval_Name <- factor(Table.S1$Interval_Name,
-  levels = c("Lower Miocene", "Middle Miocene",
-    "Upper Miocene","Plio-Pleistocene", "Modern"))
+  levels = c("Early Miocene", "Middle Miocene",
+    "Late Miocene","Plio-Pleistocene", "Modern"))
 Table.S1 <- Table.S1[order(Table.S1$Interval_Name, Table.S1$class), ]
 Table.S1 <- plyr::rename(Table.S1, c("class" = "Group"))
 Table.S1 <- plyr::rename(Table.S1, c("Interval_Name" = "Interval"))

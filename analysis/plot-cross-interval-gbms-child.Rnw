@@ -1,7 +1,7 @@
 <<plot-cross-interval-gbms-child>>=
 # Re-order stage names:
 cross_pred <- na.omit(cross_pred)
-stage_order <- c("Lower Miocene", "Middle Miocene", "Upper Miocene",
+stage_order <- c("Early Miocene", "Middle Miocene", "Late Miocene",
   "Plio-Pleistocene")
 cross_pred$stage_test <- factor(cross_pred$stage_test,
   levels = stage_order)

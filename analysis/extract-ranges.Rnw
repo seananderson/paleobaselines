@@ -128,7 +128,7 @@ extract_ranges <- function() {
   pbdb$in_paleogene[is.na(pbdb$in_paleogene)] <- 0
 
   lookup_pbdb  <- data.frame(FR2_bin =
-    c("Upper Miocene", "Middle Miocene", "Lower Miocene",
+    c("Late Miocene", "Middle Miocene", "Early Miocene",
       "Pliocene", "Pleistocene"),
     FR2_num = c(1:5), stringsAsFactors = FALSE)
 
@@ -165,10 +165,10 @@ extract_ranges <- function() {
     pbdb$interval_top >= .0117, "Plio-Pleistocene", as.character(pbdb$FR2_bin))
 
   #define the stages we want to use, for reference
-  FR2_bin <- c("Pleistocene", "Pliocene", "Plio-Pleistocene", "Upper Miocene",
-    "Middle Miocene", "Lower Miocene", "Chattian", "Rupelian")
+  FR2_bin <- c("Pleistocene", "Pliocene", "Plio-Pleistocene", "Late Miocene",
+    "Middle Miocene", "Early Miocene", "Chattian", "Rupelian")
   stage.name <- c("Plio-Pleistocene", "Plio-Pleistocene", "Plio-Pleistocene",
-    "Upper Miocene", "Middle Miocene", "Lower Miocene", "Chattian", "Rupelian")
+    "Late Miocene", "Middle Miocene", "Early Miocene", "Chattian", "Rupelian")
   top <- c(.0117,.0117,.0117,5.333,11.608,15.97,23.03,28.1)
   bottom <- c(5.333,5.333,5.333,11.608,15.97,23.03,28.1,33.9)
   stage.dates <- data.frame(FR2_bin,stage.name,bottom,top)

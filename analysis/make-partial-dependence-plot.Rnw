@@ -109,8 +109,8 @@ o$predictor <- factor(o$predictor, levels = c("occupancy",
     "mean.lat", "lat.range"))
 
 if(length(unique(o$stage)) == 5) {
-  col_df <- data.frame(stage = c("Lower Miocene", "Middle Miocene",
-      "Upper Miocene", "Plio-Pleistocene", "all"), col = pal, stage_order =
+  col_df <- data.frame(stage = c("Early Miocene", "Middle Miocene",
+      "Late Miocene", "Plio-Pleistocene", "all"), col = pal, stage_order =
     1:length(pal), lwd = lwd.u, stringsAsFactors = FALSE)
 } else {
   col_df <- data.frame(stage = c("all"), col = "#000000", stage_order =
@@ -192,9 +192,9 @@ abline(v = g$x.pos, col = "grey88", lwd = .5)
 # the points and lines:
 add.seg <- TRUE
 
-if("Lower Miocene" %in% names(g)) {
-  stage_ord <- c("Lower Miocene", "Middle Miocene",
-    "Upper Miocene", "Plio-Pleistocene", "all")
+if("Early Miocene" %in% names(g)) {
+  stage_ord <- c("Early Miocene", "Middle Miocene",
+    "Late Miocene", "Plio-Pleistocene", "all")
 } else {
   stage_ord <- c("all")
   pal <- "#000000"

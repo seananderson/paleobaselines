@@ -285,7 +285,7 @@ ggsave("../figs/hist-preserv-prob.pdf", width = 6, height = 4)
   proportion of subintervals in which a genus was sampled from the subinterval
   in which it was first observed through the subinterval in which it was last
   observed. Subintervals considered include the Paleogene, four Neogene stages
-  (Lower Miocene, Middle Miocene, Upper Miocene, and Pliocene), the Pleistocene,
+  (Early Miocene, Middle Miocene, Late Miocene, and Pliocene), the Pleistocene,
   and Recent (based on contemporary extinction status); including the Paleogene
   and Recent subintervals removes edge effects thereby allowing preservation
   probabilities to cover the entire Neogene-Pleistocene time span of our
@@ -398,7 +398,7 @@ qualified by \texttt{aff.}, \texttt{?}, \texttt{cf.}, or quotation marks. In our
 analyses only genus names were used --- we did not treat subgenera as genera.
 
 We assigned fossil occurrences to one of four Neogene-Pleistocene time intervals: the Early
-Miocene, Middle Miocene, Upper Miocene, and the Plio-Pleistocene based on the
+Miocene, Middle Miocene, Late Miocene, and the Plio-Pleistocene based on the
 \texttt{FR2\_bin} collections field in the PaleoDB download. Following these
 culls, the Neogene-Pleistocene dataset included $\sim$\Sexpr{round(sum(subset(Table.S1,
   Interval != "Modern")$Occurrences)/1e5, 1)}$\times 10^5$ occurrences of
@@ -847,7 +847,7 @@ This removes the observed out-of-sample non-linear bias in our model
 \cite{thorson2012}.
 
 <<establish-stage-order>>=
-stage_order <- c("Lower Miocene", "Middle Miocene", "Upper Miocene",
+stage_order <- c("Early Miocene", "Middle Miocene", "Late Miocene",
   "Plio-Pleistocene")
 @
 
@@ -1235,7 +1235,7 @@ with a median of
   extinction probabilities estimated from models built and tested on different
   geologic subintervals. For example, the upper-right panel plots the
   extinction risk of Plio-Pleistocene genera predicted by the model built on
-  those data (x axis) compared to a predictions by a model built using the Lower
+  those data (x axis) compared to a predictions by a model built using the Early
   Miocene data (y axis). The higher the rank order correlation, as shown by
   Spearman's Rho values in upper left panel corners (except for within-interval
   comparisons), the more similar the determinants of extinction risk are between
