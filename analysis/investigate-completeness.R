@@ -54,7 +54,15 @@ ne_stage_sum <- ne_long_w_neog %>%
   filter(prop_comp_thresh == 1.0) %>%
   group_by(stage, prop_comp_thresh, variable, value) %>%
   dplyr::summarise(N = length(Ex), N_ex = sum(Ex))
-p99 <- ggplot(ne_stage_sum, aes(value, N_ex/N, colour = stage, group = stage, size = stage)) + geom_line() + facet_wrap(~variable, scales = "free_x", nrow = 2) + labs(colour = "") + theme_bw() + scale_colour_manual(values = pal) + scale_size_manual(values = c(1, 1, 1, 1, 2)) +  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + xlab("Predictor value") + ylab("Proportion extinct") + guides(size = FALSE)
+labs_df <- data.frame(variable = unique(ne_stage_sum$variable),
+  lab = LETTERS[1:length(unique(ne_stage_sum$variable))])
+ne_stage_sum_labs <- ne_stage_sum %>% group_by(variable) %>%
+  dplyr::summarise(xlab = value[1] + 0.05 * (max(value) - value[1]), ylab = 0.95, stage = "Pleistocene-Neogene") %>%
+  dplyr::inner_join(labs_df, by = "variable") %>%
+  as.data.frame
+
+p99 <- ggplot(ne_stage_sum, aes(value, N_ex/N, colour = stage, group = stage, size = stage)) + geom_line() + facet_wrap(~variable, scales = "free_x", nrow = 2) + labs(colour = "") + theme_bw() + scale_colour_manual(values = pal) + scale_size_manual(values = c(1, 1, 1, 1, 2)) +  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + xlab("Predictor value") + ylab("Proportion extinct") + guides(size = FALSE) +
+  geom_text(data = ne_stage_sum_labs, aes(xlab, ylab, label = lab), colour = "black", size = 4)
 ggsave("../figs/raw-predictors-proportion-ext.pdf", width = 11, height = 4.5)
 
 # and with taxonomy:
@@ -65,7 +73,8 @@ ne_stage_sum <- ne_long_tax_w_neog %>%
   filter(prop_comp_thresh == 1.0) %>%
   group_by(stage, prop_comp_thresh, variable, value) %>%
   dplyr::summarise(N = length(Ex), N_ex = sum(Ex))
-p99 <- ggplot(ne_stage_sum, aes(N_ex/N, value, colour = stage, group = stage, size = stage)) + geom_point() + labs(colour = "") + theme_bw() + scale_colour_manual(values = pal) + scale_size_manual(values = c(1.4, 1.4, 1.4, 1.4, 2)) +  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + ylab("") + xlab("Proportion extinct") + guides(size = FALSE)
+p99 <- ggplot(ne_stage_sum, aes(N_ex/N, value, colour = stage, group = stage, size = stage)) + geom_point() + labs(colour = "") + theme_bw() + scale_colour_manual(values = pal) + scale_size_manual(values = c(1.4, 1.4, 1.4, 1.4, 2)) +  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank()) + ylab("") + xlab("Proportion extinct") + guides(size = FALSE) +
+  annotate("text", x = 0.05, y = length(unique(ne_stage_sum$value)), colour = "black", size = 4, label = "I")
 ggsave("../figs/raw-taxonomy-predictors-proportion-ext.pdf", width = 6, height = 5.0)
 
 
