@@ -2342,7 +2342,7 @@ dev.off()
   intrinsic risk. Points in each panel are log mean extinction risk values for
   coastal biogeographic provinces after applying different minimum sampling
   thresholds to the modern data. Spearman's rank-order correlation values are
-  presented in the upper-right cells. Provincial instrinsic risk estimates are
+  presented in the upper-right cells. Provincial intrinsic risk estimates are
   strongly correlated across all thresholds considered.}
 \label{fig:pairs-prov-obis-culls}
 \end{center}
