@@ -2432,7 +2432,7 @@ dev.off()
 @
 \begin{figure}[htbp]
 \begin{center}
-\includegraphics[width=0.9\textwidth]{../figs/pairs-paleo-culls-genera}
+\includegraphics[width=0.7\textwidth]{../figs/pairs-paleo-culls-genera}
 \caption{Comparison of intrinsic risk estimates for modern genera from GBM
   models trained on different subsets of the Neogene-Pleistocene fossil record.
   ``Base model'' refers to the main GBM model used in the paper.
