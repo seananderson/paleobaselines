@@ -519,6 +519,12 @@ some realms wrap from one side of the plot to the other.
 \subsection{Equal-area grid overlay}
 \label{sec:grid-overlay}
 
+<<get-grid-values2, echo=FALSE>>=
+load("../data/global_45x14.rda")
+grid_lat <- sprintf("%.2f", round(global_45x14$latitude, 2))
+grid_mid_lat <- sprintf("%.2f", round(read.csv("../data/grid_mid_lat.csv")$x, 2))
+@
+
 To standardize the spatial resolution of contemporary and paleontological
 datasets, we calculated all range-based predictors using an equal-area grid. For
 the contemporary dataset, we overlaid an equal-area grid over all provinces in
@@ -1183,7 +1189,7 @@ source("risk-pres-prob-scatter.R")
 \end{center}
 \end{figure}
 
-<<plot-cross-interval-gbms, results='hide', child='plot-cross-interval-gbms-child.Rnw'>>=
+<<plot-cross-interval-gbms, results='hide', cache=FALSE, child='plot-cross-interval-gbms-child.Rnw'>>=
 @
 
 \subsection{Testing the predictive performance of the models}
