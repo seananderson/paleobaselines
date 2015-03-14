@@ -1,23 +1,23 @@
 # ====================================================================
 # Created by:    Sean Anderson, sean@seananderson.ca
 # Created:       Sep 29, 2012
-# Last modified: Jul 04, 2014
+# Last modified: Mar 13, 2015
 # Purpose:       Steps to do interpolation of modern occurrence data
 #                and overlay grid etc.
 # ====================================================================
 
 # Download data:
-download.file("https://dl.dropboxusercontent.com/u/254940/riskmaps-data/composite.occ2.rda",
-  "../data/composite.occ2.rda",
-  method = "curl")
-
-download.file("https://dl.dropboxusercontent.com/u/254940/riskmaps-data/MarineMammalProvinceJoin2.csv",
-  "../data/MarineMammalProvinceJoin2.csv",
-  method = "curl")
-
-download.file("https://dl.dropboxusercontent.com/u/254940/riskmaps-data/SharkProvinceJoin2pt5DegreeBuffer_20121009.csv",
-  "../data/SharkProvinceJoin2pt5DegreeBuffer_20121009.csv",
-  method = "curl")
+# download.file("https://dl.dropboxusercontent.com/u/254940/riskmaps-data/composite.occ2.rda",
+#   "../data/composite.occ2.rda",
+#   method = "curl")
+#
+# download.file("https://dl.dropboxusercontent.com/u/254940/riskmaps-data/MarineMammalProvinceJoin2.csv",
+#   "../data/MarineMammalProvinceJoin2.csv",
+#   method = "curl")
+#
+# download.file("https://dl.dropboxusercontent.com/u/254940/riskmaps-data/SharkProvinceJoin2pt5DegreeBuffer_20121009.csv",
+#   "../data/SharkProvinceJoin2pt5DegreeBuffer_20121009.csv",
+#   method = "curl")
 
 # ... generating steps for "composite.occ2.rda"
 
