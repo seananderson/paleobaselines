@@ -1860,12 +1860,14 @@ intrinsic risk of modern genera in biogeographic provinces
 (fig.~\ref{fig:pairs-prov-paleo-culls}), suggesting that none of the potential
 biases addressed by these fossil culls play an important role in producing the
 overall patterns that we report in the main text. When the model based on the
-most stringent of these culls (``$>1$ observation'') is plotted as in Fig.~3,
-geographic patterns of estimated mean intrinsic risk are similar to those
-observed in Fig.~3 (fig.~\ref{fig:overall-maps-paleo-culls}).  Therefore we
-conclude that, although the incompleteness of the fossil record may influence
-our intrinsic risk estimates, the first-order taxonomic and geographic patterns
-we observed are robust to these potential biases.
+dataset that excludes all genera that were not smapled in one or more subintervals
+between their first and last occurences (``Preservation probability = 1'')
+is plotted as in Fig.~3, geographic patterns of estimated mean intrinsic risk
+are similar to those observed in Fig.~3
+(fig.~\ref{fig:overall-maps-paleo-culls}).  Therefore we conclude that, although
+the incompleteness of the fossil record may influence our intrinsic risk
+estimates, the first-order taxonomic and geographic patterns we observed are
+robust to these potential biases.
 
 \subsection{Exploring the effects of contemporary sampling intensity on intrinsic risk predictions}
 
@@ -2477,15 +2479,16 @@ dev.off()
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-0-pp}
-%\includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-1-pp}
-\includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-sing-pp}
+\includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-1-pp}
+%\includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-sing-pp}
 \caption{Global maps from models built with different culls of the Neogene-Pleistocene
   fossil record. Top: the base model displayed in main text Fig.~3. Bottom: a
-  model trained on fossil data including only genera that occur in the PaleoDB
-  at least twice in every subinterval within their stratigraphic range. This is
-  the same model indicated as ``$>$ 1 observation'' in Figures
-  \ref{fig:pairs-genus-paleo-culls} and \ref{fig:pairs-prov-paleo-culls}. Here,
-  intrinsic risk indicates multiples of the geometric mean value.}
+  model trained on fossil data including only genera with a preservation probability
+  equal to one (i.e., excluding all genera that were not sampled in one or more
+  subintervals between their first and last occurrences). This is the same model as
+  ``Preservation probability = 1'' in fig.~\ref{fig:pairs-genus-paleo-culls} and
+  \ref{fig:pairs-prov-paleo-culls}. Here, intrinsic risk indicates multiples of
+  the geometric mean value.}
 \label{fig:overall-maps-paleo-culls}
 \end{center}
 \end{figure}
