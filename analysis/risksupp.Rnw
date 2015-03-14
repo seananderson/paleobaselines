@@ -1614,29 +1614,32 @@ mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
   line = -1.4, las = 0, col = "grey30", cex = 0.9)
 dev.off()
 # singular
-pdf("../figs/hotspots-paleo-sing-pp.pdf", width = 7, height = 3.5)
-par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
-  las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
-map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
-  hotspots = TRUE, at = log(get_fold_locations(exp(er_dat$mean.ext), folds)),
-  at.labels = sprintf("%.2f", folds),
-  plot_column = "mean.ext.sing", col_limits = COL_LIMITS)
-par(xpd = NA)
-mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
-  line = -1.4, las = 0, col = "grey30", cex = 0.9)
-dev.off()
+# lower_lim <- 0.00965
+# # 2.5-fold to match the above map in scale (but shifted up)
+# COL_LIMITS <- c(lower_lim, lower_lim * 2.7)
+# pdf("../figs/hotspots-paleo-sing-pp-TEST.pdf", width = 7, height = 3.5)
+# par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
+#   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
+# map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
+#   hotspots = TRUE, at = log(get_fold_locations(exp(er_dat$mean.ext.sing), folds)),
+#   at.labels = sprintf("%.2f", folds),
+#   plot_column = "mean.ext.sing", col_limits = COL_LIMITS)
+# par(xpd = NA)
+# mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
+#   line = -1.4, las = 0, col = "grey30", cex = 0.9)
+# dev.off()
 # singletons and preserv. prob. == 1
-pdf("../figs/hotspots-paleo-singleton-plus-pp.pdf", width = 7, height = 3.5)
-par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
-  las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
-map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
-  hotspots = TRUE, at = log(get_fold_locations(exp(er_dat$mean.ext), folds)),
-  at.labels = sprintf("%.2f", folds),
-  plot_column = "mean.ext.singleton", col_limits = COL_LIMITS)
-par(xpd = NA)
-mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
-  line = -1.4, las = 0, col = "grey30", cex = 0.9)
-dev.off()
+# pdf("../figs/hotspots-paleo-singleton-plus-pp.pdf", width = 7, height = 3.5)
+# par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
+#   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
+# map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
+#   hotspots = TRUE, at = log(get_fold_locations(exp(er_dat$mean.ext), folds)),
+#   at.labels = sprintf("%.2f", folds),
+#   plot_column = "mean.ext.singleton", col_limits = COL_LIMITS)
+# par(xpd = NA)
+# mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
+#   line = -1.4, las = 0, col = "grey30", cex = 0.9)
+# dev.off()
 ### locality cull:
 ## pdf("../figs/hotspots-paleo-locality.pdf", width = 7, height = 3.5)
 ## par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
