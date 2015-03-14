@@ -116,6 +116,8 @@ extract_ranges <- function() {
   load("../data/4.6.2014.occs.rda")
   pbdb <- pbdb[-which(pbdb$FR2_bin == ""), ]
   pbdb <- droplevels(pbdb)
+  pbdb$FR2_bin <- gsub("Lower Miocene", "Early Miocene", pbdb$FR2_bin)
+  pbdb$FR2_bin <- gsub("Upper Miocene", "Late Miocene", pbdb$FR2_bin)
 
   # bring in PBDB data showing genera present in Paleogene
   # we will use this to calculate proportion completeness
