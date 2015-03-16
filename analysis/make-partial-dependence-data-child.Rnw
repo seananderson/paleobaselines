@@ -36,7 +36,8 @@ fit_stage_models <- function(dat, stage_name, bootstrap = FALSE) {
 # fit-marginal-stage-models
 if(!file.exists("../data/stage_models.rds")) {
   stage_models <- plyr::llply(c(stage_order, "all"), function(x)
-    rlply(30, fit_stage_models(neog, stage_name = x)), .parallel = TRUE)
+    rlply(30, fit_stage_models(neog, stage_name = x, bootstrap = TRUE)),
+      .parallel = TRUE)
   names(stage_models) <- c(stage_order, "all")
   saveRDS(stage_models, file = "../data/stage_models.rds")
 } else {
@@ -45,7 +46,7 @@ if(!file.exists("../data/stage_models.rds")) {
 # and for culled versions of paleo data:
 cull_cuts <- c(0, sort(unique(neog$prop_comp))) # all possible
 stage_models_culls <- plyr::llply(cull_cuts, function(i) {
-  plyr::rlply(1, fit_stage_models(neog[neog$prop_comp >= i, ], stage_name = "all"))
+  plyr::rlply(1, fit_stage_models(neog[neog$prop_comp >= i, ], stage_name = "all", bootstrap = FALSE))
   }, .parallel = TRUE)
 
 ####################################
