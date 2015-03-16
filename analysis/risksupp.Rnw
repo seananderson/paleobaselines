@@ -859,7 +859,6 @@ stage_order <- c("Early Miocene", "Middle Miocene", "Late Miocene",
   "Plio-Pleistocene")
 @
 
-
 <<check-classification-error, child='check-classification-error-child.Rnw', results='hide', fig.height=7, fig.width=11.5, fig.cap= paste0("Receiver operating characteristic (ROC) curves show sensitivity (true positive rate) plotted against specificity (true negative rate) across all possible probability thresholds. These ROC curves represent out-of-sample performance --- models were built on two thirds of the data and tested on the remaining third. This procedure was repeated 150 times. The area under the curves (AUC) represents the probability that a randomly chosen extinct genus will be correctly ranked as more at risk than a randomly chosen genus that survives. The dashed line represents the 50\\% line --- predictions on this line would be no better than tossing a coin.  We show predictions for models built on the entire Neogene-Pleistocene interval (as used in Fig.~2 and Fig.~3) and for models built on subintervals within the Neogene-Pleistocene. The colored lines represent ROC curves from the same models but split out by major taxonomic groups to indicate which groups are well predicted and which are poorly predicted by a given model. Subinterval AUC values for the full model (black lines) built on the entire Neogene-Pleistocene interval range from ", min(auc_range), " to ", max(auc_range), ". The AUC of the full model based on the entire Neogene-Pleistocene is ", auc_neog, ".")>>=
 @
 
@@ -868,11 +867,10 @@ stage_order <- c("Early Miocene", "Middle Miocene", "Late Miocene",
 We evaluated the marginal effect of each predictor on intrinsic extinction risk
 through partial dependence plots (Fig.~1). This procedure finds the marginal
 effect of each predictor by integrating across all other predictor values using
-the method described in Ref.~\cite{friedman2001}. Because there is some
-stochasticity when running a GBM, we ran models for each interval 20 times and
-each time recorded the marginal effects. We then took the median and
-interquartile range of those predictions. The range of these predictions is very
-small and hardly noticeable in Fig.~1.
+the method described in Ref.~\cite{friedman2001}. To visually present
+uncertainty in these marginal effects, we bootstrapped the data: we fit each
+model 40 separate times, each time resampling the rows of data with
+replacement. We then took the median, 10\% and 90\% quantiles of those predictions.
 
 <<make-partial-dependence-data, child="make-partial-dependence-data-child.Rnw", echo=FALSE, results='hide'>>==
 @
