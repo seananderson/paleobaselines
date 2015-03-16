@@ -3,11 +3,24 @@
 ####################################
 # First, we will write a function to fit the GBM models to a given stage:
 # shape-data-partial-plots:
-fit_stage_models <- function(dat, stage_name) {
+# (This function now also bootstraps the data each time to provide a measure
+# of variability.)
+fit_stage_models <- function(dat, stage_name, bootstrap = FALSE) {
   if(stage_name == "all") {
-    d <- dat
+    if(bootstrap) {
+      nrow_dat <- nrow(dat) # get first for speed
+      d <- dat[sample(seq_len(nrow_dat), size = nrow_dat, replace = TRUE), ]
+    } else {
+      d <- dat
+    }
   } else {
-    d <- dat[dat$stage == stage_name, ]
+    if(bootstrap) {
+      dat <- dat[dat$stage == stage_name, ]
+      nrow_dat <- nrow(dat) # get first for speed
+      d <- dat[sample(seq_len(nrow_dat), size = nrow_dat, replace = TRUE), ]
+    } else {
+      d <- dat[dat$stage == stage_name, ]
+    }
   }
   w <- paleorisk::get_weights(d$Ex)
   weights <- ifelse(d$Ex == 1, w$ex_weight, w$sur_weight)
@@ -22,8 +35,8 @@ fit_stage_models <- function(dat, stage_name) {
 # the model a number of times:
 # fit-marginal-stage-models
 if(!file.exists("../data/stage_models.rds")) {
-  stage_models <- llply(c(stage_order, "all"), function(x)
-    rlply(10, fit_stage_models(neog, stage_name = x)), .parallel = TRUE)
+  stage_models <- plyr::llply(c(stage_order, "all"), function(x)
+    rlply(30, fit_stage_models(neog, stage_name = x)), .parallel = TRUE)
   names(stage_models) <- c(stage_order, "all")
   saveRDS(stage_models, file = "../data/stage_models.rds")
 } else {
@@ -70,13 +83,31 @@ partial_dat_culls <- plyr::ldply(1:length(cull_cuts), function(i) {
 
 ####################################
 # We will get the median and interquartile range of the marginal effects:
+
+# To do this, because of the bootstrapping, we will need to bin the predictor
+# split values a bit. Different iterations will have slightly different
+# predictor splits:
+zzz <- partial_dat
+
+bin_predictor <- function(x, bins = 20) {
+  itvl <- seq(min(x), max(x), length.out = bins)
+  itvl[findInterval(x, itvl)]
+}
+
+group_partial_dat <- filter(partial_dat, predictor == "group")
+continuous_partial_dat <- partial_dat %>%
+  filter(predictor != "group") %>%
+  group_by(predictor) %>%
+  mutate(value = bin_predictor(value))
+partial_dat <- rbind(continuous_partial_dat, group_partial_dat)
+
 # <<summarize-marginal-effects>>=
 partial_dat2 <- plyr::ddply(partial_dat,
   c("stage", "predictor", "value"),
   plyr::summarize,
   median = median(response),
-  lower = quantile(response, probs = 0.25),
-  upper = quantile(response, probs = 0.75))
+  lower = quantile(response, probs = 0.10),
+  upper = quantile(response, probs = 0.90))
 
 # culled:
 partial_dat2_culls <- plyr::ddply(partial_dat_culls,

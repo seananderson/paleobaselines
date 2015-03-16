@@ -13,13 +13,13 @@ o <- plyr::ddply(o, c("stage", "predictor"), plyr::mutate, adj = -
 g.adj <- mean(g$median)
 g <- transform(g, median = median - g.adj, lower = lower - g.adj, upper = upper - g.adj)
 
-lwd.u <- c(rep(2.0, 4), 3.9)
+lwd.u <- c(rep(2.0, 4), 2.9)
 pal <- rev(colorspace::rainbow_hcl(4, c = 90, l = 65))
 pal <- c(pal, "#000000")
 pch <- c(rep(19, 4), 19)
-cex <- c(rep(0.55, 4), .75) * 1.4
+cex <- c(rep(0.55, 4), .68) * 1.4
 lwd <- c(rep(1.5, 4), 2.6)
-col.axis <- "grey55"
+col.axis <- "grey65"
 cex.axis <- 0.85
 cols.plot <- 3:7
 col.main.labels <- "grey15"
@@ -31,7 +31,7 @@ o.ylim.l <- -0.5
 o.ylim.u <- 0.6
 o.y.axis.at <- c(-0.5, 0, 0.6)
 g.y.axis.at <- c(-0.5, 0, 0.6)
-rect.cols <- rep(c("grey93", NA), 99)
+rect.cols <- rep(c("grey94", NA), 99)
 o.y.axis.labs <- c("-", "0", "+")
 g.y.axis.labs <- c("-", "0", "+")
 
@@ -138,8 +138,11 @@ plyr::d_ply(o, "predictor", function(x) {
     "n")
   for(i in 1:length(unique(x$stage))) {
     dat <- subset(x, stage_order == i)
+    shade_col <- paste0(dat$col, "24")
+    # separate option of polygon shading for the overall model:
+    if(dat$stage_order[1] == 5) shade_col = paste0(dat$col, "34")
     with(dat, polygon(c(value, rev(value)), c(lower, rev(upper)), border =
-        NA, col = paste0(col, "50")))
+        NA, col = shade_col))
     with(dat, lines(value, median, col = col, lwd = lwd))
   }
   box(col = col.axis)
@@ -187,7 +190,7 @@ for(i in 1:(nrow(rects)-1)) {
 }
 
 # vertical lines:
-abline(v = g$x.pos, col = "grey88", lwd = .5)
+#abline(v = g$x.pos, col = "#00000010", lwd = .6)
 
 # the points and lines:
 add.seg <- TRUE
@@ -209,14 +212,14 @@ for(i in 1:length(stage_ord)) {
   points(g$x.pos, g[,ci], col = pal[i], pch = pch[i], cex = cex[i])
   par(xpd = FALSE)
   segments(g.l$x.pos, g.l[,ci], g.u$x.pos, g.u[,ci], col =
-    paste0(pal[i], 99), lwd = 1.5)
+    paste0(pal[i], 30), lwd = 1.5)
   if(add.seg) { # for speed of development
     plyr::d_ply(g, ".class", function(x) {
       for(j in 1:(nrow(x)-1)){
         if(nrow(x) > 1) {
           # the lines connecting the dots:
           segments(x[j,"x.pos"], x[j, ci], x[j,"x.pos"]+1, x[j+1, ci] ,
-            col = paste0(pal[i], 70), lwd = lwd[i])
+            col = paste0(pal[i], 50), lwd = lwd[i])
         }
       }
     })
