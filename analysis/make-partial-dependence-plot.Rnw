@@ -145,6 +145,11 @@ plyr::d_ply(o, "predictor", function(x) {
         NA, col = shade_col))
     with(dat, lines(value, median, col = col, lwd = lwd))
   }
+
+#   N <- nn[nn$predictor == dat$predictor[1], ]
+#     #segments(N$value, o.ylim.l, N$value, o.ylim.l + N$N_perc*0.1)
+#     segments(N$value, o.ylim.l, N$value, o.ylim.l + 0.03, lwd = N$N_perc * 2.9, col = "#00000070")
+
   box(col = col.axis)
   axis(1, las = 1, col = col.axis, col.axis = col.axis, cex.axis =
     cex.axis, padj = -0.5, at = eval(parse(text = unique(x$axis.1))))

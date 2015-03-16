@@ -110,6 +110,13 @@ partial_dat2 <- plyr::ddply(partial_dat,
   lower = quantile(response, probs = 0.10),
   upper = quantile(response, probs = 0.90))
 
+# nn <- reshape2::melt(select(neog, richness:great.circle)) %>%
+#   group_by(variable, value) %>%
+#   dplyr::summarise(N = length(value)) %>%
+#   dplyr::mutate(N_perc = N / max(N)) %>%
+#   rename(predictor = variable) %>%
+#   as.data.frame
+
 # culled:
 partial_dat2_culls <- plyr::ddply(partial_dat_culls,
   c("stage", "predictor", "value"),
