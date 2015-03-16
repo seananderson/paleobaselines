@@ -36,7 +36,7 @@ fit_stage_models <- function(dat, stage_name, bootstrap = FALSE) {
 # fit-marginal-stage-models
 if(!file.exists("../data/stage_models.rds")) {
   stage_models <- plyr::llply(c(stage_order, "all"), function(x)
-    rlply(30, fit_stage_models(neog, stage_name = x, bootstrap = TRUE)),
+    rlply(40, fit_stage_models(neog, stage_name = x, bootstrap = TRUE)),
       .parallel = TRUE)
   names(stage_models) <- c(stage_order, "all")
   saveRDS(stage_models, file = "../data/stage_models.rds")
@@ -99,7 +99,8 @@ group_partial_dat <- filter(partial_dat, predictor == "group")
 continuous_partial_dat <- partial_dat %>%
   filter(predictor != "group") %>%
   group_by(predictor) %>%
-  mutate(value = bin_predictor(value))
+  mutate(value = bin_predictor(value)) %>%
+  as.data.frame
 partial_dat <- rbind(continuous_partial_dat, group_partial_dat)
 
 # <<summarize-marginal-effects>>=
