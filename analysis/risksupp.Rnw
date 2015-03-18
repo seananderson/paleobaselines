@@ -13,6 +13,9 @@
 \let\pkg=\textbf
 \let\fn=\texttt
 
+\widowpenalty=1000
+\clubpenalty=1000
+
 % Linux Libertine:
 \usepackage{textcomp}
 \usepackage[sb]{libertine}
