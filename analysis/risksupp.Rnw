@@ -1020,13 +1020,51 @@ ri_uq <- ri_uq[ri_order]
 @
 
 <<plot-relative-importance, results='hide'>>=
-names(ri_median) <- sub("group", "subgroup", names(ri_median))
+m_ri_stages <- list()
+for(i in seq_along(unique(neog$stage))) {
+  dat <- neog[neog$stage == stage_order[i], ]
+  w <- paleorisk::get_weights(dat$Ex)
+  weights <- ifelse(dat$Ex == 1, w$ex_weight, w$sur_weight)
+  m_ri_stages[[i]] <- gbm::gbm(Ex ~ richness + occupancy + occurrences + min.lat +
+    max.lat + lat.range + mean.lat + great.circle + group,
+    data = dat, n.trees = NTREES, interaction.depth = INT.DEPTH,
+    distribution = "bernoulli", shrinkage = SHRINKAGE, weights = weights)
+}
+
+ri_stages <- plyr::ldply(m_ri_stages, function(x) {
+  gbm::relative.influence(x, scale. = TRUE, sort. = FALSE, n.trees = NTREES)
+})
+ri_stages <- ri_stages[,ri_order]
+pal_ri <- rev(colorspace::rainbow_hcl(4, c = 90, l = 65))
+
+ri_lookup <- data.frame(
+  old = c("mean.lat", "occupancy", "max.lat", "min.lat", "occurrences",
+  "lat.range", "richness", "great.circle", "group"),
+  new = c("Mean latitude", "Occupancy", "Maximum latitude", "Minimum latitude",
+    "Occurrences", "Latitude range", "Number of species", "Great circle
+    distance", "Taxonomy")
+)
+
+for(i in 1:nrow(ri_lookup)) {
+  names(ri_median) <- sub(ri_lookup[i, "old"], ri_lookup[i, "new"], names(ri_median))
+}
+
 pdf("../figs/plot-relative-importance.pdf", width = 4, height = 4)
-par(xpd = NA, mar = c(4, 8, 1, 1), cex = 0.8)
+par(xpd = NA, mar = c(4, 10, 1, 1), cex = 0.8)
 plot(ri_median, 1:length(ri_median), xlab = "Relative influence", ylab = "",
-  xlim = c(0, 1), xaxs = "i", pch = 19, yaxt = "n")
-segments(ri_lq, 1:length(ri_median), ri_uq, 1:length(ri_median))
+  xlim = c(0, 1), xaxs = "i", pch = 19, yaxt = "n", type = "n")
 axis(2, at = 1:length(ri_median), labels = names(ri_median), las = 1)
+
+for(i in 1:nrow(ri_stages)) {
+  points(ri_stages[i,], 1:ncol(ri_stages), col = pal_ri[i], pch = 21)
+}
+
+points(ri_median, 1:length(ri_median), pch = 19)
+segments(ri_lq, 1:length(ri_median), ri_uq, 1:length(ri_median))
+
+legend("bottomright", legend = c("Neogene-Pleistocene", stage_order),
+  col = c("black", pal_ri), pch = c(19, rep(21, 4)), bty = "n")
+
 dev.off()
 @
 
@@ -1041,9 +1079,7 @@ dev.off()
   runs for the full Neogene-Pleistocene model (black). Some line segments are
   smaller than the dots overlaid on top where there is little variability across
   model runs. Also shown are the relative importance scores for the subinterval
-  models (coloured dots). The vertical lines indicate the relative importance of
-  an additional random variable that was added to the model and gives an
-  approximate idea of the utility of a given predictor.}
+  models (coloured dots).}
 \label{fig:plot-relative-importance}
 \end{figure}
 
