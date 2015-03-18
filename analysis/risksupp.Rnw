@@ -988,75 +988,13 @@ ri_uq <- ri_uq[ri_order]
 @
 
 <<plot-relative-importance, results='hide'>>=
-neog_temp <- neog
-w <- paleorisk::get_weights(neog$Ex)
-weights <- ifelse(neog$Ex == 1, w$ex_weight, w$sur_weight)
-m_ri <- list()
-set.seed(1234)
-for(i in 1:10) {
-  neog_temp$random.predictor <- round(runif(nrow(neog_temp), 0, 10))
-  m_ri[[i]] <- gbm::gbm(Ex ~ richness + occupancy + occurrences + min.lat +
-    max.lat + lat.range + mean.lat + great.circle + group + random.predictor,
-    data = neog_temp, n.trees = NTREES, interaction.depth = INT.DEPTH,
-    distribution = "bernoulli", shrinkage = SHRINKAGE, weights = weights)
-}
-m_ri_stages <- list()
-set.seed(1234)
-for(i in seq_along(unique(neog$stage))) {
-  neog_temp$random.predictor <- round(runif(nrow(neog_temp), 0, 10))
-  dat <- neog_temp[neog_temp$stage == stage_order[i], ]
-  w <- paleorisk::get_weights(dat$Ex)
-  weights <- ifelse(dat$Ex == 1, w$ex_weight, w$sur_weight)
-  m_ri_stages[[i]] <- gbm::gbm(Ex ~ richness + occupancy + occurrences + min.lat +
-    max.lat + lat.range + mean.lat + great.circle + group + random.predictor,
-    data = dat, n.trees = NTREES, interaction.depth = INT.DEPTH,
-    distribution = "bernoulli", shrinkage = SHRINKAGE, weights = weights)
-}
-ri <- ldply(m_ri, function(x) {
-  gbm::relative.influence(x, scale. = TRUE,
-    sort. = FALSE, n.trees = NTREES)
-})
-ri_median <- apply(ri, 2, median)
-ri_lq <- apply(ri, 2, function(x) quantile(x, probs = 1.0))
-ri_uq <- apply(ri, 2, function(x) quantile(x, probs = 0.75))
-ri_order <- order(ri_median)
-ri_median <- ri_median[ri_order]
-ri_lq <- ri_lq[ri_order]
-ri_uq <- ri_uq[ri_order]
 names(ri_median) <- sub("group", "subgroup", names(ri_median))
-
-ri_stages <- plyr::ldply(m_ri_stages, function(x) {
-  gbm::relative.influence(x, scale. = TRUE, sort. = FALSE, n.trees = NTREES)
-})
-ri_stages <- ri_stages[,ri_order]
-pal <- rev(colorspace::rainbow_hcl(4, c = 90, l = 65))
-
-random.i <- which(names(ri_median) %in% "random.predictor")
-rand.val <- vector(length = 5)
-rand.val[1] <- ri_median[random.i]
-rand.val[2:5] <- ri_stages[, random.i]
-
-ri_median <- ri_median[-random.i]
-ri_lq <- ri_lq[-random.i]
-ri_uq <- ri_uq[-random.i]
-ri_stages <- ri_stages[,-random.i]
-
 pdf("../figs/plot-relative-importance.pdf", width = 4, height = 4)
-par(mar = c(4, 8, 1, 1), cex = 0.8)
+par(xpd = NA, mar = c(4, 8, 1, 1), cex = 0.8)
 plot(ri_median, 1:length(ri_median), xlab = "Relative influence", ylab = "",
-  xlim = c(0, 1), xaxs = "i", pch = 19, yaxt = "n", type = "n")
-abline(v = rand.val, col = paste0(c("#000000", pal), "50"), lwd = 2.0)
-abline(v = rand.val[1], col = paste0(c("#000000"), "50"), lwd = 2.0) # reinforce the main one
-par(xpd = NA)
+  xlim = c(0, 1), xaxs = "i", pch = 19, yaxt = "n")
 segments(ri_lq, 1:length(ri_median), ri_uq, 1:length(ri_median))
 axis(2, at = 1:length(ri_median), labels = names(ri_median), las = 1)
-
-for(i in 1:nrow(ri_stages)) {
-  points(ri_stages[i,], 1:ncol(ri_stages), col = pal[i], pch = 19)
-}
-points(ri_median, 1:length(ri_median), pch = 19)
-legend("bottomright", legend = c("Neogene-Pleistocene", stage_order),
-  fill = c("black", pal), bty = "n")
 dev.off()
 @
 
