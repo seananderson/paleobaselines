@@ -88,8 +88,6 @@ partial_dat_culls <- plyr::ldply(1:length(cull_cuts), function(i) {
 # To do this, because of the bootstrapping, we will need to bin the predictor
 # split values a bit. Different iterations will have slightly different
 # predictor splits:
-zzz <- partial_dat
-
 bin_predictor <- function(x, bins = 20) {
   itvl <- seq(min(x), max(x), length.out = bins)
   itvl[findInterval(x, itvl)]
