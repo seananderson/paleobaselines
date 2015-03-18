@@ -221,7 +221,6 @@ pkgs
 @
 
 In particular, our work would not have been possible without:
-\pkg{PBSmapping} \cite{pbsmapping},
 \pkg{maptools} \cite{maptools},
 \pkg{sp} \cite{sp1, sp2},
 \pkg{gbm} \cite{gbm2013},
@@ -888,6 +887,24 @@ Ref.~\cite{friedman2001} (fig.~\ref{fig:plot-relative-importance}). The
 \texttt{subgroup} variable, which refers to the taxonomic subgroupings
 (primarily order), has the greatest relative importance followed by the great
 circle distance of range size.
+
+% TODO add short paragraph here on collinearity
+<<predictor-pairs-plot>>=
+panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor, ...) {
+    usr <- par("usr"); on.exit(par(usr))
+    par(usr = c(0, 1, 0, 1))
+    r <- abs(cor(x, y, method = "spearman"))
+    txt <- format(c(r, 0.123456789), digits = digits)[1]
+    txt <- paste0(prefix, txt)
+    if(missing(cex.cor)) cex.cor <- 0.8/strwidth(txt)
+    text(0.5, 0.5, txt, cex = cex.cor * r)
+}
+
+png("../figs/predictor-pairs.png", width = 700, height = 700)
+pairs(stcen[,7:14], col = "#00000002", pch = 20, cex = 1.5,
+  lower.panel = panel.smooth, upper.panel = panel.cor, cex.cor = 3)
+dev.off()
+@
 
 \begin{table}
 \centering
