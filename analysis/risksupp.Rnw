@@ -1465,8 +1465,7 @@ intrinsic risk and modern impacts. To map out the distribution of mean intrinsic
 risk across coastal biogeographic provinces, we calculated the mean intrinsic
 risk estimates on a log scale for all genera occupying a given province
 (following the minimum bounding box interpolation). We first did this separately
-for each major taxonomic group (Fig.~2) and then for all genera combined
-(Fig.~3).
+for each major taxonomic group (Fig.~2) and then for all genera combined~(Fig.~3).
 
 \subsection{Comparing geographic distributions of intrinsic risk and contemporary threats}
 
