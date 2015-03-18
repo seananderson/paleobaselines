@@ -1,5 +1,6 @@
 <<plot-cross-interval-gbms-child>>=
 # Re-order stage names:
+cross_pred <- readRDS("../data/cross_pred.rds")
 cross_pred <- na.omit(cross_pred)
 stage_order <- c("Early Miocene", "Middle Miocene", "Late Miocene",
   "Plio-Pleistocene")
@@ -44,6 +45,8 @@ cols_df <- data.frame(
   stringsAsFactors = FALSE)
 cross_pred2 <- plyr::join(cross_pred2, cols_df)
 
+# a hack to fix weird knitr problems where only the top row is now showing:
+if(!file.exists("../figs/plot-cross-interval-gbms-base.pdf")) {
 pdf("../figs/plot-cross-interval-gbms-base.pdf", width = 4.7, height = 4.8)
 par(mfrow = c(4,4), mar = c(0,0,0,0), cex = 0.5, oma = c(3.8, 4.0, 4, 2),
   mgp = c(2, 0.4, 0), tck = -0.02)
@@ -81,4 +84,5 @@ mtext("Uncalibrated extinction risk (subinterval that model was tested on)",
   side = 2, outer = TRUE, col = "grey50", cex = 0.6, line = 2.8, las = 0)
 par(xpd = NA)
 dev.off()
+}
 @
