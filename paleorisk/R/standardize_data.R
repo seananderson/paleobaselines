@@ -60,8 +60,8 @@ standardize_data <- function(dat, min_lat_bin = 10, max_lat_bin = 10,
   lats <- data.frame(abs(data1$MinLat), abs(data1$MaxLat))
 
   #paleolats & longs rounded
-  min.lat <- floor(apply(lats, 1, min)/min_lat_bin)*min_lat_bin
-  max.lat <- ceiling(apply(lats, 1, max)/max_lat_bin)*max_lat_bin
+  min.lat <- round(apply(lats, 1, min)/min_lat_bin)*min_lat_bin
+  max.lat <- round(apply(lats, 1, max)/max_lat_bin)*max_lat_bin
   lat.range <- max.lat-min.lat
   mean.lat <- round(abs(data1$mean_lat)/mean_lat_bin)*mean_lat_bin
   tropical_only <- ifelse(max.lat > 30, 0, 1)
