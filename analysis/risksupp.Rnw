@@ -888,10 +888,17 @@ each of the GBM predictors using the \texttt{relative.influence()} function in
 the \pkg{gbm} package, which uses the algorithm as described in
 Ref.~\cite{friedman2001} (fig.~\ref{fig:plot-relative-importance}). The
 \texttt{subgroup} variable, which refers to the taxonomic subgroupings
-(primarily order), has the greatest relative importance followed by the great
-circle distance of range size.
+(primarily order), has the greatest relative influence followed by the great
+circle distance of range size. Some of the non-taxonomic predictors exhibit
+collinearity, which may affect their apparent relative contributions, but GBM
+models are relatively tolerant to multicollinearity for the purposes of
+prediction \cite{dormann2013}.
 
-% TODO add short paragraph here on collinearity
+The following figure illustrates cross plots of all non-taxonomic model
+predictors for Neogene-Pleistocene genera. Values in upper-right panels indicate
+Spearman's rank correlation coefficients (rho). Red lines in lower-left panels
+represent loess smoothers.
+
 <<predictor-pairs-plot>>=
 panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor, ...) {
     usr <- par("usr"); on.exit(par(usr))
@@ -908,6 +915,11 @@ pairs(stcen[,7:14], col = "#00000002", pch = 20, cex = 1.5,
   lower.panel = panel.smooth, upper.panel = panel.cor, cex.cor = 3)
 dev.off()
 @
+
+\includegraphics[width=5.5in]{../figs/predictor-pairs.png}
+\caption{}
+\label{fig:collinearity}
+\end{figure}
 
 \begin{table}
 \centering
