@@ -1861,12 +1861,8 @@ modern genera (fig.~\ref{fig:pairs-genus-paleo-culls}) and for the mean
 intrinsic risk of modern genera in biogeographic provinces
 (fig.~\ref{fig:pairs-prov-paleo-culls}), suggesting that none of the potential
 biases addressed by these fossil culls play an important role in producing the
-overall patterns that we report in the main text. When the model based on the
-dataset that excludes all genera that were not smapled in one or more subintervals
-between their first and last occurences (``Preservation probability = 1'')
-is plotted as in Fig.~3, geographic patterns of estimated mean intrinsic risk
-are similar to those observed in Fig.~3
-(fig.~\ref{fig:overall-maps-paleo-culls}).  Therefore we conclude that, although
+overall patterns that we report in the main text.
+Therefore we conclude that, although
 the incompleteness of the fossil record may influence our intrinsic risk
 estimates, the first-order taxonomic and geographic patterns we observed are
 robust to these potential biases.
