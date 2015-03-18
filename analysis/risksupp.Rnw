@@ -1210,7 +1210,7 @@ AUC is a measure of predictive ability of a model.
 Here, it represents the probability that a randomly selected extinct genus
 will be correctly assigned a higher extinction risk than a randomly selected
 genus that survived. Additionally, we calculated 95\% confidence intervals on
-the AUC values using the method described in Ref.~\cite{delong1988} and implemented in the
+the AUC values using the Delong method \cite{delong1988} as implemented in the
 \pkg{pROC} R package.
 
 In the second case, we built models on two thirds of the data and then tested on
