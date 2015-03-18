@@ -2478,22 +2478,22 @@ dev.off()
 \end{center}
 \end{figure}
 
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-0-pp}
-\includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-1-pp}
-%\includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-sing-pp}
-\caption{Global maps from models built with different culls of the Neogene-Pleistocene
-  fossil record. Top: the base model displayed in main text Fig.~3. Bottom: a
-  model trained on fossil data including only genera with a preservation probability
-  equal to one (i.e., excluding all genera that were not sampled in one or more
-  subintervals between their first and last occurrences). This is the same model as
-  ``Preservation probability = 1'' in fig.~\ref{fig:pairs-genus-paleo-culls} and
-  \ref{fig:pairs-prov-paleo-culls}. Here, intrinsic risk indicates multiples of
-  the geometric mean value.}
-\label{fig:overall-maps-paleo-culls}
-\end{center}
-\end{figure}
+% \begin{figure}[htbp]
+% \begin{center}
+% \includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-0-pp}
+% \includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-1-pp}
+% %\includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-sing-pp}
+% \caption{Global maps from models built with different culls of the Neogene-Pleistocene
+%   fossil record. Top: the base model displayed in main text Fig.~3. Bottom: a
+%   model trained on fossil data including only genera with a preservation probability
+%   equal to one (i.e., excluding all genera that were not sampled in one or more
+%   subintervals between their first and last occurrences). This is the same model as
+%   ``Preservation probability = 1'' in fig.~\ref{fig:pairs-genus-paleo-culls} and
+%   \ref{fig:pairs-prov-paleo-culls}. Here, intrinsic risk indicates multiples of
+%   the geometric mean value.}
+% \label{fig:overall-maps-paleo-culls}
+% \end{center}
+% \end{figure}
 
 \subsection{Testing the influence of individual taxonomic groups on contemporary risk maps}
 
