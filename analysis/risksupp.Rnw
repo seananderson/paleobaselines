@@ -105,8 +105,8 @@ Figs.\ S1 to S27
 % Supplementary figures all get printed at the end because we loaded the
 % endfloat LaTeX package.
 
-\linenumbers
-\modulolinenumbers[2]
+%\linenumbers
+%\modulolinenumbers[2]
 \begin{spacing}{1.05}
 
 % cite everything in the main text:
