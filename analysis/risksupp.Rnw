@@ -93,8 +93,8 @@ opts_knit$set(eval.after = 'fig.cap') # evaluate fig.cap after the chunk
 This PDF file includes:\\
 Supporting methods\\
 References\\
-Tables S1 to S2\\
-Figs.\ S1 to S28
+Tables S1 to S3\\
+Figs.\ S1 to S27
 
 \clearpage
 \setlength\parskip{0in}
