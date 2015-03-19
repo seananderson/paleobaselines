@@ -424,8 +424,9 @@ To quantify geographic distribution, we measured the maximum, minimum, and mean
 absolute latitude at which each genus was sampled in each interval, the absolute
 latitudinal range (maximum latitude minus minimum latitude), the maximum
 distance between observations of each genus (great circle distance), and the
-number of equal-area grid cells in which each genus occurred (occupancy). We
-also measured the total number of global observations of each genus (occurrences)
+number of equal-area grid cells in which each genus occurred (occupancy).
+Latitude predictors were based on paleolatitudes.
+We also measured the total number of global observations of each genus (occurrences)
 as an imperfect measure of abundance/ecological dominance. Finally because we
 were analyzing genera rather than species, we also measured the total number of
 named species assigned to each genus in each interval. All else being equal,
