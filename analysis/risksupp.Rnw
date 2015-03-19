@@ -908,9 +908,6 @@ dev.off()
 @
 
 \includegraphics[width=5.5in]{../figs/predictor-pairs.png}
-\caption{}
-\label{fig:collinearity}
-\end{figure}
 
 \begin{table}
 \centering
