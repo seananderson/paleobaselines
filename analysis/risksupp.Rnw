@@ -40,7 +40,7 @@
 
 \usepackage[dvipsnames,svgnames,x11names,hyperref]{xcolor}
 \usepackage{hyperref}
-\hypersetup{colorlinks,breaklinks,allcolors=DodgerBlue3}
+\hypersetup{colorlinks,breaklinks,allcolors=Black}
 
 \usepackage{fancyhdr}
 \pagestyle{fancy}
