@@ -3,7 +3,6 @@ all: knit pdf rnwdrop mainfigsdropbox
 rnwdrop:
 	cp risksupp.Rnw ~/Dropbox/nescent_extinction_map/risksupp.Rnw
 	cp risksupp.pdf ~/Dropbox/nescent_extinction_map/risksupp.pdf
-	#cp risksupp.rtf ~/Dropbox/nescent_extinction_map/risksupp.rtf
 
 knit:
 	Rscript -e "knitr::knit('risksupp.Rnw')"
@@ -15,12 +14,6 @@ pdf:
 	pdflatex risksupp
 	pdflatex risksupp
 
-dropbox:
-	cp risksupp.pdf ~/Dropbox/Public/
-
-sundia:
-	cp risksupp.pdf ~/Dropbox/sundia/
-
 clean:
 	rm -rf ../cache/*
 	rm -f *.aux
@@ -29,7 +22,6 @@ clean:
 	rm -f *.blg
 	rm -f *.toc
 	rm -f risksupp.tex
-	#mkdir ../cache/
 
 deleteranges:
 	rm ../data/modern_and_paleo_ranges.rds
@@ -85,12 +77,8 @@ cleanall: clean deleteranges deletecv deleteroc deletecross deletestagemodels de
 # partial for speed:
 cleanall2: clean deletemainmodel deleterest
 
-# also ../data/obis_prov_obs_no_interp.rds
-# also ../data/interpolated_provs_all_taxa.rda
-
 rtf:
 	latex2rtf -Z2 -d 0 -b risksupp.bbl -E0 -M6 risksupp.tex
-	#latex2rtf -d 0 -b risksupp.bbl -E0 -M6 risksupp.tex
 	
 png:
 	#rm ../figs/*\.png
