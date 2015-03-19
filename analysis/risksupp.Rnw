@@ -165,21 +165,12 @@ methodology, and model exploration and sensitivity analyses.
 This document is written with the \pkg{knitr} package
 \cite{xie2013b,xie2014a,xie2014} for the \proglang{R} statistical environment
 \cite{r2014}. The entire analysis can be recreated by running
-\texttt{knitr::knit()} on the underlying source code (or using the \texttt{make}
-command as outlined below). A number of functions that are used in this analysis
+\texttt{knitr::knit()} on the underlying source code \texttt{.Rnw} file.
+A number of functions that are used in this analysis
 have been compiled into an \proglang{R} package \pkg{paleorisk}.
 
 The \proglang{R} package, analysis files, and data files can be accessed in the
-Git repository: \url{https://github.com/seananderson/riskmaps/}.
-\textit{Currently private while in review.}
-
-You can recreate the entire analysis by opening the root \texttt{riskmaps}
-folder on the command line and running:
-
-\begin{verbatim}
-cd analysis
-make
-\end{verbatim}
+Git repository: \url{https://github.com/seananderson/paleobaselines/}.
 
 <<install-paleorisk, eval=TRUE, echo=FALSE, cache=FALSE>>=
 devtools::install("../paleorisk/")
