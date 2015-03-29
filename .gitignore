@@ -33,3 +33,5 @@ analysis/temp.50.R
 *.fls
 *.latexmain
 analysis/todo.md
+
+README.html
