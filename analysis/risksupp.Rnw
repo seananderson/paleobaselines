@@ -12,6 +12,7 @@
 \let\proglang=\textsf
 \let\pkg=\textbf
 \let\fn=\texttt
+\usepackage{pdfpages}
 
 \widowpenalty=1000
 \clubpenalty=1000
@@ -63,6 +64,7 @@ opts_chunk$set(warning=FALSE, message=FALSE, tidy=FALSE, refresh=TRUE,
 opts_chunk$set(dev = 'pdf')
 opts_knit$set(out.format = "latex", out.width="\\textwidth")
 opts_knit$set(eval.after = 'fig.cap') # evaluate fig.cap after the chunk
+opts_chunk$set(collapse = TRUE, comment = "")
 @
 
 \title{Supporting Online Material for\\
@@ -85,18 +87,20 @@ opts_knit$set(eval.after = 'fig.cap') # evaluate fig.cap after the chunk
   \and John M. Pandolfi
 }
 \date{}
-\maketitle
+% \maketitle
+%
+% \textsuperscript{$\ast$}Corresponding author. E-mail sethf@berkeley.edu\\
+% \textsuperscript{$\dagger$}Authors contributed equally to this work
+%
+% This PDF file includes:\\
+% Supporting methods\\
+% References\\
+% Tables S1 to S3\\
+% Figs.\ S1 to S27
 
-\textsuperscript{$\ast$}Corresponding author. E-mail sethf@berkeley.edu\\
-\textsuperscript{$\dagger$}Authors contributed equally to this work
+\includepdf[pages=-]{Cover-page.pdf}
 
-This PDF file includes:\\
-Supporting methods\\
-References\\
-Tables S1 to S3\\
-Figs.\ S1 to S27
-
-\clearpage
+%\clearpage
 \setlength\parskip{0in}
 \tableofcontents
 \clearpage
@@ -170,7 +174,8 @@ A number of functions that are used in this analysis
 have been compiled into an \proglang{R} package \pkg{paleorisk}.
 
 The \proglang{R} package, analysis files, and data files can be accessed in the
-Git repository: \url{https://github.com/seananderson/paleobaselines/}.
+Git repository:\\
+\url{https://github.com/seananderson/paleobaselines/}.
 
 <<install-paleorisk, eval=TRUE, echo=FALSE, cache=FALSE>>=
 devtools::install("../paleorisk/")
@@ -200,7 +205,7 @@ if(!grepl("Linux", Sys.info()["sysname"])) { # serial on Bugaboo server
 }
 @
 
-<<preamble-work, cache=FALSE, echo=FALSE, results=FALSE>>=
+<<preamble-work, cache=FALSE, results='hide', echo=FALSE>>=
 theme_set(theme_bw())
 rversion <- capture.output(sessionInfo())[[1]]
 x <- capture.output(sessionInfo())
@@ -214,7 +219,8 @@ We used \Sexpr{rversion} and the following packages:
 pkgs
 @
 
-In particular, our work would not have been possible without:
+In particular, our work would not have been possible without the \proglang{R}
+packages:
 \pkg{maptools} \cite{maptools},
 \pkg{sp} \cite{sp1, sp2},
 \pkg{gbm} \cite{gbm2013},
