@@ -1,11 +1,10 @@
-This repository contains the analysis files for the paper *Paleontological baselines for evaluating contemporary extinction risk in the coastal oceans* by Seth Finnegan, Sean C. Anderson, Paul G. Harnik, Carl Simpson, Derek P. Tittensor, Jarrett E. Byrnes, Zoe V. Finkel, David R. Lindberg, Lee Hsiang Liow, Rowan Lockwood, Heike K. Lotze, Craig M. McClain, Jenny L. McGuire, Aaron O'Dea, and John M. Pandolfi.
+### Paleontological baselines for evaluating extinction risk in the modern oceans
 
-This work is a product of the Determinants of Extinction in Ancient and Modern Seas Working Group supported by the National Evolutionary Synthesis Center, NSF #EF-0905606.
+This repository contains the complete analysis for the paper:
 
-The analysis is writen in a knitr document `risksupp.Rnw` (the Supporting Material document), which can be found in the `analysis` folder.
+Finnegan\*, S., S.C. Anderson\*, P.G. Harnik\*, C. Simpson, D.P. Tittensor, J.E. Byrnes, Z.V. Finkel, D.R. Lindberg, L.H. Liow, R. Lockwood, H.K. Lotze, C.M. McClain, J.L. McGuire, A. O’Dea, J.M. Pandolfi. Paleontological baselines for evaluating extinction risk in the modern oceans. In press at Science. (*\*Authors contributed equally*)
 
-An up-to-date version of the Supporting Materials document is available here:
-<https://dl.dropboxusercontent.com/u/254940/risksupp.pdf>
+The analysis is writen in a knitr document `analysis/risksupp.Rnw` that generates the Supporting Materials document. 
 
 ## How to recreate the whole analysis
 
