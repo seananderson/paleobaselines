@@ -20,7 +20,7 @@ You will need the following R packages installed:
 x <- c("knitr", "devtools", "paleorisk", "plyr", "reshape2",
   "ggplot2", "gbm", "maps", "mapproj", "maptools", "RColorBrewer", 
   "PBSmapping", "fields", "xtable", "lmodel2", "pROC", "rgeos", "dplyr", 
-  "doParallel", "foreach", "grImport"))
+  "doParallel", "foreach", "grImport")
 install.packages(x)
 ```
 
