@@ -30,7 +30,7 @@ setwd("analysis")
 knitr::knit("risksupp.Rnw")
 ```
 
-This will build the LaTeX file `analysis/risksupp.tex` and all the figures. To generate the Supporting Materials PDF, you will need [a LaTeX installation](http://latex-project.org/ftp.html). Then run:
+This will build the LaTeX file `analysis/risksupp.tex` and all the figures. To generate the Supporting Materials PDF, you will need [a LaTeX installation](http://latex-project.org/). Then run:
 
 ```R
 system("pdflatex risksupp")
