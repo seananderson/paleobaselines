@@ -23,7 +23,7 @@ x <- c("knitr", "devtools", "plyr", "reshape2", "ggplot2", "gbm", "maps",
 install.packages(x)
 ```
 
-Then in an R console (version 3.1.3 or higher) run:
+Then in an R console (version 3.2.0 or higher) run:
 
 ```R
 knitr::knit("analysis/risksupp.Rnw")
