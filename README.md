@@ -17,10 +17,9 @@ Or [download the .zip version](https://github.com/seananderson/paleobaselines/ar
 You will need the following R packages installed:
 
 ```R
-x <- c("knitr", "devtools", "paleorisk", "plyr", "reshape2",
-  "ggplot2", "gbm", "maps", "mapproj", "maptools", "RColorBrewer", 
-  "PBSmapping", "fields", "xtable", "lmodel2", "pROC", "rgeos", "dplyr", 
-  "doParallel", "foreach", "grImport")
+x <- c("knitr", "devtools", "plyr", "reshape2", "ggplot2", "gbm", "maps",
+  "mapproj", "maptools", "RColorBrewer", "PBSmapping", "fields", "xtable",
+  "lmodel2", "pROC", "rgeos", "dplyr", "doParallel", "foreach", "grImport")
 install.packages(x)
 ```
 
