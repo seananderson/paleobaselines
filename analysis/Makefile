@@ -1,4 +1,4 @@
-all: knit pdf rnwdrop mainfigsdropbox
+all: knit pdf
 
 rnwdrop:
 	cp risksupp.Rnw ~/Dropbox/nescent_extinction_map/risksupp.Rnw
