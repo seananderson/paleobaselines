@@ -17,10 +17,11 @@ Or [download the .zip version](https://github.com/seananderson/paleobaselines/ar
 You will need the following R packages installed:
 
 ```R
-install.packages(c("knitr", "devtools", "paleorisk", "plyr", "reshape2",
+x <- c("knitr", "devtools", "paleorisk", "plyr", "reshape2",
   "ggplot2", "gbm", "maps", "mapproj", "maptools", "RColorBrewer", 
   "PBSmapping", "fields", "xtable", "lmodel2", "pROC", "rgeos", "dplyr", 
   "doParallel", "foreach", "grImport"))
+install.packages(x)
 ```
 
 Then in an R console (version 3.1.3 or higher) run:
