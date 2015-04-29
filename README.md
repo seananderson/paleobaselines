@@ -26,7 +26,8 @@ install.packages(x)
 Then in an R console (version 3.2.0 or higher) run:
 
 ```R
-knitr::knit("analysis/risksupp.Rnw")
+setwd("analysis")
+knitr::knit("risksupp.Rnw")
 ```
 
 Or, using the `makefile`, run the following on the command line:
