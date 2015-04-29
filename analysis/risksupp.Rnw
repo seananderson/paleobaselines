@@ -1417,7 +1417,6 @@ dev.off()
 
 <<add-obis-sampling-intensities>>=
 load("../data/composite.occ2.rda")
-library(dplyr)
 counts <- composite.occ2 %>% group_by(genus) %>%
   dplyr::summarise(obis_n = n())
 modern <- plyr::join(modern, counts, by = "genus")
