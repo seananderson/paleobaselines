@@ -12,7 +12,7 @@ To recreate the analysis, first clone the Git repository:
 git clone https://github.com/seananderson/paleobaselines.git
 ```
 
-Or [download the .zip version](https://github.com/seananderson/riskmaps/archive/master.zip) and unzip it.
+Or [download the .zip version](https://github.com/seananderson/paleobaselines/archive/master.zip) and unzip it.
 
 You will need the following R packages installed:
 
