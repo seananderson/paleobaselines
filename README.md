@@ -32,16 +32,17 @@ knitr::knit("risksupp.Rnw")
 
 (Warning — this may take a long time to run: ~1 to 2 hours.)
 
-Running `knit()` on the `.Rnw` file will generate the LaTeX file `analysis/risksupp.tex` and all the figures. To generate the Supporting Materials PDF, you will need [a LaTeX installation](http://latex-project.org/). Then run:
+Running `knit()` on the `.Rnw` file will generate the LaTeX file `analysis/risksupp.tex` and all the figures. To generate the Supporting Materials PDF, you will need [a LaTeX installation](http://latex-project.org/). Then, on the Terminal command line, run:
 
-```R
-system("pdflatex risksupp")
-system("bibtex risksupp")
-system("pdflatex risksupp")
-system("pdflatex risksupp")
+```sh
+cd analysis
+pdflatex risksupp
+bibtex risksupp
+pdflatex risksupp
+pdflatex risksupp
 ```
 
-Or, use the `makefile` on the Terminal command line to run the above steps:
+Or, use the `makefile` to run the above steps:
 
 ```sh
 cd analysis; make
