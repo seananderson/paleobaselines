@@ -41,7 +41,7 @@ system("pdflatex risksupp")
 system("pdflatex risksupp")
 ```
 
-Or, using the `makefile`, the following run on a command line will run the analysis and generate the PDF in one step:
+Or, use the `makefile` on the Terminal command line to run the above steps:
 
 ```sh
 cd analysis; make
