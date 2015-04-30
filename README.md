@@ -4,7 +4,7 @@ This repository contains the complete analysis for the paper:
 
 Finnegan\*, S., S.C. Anderson\*, P.G. Harnik\*, C. Simpson, D.P. Tittensor, J.E. Byrnes, Z.V. Finkel, D.R. Lindberg, L.H. Liow, R. Lockwood, H.K. Lotze, C.M. McClain, J.L. McGuire, A. O’Dea, J.M. Pandolfi. Paleontological baselines for evaluating extinction risk in the modern oceans. In press at Science. (\*Authors contributed equally)
 
-The analysis is written in the knitr file `analysis/risksupp.Rnw`, which generates the Supporting Materials document and all figures.
+The analysis is written in the [knitr](http://yihui.name/knitr/) file `analysis/risksupp.Rnw`, which generates the Supporting Materials document and all figures.
 
 To recreate the analysis, first clone the Git repository:
 
@@ -30,9 +30,9 @@ setwd("analysis")
 knitr::knit("risksupp.Rnw")
 ```
 
-(Warning — this may take a long time to run: ~1 to 2 hours.)
+(Warning — this may take a long time to run: ~1 to 3 hours.)
 
-Running `knit()` on the `.Rnw` file will generate the LaTeX file `analysis/risksupp.tex` and all the figures. To generate the Supporting Materials PDF, you will need [a LaTeX installation](http://latex-project.org/). Then, on the Terminal command line, run:
+Running `knit()` on the `.Rnw` file will generate the LaTeX file `analysis/risksupp.tex` and all the figures in the `figs` folder. To generate the Supporting Materials PDF, you will need [a LaTeX installation](http://latex-project.org/). Then, on the Terminal command line, run:
 
 ```sh
 cd analysis
