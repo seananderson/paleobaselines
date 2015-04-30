@@ -1,12 +1,11 @@
 #' Standardize paleontological and contemporary datasets
 #'
 #' @param dat The data frame to standardize.
-#' @param min_lat_bin TODO
-#' @param max_lat_bin TODO
-#' @param lat_range_bin TODO
-#' @param mean_lat_bin TODO
-#' @param tropical_only_bin
-#' @param great_circle_bin
+#' @param min_lat_bin Number of bins for minimum latitude
+#' @param max_lat_bin Number of bins for maximum latitude
+#' @param lat_range_bin Number of bins for latitude range
+#' @param mean_lat_bin Number of bins for mean latitude
+#' @param great_circle_bin Number of bins for great circle distance
 #' @param num_bins Number of bins to use for standardizing richness,
 #' occurrences, occupancy.
 #' @param num_risk_quantiles Number of quantiles to use for standardizing
@@ -26,7 +25,7 @@
 
 standardize_data <- function(dat, min_lat_bin = 10, max_lat_bin = 10,
   lat_range_bin = 10, mean_lat_bin = 10,
-  tropical_only_bin = 1, great_circle_bin = 2000, num_bins = 10,
+  great_circle_bin = 2000, num_bins = 10,
   min_modern_occurrences = 2) {
 
   if(unique(dat$Interval_Name[1]) %in% c("Modern_merged", "Modern_raw")) {

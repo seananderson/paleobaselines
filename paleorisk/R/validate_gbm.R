@@ -1,6 +1,6 @@
 #' Validate and calibrate models
 #'
-#' This function fits \code{\link[gbm]{gbm}} benoulli models and returns
+#' This function fits \code{\link[gbm]{gbm}} Bernoulli models and returns
 #' observation statistics within bins for use with validation and calibration.
 #'
 #' @param dat The input data.
