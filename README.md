@@ -36,8 +36,8 @@ Running `knit()` on the `.Rnw` file will generate the LaTeX file `analysis/risks
 
 ```R
 system("pdflatex risksupp")
-system("pdflatex risksupp")
 system("bibtex risksupp")
+system("pdflatex risksupp")
 system("pdflatex risksupp")
 ```
 
