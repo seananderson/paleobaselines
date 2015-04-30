@@ -718,12 +718,6 @@ if(!file.exists("../data/val_test.rds")) {
 @
 
 <<alternative-validations, cache=FALSE>>=
-# Some code for testing fake data:
-# FAKE_NEOG <- neog
-# set.seed(1)
-# FAKE_NEOG$Ex <- FAKE_NEOG$Ex[sample(seq_len(nrow(FAKE_NEOG)), nrow(FAKE_NEOG))]
-# FAKE_NEOG$Ex <- rbinom(nrow(FAKE_NEOG), 1, 0.5)
-#
 # only p == 1.0:
 if(!file.exists("../data/val_test_1.0.rds")) {
   val_test_1.0 <- ldply(1:100, function(i)
@@ -940,8 +934,6 @@ Taxonomic subgroup    & Ordinal to family rank taxonomic assignments for each ge
 \end{tabular}
 \end{table}
 
-
-
 % build main models and extract relative importance scores:
 <<get-relative-importance, results='hide'>>=
 if(!file.exists("../data/main_model.rds")) {
@@ -958,7 +950,6 @@ if(!file.exists("../data/main_model.rds")) {
 # 1.0 prop complete threshold:
 if(!file.exists("../data/main_model_1.0.rds")) {
   neog_subset <- neog[neog$prop_comp == 1.0, ]
-# neog_subset <- FAKE_NEOG
   w <- paleorisk::get_weights(neog_subset$Ex)
   weights <- ifelse(neog_subset$Ex == 1, w$ex_weight, w$sur_weight)
   m_1.0 <- rlply(5, gbm(Ex ~ richness + occupancy + occurrences + min.lat +
@@ -1551,30 +1542,6 @@ dev.off()
 % And make comparison versions with the paleo culls of == 1.0 and
 % singletons
 <<plot-paleo-cull-class-maps, results='hide'>>=
-# class maps:
-# 1.0 cull:
-## pdf("../figs/class-risk-maps-mean-log-ext-paleo-1-pp.pdf", width = 6.45, height = 5.1)
-## map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10),
-## # max_range <- map_class_ext(er_dat_class, yticks = c(0.1, 0.15, 0.2, 0.25),
-##   min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0032, 0.16),
-##  picture_files = NULL, plot_column = "mean.ext.1.0",
-## #   picture_files = NULL, plot_column = "mean.ext.1.0",
-##   silhouette_coords = silhouette_coords, max_range_given = exp(max_range)+1.1,
-##   ylabel = "Intrinsic extinction risk")
-## dev.off()
-## # < 2 observation in fossil record cull:
-## # bring down a couple massive outliers:
-## er_dat_class$mean.ext.sing[er_dat_class$mean.ext.sing < log(0.003201)] <- log(0.003201)
-## er_dat_class$mean.ext.sing[er_dat_class$mean.ext.sing > log(0.158)] <- log(0.158)
-## pdf("../figs/class-risk-maps-mean-log-ext-paleo-sing-pp.pdf", width = 6.45, height = 5.1)
-## map_class_ext(er_dat_class, yticks = c(0.005, 0.01, 0.02, 0.05, 0.10),
-##   min_prov_genera = 10, col_range = TRUE, exact_limits = c(0.0032, 0.16),
-##   picture_files = picture_files, plot_column = "mean.ext.sing",
-##   silhouette_coords = silhouette_coords, max_range_given = exp(max_range)+6,
-##   ylabel = "Intrinsic extinction risk")
-## dev.off()
-##
-## # and the overall map:
 # 0.0 cull (i.e. repeat of the main map):
 pdf("../figs/hotspots-paleo-0-pp.pdf", width = 7, height = 3.5)
 par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
@@ -1611,44 +1578,6 @@ par(xpd = NA)
 mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
   line = -1.4, las = 0, col = "grey30", cex = 0.9)
 dev.off()
-# singular
-# lower_lim <- 0.00965
-# # 2.5-fold to match the above map in scale (but shifted up)
-# COL_LIMITS <- c(lower_lim, lower_lim * 2.7)
-# pdf("../figs/hotspots-paleo-sing-pp-TEST.pdf", width = 7, height = 3.5)
-# par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
-#   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
-# map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
-#   hotspots = TRUE, at = log(get_fold_locations(exp(er_dat$mean.ext.sing), folds)),
-#   at.labels = sprintf("%.2f", folds),
-#   plot_column = "mean.ext.sing", col_limits = COL_LIMITS)
-# par(xpd = NA)
-# mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
-#   line = -1.4, las = 0, col = "grey30", cex = 0.9)
-# dev.off()
-# singletons and preserv. prob. == 1
-# pdf("../figs/hotspots-paleo-singleton-plus-pp.pdf", width = 7, height = 3.5)
-# par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
-#   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
-# map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
-#   hotspots = TRUE, at = log(get_fold_locations(exp(er_dat$mean.ext), folds)),
-#   at.labels = sprintf("%.2f", folds),
-#   plot_column = "mean.ext.singleton", col_limits = COL_LIMITS)
-# par(xpd = NA)
-# mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
-#   line = -1.4, las = 0, col = "grey30", cex = 0.9)
-# dev.off()
-### locality cull:
-## pdf("../figs/hotspots-paleo-locality.pdf", width = 7, height = 3.5)
-## par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
-##   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
-## map_hotspots(er_dat, min_prov_genera = 100, add_legend = TRUE,
-##   hotspots = TRUE, at = log(labs), at.labels = labs_show,
-##   plot_column = "mean.ext.locality", col_limits = COL_LIMITS)
-## par(xpd = NA)
-## mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
-##   line = -1.4, las = 0, col = "grey30", cex = 0.9)
-## dev.off()
 @
 
 % And source() the paleo cull sensitivity plotting code:
@@ -2080,17 +2009,12 @@ par(mfrow = c(3, 2))
 par(mar = c(0, 0, 1.5, 0), oma = c(2, 2, 2, 2))
 labs.ns <- seq(0.012, 0.022, 0.004)
 for(i in seq_along(obis.culls)) {
-  # par(mar = c(0, 0, 0, 0), oma = c(0, 0, 0, 0),
-  #   las = 1, mgp = c(1, 0.5, 0), tck = -0.2)
   er_dat_obis_cull <- plyr::join(er_points, er@data, by = "id")
   er_dat_obis_cull <- plyr::join(er_dat_obis_cull, by.prov.all.obis.culls[[i]],
     by = "PROV_CODE")
   map_hotspots(er_dat_obis_cull, min_prov_genera = 100, add_legend = FALSE,
     hotspots = FALSE, at = log(labs.ns), at.labels = labs.ns)
   mtext(paste("Exclude genera with <", obis.culls[i], "OBIS records"), line = -0.5)
-  #par(xpd = NA)
-  #mtext("Intrinsic extinction risk", side = 4, outer = TRUE,
-  #  line = -1.2, las = 0, col = "grey30", cex = 0.9)
 }
 dev.off()
 @
@@ -2472,23 +2396,6 @@ dev.off()
 \label{fig:pairs-prov-paleo-culls}
 \end{center}
 \end{figure}
-
-% \begin{figure}[htbp]
-% \begin{center}
-% \includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-0-pp}
-% \includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-1-pp}
-% %\includegraphics[width=0.6\textwidth]{../figs/hotspots-paleo-sing-pp}
-% \caption{Global maps from models built with different culls of the Neogene-Pleistocene
-%   fossil record. Top: the base model displayed in main text Fig.~3. Bottom: a
-%   model trained on fossil data including only genera with a preservation probability
-%   equal to one (i.e., excluding all genera that were not sampled in one or more
-%   subintervals between their first and last occurrences). This is the same model as
-%   ``Preservation probability = 1'' in fig.~\ref{fig:pairs-genus-paleo-culls} and
-%   \ref{fig:pairs-prov-paleo-culls}. Here, intrinsic risk indicates multiples of
-%   the geometric mean value.}
-% \label{fig:overall-maps-paleo-culls}
-% \end{center}
-% \end{figure}
 
 \subsection{Testing the influence of individual taxonomic groups on contemporary risk maps}
 
