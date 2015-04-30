@@ -87,7 +87,7 @@ opts_chunk$set(collapse = TRUE, comment = "")
   \and John M. Pandolfi
 }
 \date{}
-% \maketitle
+ \maketitle
 %
 % \textsuperscript{$\ast$}Corresponding author. E-mail sethf@berkeley.edu\\
 % \textsuperscript{$\dagger$}Authors contributed equally to this work
@@ -98,7 +98,7 @@ opts_chunk$set(collapse = TRUE, comment = "")
 % Tables S1 to S3\\
 % Figs.\ S1 to S27
 
-\includepdf[pages=-]{Cover-page.pdf}
+%\includepdf[pages=-]{Cover-page.pdf}
 
 %\clearpage
 \setlength\parskip{0in}
